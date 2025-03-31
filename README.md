@@ -92,17 +92,26 @@ Create a production build:
 npm run build
 ```
 
+Start the production server:
+
+```sh
+npm start
+```
+
 ## Deployment
 
 ### Docker Deployment
 
-To build and run using Docker:
+Build:
 
 ```bash
-docker build -t my-app .
+docker build -t bgee-web .
+```
 
-# Run the container
-docker run -p 3000:3000 my-app
+Run:
+
+```sh
+docker run -p 3000:3000 bgee-web
 ```
 
 The containerized application can be deployed to any platform that supports Docker, including:
@@ -143,3 +152,13 @@ find . -type f -name "*.js" -exec bash -c 'mv "$0" "${0%.js}.jsx"' {} \;
 ```
 
 Need to remove all `defaultProps`, and use the default definition in the functions arguments
+
+### TODO
+
+In `public/index.html` there was these lines to import icons, we might want to do this properly by installing the dependency in the `package.json`:
+
+```html
+<script type="module" src="/js/ionicons-5.5.4/ionicons.esm.js"></script>
+<script nomodule src="/js/ionicons-5.5.4/ionicons.js"></script>
+```
+
