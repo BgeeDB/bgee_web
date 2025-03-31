@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import api from '../api';
 import useForm from './useForm';
-import PATHS from '../routes/paths';
+import PATHS from '../paths/paths';
 import { NotificationContext } from '../contexts/NotificationsContext';
 import {
   TOP_ANAT_DEFAULT_RP,

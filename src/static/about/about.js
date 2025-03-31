@@ -1,4 +1,4 @@
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 import imagePath from '../../helpers/imagePath';
 
 const about = [

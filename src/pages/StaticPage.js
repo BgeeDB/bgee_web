@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet';
 import staticBuilder from '../helpers/staticBuilder';
-import ROUTES from '../routes/routes';
+import ROUTES from '../paths/routes';
 import config from '../config.json';
 
 const StaticPage = ({ location: { pathname } }) => (

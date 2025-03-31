@@ -1,5 +1,5 @@
 import imagePath from '../../helpers/imagePath';
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 
 const tutorialValues = [
   {

@@ -5,7 +5,7 @@ import LinkExternal from '../../../../components/LinkExternal';
 import { COLUMN_TYPES } from '../../../../helpers/constants/columnDescriptions';
 import obolibraryLinkFromID from '../../../../helpers/obolibraryLinkFromID';
 import { getChildValueFromAttribute } from '../../../../helpers/selects';
-import PATHS from '../../../../routes/paths';
+import PATHS from '../../../../paths/paths';
 import { PROC_EXPR_VALUES } from '../../rawdata/useLogic';
 
 const getColumnValues = (cell, attributes = []) =>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 import api from '../../api';
 import GeneDetails from '../../components/Gene/GeneDetails';
 import GeneList from '../../components/Gene/GeneList';

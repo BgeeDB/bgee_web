@@ -12,7 +12,7 @@ import './rawDataAnnotations.scss';
 import LinkExternal from '../../../components/LinkExternal';
 import TagSource from '../../../components/TagSource/TagSource';
 import { DATA_TYPES, PROC_EXPR_VALUES, RAW_DATA_ANNOTS } from './useLogic';
-import PATHS from '../../../routes/paths';
+import PATHS from '../../../paths/paths';
 import { getChildValueFromAttribute } from '../../../helpers/selects';
 import config from '../../../config.json';
 

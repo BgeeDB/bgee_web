@@ -1,8 +1,8 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
+import {Link} from "react-router";
 import useAnchorAtMount from '../../hooks/useAnchorAtMount';
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 import GoTop from '../../components/GoTop';
 
 const GeneExpressionCalls = () => {

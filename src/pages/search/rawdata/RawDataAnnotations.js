@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import Button from '../../../components/Bulma/Button/Button';
-import PATHS from '../../../routes/paths';
+import PATHS from '../../../paths/paths';
 import './rawDataAnnotations.scss';
 import RawDataAnnotationResults from './RawDataAnnotationResults';
 import DevelopmentalAndLifeStages from './components/filters/DevelopmentalAndLifeStages/DevelopmentalAndLifeStages';

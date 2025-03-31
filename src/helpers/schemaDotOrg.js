@@ -1,5 +1,5 @@
 import config from '../config.json';
-import PATHS from '../routes/paths';
+import PATHS from '../paths/paths';
 import obolibraryLinkFromID, {
   obolibraryNCBITaxonLinkFromID,
 } from './obolibraryLinkFromID';

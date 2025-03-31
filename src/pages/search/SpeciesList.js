@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 import Bulma from '../../components/Bulma';
 import CreativeCommons from '../../components/CreativeCommons';
 import api from '../../api';

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useHistory } from 'react-router-dom';
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 import useQuery from '../../hooks/useQuery';
 import Bulma from '../../components/Bulma';
 import api from '../../api';

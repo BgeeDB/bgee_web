@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles/global.scss';
 import { Helmet } from 'react-helmet';
-import Router from './routes';
+import Router from './paths';
 import config from './config.json';
 
 const current = new Date();

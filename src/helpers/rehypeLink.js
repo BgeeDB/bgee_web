@@ -5,7 +5,7 @@ import config from '../config.json';
 const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}/` : '/'}`;
-const rehypeLink = (history) => () => (tree) => {
+const rehypeLink = (navigate) => () => (tree) => {
   visit(tree, 'element', (node) => {
     const isInternal = /(^#)|(^\/)|(^https:\/\/www.bgee.org)/gi;
     if (node.tagName === 'a') {
@@ -16,7 +16,7 @@ const rehypeLink = (history) => () => (tree) => {
         node.properties.href = node.properties.href.replace(isInternalAndNotAnchor, `${URL_ROOT}`).replaceAll(regex, '/');
         node.properties.onclick = (e) => {
           e.preventDefault();
-          history.push(e.target.href.replace(window.location.origin, ''));
+          navigate(e.target.href.replace(window.location.origin, ''));
         };
       } else {
         node.properties.classname = 'external-link';

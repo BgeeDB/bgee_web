@@ -12,7 +12,7 @@ import {
   RNA_SEQ,
 } from '../../rawdata/useLogic';
 import { FULL_LENGTH_LABEL } from '../../../../api/prod/constant';
-import PATHS from "../../../../routes/paths";
+import PATHS from "../../../../paths/paths";
 import config from "../../../../config.json";
 
 const getUserFriendlyDataType = (dataType) => {

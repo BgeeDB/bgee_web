@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import Table from '../../components/Table';
 import Bulma from '../../components/Bulma';
 import api from '../../api';
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 import LinkExternal from '../../components/LinkExternal/LinkExternal';
 import classnames from '../../helpers/classnames';
 import { NotificationContext } from '../../contexts/NotificationsContext';

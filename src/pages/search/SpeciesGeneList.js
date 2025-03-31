@@ -4,7 +4,7 @@ import {Link, useHistory, useParams} from "react-router-dom";
 import { Helmet } from 'react-helmet';
 import Bulma from '../../components/Bulma';
 import api from '../../api';
-import PATHS from "../../routes/paths";
+import PATHS from "../../paths/paths";
 import config from '../../config.json';
 
 const SpeciesGeneList = () => {
@@ -21,7 +21,7 @@ const SpeciesGeneList = () => {
     function getCanonicalURL(sp) {
         return PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES
             .replace(':speciesId', sp.id)
-            .replace(':speciesName', sp.speciesFullNameWithoutSpace?.replace("_", "-").toLowerCase()); 
+            .replace(':speciesName', sp.speciesFullNameWithoutSpace?.replace("_", "-").toLowerCase());
     }
 
     React.useEffect(() => {
@@ -32,7 +32,7 @@ const SpeciesGeneList = () => {
             .then((geneListResp) => setGenes(geneListResp.data.genes))
             .finally(() => setLoading(false));
     }, [speciesId]);
-    
+
     React.useEffect(() => {
         api.search.species.name(speciesId)
             .then((nameResp) => {
@@ -90,7 +90,7 @@ const SpeciesGeneList = () => {
                 <Bulma.Title size={3} className="m-0">{`Gene list for ${speciesDisplay}`}
                 </Bulma.Title>
             </div>
-            
+
             {loading && (
                 <Bulma.Notification color="info" className="mt-5">
                     <p className="has-text-centered">Loading</p>
@@ -103,7 +103,7 @@ const SpeciesGeneList = () => {
                     </progress>
                 </Bulma.Notification>
             )}
-            
+
             {!loading && genes && (
                 <div className="content">
                     <div className="content">

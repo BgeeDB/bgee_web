@@ -1,7 +1,7 @@
 import axios from 'axios';
 import axiosInstance from './constant';
 import errorHandler from '../errorHandler';
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 
 export const SEARCH_CANCEL_API = {

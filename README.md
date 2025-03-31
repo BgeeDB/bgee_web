@@ -60,3 +60,86 @@ $size-4: 1.2rem (= 16.8px)
 $size-3: 1.5rem (= 21px)
 ````
 
+---
+
+## Getting Started
+
+[📖 React Router docs](https://reactrouter.com/)
+
+### Installation
+
+Install the dependencies:
+
+```bash
+npm i
+```
+
+### Development
+
+Start the development server with HMR:
+
+```bash
+npm run dev
+```
+
+Your application will be available at `http://localhost:5173`.
+
+## Building for Production
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+## Deployment
+
+### Docker Deployment
+
+To build and run using Docker:
+
+```bash
+docker build -t my-app .
+
+# Run the container
+docker run -p 3000:3000 my-app
+```
+
+The containerized application can be deployed to any platform that supports Docker, including:
+
+- AWS ECS
+- Google Cloud Run
+- Azure Container Apps
+- Digital Ocean App Platform
+- Fly.io
+- Railway
+
+### DIY Deployment
+
+If you're familiar with deploying Node applications, the built-in app server is production-ready.
+
+Make sure to deploy the output of `npm run build`
+
+```
+├── package.json
+├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
+├── build/
+│   ├── client/    # Static assets
+│   └── server/    # Server-side code
+```
+
+## Migration
+
+https://reactrouter.com/6.30.0/upgrading/v5
+
+https://reactrouter.com/upgrading/v6
+
+File base routing: https://reactrouter.com/how-to/file-route-conventions
+
+Rename `.js` to `.jsx` in folder:
+
+```bash
+find . -type f -name "*.js" -exec bash -c 'mv "$0" "${0%.js}.jsx"' {} \;
+```
+
+Need to remove all `defaultProps`, and use the default definition in the functions arguments

@@ -4,7 +4,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import Bulma from '../../components/Bulma';
 import Table from '../../components/Table';
 import api from '../../api';
-import PATHS from '../../routes/paths';
+import PATHS from '../../paths/paths';
 import LinkExternal from '../../components/LinkExternal';
 import { customAnatomicalHomologySorter } from '../../helpers/sortTable';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';

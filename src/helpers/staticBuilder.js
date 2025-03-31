@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define,no-case-declarations,react/no-array-index-key */
-import { Link } from 'react-router-dom';
+import {Link} from "react-router";
 import arrayHelper from './arrayHelper';
 import Accordion from '../components/Accordion';
 import LinkExternal from '../components/LinkExternal';
