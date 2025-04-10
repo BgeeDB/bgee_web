@@ -1,7 +1,6 @@
-/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router';
 import PATHS from '../../paths/paths';
 import Bulma from '../../components/Bulma';
 import api from '../../api';

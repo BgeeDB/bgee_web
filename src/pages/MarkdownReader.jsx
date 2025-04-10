@@ -1,4 +1,3 @@
-/* eslint-disable react/no-children-prop,no-param-reassign,react/destructuring-assignment */
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkToc from 'remark-toc';
@@ -7,14 +6,14 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import ROUTES from '../paths/routes';
 import classnames from '../helpers/classnames';
 import Bulma from '../components/Bulma';
 import rehypeLink from '../helpers/rehypeLink';
 
 const MarkdownReader = ({ location: { pathname } }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const components = React.useMemo(
     () => ({
       h1: ({ children, id }) => (
@@ -53,7 +52,7 @@ const MarkdownReader = ({ location: { pathname } }) => {
           rehypeSanitize,
           rehypeRaw,
           rehypeSlug,
-          rehypeLink(history),
+          rehypeLink(navigate),
         ]}
       />
     </>

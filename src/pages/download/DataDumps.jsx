@@ -1,22 +1,28 @@
-import { Helmet } from 'react-helmet';
 import Bulma from '../../components/Bulma';
 import classnames from '../../helpers/classnames';
 import GaEvent from '../../components/GaEvent/GaEvent';
 import imagePath from '../../helpers/imagePath';
 import LinkExternal from '../../components/LinkExternal';
 import config from '../../config.json';
+import { getMetadata } from '~/helpers/metadata';
 
-const title = 'Bgee Data dumps download page';
-const description = 'Download a simplified view of the Bgee database in various formats.';
+export function meta() {
+  return getMetadata({
+    title: 'Bgee Data dumps download page',
+    description: 'Download a simplified view of the Bgee database in various formats.',
+    keywords: "dataset, data download, MySQL, RDF, EasyBgee, gene expression data",
+  });
+}
+
 const DataDumps = () => (
   <>
-    <Helmet>
+    {/* <Helmet>
       <title>{title}</title>
       <meta property='og:title' content={title} />
       <meta name="description" content={description} />
       <meta property='og:description' content={description} />
       <meta name="keywords" content="dataset, data download, MySQL, RDF, EasyBgee, gene expression data" />
-    </Helmet>
+    </Helmet> */}
     <div className="content has-text-centered">
       <Bulma.Title size={3}>Bgee data dumps</Bulma.Title>
     </div>

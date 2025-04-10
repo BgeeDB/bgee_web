@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { Helmet } from 'react-helmet';
 import Table from '../../components/Table';
 import Bulma from '../../components/Bulma';
@@ -368,7 +368,7 @@ const onSort = (sortOpts) => (a, b) => {
 };
 
 const ExpComp = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [error, setError] = React.useState(false);
   const [geneInfo, setGeneInfo] = React.useState();
   const { addNotification } = React.useContext(NotificationContext);
@@ -406,7 +406,7 @@ const ExpComp = () => {
             data,
           });
           if (storableParams?.queryString) {
-            history.replace(`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${storableParams?.queryString}`);
+            navigate(`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${storableParams?.queryString}`, {replace: true});
           }
         })
         .catch((err) => {

@@ -1,8 +1,5 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable consistent-return */
-/* eslint-disable no-use-before-define */
 import { useState, useEffect, useCallback } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
 import {
@@ -151,7 +148,7 @@ const BASE_PAGE_NUMBER = '1';
 const BASE_LIMIT = '50';
 
 const useLogic = (isExprCalls) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   // Init from URL
   const loc = useLocation();
   const initSearch = new URLSearchParams(loc.search);
@@ -284,13 +281,13 @@ const useLogic = (isExprCalls) => {
     triggerSearch();
     setIsCountLoading(true);
 
-    // Allow to detect a browser back btn pressed and force all the worflow to work again by forcing reload @ugly
-    history.listen(() => {
-      if (history.action === 'POP') {
-        // eslint-disable-next-line no-restricted-globals
-        location.reload();
-      }
-    });
+    // TODO: Allow to detect a browser back btn pressed and force all the worflow to work again by forcing reload @ugly
+    // history.listen(() => {
+    //   if (history.action === 'POP') {
+    //     // eslint-disable-next-line no-restricted-globals
+    //     location.reload();
+    //   }
+    // });
   }, []);
 
   useEffect(() => {
@@ -668,12 +665,12 @@ const useLogic = (isExprCalls) => {
             searchParams.delete('only_propagated');
           }
           if (isFirstSearch) {
-            history.replace({
+            navigate({
               search: searchParams.toString(),
               pathname: `${URL_ROOT}${loc.pathname}`,
-            });
+            }, {replace: true});
           } else {
-            history.push({
+            navigate({
               search: searchParams.toString(),
               pathname: `${URL_ROOT}${loc.pathname}`,
             });
@@ -696,7 +693,7 @@ const useLogic = (isExprCalls) => {
       })
       .catch(() => {
         // We remove all the parameters that we may have sent
-        history.replace(`${URL_ROOT}${loc.pathname}`);
+        navigate(`${URL_ROOT}${loc.pathname}`, {replace: true});
         setIsLoading(false);
       })
       .finally(() => {

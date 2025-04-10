@@ -4,7 +4,7 @@ import PATHS from '../../paths/paths';
 import classnames from '../../helpers/classnames';
 import imagePath from '../../helpers/imagePath';
 
-const GeneList = ({ details, history }) => (
+const GeneList = ({ details, navigate }) => (
   <>
     <Helmet>
       <title>{`Gene ${details[0].name} ${details[0].geneId}`}</title>
@@ -21,7 +21,7 @@ const GeneList = ({ details, history }) => (
         <div
           key={e.species.id}
           onClick={() => {
-            history.push(
+            navigate(
               PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(
                 ':geneId',
                 e.geneId

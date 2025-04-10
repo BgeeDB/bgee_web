@@ -1,6 +1,5 @@
-/* eslint-disable react/no-array-index-key */
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Bulma from '../Bulma';
 import { ModalContext } from '../../contexts/ModalContext';
 import PATHS from '../../paths/paths';
@@ -78,7 +77,7 @@ export const addTopAnatHistory = (id, speciesId, speciesName, title = '') => {
 };
 
 const TopAnatHistoryModal = () => {
-  const navHistory = useHistory();
+  const navigate = useNavigate();
   const [history, setHistory] = React.useState([]);
   const { showModal, hideModal } = React.useContext(ModalContext);
 
@@ -98,7 +97,7 @@ const TopAnatHistoryModal = () => {
   const onLoad = React.useCallback(
     (id) => () => {
       hideModal();
-      navHistory.push(PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(':id', id));
+      navigate(PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(':id', id));
     },
     []
   );

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router';
 import api from '../../../../api';
 import LinkExternal from '../../../../components/LinkExternal';
 import { COLUMN_TYPES } from '../../../../helpers/constants/columnDescriptions';

@@ -1,6 +1,5 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Bulma from '../Bulma';
 import classnames from '../../helpers/classnames';
 import api from '../../api';
@@ -8,7 +7,7 @@ import PATHS from '../../paths/paths';
 import AutoCompleteSearch from '../AutoCompleteSearch/AutoCompleteSearch';
 
 const GeneSearch = ({ classNames, children, searchTerm = '' }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const renderOption = useCallback((option, search) => {
     let redPart;
@@ -48,7 +47,7 @@ const GeneSearch = ({ classNames, children, searchTerm = '' }) => {
   }, []);
 
   const onSelectOption = useCallback((option) => {
-    history.push(`${PATHS.SEARCH.GENE}?search=${option}`);
+    navigate(`${PATHS.SEARCH.GENE}?search=${option}`);
   }, []);
 
   return (

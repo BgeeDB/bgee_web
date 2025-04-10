@@ -1,6 +1,5 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */
 import React from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router';
 import Bulma from '../../components/Bulma';
 import Table from '../../components/Table';
 import api from '../../api';
@@ -89,7 +88,7 @@ const DEFAULT_RESULTS = {
 };
 
 const AnatomicalHomologySearch = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [anatomicalEntities, setAnatomicalEntities] = React.useState('');
   const [error, setError] = React.useState(false);
@@ -151,7 +150,7 @@ const AnatomicalHomologySearch = () => {
           signature: queryString,
           data,
         });
-        history.push(`${URL_ROOT}${pathname}?${queryString}`);
+        navigate(`${URL_ROOT}${pathname}?${queryString}`);
       })
       .catch((err) => {
         console.error(err);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import PATHS from '../../paths/paths';
 import api from '../../api';
 import GeneDetails from '../../components/Gene/GeneDetails';
@@ -11,7 +11,7 @@ const FLOW = {
 };
 
 const Gene = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { geneId, speciesId: urlSpeciesId } = useParams();
 
   const [flowState, setFlowState] = React.useState(FLOW.LOADING);
@@ -23,7 +23,7 @@ const Gene = () => {
       .getGeneralInformation(geneId)
       .then(({ data }) => {
         if (data.genes.length === 1 && urlSpeciesId) {
-          history.replace(PATHS.SEARCH.GENE_ITEM.replace(':geneId', geneId));
+          navigate(PATHS.SEARCH.GENE_ITEM.replace(':geneId', geneId));
         } else {
           setGeneDetails(data.genes);
           setFlowState(FLOW.LOADED);
@@ -31,7 +31,7 @@ const Gene = () => {
       })
       .catch((err) => {
         console.log(err.message);
-        history.replace(PATHS.ERROR, {
+        navigate(PATHS.ERROR, {
           error: {
             message: err.message || err?.data?.code,
           },
@@ -59,7 +59,7 @@ const Gene = () => {
   }
 
   if (!urlSpeciesId && geneDetails?.length > 1) {
-    return <GeneList details={geneDetails} history={history} />;
+    return <GeneList details={geneDetails} navigate={navigate} />;
   }
   return null;
 };

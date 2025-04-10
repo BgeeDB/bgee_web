@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/interactive-supports-focus,react/no-array-index-key,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router';

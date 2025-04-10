@@ -1,6 +1,5 @@
-/* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
-import {Link, useHistory, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router";
 import { Helmet } from 'react-helmet';
 import Bulma from '../../components/Bulma';
 import api from '../../api';
@@ -16,7 +15,7 @@ const SpeciesGeneList = () => {
     const [species, setSpecies] = useState([]);
     const [loading, setLoading] = useState(false);
     const { speciesId, speciesName } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     function getCanonicalURL(sp) {
         return PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES
@@ -38,12 +37,12 @@ const SpeciesGeneList = () => {
             .then((nameResp) => {
                 setSpecies(nameResp.data.species);
                 if (nameResp.data.species.speciesFullNameWithoutSpace !== speciesName) {
-                    history.replace(getCanonicalURL(nameResp.data.species));
+                    navigate(getCanonicalURL(nameResp.data.species));
                 }
             })
             .catch((err) => {
                 console.log(err.message);
-                history.replace(PATHS.ERROR, {
+                navigate(PATHS.ERROR, {
                     error: {
                         message: err.message || err?.data?.code,
                     },

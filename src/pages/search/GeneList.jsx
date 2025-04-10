@@ -1,7 +1,6 @@
-/* eslint-disable no-case-declarations,react/no-array-index-key */
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router';
 import PATHS from '../../paths/paths';
 import Bulma from '../../components/Bulma';
 import useGeneSearch from '../../hooks/useGeneSearch';

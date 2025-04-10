@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import config from '../config.json';
 
 const APP_VERSION = config.version;
@@ -52,7 +52,7 @@ const usePagination = (
   paginationResultCountKey = RESULTS_COUNT_KEY
 ) => {
   const { pathname, search } = useLocation();
-  const { push } = useHistory();
+  const navigate = useNavigate();
 
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
 
@@ -69,7 +69,7 @@ const usePagination = (
         ...sp,
         [keyForPage]: newPage,
       };
-      push({
+      navigate({
         search: new URLSearchParams(newParams).toString(),
         pathname: `${URL_ROOT}${pathname}`,
       });
@@ -85,7 +85,7 @@ const usePagination = (
         [keyForPageSize]: newPageSize,
         [keyForPage]: 1, // Always reset the page when page size is changed
       };
-      push({
+      navigate({
         search: new URLSearchParams(params).toString(),
         pathname: `${URL_ROOT}${pathname}`,
       });

@@ -1,8 +1,5 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable consistent-return */
-/* eslint-disable no-use-before-define */
 import { useState, useEffect, useCallback } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
 import {
@@ -160,7 +157,7 @@ export const ALL_CALL_TYPE = [
 const BASE_LIMIT = '10000';
 
 const useLogic = (isExprCalls) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   // Init from URL
   const loc = useLocation();
   const initSearch = new URLSearchParams(loc.search);
@@ -735,12 +732,12 @@ const useLogic = (isExprCalls) => {
         }
 
         if (isFirstSearch) {
-          history.replace({
+          navigate({
             search: searchParams.toString(),
             pathname: `${URL_ROOT}${loc.pathname}`,
-          });
+          }, {replace: true});
         } else {
-          history.push({
+          navigate({
             search: searchParams.toString(),
             pathname: `${URL_ROOT}${loc.pathname}`,
           });
@@ -755,7 +752,7 @@ const useLogic = (isExprCalls) => {
       }
     } catch (error) {
       console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`)
-      history.replace(`${URL_ROOT}${loc.pathname}`);
+      navigate(`${URL_ROOT}${loc.pathname}`, {replace: true});
       setIsLoading(false);
     } finally {
       // console.log(`[useLogic.triggerInitialSearch] finally.`)
@@ -876,12 +873,12 @@ const useLogic = (isExprCalls) => {
             searchParams.delete('anat_entity_descendant');
           }
           if (isFirstSearch) {
-            history.replace({
+            navigate({
               search: searchParams.toString(),
               pathname: `${URL_ROOT}${loc.pathname}`,
-            });
+            }, {replace: true});
           } else {
-            history.push({
+            navigate({
               search: searchParams.toString(),
               pathname: `${URL_ROOT}${loc.pathname}`,
             });
@@ -907,7 +904,7 @@ const useLogic = (isExprCalls) => {
       })
       .catch(() => {
         // We remove all the parameters that we may have sent
-        history.replace(`${URL_ROOT}${loc.pathname}`);
+        navigate(`${URL_ROOT}${loc.pathname}`, {replace: true});
         setIsLoading(false);
       })
       .finally(() => {
@@ -1113,7 +1110,7 @@ const useLogic = (isExprCalls) => {
         // DEBUG: remove console log in prod
         console.log(`[useLogic] triggerSearchChildren - Whoops! Something went wrong...`);
         // We remove all the parameters that we may have sent
-        history.replace(`${URL_ROOT}${loc.pathname}`);
+        navigate(`${URL_ROOT}${loc.pathname}`, {replace: true});
         setIsLoading(false);
       }) */
       .finally(() => {
@@ -1208,16 +1205,16 @@ const useLogic = (isExprCalls) => {
         // console.log(`[useLogic.initFromUrlParams] simple RP resp:\n${JSON.stringify(resp1, null, 2)}`);
 
         const simpleParams = resp1.resp.requestParameters;
-        
+
         // Check for gene_list first before processing other parameters
         if (simpleParams.gene_list) {
           // Join array items with newlines and encode for URL
           const encodedGeneList = simpleParams.gene_list.join('%0A');
           // Redirect to same page with gene_list parameter
-          history.replace({
+          navigate({
             pathname: loc.pathname,
             search: `?gene_list=${encodedGeneList}`
-          });
+          }, {replace: true});
           return; // Exit the entire function
         }
 
@@ -1337,7 +1334,7 @@ const useLogic = (isExprCalls) => {
 
     function updateExpandedStateHierarchically(terms) {
       const newTermProps = {...anatomicalTermsProps};
-      
+
       // Helper function to recursively traverse the array
       function traverse(node) {
         if (!node || !Array.isArray(node)) return []; // break condition
@@ -1373,13 +1370,13 @@ const useLogic = (isExprCalls) => {
     }
 
     const {newDrilldown, newTermProps} = updateExpandedStateHierarchically(anatomicalTerms);
-    
+
     // Update anatomical terms state
     // console.log(`[useLogic] CALL setAnatomicalTermsProps...`);
     setAnatomicalTermsProps(newTermProps);
     // console.log(`[useLogic] CALL setAnatomicalTerms...`);
     setAnatomicalTerms(newDrilldown);
-    
+
     // console.log(`[useLogic] DONE onToggleExpandCollapse.`);
   };
 

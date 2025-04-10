@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import Bulma from '../Bulma';
 import api from '../../api';
 import Heatmap from '../Heatmap/Heatmap';
@@ -43,7 +43,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   const loc = useLocation();
   const initSearch = new URLSearchParams(loc.search);
   const initHash = initSearch.get('data');
-  const history = useHistory();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [searchResult, setSearchResult] = useState();
   const [anatomicalTerms, setAnatomicalTerms] = useState([]);
@@ -619,7 +619,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
                 queryParams.set(dataTypeKey, dataType.join(','));
               else queryParams.delete(dataTypeKey);
 
-              history.replace(`${URL_ROOT}${history.location.pathname}?${queryParams.toString()}`);
+              navigate(`${URL_ROOT}${loc.pathname}?${queryParams.toString()}`, {replace: true});
             }}
           >
             Update

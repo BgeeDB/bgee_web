@@ -1,7 +1,5 @@
-/* eslint-disable jsx-a11y/no-redundant-roles */
-/* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
 import React, { useContext } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { TableContext } from '../../contexts/TableContext';
 import { usePaginationLink } from '../../hooks/usePagination';
 import config from '../../config.json';
@@ -18,7 +16,7 @@ const PaginationWithoutRefresh = ({ current, total }) => {
     paginationResultCountKey
   );
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const loc = useLocation();
   const sp = new URLSearchParams(loc.search);
 
@@ -57,7 +55,7 @@ const PaginationWithoutRefresh = ({ current, total }) => {
     e.preventDefault();
     e.stopPropagation();
     sp.set(paginationParamPageKey, targetPage);
-    history.push({ search: `?${sp.toString()}`, pathname: `${URL_ROOT}${loc.pathname}` });
+    navigate({ search: `?${sp.toString()}`, pathname: `${URL_ROOT}${loc.pathname}` });
   };
 
   if (total === 1) return null;

@@ -1,6 +1,5 @@
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions,jsx-a11y/click-events-have-key-events */
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import PATHS from '../../paths/paths';
 import config from '../../config.json';
@@ -10,12 +9,12 @@ const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
 const GeneDetailsSideMenu = ({ homologs = null, xRefs }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const handlerMenuClick = React.useCallback(
     (id) => {
-      history.replace(`${URL_ROOT}${location.pathname}${location.search}#${id}`);
+      navigate(`${URL_ROOT}${location.pathname}${location.search}#${id}`, {replace: true});
     },
     [location]
   );

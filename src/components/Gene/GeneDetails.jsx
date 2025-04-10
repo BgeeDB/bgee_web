@@ -1,6 +1,5 @@
-/* eslint-disable no-nested-ternary,jsx-a11y/label-has-associated-control,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions, no-case-declarations, react/no-array-index-key */
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router';
 import { Helmet } from 'react-helmet';
 import Bulma from '../Bulma';
 import PATHS from '../../paths/paths';

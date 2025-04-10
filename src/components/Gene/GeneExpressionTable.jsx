@@ -1,6 +1,5 @@
-/* eslint-disable no-nested-ternary,jsx-a11y/label-has-associated-control,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions, no-case-declarations, react/no-array-index-key */
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router';
 import Bulma from '../Bulma';
 import api from '../../api';
 import classnames from '../../helpers/classnames';
@@ -185,7 +184,8 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed }) => {
     () => (notExpressed && SEPARATE_DATA_FORM ? 'not_data_type' : 'data_type'),
     [notExpressed]
   );
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const hashExpr = useQuery(exprKey);
   const dataTypeExpr = useQuery(dataTypeKey);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -327,7 +327,7 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed }) => {
                 queryParams.set(dataTypeKey, dataType.join(','));
               else queryParams.delete(dataTypeKey);
 
-              history.replace(`${URL_ROOT}${history.location.pathname}?${queryParams.toString()}`);
+              navigate(`${URL_ROOT}${location.pathname}?${queryParams.toString()}`, {replace: true});
             }}
           >
             Update
