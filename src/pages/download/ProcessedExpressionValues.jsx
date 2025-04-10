@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus,react/no-array-index-key,react/button-has-type,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,jsx-a11y/label-has-associated-control */
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import PATHS from '../../paths/paths';
 import useQuery from '../../hooks/useQuery';
 import Bulma from '../../components/Bulma';
@@ -20,7 +20,7 @@ import config from '../../config.json';
 const FULL_LENGTH_LABEL = "Full length RNA-Seq";
 const DROPLET_BASED_LABEL = "Droplet based RNA-Seq";
 const ProcessedExpressionValues = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [speciesList, setSpeciesList] = React.useState([]);
   const [kwList, setKwList] = React.useState({});
   const [search, setSearch] = React.useState('');
@@ -144,7 +144,7 @@ const ProcessedExpressionValues = () => {
                   )}
                   onRender={expressionPageHelper.autocompleteSpeciesRender(
                     setSearch,
-                    history
+                    navigate
                   )}
                 />
               </div>
@@ -168,11 +168,11 @@ const ProcessedExpressionValues = () => {
                 speciesList={filteredSpecies}
                 defaultSelection={speciesID}
                 onClick={(species, isSelected) => {
-                  history.replace(
+                  navigate(
                     isSelected
                       ? `${PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES}?id=${species.id}`
                       : PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES
-                  );
+                  , {replace: true});
                 }}
                 onRenderSelection={(species, { onClose }) => (
                   <div

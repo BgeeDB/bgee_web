@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import api from '../api';
 import useForm from './useForm';
 import PATHS from '../paths/paths';
@@ -31,13 +31,13 @@ const useTopAnat = (flowState, setFlowState) => {
   const [requestParameters, setRP] = React.useState(TOP_ANAT_DEFAULT_RP);
   const [results, setResults] = React.useState();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const onSubmit = React.useCallback((data) => {
     setFlowState(TOP_ANAT_FLOW.LAUNCHING_JOB);
     api.topAnat
       .runJob(data)
       .then((res) => {
-        history.push(
+        navigate(
           PATHS.ANALYSIS[
             res.data.jobResponse.jobStatus === 'RUNNING'
               ? 'TOP_ANAT_RESULT_JOB_ID'
@@ -203,14 +203,14 @@ const useTopAnat = (flowState, setFlowState) => {
               children: res.message,
               className: 'is-success',
             });
-            history.push(PATHS.ANALYSIS.TOP_ANAT, {
+            navigate(PATHS.ANALYSIS.TOP_ANAT, {
               form: dataForm,
               requestParameters,
             });
           })
           .catch((err) => {
             console.debug('[ERROR] api.topAnat.cancelJob(%s)', jobId, err);
-            history.push(PATHS.ANALYSIS.TOP_ANAT);
+            navigate(PATHS.ANALYSIS.TOP_ANAT);
           });
       }
     },
@@ -218,7 +218,7 @@ const useTopAnat = (flowState, setFlowState) => {
   );
   const startNewJob = React.useCallback(
     (newJob) => () => {
-      history.push(PATHS.ANALYSIS.TOP_ANAT, {
+      navigate(PATHS.ANALYSIS.TOP_ANAT, {
         form: newJob ? undefined : dataForm,
         requestParameters,
       });

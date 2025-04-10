@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus,react/no-array-index-key,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import PATHS from '../../paths/paths';
 import useQuery from '../../hooks/useQuery';
 import Bulma from '../../components/Bulma';
@@ -16,7 +16,7 @@ import LinkExternal from '../../components/LinkExternal';
 import imagePath from '../../helpers/imagePath';
 
 const GeneExpressionCalls = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [singleSpeciesList, setSingleSpeciesList] = React.useState([]);
   const [kwList, setKwList] = React.useState({});
   const [search, setSearch] = React.useState('');
@@ -129,7 +129,7 @@ const GeneExpressionCalls = () => {
                 )}
                 onRender={expressionPageHelper.autocompleteSpeciesRender(
                   setSearch,
-                  history
+                  navigate
                 )}
               />
             </div>
@@ -152,11 +152,11 @@ const GeneExpressionCalls = () => {
                 speciesList={filteredSingleSpecies}
                 defaultSelection={speciesID}
                 onClick={(species, isSelected) => {
-                  history.replace(
+                  navigate(
                     isSelected
                       ? `${PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}?id=${species.id}`
                       : PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS
-                  );
+                  , {replace: true});
                 }}
                 onRenderSelection={(species, { onClose }) => (
                   <div

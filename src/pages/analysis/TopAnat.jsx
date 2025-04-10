@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,jsx-a11y/label-has-associated-control */
 import React from 'react';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router';
 import PATHS from '../../paths/paths';
 import api from '../../api';
 import TopAnatBanner from '../../components/TopAnat/TopAnatBanner';
@@ -22,7 +22,8 @@ const { ID_FULL_LENGTH } = config.dataTypeIds;
 let getJobStatusTimeOut;
 
 const TopAnat = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
+  const loc = useLocation();
   const { id, jobId } = useParams();
   const { state: pageState } = useLocation();
   const { addNotification } = React.useContext(NotificationContext);
@@ -48,12 +49,12 @@ const TopAnat = () => {
   } = useTopAnat(flowState, setFlowState);
 
   const oldResultFragment = '#/result/';
-  if (history.location.hash !== '' && history.location.hash.match(oldResultFragment) ) {
-    // Get result hashtag from history.location.hash, and clean the history.location.hash value
-    const resultId = history.location.hash.replace(oldResultFragment, '');
-    history.location.hash = '';
-    // Rewrite the history.location with the current pathname + resultId
-    history.push(`${resultId}`);
+  if (loc.hash !== '' && loc.hash.match(oldResultFragment) ) {
+    // Get result hashtag from loc.hash, and clean the loc.hash value
+    const resultId = loc.hash.replace(oldResultFragment, '');
+    loc.hash = '';
+    // Rewrite the loc with the current pathname + resultId
+    navigate(`${resultId}`);
   }
 
   const getJobStatus = React.useCallback((ID, jobID, requestParams = true) => {
@@ -62,7 +63,7 @@ const TopAnat = () => {
       .then((res) => {
         if (res.data.jobResponse.jobStatus === 'UNDEFINED') {
           if (res.data?.jobResponse?.data)
-            history.push(
+            navigate(
               PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(
                 ':id',
                 res.data.jobResponse.data
@@ -163,7 +164,7 @@ const TopAnat = () => {
           }
           setFlowState(TOP_ANAT_FLOW.GOT_JOB);
         } else {
-          history.push(
+          navigate(
             PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(
               ':id',
               res.data.jobResponse.data
@@ -216,7 +217,7 @@ const TopAnat = () => {
           api.topAnat
             .runJob(formData)
             .then((res) => {
-              history.push(
+              navigate(
                 PATHS.ANALYSIS[
                   res.data.jobResponse.jobStatus === 'RUNNING'
                     ? 'TOP_ANAT_RESULT_JOB_ID'

@@ -2,19 +2,19 @@ import PATHS from './paths';
 
 import Home from '../pages/Home';
 
-import TopAnatAnalysis from '../pages/analysis/TopAnat';
-import ExpComp from '../pages/analysis/ExpComp';
+// import TopAnatAnalysis from '../pages/analysis/TopAnat';
+// import ExpComp from '../pages/analysis/ExpComp';
 
-import GeneList from '../pages/search/GeneList';
-import Gene from '../pages/search/Gene';
-import RawDataAnnotations from '../pages/search/rawdata/RawDataAnnotations';
-import GeneExpressionMatrix from '../pages/search/expressionmatrix/GeneExpressionMatrix';
-import AnatomicalHomologySearch from '../pages/search/AnatomicalHomologySearch';
-import SpeciesList from '../pages/search/SpeciesList';
-import Species from '../pages/search/Species';
-import SpeciesGeneList from "../pages/search/SpeciesGeneList";
+// import GeneList from '../pages/search/GeneList';
+// import Gene from '../pages/search/Gene';
+// import RawDataAnnotations from '../pages/search/rawdata/RawDataAnnotations';
+// import GeneExpressionMatrix from '../pages/search/expressionmatrix/GeneExpressionMatrix';
+// import AnatomicalHomologySearch from '../pages/search/AnatomicalHomologySearch';
+// import SpeciesList from '../pages/search/SpeciesList';
+// import Species from '../pages/search/Species';
+// import SpeciesGeneList from "../pages/search/SpeciesGeneList";
 
-import Experiment from '../pages/search/experiments/Experiment';
+// import Experiment from '../pages/search/experiments/Experiment';
 
 import ProcessedExpressionValues from '../pages/download/ProcessedExpressionValues';
 import GeneExpressionCallsDownload from '../pages/download/GeneExpressionCalls';
@@ -59,7 +59,7 @@ import DataSource from '../pages/about/DataSource';
 const ANALYSIS = {
   [PATHS.ANALYSIS.TOP_ANAT]: {
     title: 'TopAnat: Expression enrichment analysis',
-    component: TopAnatAnalysis,
+    // component: TopAnatAnalysis,
     meta: {
       title: 'TopAnat: Expression enrichment analysis',
       description: 'GO-like enrichment of anatomical terms, mapped to genes by expression patterns',
@@ -68,7 +68,7 @@ const ANALYSIS = {
   },
   [PATHS.ANALYSIS.EXPRESSION_COMPARISON]: {
     title: 'Expression comparison',
-    component: ExpComp,
+    // component: ExpComp,
     meta: {
       title: 'Expression comparison analysis',
       description:
@@ -82,14 +82,14 @@ const ANALYSIS = {
 const SEARCH = {
   [PATHS.SEARCH.GENE]: {
     title: 'Genes',
-    component: GeneList,
+    // component: GeneList,
   },
   [PATHS.SEARCH.GENE_ITEM]: {
-    component: Gene,
+    // component: Gene,
     title: 'Gene',
   },
   [PATHS.SEARCH.ANATOMICAL_HOMOLOGY]: {
-    component: AnatomicalHomologySearch,
+    // component: AnatomicalHomologySearch,
     title: 'Anatomical homologies',
     meta: {
       title: 'Anatomical homology search',
@@ -99,19 +99,19 @@ const SEARCH = {
     },
   },
   [PATHS.SEARCH.SPECIES]: {
-    component: SpeciesList,
+    // component: SpeciesList,
     title: 'Species',
   },
   [PATHS.SEARCH.SPECIES_ITEM]: {
-    component: Species,
+    // component: Species,
     title: 'Species',
   },
   [PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES]: {
-    component: SpeciesGeneList,
+    // component: SpeciesGeneList,
     title: 'Species gene list',
   },
   [PATHS.SEARCH.RAW_DATA_ANNOTATIONS]: {
-    component: () => <RawDataAnnotations />,
+    // component: () => <RawDataAnnotations />,
     title: 'Raw data annotated and processed',
     meta: {
       title: 'Raw data annotated and processed',
@@ -120,7 +120,7 @@ const SEARCH = {
     },
   },
   [PATHS.SEARCH.EXPRESSION_CALLS]: {
-    component: () => <RawDataAnnotations isExprCalls />,
+    // component: () => <RawDataAnnotations isExprCalls />,
     title: 'Present/absent expression calls',
     meta: {
       title: 'Present/absent expression calls',
@@ -129,11 +129,11 @@ const SEARCH = {
     },
   },
   [PATHS.SEARCH.EXPRESSION_MATRIX]: {
-    component: () => <GeneExpressionMatrix isExprCalls />,
+    // component: () => <GeneExpressionMatrix isExprCalls />,
     title: 'Gene expression matrix (beta)',
   },
   [PATHS.SEARCH.EXPERIMENT]: {
-    component: Experiment,
+    // component: Experiment,
     title: 'Experiment informations',
   },
 };

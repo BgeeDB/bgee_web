@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 /*
  * At component mount, will trigger window.scrollTo to the passed anchor
