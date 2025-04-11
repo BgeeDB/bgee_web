@@ -1,5 +1,19 @@
 import { FULL_LENGTH_LABEL } from '../../api/prod/constant';
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Annotation resources',
+    description: 'Access annotations of expression data and of anatomical similarities produced by Bgee.',
+    keywords: 'Anatomical similarity annotations, RNA-Seq annotations, Affymetrix annotations, EST annotations, GTEx annotations, scRNA-Seq annotations',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(annotations)
+}
 
 const annotations = [
   {
@@ -139,5 +153,3 @@ const annotations = [
     fillRow: true,
   },
 ];
-
-export default annotations;

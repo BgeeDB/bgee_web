@@ -1,4 +1,18 @@
 import config from '../../config.json';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Privacy notice',
+    description: 'Privacy notice describing the use of personal data by Bgee.',
+    keywords: 'privacy notice, privacy policy, personal data, data controller, personal data collection, GDPR',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(privacyPolicy)
+}
 
 const privacyPolicy = [
   {
@@ -413,5 +427,3 @@ const privacyPolicy = [
     ],
   },
 ];
-
-export default privacyPolicy;

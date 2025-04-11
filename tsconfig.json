@@ -20,10 +20,12 @@
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    "noImplicitAny": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "allowJs": true,
-    "checkJs": true
+    "checkJs": true,
+    "jsxImportSource": "react"
   }
 }

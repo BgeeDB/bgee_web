@@ -8,10 +8,19 @@ import LinkExternal from '../../components/LinkExternal';
 import { customAnatomicalHomologySorter } from '../../helpers/sortTable';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 import config from '../../config.json';
+import { getMetadata } from '~/helpers/metadata';
 
 const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+
+export function meta() {
+  return getMetadata({
+    title: 'Anatomical homology search',
+    description: 'Identify relations of homology and anatomical similarity between anatomical entities.',
+    keywords: 'homology, similarity, anatomical entity',
+  });
+}
 
 const onRenderCell =
   () =>

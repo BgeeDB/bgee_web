@@ -1,5 +1,19 @@
 import config from '../../config.json';
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Bgee collaborations',
+    description: 'Examples of collaboration with groups making use of Bgee data.',
+    keywords: 'Collaborations, Bio-SODA, INODE, OMA, OncoMX',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(collaborations)
+}
 
 // TODO how to link David Osumi-Sutherland? Which affiliation?
 const collaborations = [
@@ -504,5 +518,3 @@ const collaborations = [
     ],
   },
 ];
-
-export default collaborations;

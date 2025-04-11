@@ -15,8 +15,6 @@ import TablePagination from './TablePagination';
 import usePagination from '../../hooks/usePagination';
 import TablePaginationWithoutRefresh from './TablePaginationWithoutRefresh';
 
-let idcounter = 0;
-
 const Table = ({
   fullwidth = true,
   classNames = '',
@@ -54,6 +52,7 @@ const Table = ({
     [data, mappingObj]
   );
   const table = React.useRef();
+  const inputId = React.useId();
   const { width } = useWindowSize();
   const usedWidth = React.useMemo(
     () => table?.current?.offsetWidth || width,
@@ -144,9 +143,9 @@ const Table = ({
     () => (
       <div className="control table-search is-flex is-flex-direction-row is-align-items-center">
         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-        <label htmlFor={`filtering${idcounter}`} className="mr-1">Filter:</label>
+        <label htmlFor={`filtering${inputId}`} className="mr-1">Filter:</label>
         <Input
-          id={`filtering${idcounter}`}
+          id={`filtering${inputId}`}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -204,7 +203,6 @@ const Table = ({
     ? TablePaginationWithoutRefresh
     : TablePagination;
 
-  idcounter+=1;
   return (
     <TableProvider
       data={{

@@ -10,6 +10,15 @@ import { MEDIA_QUERIES } from '../../helpers/constants/mediaQueries';
 import { customGeneListSorter } from '../../helpers/sortTable';
 import Table from '../../components/Table';
 import config from "../../config.json";
+import { getMetadata } from '~/helpers/metadata';
+
+export function meta() {
+  return getMetadata({
+    title: 'Gene search',
+    description: 'Search for a gene in Bgee',
+    keywords: 'gene search, gene',
+  });
+}
 
 const onRenderCell =
   (search) =>

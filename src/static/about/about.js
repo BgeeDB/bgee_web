@@ -1,5 +1,19 @@
 import PATHS from '../../paths/paths';
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'About Bgee',
+    description: 'General information about Bgee and the team developing it.',
+    keywords: 'About, license, CC0',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(about)
+}
 
 const about = [
   {
@@ -465,5 +479,3 @@ const about = [
     ],
   },
 ];
-
-export default about;

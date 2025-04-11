@@ -1,49 +1,39 @@
-/* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
-import { Helmet } from 'react-helmet';
-import PATHS from '../../paths/paths';
-import Bulma from '../../components/Bulma';
-import CreativeCommons from '../../components/CreativeCommons';
-import api from '../../api';
-import GridSpecies from '../../components/GridSpecies/GridSpecies';
-import config from "../../config.json";
+import PATHS from '~/paths/paths';
+import Bulma from '~/components/Bulma';
+import api from '~/api';
+import GridSpecies from '~/components/GridSpecies/GridSpecies';
+import config from "~/config.json";
+import { getMetadata } from '~/helpers/metadata';
+import { useLoaderData } from 'react-router';
+
+
+export async function loader() {
+  try {
+    const speciesRes = await api.search.species.list();
+    return {speciesList: speciesRes.data.species}
+  } catch (error) {
+    // console.warn(error)
+    throw new Response(error.data.message || 'Failed to load species data', { status: 404 });
+  }
+}
+
+export function meta({ data }) {
+  return getMetadata({
+    title: 'Bgee Species list',
+    description: 'List of species with expression data available in Bgee',
+    keywords: data.speciesList.map(
+        (s) => `${s.genus} ${s.speciesName} ${s.name ? `, ${s.name}` : ''}`
+      )
+      .join(', '),
+    link: `${config.genericDomain}${PATHS.SEARCH.SPECIES}`,
+  });
+}
 
 const SpeciesList = () => {
-  const [speciesList, setSpeciesList] = useState([]);
+  const {speciesList} = useLoaderData()
 
-  React.useEffect(() => {
-    api.search.species.list().then((resp) => {
-      if (resp.code === 200) {
-        setSpeciesList(resp.data.species);
-      } else {
-        setSpeciesList([]);
-      }
-    });
-  }, []);
-
-  const metaKeywords = React.useMemo(
-    () =>
-      speciesList
-        .map(
-          (s) => `${s.genus} ${s.speciesName} ${s.name ? `, ${s.name}` : ''}`
-        )
-        .join(', '),
-    [speciesList]
-  );
-
-  const title = 'Bgee Species list';
-  const description = 'List of species with expression data available in Bgee';
   return (
     <>
-      <Helmet>
-        <title>{title}</title>
-        <meta property='og:title' content={title} />
-        <meta name="description" content={description} />
-        <meta property='og:description' content={description} />
-        <meta name="keywords" content={metaKeywords} />
-        <meta property="og:url" content={`${config.genericDomain}${PATHS.SEARCH.SPECIES}`} />
-        <link rel="canonical" href={`${config.genericDomain}${PATHS.SEARCH.SPECIES}`} />
-      </Helmet>
       <div className="content has-text-centered">
         <Bulma.Title size={3}>Bgee species list</Bulma.Title>
       </div>

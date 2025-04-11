@@ -1,5 +1,19 @@
 // import config from '../../config.json';
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Course videos',
+    description: 'Bgee tutorial videos and online courses',
+    keywords: 'The Bgee videos, Bgee videos, Bgee YouTube, Bgee online courses',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(videos)
+}
 
 const videos = [
   {
@@ -231,5 +245,3 @@ const videos = [
     ],
   },
 ];
-
-export default videos;

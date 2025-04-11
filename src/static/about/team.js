@@ -1,5 +1,19 @@
 import { FULL_LENGTH_LABEL } from '../../api/prod/constant';
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Bgee team',
+    description: 'The Bgee team from SIB/UNIL',
+    keywords: 'The Bgee team, Bgee team, SIB bgee, UNIL bgee',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(team)
+}
 
 const team = [
   {
@@ -514,5 +528,3 @@ const team = [
     ],
   },
 ];
-
-export default team;

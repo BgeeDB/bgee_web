@@ -22,10 +22,18 @@ import CallType from './components/filters/CallType';
 import config from '../../../config.json';
 import GeneExpressionMatrixResults from './GeneExpressionMatrixResults';
 import UserFeedback from './components/UserFeedback';
+import { getMetadata } from '~/helpers/metadata';
 
 const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+
+export function meta() {
+  return getMetadata({
+    title: 'Gene expression matrix (beta)',
+  });
+}
+
 const GeneExpressionMatrix = ({ isExprCalls = false }) => {
   const {
     searchResult,

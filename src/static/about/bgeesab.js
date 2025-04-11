@@ -1,3 +1,18 @@
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Bgee Scientific Advisory Board',
+    description: 'The Bgee Scientific Advisory Board (SAB)',
+    keywords: 'Scientific Advisory Board, SAB',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(bgeesab)
+}
+
 const bgeesab = [
   {
     type: 'title',
@@ -218,5 +233,3 @@ const bgeesab = [
     ],
   },
 ];
-
-export default bgeesab;

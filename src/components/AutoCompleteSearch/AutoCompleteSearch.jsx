@@ -139,6 +139,7 @@ const AutoCompleteSearch = ({
     const onClick = () => {
       setAutocompleteList([]);
     };
+    if (!document.getElementById('root')) return;
     document.getElementById('root').addEventListener('click', onClick);
     const onClickInput = (e) => {
       e.stopPropagation();

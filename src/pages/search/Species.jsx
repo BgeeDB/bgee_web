@@ -1,26 +1,55 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
-import { Link, useParams } from 'react-router';
-import PATHS from '../../paths/paths';
-import Bulma from '../../components/Bulma';
-import api from '../../api';
-import LinkExternal from '../../components/LinkExternal';
-import readableFileSize from '../../helpers/readableFileSize';
-import schemaDotOrg from '../../helpers/schemaDotOrg';
-import imagePath from '../../helpers/imagePath';
-import config from "../../config.json";
+import { Link, useLoaderData } from 'react-router';
+import PATHS from '~/paths/paths';
+import Bulma from '~/components/Bulma';
+import api from '~/api';
+import LinkExternal from '~/components/LinkExternal';
+import readableFileSize from '~/helpers/readableFileSize';
+import { speciesToLdJSON } from '~/helpers/schemaDotOrg';
+import imagePath from '~/helpers/imagePath';
+import config from "~/config.json";
+import { getMetadata } from '~/helpers/metadata';
 
 const FULL_LENGTH_LABEL = "Full length RNA-Seq";
 const DROPLET_BASED_LABEL = "Droplet based RNA-Seq";
 
-const Species = () => {
-  let metaTitle = '';
-  let metaDescription = '';
-  let metaKeywords = '';
-  let metaLink = '';
 
-  const [data, setData] = React.useState();
-  const { id } = useParams();
+export async function loader({ params }) {
+  try {
+    const res = await api.search.species.species(params.id)
+    return res.data
+  } catch (error) {
+    throw new Response(error.data.message || 'Failed to load species data', { status: 404 });
+  }
+}
+
+export function meta({ data }) {
+  const metaTitle = `${data.species.genus}  ${data.species.speciesName}
+    ${data.species.name ? `( ${data.species.name} )` : ''}`;
+  const metaDescription = `General information and datasets available
+      in Bgee for species
+      ${data.species.genus}  ${data.species.speciesName}
+      ${data.species.name ? `( ${data.species.name} )` : ''}`;
+      const metaKeywords = `gene expression in
+      ${data.species.genus} ${data.species.speciesName},
+      ${data.species.name ? `gene expression in ${data.species.name} , ` : ''}
+      ${data.species.genus} ${data.species.speciesName},
+      ${data.species.name ? `${data.species.name} , ` : ''}
+      species, taxon`;
+  const metaLink = `${config.genericDomain}${PATHS.SEARCH.SPECIES_ITEM
+      .replace(':id', data.species.id)}`;
+  return getMetadata({
+    title: metaTitle,
+    description: metaDescription,
+    keywords: metaKeywords,
+    link: metaLink,
+    schemaorg: [speciesToLdJSON(data)],
+  });
+}
+
+
+const Species = () => {
+  const data = useLoaderData();
 
   const files = React.useMemo(() => {
     const src = {
@@ -102,50 +131,9 @@ const Species = () => {
     return src;
   }, [data]);
 
-  React.useEffect(() => {
-    setData();
-    api.search.species
-      .species(id)
-      .then((res) => {
-        setData(res.data);
-        schemaDotOrg.setSpeciesLdJSON(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
-
-  if (data) {
-    metaTitle = `${data.species.genus}  ${data.species.speciesName}
-       ${data.species.name ? `( ${data.species.name} )` : ''}`;
-    metaDescription = `General information and datasets available
-        in Bgee for species
-        ${data.species.genus}  ${data.species.speciesName}
-       ${data.species.name ? `( ${data.species.name} )` : ''}`;
-    metaKeywords = `gene expression in
-       ${data.species.genus} ${data.species.speciesName},
-       ${data.species.name ? `gene expression in ${data.species.name} , ` : ''}
-       ${data.species.genus} ${data.species.speciesName},
-       ${data.species.name ? `${data.species.name} , ` : ''}
-       species, taxon`;
-    metaLink = `${config.genericDomain}${PATHS.SEARCH.SPECIES_ITEM
-        .replace(':id', data.species.id)}`;
-  }
 
   return !data ? null : (
     <>
-      {data && (
-        <Helmet>
-          <title>{metaTitle}</title>
-          <meta name="description" content={metaDescription} />
-          <meta name="keywords" content={metaKeywords} />
-          <meta property='og:title' content={metaTitle} />
-          <meta property='og:description' content={metaDescription} />
-          <meta property="og:image" content={`${config.genericDomain}${config.imageDomain}/species/${data.species.id}_light.jpg`} />
-          <meta property="og:url" content={metaLink} />
-          <link rel="canonical" href={metaLink} />
-        </Helmet>
-      )}
       <div className="content has-text-centered is-flex is-justify-content-center is-align-items-center">
         <Bulma.Image
           className="m-0 mr-2 species-img"

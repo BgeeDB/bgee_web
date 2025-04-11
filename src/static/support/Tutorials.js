@@ -1,5 +1,19 @@
 import imagePath from '../../helpers/imagePath';
 import PATHS from '../../paths/paths';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Documentation and tutorials',
+    description: 'Bgee tutorials and documentation',
+    keywords: 'Tutorials, documentation',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(tutorialValues)
+}
 
 const tutorialValues = [
   {
@@ -274,5 +288,3 @@ const tutorialValues = [
     fillRow: true,
   },
 ];
-
-export default tutorialValues;

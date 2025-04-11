@@ -1,4 +1,18 @@
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'R packages and containers available',
+    description: 'Access R packages allowing to retrieve Bgee data, or to perform Bgee analyses on your own data.',
+    keywords: 'R package, Bioconductor, BgeeDB, BgeeCall, Docker container',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(rPackage)
+}
 
 const rPackage = [
   {
@@ -75,5 +89,3 @@ const rPackage = [
     cols: 4,
   },
 ];
-
-export default rPackage;

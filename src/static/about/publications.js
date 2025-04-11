@@ -1,4 +1,18 @@
 import config from '../../config.json';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Bgee publications',
+    description: 'List of publications about Bgee and related tools to use to cite us.',
+    keywords: 'cite us, how to cite us, publications',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(publications)
+}
 
 const publications = [
   {
@@ -822,5 +836,3 @@ const publications = [
     ],
   },
 ];
-
-export default publications;

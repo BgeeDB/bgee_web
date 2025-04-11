@@ -1,4 +1,18 @@
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Source code information',
+    description: 'Access the source code of the resources developed by Bgee.',
+    keywords: 'Source code, Bgee pipeline, bgee_pipeline, bgee_apps, BgeeDB, BgeeDB R package, BgeeCall, BgeeCall R package, IQRray',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(source)
+}
 
 const source = [
   {
@@ -97,5 +111,3 @@ const source = [
     fillRow: true,
   },
 ];
-
-export default source;

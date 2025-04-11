@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation, useParams } from 'react-router';
-import api from '../../../../api';
+import { useCallback, useMemo } from 'react';
+import { useLocation } from 'react-router';
 import LinkExternal from '../../../../components/LinkExternal';
 import { COLUMN_TYPES } from '../../../../helpers/constants/columnDescriptions';
 import obolibraryLinkFromID from '../../../../helpers/obolibraryLinkFromID';
@@ -17,19 +16,8 @@ const getColumnValues = (cell, attributes = []) =>
     })
     .filter((x) => x !== undefined);
 
-const useLogic = () => {
-  const [data, setData] = useState();
-
-  const { id: experimentId } = useParams();
+const useLogic = (data) => {
   const loc = useLocation();
-
-  useEffect(() => {
-    api.search.experiments.getExperiment(experimentId).then((response) => {
-      if (response.status === 200) {
-        setData(response.data?.data);
-      }
-    });
-  }, [experimentId]);
 
   const columns = useMemo(
     () =>

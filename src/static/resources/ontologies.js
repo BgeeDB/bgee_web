@@ -1,4 +1,18 @@
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+import staticBuilder from '~/helpers/staticBuilder';
+
+export function meta() {
+  return getMetadata({
+    title: 'Ontology resources',
+    description: 'Access ontologies used or developed as part of the Bgee project.',
+    keywords: 'Developmental and life stage ontologies, Confidence Information Ontology, CIO ontology, Homology Ontology, HOM ontology, Uberon ontology, NCBITaxon ontology, NCBI taxonomy ontology',
+  });
+}
+
+export default function Page() {
+  return staticBuilder(ontologies)
+}
 
 const ontologies = [
   {
@@ -180,5 +194,3 @@ const ontologies = [
     fillRow: true,
   },
 ];
-
-export default ontologies;

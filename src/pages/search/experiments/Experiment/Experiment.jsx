@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { Helmet } from 'react-helmet';
 import Bulma from '../../../../components/Bulma';
 import Table from '../../../../components/Table';
 import useLogic from './useLogic';
@@ -14,6 +13,24 @@ import {
 import { FULL_LENGTH_LABEL } from '../../../../api/prod/constant';
 import PATHS from "../../../../paths/paths";
 import config from "../../../../config.json";
+import { useLoaderData } from 'react-router';
+import { getMetadata } from '~/helpers/metadata';
+import api from '~/api';
+
+export async function loader({ params }) {
+  const res = await api.search.experiments.getExperiment(params.id)
+  return res.data;
+}
+
+export function meta({ data }) {
+  data = data.data;
+  return getMetadata({
+    title: `${data.experiment.name ? data.experiment.name : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`,
+    description: `${data.experiment.description ? data.experiment.description : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`,
+    keywords: `experiment,${data.experiment.id}${data.experiment.name ? `,${data.experiment.name}`: ''}`,
+    link: `${config.genericDomain}${PATHS.SEARCH.EXPERIMENT.replace(':id', data?.experiment?.id)}`,
+  });
+}
 
 const getUserFriendlyDataType = (dataType) => {
   switch (dataType) {
@@ -38,7 +55,8 @@ const formatLargeNumber = (largeNumber) => {
 };
 
 const Experiment = () => {
-  const { data, columns, onRenderCell, onFilter } = useLogic();
+  const { data } = useLoaderData();
+  const { columns, onRenderCell, onFilter } = useLogic(data);
 
   const customHeader = useCallback(
     (searchElement, pageSizeElement) => (
@@ -60,16 +78,6 @@ const Experiment = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{`${data.experiment.name ? `${data.experiment.id} ${data.experiment.name}` : `${data.experiment.id} ${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`}</title>
-        <meta name="description" content={`${data.experiment.description ? data.experiment.description : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
-        <meta name="keywords" content={`experiment,${data.experiment.id}${data.experiment.name ? `,${data.experiment.name}`: ''}`} />
-        <meta property='og:title' content={`${data.experiment.name ? `${data.experiment.id} ${data.experiment.name}` : `${data.experiment.id}  ${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
-        <meta property='og:description' content={`${data.experiment.description ? data.experiment.description : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
-        <meta property="og:url" content={`${config.genericDomain}${PATHS.SEARCH.EXPERIMENT.replace(':id', data?.experiment?.id)}`} />
-        <link rel="canonical" href={`${config.genericDomain}${PATHS.SEARCH.EXPERIMENT.replace(':id', data?.experiment?.id)}`} />
-      </Helmet>
-
       <div className="experimentPage">
         <div>
           <Bulma.Title className="has-text-centered">
@@ -167,6 +175,7 @@ const Experiment = () => {
                     renderAs="a"
                     target="_blank"
                     rel="noopener noreferrer"
+                    key={`ddl-${url.href}`}
                   >
                     {url.text}
                     <span className="icon is-small ml-1">

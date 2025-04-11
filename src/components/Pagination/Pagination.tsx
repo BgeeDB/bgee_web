@@ -1,8 +1,11 @@
 /* eslint-disable jsx-a11y/no-redundant-roles */
 /* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
 import React, { useContext } from 'react';
+import { Link } from 'react-router';
 import { TableContext } from '../../contexts/TableContext';
 import { usePaginationLink } from '../../hooks/usePagination';
+
+const disabledStyle = { pointerEvents: 'none' as const, opacity: 0.5, cursor: 'not-allowed' };
 
 const Pagination = ({ current, total }) => {
   const { paginationParamPageKey, paginationResultCountKey } =
@@ -16,7 +19,6 @@ const Pagination = ({ current, total }) => {
     const pages = [];
     const pageBtw = total - 2;
     if (pageBtw <= 3) {
-      // eslint-disable-next-line no-plusplus
       for (let i = 1; i <= pageBtw; ++i) pages.push(i + 1);
     } else if (current === 1) {
       pages.push(current + 1);
@@ -49,31 +51,31 @@ const Pagination = ({ current, total }) => {
   const disabledNext = current === total;
   return (
     <nav className="pagination is-small is-centered" aria-label="pagination">
-      <a
+      <Link
         className="pagination-previous"
         role="link"
-        disabled={disabledPrevious}
-        href={disabledPrevious ? null : generatePaginationLink(current - 1)}
+        style={disabledPrevious ? disabledStyle : {}}
+        to={generatePaginationLink(current - 1)}
       >
         Previous
-      </a>
-      <a
+      </Link>
+      <Link
         className="pagination-next"
         role="link"
-        disabled={disabledNext}
-        href={disabledNext ? null : generatePaginationLink(current + 1)}
+        style={disabledNext ? disabledStyle : {}}
+        to={generatePaginationLink(current + 1)}
       >
         Next
-      </a>
+      </Link>
       <ul className="pagination-list">
         <li>
-          <a
+          <Link
             className={`pagination-link  ${current === 1 ? 'is-current' : ''}`}
             aria-label="Goto page 1"
-            href={generatePaginationLink(1)}
+            to={generatePaginationLink(1)}
           >
             1
-          </a>
+          </Link>
         </li>
         {total > 5 && current > 2 && (
           <li>
@@ -82,15 +84,15 @@ const Pagination = ({ current, total }) => {
         )}
         {center.map((page) => (
           <li key={page}>
-            <a
+            <Link
               className={`pagination-link  ${
                 current === page ? 'is-current' : ''
               }`}
               aria-label={`Go to page ${page}`}
-              href={generatePaginationLink(page)}
+              to={generatePaginationLink(page)}
             >
               {page}
-            </a>
+            </Link>
           </li>
         ))}
         {total > 5 && current < total - 1 && (
@@ -99,15 +101,15 @@ const Pagination = ({ current, total }) => {
           </li>
         )}
         <li>
-          <a
+          <Link
             className={`pagination-link  ${
               current === total ? 'is-current' : ''
             }`}
             aria-label={`Goto page ${total}`}
-            href={generatePaginationLink(total)}
+            to={generatePaginationLink(total)}
           >
             {total}
-          </a>
+          </Link>
         </li>
       </ul>
     </nav>

@@ -1,69 +1,56 @@
-import React, { useState } from 'react';
-import {Link, useNavigate, useParams} from "react-router";
-import { Helmet } from 'react-helmet';
+import {Link, useLoaderData} from "react-router";
 import Bulma from '../../components/Bulma';
 import api from '../../api';
 import PATHS from "../../paths/paths";
 import config from '../../config.json';
+import { getMetadata } from '~/helpers/metadata';
+// import { speciesToLdJSON } from "~/helpers/schemaDotOrg";
+
+
+function getCanonicalURL(sp) {
+  return PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES
+      .replace(':speciesId', sp.id)
+      .replace(':speciesName', sp.speciesFullNameWithoutSpace?.replace("_", "-").toLowerCase());
+}
+
+export async function loader({ params }) {
+  try {
+    const [geneListRes, speciesRes] = await Promise.all([
+      api.search.species.geneList(params.speciesId),
+      api.search.species.name(params.speciesId)
+    ]);
+    // if (nameResp.data.species.speciesFullNameWithoutSpace !== speciesName) {
+    //     navigate(getCanonicalURL(nameResp.data.species), {replace: true});
+    // }
+    const species = speciesRes.data.species
+    const speciesScientificName = `${species.genus} ${species.speciesName}`;
+    const speciesDisplay = `${speciesScientificName}${species.name ? ` (${species.name})` : ''}`;
+    return {
+      genes: geneListRes.data.genes,
+      species,
+      speciesScientificName,
+      speciesDisplay,
+    }
+  } catch (error) {
+    console.warn(error)
+    throw new Response(error.data.message || 'Failed to load species data', { status: 404 });
+  }
+}
+
+export function meta({ data }) {
+  const canonicalURL = `${config.genericDomain}${getCanonicalURL(data.species)}`;
+
+  return getMetadata({
+    title: `${data.speciesDisplay} gene list`,
+    description: `List of genes of ${data.speciesScientificName} with expression data available in Bgee`,
+    keywords: `${data.speciesScientificName} genes, gene expression in ${data.speciesScientificName}`,
+    link: canonicalURL,
+    // schemaorg: [speciesToLdJSON(data)],
+  });
+}
 
 const SpeciesGeneList = () => {
-    let speciesDisplay = '';
-    let speciesScientificName = '';
-    let canonicalURL = '';
-
-    const [genes, setGenes] = useState([]);
-    const [species, setSpecies] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const { speciesId, speciesName } = useParams();
-    const navigate = useNavigate();
-
-    function getCanonicalURL(sp) {
-        return PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES
-            .replace(':speciesId', sp.id)
-            .replace(':speciesName', sp.speciesFullNameWithoutSpace?.replace("_", "-").toLowerCase());
-    }
-
-    React.useEffect(() => {
-        setLoading(true);
-
-        // Make the geneList API call first
-        api.search.species.geneList(speciesId)
-            .then((geneListResp) => setGenes(geneListResp.data.genes))
-            .finally(() => setLoading(false));
-    }, [speciesId]);
-
-    React.useEffect(() => {
-        api.search.species.name(speciesId)
-            .then((nameResp) => {
-                setSpecies(nameResp.data.species);
-                if (nameResp.data.species.speciesFullNameWithoutSpace !== speciesName) {
-                    navigate(getCanonicalURL(nameResp.data.species));
-                }
-            })
-            .catch((err) => {
-                console.log(err.message);
-                navigate(PATHS.ERROR, {
-                    error: {
-                        message: err.message || err?.data?.code,
-                    },
-                });
-            });
-    }, [speciesId]);
-
-    if (species) {
-        speciesScientificName = `${species.genus} ${species.speciesName}`;
-        speciesDisplay = `${speciesScientificName}${species.name ? ` (${species.name})` : ''}`;
-        canonicalURL = `${config.genericDomain}${getCanonicalURL(species)}`;
-    }
-
-    const meta = React.useMemo(
-        () => ({
-            title: `${speciesDisplay} gene list`,
-            description: `List of genes of ${speciesScientificName} with expression data available in Bgee`,
-            keywords: `${speciesScientificName} genes, gene expression in ${speciesScientificName}`,
-        }),
-        [speciesScientificName, speciesDisplay]
-    );
+    const { genes, species, speciesDisplay } = useLoaderData()
 
     function getGeneDisplay(element) {
         let text = element.geneId;
@@ -75,35 +62,11 @@ const SpeciesGeneList = () => {
 
     return !species ? null :(
         <>
-            <Helmet>
-                <title>{meta.title} gene list</title>
-                <meta property='og:title' content={`${meta.title} gene list`} />
-                <meta name="description" content={meta.description}/>
-                <meta property='og:description' content={meta.description} />
-                <meta name="keywords" content={meta.keywords}/>
-                <meta property="og:url" content={canonicalURL}/>
-                <link rel="canonical" href={canonicalURL}/>
-            </Helmet>
-
             <div className="content has-text-centered">
                 <Bulma.Title size={3} className="m-0">{`Gene list for ${speciesDisplay}`}
                 </Bulma.Title>
             </div>
-
-            {loading && (
-                <Bulma.Notification color="info" className="mt-5">
-                    <p className="has-text-centered">Loading</p>
-                    <progress
-                        className="progress is-small"
-                        max="100"
-                        style={{ animationDuration: '3s', marginBottom: 12 }}
-                    >
-                        80%
-                    </progress>
-                </Bulma.Notification>
-            )}
-
-            {!loading && genes && (
+            {genes && (
                 <div className="content">
                     <div className="content">
                         <ul className="inline-list">

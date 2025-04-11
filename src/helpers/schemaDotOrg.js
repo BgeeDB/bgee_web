@@ -1,10 +1,22 @@
+import { useLocation } from 'react-router';
 import config from '../config.json';
 import PATHS from '../paths/paths';
 import obolibraryLinkFromID, {
   obolibraryNCBITaxonLinkFromID,
 } from './obolibraryLinkFromID';
 
-const geneToLdJSON = ({
+const getFullUrl = (path) => {
+  // During SSR, use the configured domain
+  if (typeof window === 'undefined') {
+    return config.permanentVersionedDomain + path;
+  }
+  // In browser, use the current URL
+  return window.location.href;
+};
+
+// TODO: properly get the full URL in SSR without using window.location.href
+
+export const geneToLdJSON = ({
   name,
   geneId,
   description,
@@ -15,7 +27,8 @@ const geneToLdJSON = ({
 }) => ({
   '@context': 'https://schema.org/',
   '@type': 'Gene',
-  '@id': window.location.href,
+  // '@id': window.location.href,
+  '@id': getFullUrl(path),
   'http://purl.org/dc/terms/conformsTo': {
     '@id': 'https://bioschemas.org/profiles/Gene/1.0-RELEASE',
     '@type': 'CreativeWork',
@@ -48,7 +61,7 @@ const geneToLdJSON = ({
   }, []),
 });
 
-const geneHomologsToLdJSON = (homo) => {
+export const geneHomologsToLdJSON = (homo) => {
   const ldJson = [];
   homo.forEach((h) => {
     ldJson.push({
@@ -68,7 +81,7 @@ const geneHomologsToLdJSON = (homo) => {
   return ldJson;
 };
 
-const geneExpressionToLdJSON = (genes) => {
+export const geneExpressionToLdJSON = (genes) => {
   const ldJson = [];
   genes.forEach((g) => {
     const { anatEntity, cellType } = g.condition;
@@ -113,7 +126,7 @@ const geneExpressionToLdJSON = (genes) => {
   return ldJson;
 };
 
-const fileDownloadProps = (file) => ({
+export const fileDownloadProps = (file) => ({
   '@type': 'Dataset',
   'http://purl.org/dc/terms/conformsTo': {
     '@id': 'https://bioschemas.org/profiles/Dataset/1.0-RELEASE',
@@ -140,7 +153,7 @@ const fileDownloadProps = (file) => ({
   ],
 });
 
-const datasetToLdJSON = () => {
+export const datasetToLdJSON = () => {
     const ldJson = [];
     ldJson.push({
         '@context': 'https://schema.org/',
@@ -270,13 +283,15 @@ const datasetToLdJSON = () => {
     return ldJson[0];
 };
 
-const speciesToLdJSON = ({
+export const speciesToLdJSON = ({
   downloadFilesGroups: { downloadFiles },
   species: { genus, name, speciesName, id },
 }) => {
+  const {pathname} = useLocation();
+  const url = config.genericDomain + pathname;
   const json = {
     '@context': 'https://schema.org/',
-    '@id': window.location.href,
+    '@id': url,
     '@type': 'Taxon',
     'http://purl.org/dc/terms/conformsTo': {
       '@id': 'https://bioschemas.org/profiles/Taxon/1.0-RELEASE',
@@ -320,7 +335,7 @@ const speciesToLdJSON = ({
         },
         isAccessibleForFree: 'true',
         name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} gene expression calls`,
-        url: `${window.location.href}#expr-calls`,
+        url: `${url}#expr-calls`,
         version: config.version,
         hasPart: [
           {
@@ -484,13 +499,13 @@ const speciesToLdJSON = ({
         },
         isAccessibleForFree: 'true',
         name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} processed expression values`,
-        url: `${window.location.href}#proc-values`,
+        url: `${url}#proc-values`,
         version: config.version,
         hasPart: [],
       },
       {
         '@type': 'WebPage',
-        url: `${window.location.href}`,
+        url: `${url}`,
         name: `Species: ${genus} ${speciesName}${ name ? ` (${name})` : ''}`,
       },
     ],
@@ -503,7 +518,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Affymetrix experiments chips`,
       keywords: ['Affymetrix'],
       description: 'Affymetrix experiments/chips annotations and metadata.',
-      url: `${window.location.href}#proc-values-affymetrix`,
+      url: `${url}#proc-values-affymetrix`,
     });
   }
   file = downloadFiles.find((d) => d.category === 'affy_data');
@@ -512,7 +527,7 @@ const speciesToLdJSON = ({
       ...fileDownloadProps(file),
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Affymetrix probesets`,
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Affymetrix probesets, data (signal intensities).`,
-      url: `${window.location.href}#proc-values-affymetrix`,
+      url: `${url}#proc-values-affymetrix`,
     });
   }
 
@@ -523,7 +538,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} RNA-Seq experiment libraries`,
       keywords: ['RNA-Seq'],
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} RNA-Seq experiments/libraries annotations and metadata.`,
-      url: `${window.location.href}#proc-values-rna-seq`,
+      url: `${url}#proc-values-rna-seq`,
     });
   }
   file = downloadFiles.find((d) => d.category === 'rnaseq_data');
@@ -533,7 +548,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} RNA-Seq read counts, TPM and FPKM`,
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} RNA-Seq read counts, TPM (Transcript Per Million) and FPKM (Fragments Per Kilobase of transcript per Million mapped reads).`,
       keywords: ['RNA-Seq'],
-      url: `${window.location.href}#proc-values-rna-seq`,
+      url: `${url}#proc-values-rna-seq`,
     });
   }
 
@@ -544,7 +559,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Full length Single cell RNA-Seq experiment libraries`,
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Full length Single cell RNA-Seq experiments/libraries annotations and metadata.`,
       keywords: ['scRNA-Seq', 'Single cell RNA-Seq', 'Full length RNA-Seq'],
-      url: `${window.location.href}#proc-values-fl-scrna-seq`,
+      url: `${url}#proc-values-fl-scrna-seq`,
     });
   }
   file = downloadFiles.find((d) => d.category === 'full_length_data');
@@ -554,7 +569,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Full length Single Cell RNA-Seq read counts, TPM and FPKM`,
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Full length Single Cell RNA-Seq read counts, TPM (Transcript Per Million) and FPKM (Fragments Per Kilobase of transcript per Million mapped reads).`,
       keywords: ['scRNA-Seq', 'Single cell RNA-Seq', 'Full length RNA-Seq'],
-      url: `${window.location.href}#proc-values-fl-scrna-seq`,
+      url: `${url}#proc-values-fl-scrna-seq`,
     });
   }
   file = downloadFiles.find((d) => d.category === 'full_length_h5ad');
@@ -564,7 +579,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Full length Single Cell RNA-Seq processed H5AD data per cell (read counts)`,
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Full length Single Cell RNA-Seq processed H5AD data per cell (read counts).`,
       keywords: ['scRNA-Seq', 'Single cell RNA-Seq', 'Full length RNA-Seq', 'H5AD'],
-      url: `${window.location.href}#proc-values-fl-scrna-seq`,
+      url: `${url}#proc-values-fl-scrna-seq`,
       distribution: [ {'@type': 'DataDownload', encodingFormat: 'H5AD', contentUrl: file.path, }, ],
     });
   }
@@ -576,7 +591,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Droplet based Single cell RNA-Seq experiment libraries`,
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Droplet based Single cell RNA-Seq experiments/libraries annotations and metadata.`,
       keywords: ['scRNA-Seq', 'Single cell RNA-Seq', 'Droplet based RNA-Seq'],
-      url: `${window.location.href}#proc-values-db-scrna-seq`,
+      url: `${url}#proc-values-db-scrna-seq`,
     });
   }
   file = downloadFiles.find((d) => d.category === 'droplet_based_data');
@@ -586,7 +601,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Droplet based Single Cell RNA-Seq UMI counts, CPM`,
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Droplet based Single Cell RNA-Seq UMI counts, CPM (Counts Per Million).`,
       keywords: ['scRNA-Seq', 'Single cell RNA-Seq', 'Droplet based RNA-Seq'],
-      url: `${window.location.href}#proc-values-db-scrna-seq`,
+      url: `${url}#proc-values-db-scrna-seq`,
     });
   }
   file = downloadFiles.find((d) => d.category === 'droplet_based_h5ad');
@@ -596,7 +611,7 @@ const speciesToLdJSON = ({
       name: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Droplet based Single Cell RNA-Seq processed H5AD data per cell (UMI counts)`,
       description: `${genus} ${speciesName}${ name ? ` (${name})` : ''} Droplet based Single Cell RNA-Seq processed H5AD data per cell (UMI counts).`,
       keywords: ['scRNA-Seq', 'Single cell RNA-Seq', 'Droplet based RNA-Seq', 'H5AD'],
-      url: `${window.location.href}#proc-values-db-scrna-seq`,
+      url: `${url}#proc-values-db-scrna-seq`,
       distribution: [ {'@type': 'DataDownload', encodingFormat: 'H5AD', contentUrl: file.path, }, ],
     });
   }
@@ -604,7 +619,7 @@ const speciesToLdJSON = ({
   return json;
 };
 
-const schemaDotOrg = {
+export const schemaDotOrg = {
   setHomeDatasetLdJSON: (species) => {
     /* add ld+json @ bottom of body */
     const script = document.createElement('script');

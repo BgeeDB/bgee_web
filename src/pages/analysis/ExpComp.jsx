@@ -9,11 +9,20 @@ import LinkExternal from '../../components/LinkExternal/LinkExternal';
 import classnames from '../../helpers/classnames';
 import { NotificationContext } from '../../contexts/NotificationsContext';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
+import { getMetadata } from '~/helpers/metadata';
 
 const DEFAULT_RESULTS = {
   signature: undefined,
   data: undefined,
 };
+
+export function meta() {
+  return getMetadata({
+    title: 'Expression comparison analysis',
+    description: 'Compare gene expression within species, or between species using homology relations between anatomical entities.',
+    keywords: 'gene expression comparison, homology, gene expression patterns, expression call comparison',
+  });
+}
 
 const AnatEntitiesCell = ({
   multiSpeciesCondition = null,

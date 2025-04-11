@@ -9,7 +9,7 @@ import {
   MEDIA_QUERIES,
   MEDIA_QUERIES_SIZE,
 } from '../../helpers/constants/mediaQueries';
-import useWindowSize from '../../hooks/useWindowSize';
+// import useWindowSize from '../../hooks/useWindowSize';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import Table from '../Table';
 
@@ -54,7 +54,7 @@ const ExpandCell = ({ onClick }) => (
   </a>
 );
 const GenesCell = ({ genes }) => {
-  const { width } = useWindowSize();
+  // const { width } = useWindowSize();
   let prevSpecies = 0;
   const expandContent = genes.reduce((r, a, pos) => {
     r.push(
@@ -85,10 +85,10 @@ const GenesCell = ({ genes }) => {
 
   return (
     <div
-      style={{
-        minWidth:
-          width > MEDIA_QUERIES_SIZE[MEDIA_QUERIES.DESKTOP] ? 230 : undefined,
-      }}
+      // style={{
+      //   minWidth:
+      //     width > MEDIA_QUERIES_SIZE[MEDIA_QUERIES.DESKTOP] ? 230 : undefined,
+      // }}
     >
       <p>{`${genes.length} ${isPlural('gene', genes.length)}`}</p>
       <div className="expand-content">{expandContent}</div>
@@ -96,7 +96,7 @@ const GenesCell = ({ genes }) => {
   );
 };
 const SpeciesCell = ({ genes }) => {
-  const { width } = useWindowSize();
+  // const { width } = useWindowSize();
   const expandContentSpecies = genes.reduce((r, a) => {
     const pos = r.findIndex((g) => g.id === a.species.id);
     if (pos === -1)
@@ -113,10 +113,10 @@ const SpeciesCell = ({ genes }) => {
 
   return (
     <div
-      style={{
-        minWidth:
-          width > MEDIA_QUERIES_SIZE[MEDIA_QUERIES.TABLET] ? 250 : undefined,
-      }}
+      // style={{
+      //   minWidth:
+      //     width > MEDIA_QUERIES_SIZE[MEDIA_QUERIES.TABLET] ? 250 : undefined,
+      // }}
     >
       <p>{`${expandContentSpecies.length} species`}</p>
       <div className="expand-content">
