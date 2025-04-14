@@ -1,13 +1,3 @@
-import { getMetadata } from '~/helpers/metadata';
-
-export function meta() {
-  return getMetadata({
-    title: 'Bgee TopAnat tutorial',
-    description: 'Bgee Tutorial about TopAnat Uberon enrichment analysis',
-    keywords: 'Tutorial, enrichment analysis, Uberon',
-  });
-}
-
 # TopAnat: an Anatomical Entity (Uberon) Enrichment Tool
 
 *   [Introduction](#introduction "Quick jump to this section")

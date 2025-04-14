@@ -33,27 +33,9 @@ export default [
   route(PATHS.RESOURCES.ONTOLOGIES, './static/resources/ontologies.js'),
   route(PATHS.RESOURCES.SOURCE_CODE, './static/resources/source.js'),
 
-  // Support routes
+  // Support routes (most are in the routes folder)
   route(PATHS.SUPPORT.TUTORIALS, './static/support/Tutorials.js'),
   route(PATHS.SUPPORT.VIDEOS, './static/support/videos.js'),
-  route(PATHS.SUPPORT.TUTORIAL_TOPANAT, './markdown/support/topAnat/topAnat.mdx'),
-  route(PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS, './markdown/support/present_absent-expression-calls/Expression_call_search.mdx'),
-  // route(PATHS.SUPPORT.GTEX, './pages/support/DatasetsOfInterest.jsx'),
-  // route(PATHS.SUPPORT.SCRNASEQPROTOCOLS, './pages/support/ScRNASeqProtocols.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_GENE_PAGE, './pages/support/gene-page/TutorialGenePage.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS, './pages/support/present_absent-expression-calls/ExpressionCallSearch.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_SPARQL, './pages/support/sparql-tutorial/SparqlTutorial.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_CURATION, './pages/support/data-curation/DataCuration.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_EXPRESSION_COMPARISON, './pages/support/expression-comparison/ExpressionComparison.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_RAW_DATA, './pages/support/Raw-data-interface/RawDataInterface.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_ANAT_HOMOLOGY, './pages/support/anatomical-homology/AnatomicalHomology.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_AFFY_EXPR_VAL, './pages/support/Download-files/AffyProcExprValues.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_RNASEQ_EXPR_VAL, './pages/support/Download-files/RnaSeqProcExprValues.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_SCRNASEQ_FL_EXPR_VAL, './pages/support/Download-files/ScRNASeqFLProcExprValues.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_SCRNASEQ_TB_EXPR_VAL, './pages/support/Download-files/ScRNASeqTBProcExprValues.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_EXPR_VAL, './pages/support/Download-files/ProcExprValFile.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_GENE_EXPR, './pages/support/Download-files/GeneExpression.jsx'),
-  // route(PATHS.SUPPORT.FAQ, './pages/support/FAQ.jsx'),
 
   // About routes
   route(PATHS.ABOUT.NEWS, './pages/about/NewsPage.jsx'),

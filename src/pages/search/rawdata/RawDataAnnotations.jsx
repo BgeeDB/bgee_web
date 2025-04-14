@@ -34,6 +34,16 @@ import DataQualityParameter from './components/filters/DataQualityParameter';
 import CallType from './components/filters/CallType';
 import OnlyPropagated from './components/filters/OnlyPropagated/OnlyPropagated';
 import config from '../../../config.json';
+import { getMetadata } from '~/helpers/metadata';
+
+export function meta() {
+    return getMetadata({
+      title: 'Raw data annotated and processed',
+      description: 'Search for Experiments, Raw data annotations and Processed expression values',
+      keywords: 'Raw data, annotations, annotated, processed, experiments, raw data annotations, processed expression values',
+    });
+}
+
 
 const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');

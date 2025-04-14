@@ -1,7 +1,15 @@
 import Bulma from '../../components/Bulma';
 import GoTop from '../../components/GoTop';
 import NewsItem from '../../components/NewsItem';
+import { getMetadata } from '~/helpers/metadata';
 
+export function meta() {
+  return getMetadata({
+    title: 'Bgee news',
+    description: 'Bgee news describing each new releases',
+    keywords: 'News, latest, information, releases',
+  });
+}
 
 const markdownFiles = import.meta.glob('../../markdown/news/*.md', { eager: true });
 const news = Object.entries(markdownFiles).map(([path, module]) => {

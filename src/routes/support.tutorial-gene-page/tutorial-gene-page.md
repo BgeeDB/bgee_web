@@ -1,14 +1,3 @@
-
-import { getMetadata } from '~/helpers/metadata';
-
-export function meta() {
-  return getMetadata({
-    title: 'Bgee gene page tutorial',
-    description: 'Bgee Tutorial about gene search and gene page',
-    keywords: 'Tutorial, gene, search',
-  });
-}
-
 # Gene Search and Gene Page
 This tutorial shows how to search for genes in Bgee and describes the information you will find on a gene page including gene expression, orthologs, paralogs, and general information about the gene. We use the mouse CDK5 gene (ENSMUSG00000028969) from Bgee release 15.0 as an example throughout the tutorial. The link to the most current version of the gene page for ENSMUSG00000028969 is found [here](/gene/ENSMUSG00000028969).
 

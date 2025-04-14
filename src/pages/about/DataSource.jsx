@@ -3,6 +3,15 @@ import config from '../../config.json';
 import api from '../../api';
 import Bulma from '../../components/Bulma';
 import { FULL_LENGTH_LABEL } from '../../api/prod/constant';
+import { getMetadata } from '~/helpers/metadata';
+
+export function meta() {
+  return getMetadata({
+    title: 'Data sources',
+    description: 'List of the sources and the versions used to build the Bgee database.',
+    keywords: 'data sources, data source versions',
+  });
+}
 
 const CATEGORIES = [
   {
@@ -42,6 +51,7 @@ const CATEGORIES = [
     title: 'Other sources',
   },
 ];
+
 const DataSource = () => {
   const [loading, setLoading] = React.useState(false);
   const [sources, setSources] = React.useState({});
