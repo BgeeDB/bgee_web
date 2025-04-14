@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation, useLoaderData } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import Bulma from '~/components/Bulma';
 import PATHS from '~/paths/paths';
 import api from '~/api';
@@ -22,7 +22,8 @@ export async function loader({ params, request }) {
     // Get general gene information
     const geneInfoResponse = await api.search.genes.getGeneralInformation(params.geneId);
     const geneDetails = geneInfoResponse.data.genes[0]; // Get the first gene
-    if (!geneDetails) throw new Error('Gene not found');
+    // const geneDetails = undefined;
+    if (!geneDetails) throw new Error('Page not found');
 
     const { geneId, species } = geneDetails;
     // Get homologs and xrefs in parallel
@@ -57,8 +58,8 @@ export async function loader({ params, request }) {
       pathname: new URL(request.url).pathname
     };
   } catch (error: any) {
-    console.error('Error loading gene data:', error.data.message);
-    throw new Response(error.data.message || 'Failed to load gene data', { status: 404 });
+    // console.error('Error loading gene data:', error);
+    throw new Response(error.data?.message || error.message || 'Failed to load gene data', { status: 404 });
   }
 }
 
@@ -97,8 +98,8 @@ export function meta({ data }) {
   });
 }
 
-const GeneDetails = () => {
-  const { details, homologs, xRefs } = useLoaderData();
+const GeneDetails = ({loaderData}) => {
+  const { details, homologs, xRefs } = loaderData;
   const { name, geneId, description, species, synonyms } = details;
   const loc = useLocation();
 

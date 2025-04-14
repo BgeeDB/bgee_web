@@ -8,8 +8,8 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-// import remarkFrontmatter from "remark-frontmatter";
-// import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 
 export default defineConfig({
   plugins: [
@@ -17,10 +17,10 @@ export default defineConfig({
     mdx({
       providerImportSource: "/src/helpers/mdxComponents.tsx",
       remarkPlugins: [
+        remarkFrontmatter,
+        remarkMdxFrontmatter,
         remarkGfm,
         remarkToc,
-        // remarkFrontmatter,
-        // remarkMdxFrontmatter,
       ],
       rehypePlugins: [
         rehypeHighlight,
@@ -31,5 +31,8 @@ export default defineConfig({
     }),
     reactRouter(),
   ],
+  optimizeDeps: {
+    include: ['react/jsx-runtime'],
+  },
   // assetsInclude: ["**/*.md"],
 })
