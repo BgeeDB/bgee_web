@@ -6,14 +6,16 @@ import HeroFooter from './HeroFooter';
 
 const Hero = ({
   children,
-  className,
-  color,
-  gradient,
-  size,
-  hasNavbar,
+  className = '',
+  color = undefined,
+  gradient = false,
+  size = undefined,
+  hasNavbar = false,
+  renderAs = 'section',
   ...props
 }) => (
   <Element
+    renderAs={renderAs}
     {...props}
     className={classnames('hero', className, {
       [`is-${color}`]: color,
@@ -29,9 +31,5 @@ const Hero = ({
 Hero.Header = HeroHeader;
 Hero.Body = HeroBody;
 Hero.Footer = HeroFooter;
-
-Hero.defaultProps = {
-  renderAs: 'section',
-};
 
 export default Hero;

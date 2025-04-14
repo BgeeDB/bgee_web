@@ -36,10 +36,11 @@ export default [
   // Support routes
   route(PATHS.SUPPORT.TUTORIALS, './static/support/Tutorials.js'),
   route(PATHS.SUPPORT.VIDEOS, './static/support/videos.js'),
+  route(PATHS.SUPPORT.TUTORIAL_TOPANAT, './markdown/support/topAnat/topAnat.mdx'),
+  route(PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS, './markdown/support/present_absent-expression-calls/Expression_call_search.mdx'),
   // route(PATHS.SUPPORT.GTEX, './pages/support/DatasetsOfInterest.jsx'),
   // route(PATHS.SUPPORT.SCRNASEQPROTOCOLS, './pages/support/ScRNASeqProtocols.jsx'),
   // route(PATHS.SUPPORT.TUTORIAL_GENE_PAGE, './pages/support/gene-page/TutorialGenePage.jsx'),
-  // route(PATHS.SUPPORT.TUTORIAL_TOPANAT, './pages/support/topAnat/TopAnat.jsx'),
   // route(PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS, './pages/support/present_absent-expression-calls/ExpressionCallSearch.jsx'),
   // route(PATHS.SUPPORT.TUTORIAL_SPARQL, './pages/support/sparql-tutorial/SparqlTutorial.jsx'),
   // route(PATHS.SUPPORT.TUTORIAL_CURATION, './pages/support/data-curation/DataCuration.jsx'),
@@ -64,7 +65,7 @@ export default [
   route(PATHS.ABOUT.BGEESAB, './static/about/bgeesab.js'),
   route(PATHS.ABOUT.PRIVACY_POLICY, './static/about/privacyPolicy.js'),
 
-  // Error route
+  // TODO: Error route
   // route(PATHS.ERROR, './pages/Error.jsx'),
   ...(await flatRoutes()),
 ] satisfies RouteConfig;

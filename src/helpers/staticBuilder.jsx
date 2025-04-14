@@ -117,10 +117,10 @@ const gridBuilder = ({ cols, content, fillRow }) => (
         fillChunk: fillRow,
         defaultItemFactory: () => ({ children: [] }),
       })
-      .map((tiles) => (
-        <Bulma.Tile kind="ancestor">
-          {tiles.map(({ classNames, children }) => (
-            <Bulma.Tile kind="parent">
+      .map((tiles, rowIndex) => (
+        <Bulma.Tile kind="ancestor" key={`row-${rowIndex}`}>
+          {tiles.map(({ classNames, children }, tileIndex) => (
+            <Bulma.Tile kind="parent" key={`tile-${rowIndex}-${tileIndex}`}>
               <Bulma.Tile kind="child" className={classnames(classNames)}>
                 {staticBuilder(children)}
               </Bulma.Tile>
@@ -132,9 +132,8 @@ const gridBuilder = ({ cols, content, fillRow }) => (
 );
 
 /*
-            id={id}
-className={classnames('cardustomcard',classNames)}
-
+  id={id}
+  className={classnames('cardustomcard',classNames)}
  */
 const staticBuilder = (json, prefixKey = '') =>
   json.map(({ type, id, classNames, ...props }, key) => {
@@ -197,13 +196,13 @@ const staticBuilder = (json, prefixKey = '') =>
         );
         if (props.linkType === 'internal')
           return (
-            <Link to={props.link}>
+            <Link to={props.link} key={`${prefixKey}-${key}`}>
               <Component />
             </Link>
           );
         if (props.linkType === 'external')
           return (
-            <a href={props.link} target="_blank" rel="noopener noreferrer">
+            <a href={props.link} key={`${prefixKey}-${key}`} target="_blank" rel="noopener noreferrer">
               <Component />
             </a>
           );

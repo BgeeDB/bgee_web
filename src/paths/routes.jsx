@@ -1,6 +1,6 @@
 import PATHS from './paths';
 
-import Home from '../pages/Home';
+// import Home from '../pages/Home';
 
 // import TopAnatAnalysis from '../pages/analysis/TopAnat';
 // import ExpComp from '../pages/analysis/ExpComp';
@@ -16,45 +16,45 @@ import Home from '../pages/Home';
 
 // import Experiment from '../pages/search/experiments/Experiment';
 
-import ProcessedExpressionValues from '../pages/download/ProcessedExpressionValues';
-import GeneExpressionCallsDownload from '../pages/download/GeneExpressionCalls';
+// import ProcessedExpressionValues from '../pages/download/ProcessedExpressionValues';
+// import GeneExpressionCallsDownload from '../pages/download/GeneExpressionCalls';
 
-import RPackageFile from '../static/resources/rPackage';
-import AnnotationsFile from '../static/resources/annotations';
-import OntologiesFile from '../static/resources/ontologies';
-import ResourceSourceFile from '../static/resources/source';
+// import RPackageFile from '../static/resources/rPackage';
+// import AnnotationsFile from '../static/resources/annotations';
+// import OntologiesFile from '../static/resources/ontologies';
+// import ResourceSourceFile from '../static/resources/source';
 
-import DatasetsInterestFile from '../markdown/support/datasets_of_interest.md';
-import TutoFile from '../static/support/Tutorials';
-import ScRNASeqProtocolsFile from '../markdown/support/scRNA-seq_Protocols.md';
-import VideoFile from '../static/support/videos';
-import TutoGenePageFile from '../markdown/support/gene-page/Tutorial_gene_page.md';
-import TutoTopAnatFile from '../markdown/support/topAnat/topAnat.md';
-import TutoExpressionCallsFile from '../markdown/support/present_absent-expression-calls/Expression_call_search.md';
-import TutoSPARQLFile from '../markdown/support/sparql-tutorial/sparql-tutorial.md';
-import TutoCurationFile from '../markdown/support/data-curation/data-curation.md';
-import TutoExpCompFile from '../markdown/support/expression-comparison/expression-comparison.md';
-import TutoRawDataFile from '../markdown/support/Raw-data-interface/Raw-data-interface.md';
-import TutoAnatHomologyFile from '../markdown/support/anatomical-homology/anatomical-homology.md';
-import TutoAffyExprVal from '../markdown/support/Download-files/affyProcExprValues.md';
-import TutoRNASeqExprVal from '../markdown/support/Download-files/rnaSeqProcExprValues.md';
-import TutoscRNAseqFLExprVal from '../markdown/support/Download-files/scRNASeqFLProcExprValues.md';
-import TutoscRNAseqTBExprVal from '../markdown/support/Download-files/scRNASeqTBProcExprValues.md';
-import TutoExprVal from '../markdown/support/Download-files/procExprValFile.md';
-import TutoGeneExpr from '../markdown/support/Download-files/geneExpression.md';
-import FaqFile from '../markdown/support/FAQ.md';
+// import DatasetsInterestFile from '../markdown/support/datasets_of_interest.md';
+// import TutoFile from '../static/support/Tutorials';
+// import ScRNASeqProtocolsFile from '../markdown/support/scRNA-seq_Protocols.md';
+// import VideoFile from '../static/support/videos';
+// import TutoGenePageFile from '../markdown/support/gene-page/Tutorial_gene_page.md';
+// // import TutoTopAnatFile from '../markdown/support/topAnat/topAnat.md';
+// // import TutoExpressionCallsFile from '../markdown/support/present_absent-expression-calls/Expression_call_search.md';
+// import TutoSPARQLFile from '../markdown/support/sparql-tutorial/sparql-tutorial.md';
+// import TutoCurationFile from '../markdown/support/data-curation/data-curation.md';
+// import TutoExpCompFile from '../markdown/support/expression-comparison/expression-comparison.md';
+// import TutoRawDataFile from '../markdown/support/Raw-data-interface/Raw-data-interface.md';
+// import TutoAnatHomologyFile from '../markdown/support/anatomical-homology/anatomical-homology.md';
+// import TutoAffyExprVal from '../markdown/support/Download-files/affyProcExprValues.md';
+// import TutoRNASeqExprVal from '../markdown/support/Download-files/rnaSeqProcExprValues.md';
+// import TutoscRNAseqFLExprVal from '../markdown/support/Download-files/scRNASeqFLProcExprValues.md';
+// import TutoscRNAseqTBExprVal from '../markdown/support/Download-files/scRNASeqTBProcExprValues.md';
+// import TutoExprVal from '../markdown/support/Download-files/procExprValFile.md';
+// import TutoGeneExpr from '../markdown/support/Download-files/geneExpression.md';
+// import FaqFile from '../markdown/support/FAQ.md';
 
-import AboutFile from '../static/about/about';
-import CollaborationsFile from '../static/about/collaborations';
-import PublicationsFile from '../static/about/publications';
-import TeamFile from '../static/about/team';
-import SABFile from '../static/about/bgeesab';
-import PrivacyPolicyFile from '../static/about/privacyPolicy';
+// import AboutFile from '../static/about/about';
+// import CollaborationsFile from '../static/about/collaborations';
+// import PublicationsFile from '../static/about/publications';
+// import TeamFile from '../static/about/team';
+// import SABFile from '../static/about/bgeesab';
+// import PrivacyPolicyFile from '../static/about/privacyPolicy';
 
-import Error from '../pages/Error';
-import DataDumps from '../pages/download/DataDumps';
-import NewsPage from '../pages/about/NewsPage';
-import DataSource from '../pages/about/DataSource';
+// import Error from '../pages/Error';
+// import DataDumps from '../pages/download/DataDumps';
+// import NewsPage from '../pages/about/NewsPage';
+// import DataSource from '../pages/about/DataSource';
 
 const ANALYSIS = {
   [PATHS.ANALYSIS.TOP_ANAT]: {
@@ -140,22 +140,22 @@ const SEARCH = {
 
 const DOWNLOAD = {
   [PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS]: {
-    component: GeneExpressionCallsDownload,
+    // component: GeneExpressionCallsDownload,
     title: 'Download gene expression calls',
   },
   [PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES]: {
-    component: ProcessedExpressionValues,
+    // component: ProcessedExpressionValues,
     title: 'Download processed expression values',
   },
   [PATHS.DOWNLOAD.DATA_DUMPS]: {
-    component: DataDumps,
+    // component: DataDumps,
     title: 'Data dumps',
   },
 };
 
 const RESOURCES = {
   [PATHS.RESOURCES.R_PACKAGES]: {
-    source: RPackageFile,
+    // source: RPackageFile,
     title: 'R packages',
     meta: {
       title: 'R packages and containers available',
@@ -165,7 +165,7 @@ const RESOURCES = {
     },
   },
   [PATHS.RESOURCES.ANNOTATIONS]: {
-    source: AnnotationsFile,
+    // source: AnnotationsFile,
     title: 'Annotation resources',
     meta: {
       title: 'Annotation resources',
@@ -176,7 +176,7 @@ const RESOURCES = {
     },
   },
   [PATHS.RESOURCES.ONTOLOGIES]: {
-    source: OntologiesFile,
+    // source: OntologiesFile,
     title: 'Ontology resources',
     meta: {
       title: 'Ontology resources',
@@ -187,7 +187,7 @@ const RESOURCES = {
     },
   },
   [PATHS.RESOURCES.SOURCE_CODE]: {
-    source: ResourceSourceFile,
+    // source: ResourceSourceFile,
     title: 'Source code',
     meta: {
       title: 'Source code information',
@@ -200,7 +200,7 @@ const RESOURCES = {
 
 const SUPPORT = {
   [PATHS.SUPPORT.GTEX]: {
-    source: DatasetsInterestFile,
+    // source: DatasetsInterestFile,
     title: 'Datasets of interest',
     meta: {
       title: 'Datasets of interest',
@@ -210,7 +210,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIALS]: {
-    source: TutoFile,
+    // source: TutoFile,
     title: 'Documentation and tutorials',
     meta: {
       title: 'Documentation and tutorials',
@@ -219,7 +219,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.SCRNASEQPROTOCOLS]: {
-    source: ScRNASeqProtocolsFile,
+    // source: ScRNASeqProtocolsFile,
     title: 'scRNA-Seq Protocols: A Comparative Guide',
     meta: {
       title: 'Single-cell RNA Sequencing (scRNA-Seq) Protocols: A Comparative Guide',
@@ -228,7 +228,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.VIDEOS]: {
-    source: VideoFile,
+    // source: VideoFile,
     title: 'Course videos',
     meta: {
       title: 'Course videos',
@@ -238,7 +238,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_GENE_PAGE]: {
-    source: TutoGenePageFile,
+    // source: TutoGenePageFile,
     title: 'Tutorial: gene page',
     meta: {
       title: 'Bgee gene page tutorial',
@@ -247,7 +247,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_TOPANAT]: {
-    source: TutoTopAnatFile,
+    // source: TutoTopAnatFile,
     title: 'Tutorial: TopAnat',
     meta: {
       title: 'Bgee TopAnat tutorial',
@@ -256,7 +256,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS]: {
-    source: TutoExpressionCallsFile,
+    // source: TutoExpressionCallsFile,
     title: 'Tutorial: expression calls',
     meta: {
       title: 'Bgee expression calls tutorial',
@@ -265,7 +265,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_SPARQL]: {
-    source: TutoSPARQLFile,
+    // source: TutoSPARQLFile,
     title: 'Tutorial: knowledge graph query',
     meta: {
       title: 'Bgee knowledge graph tutorial',
@@ -274,7 +274,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_CURATION]: {
-    source: TutoCurationFile,
+    // source: TutoCurationFile,
     title: 'Tutorial: data curation',
     meta: {
       title: 'Bgee data curation tutorial',
@@ -283,7 +283,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_EXPRESSION_COMPARISON]: {
-    source: TutoExpCompFile,
+    // source: TutoExpCompFile,
     title: 'Tutorial: expression comparison',
     meta: {
       title: 'Bgee expression comparison tutorial',
@@ -292,7 +292,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_RAW_DATA]: {
-    source: TutoRawDataFile,
+    // source: TutoRawDataFile,
     title: 'Tutorial: raw data',
     meta: {
       title: 'Bgee raw data interface tutorial',
@@ -301,7 +301,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_ANAT_HOMOLOGY]: {
-    source: TutoAnatHomologyFile,
+    // source: TutoAnatHomologyFile,
     title: 'Tutorial: anatomical homology',
     meta: {
       title: 'Bgee anatomical homology tutorial',
@@ -310,7 +310,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_AFFY_EXPR_VAL]: {
-    source: TutoAffyExprVal,
+    // source: TutoAffyExprVal,
     title: 'Tutorial: Affymetrix download file documentation',
     meta: {
       title: 'Bgee Affymetrix download file documentation: annotations and processed expression values tutorial',
@@ -319,7 +319,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_RNASEQ_EXPR_VAL]: {
-    source: TutoRNASeqExprVal,
+    // source: TutoRNASeqExprVal,
     title: 'Tutorial: RNA-Seq download file documentation',
     meta: {
       title: 'Bgee RNA-Seq download file documentation: annotations and processed expression values tutorial',
@@ -328,7 +328,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_SCRNASEQ_FL_EXPR_VAL]: {
-    source: TutoscRNAseqFLExprVal,
+    // source: TutoscRNAseqFLExprVal,
     title: 'Tutorial: Single cell RNA-Seq full-length download file documentation',
     meta: {
       title: 'Bgee Single cell RNA-Seq full-length download file documentation: annotations and processed expression values tutorial',
@@ -337,7 +337,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_SCRNASEQ_TB_EXPR_VAL]: {
-    source: TutoscRNAseqTBExprVal,
+    // source: TutoscRNAseqTBExprVal,
     title: 'Tutorial: Droplet-based scRNA-seq Data in H5AD Format',
     meta: {
       title: 'Bgee Droplet-based scRNA-seq Data in H5AD Format tutorial',
@@ -346,7 +346,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_EXPR_VAL]: {
-    source: TutoExprVal,
+    // source: TutoExprVal,
     title: 'Tutorial: Processed expression values download file documentation',
     meta: {
       title: 'Bgee Processed expression values download file documentation tutorial',
@@ -355,7 +355,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.TUTORIAL_GENE_EXPR]: {
-    source: TutoGeneExpr,
+    // source: TutoGeneExpr,
     title: 'Tutorial: Expression call download file documentation',
     meta: {
       title: 'Bgee Expression call download file documentation tutorial',
@@ -364,7 +364,7 @@ const SUPPORT = {
     },
   },
   [PATHS.SUPPORT.FAQ]: {
-    source: FaqFile,
+    // source: FaqFile,
     title: 'FAQ',
     meta: {
       title: 'FAQ',
@@ -376,7 +376,7 @@ const SUPPORT = {
 
 const ABOUT = {
   [PATHS.ABOUT.ABOUT]: {
-    source: AboutFile,
+    // source: AboutFile,
     title: 'About Bgee',
     meta: {
       title: 'About Bgee',
@@ -385,7 +385,7 @@ const ABOUT = {
     },
   },
   [PATHS.ABOUT.NEWS]: {
-    component: NewsPage,
+    // component: NewsPage,
     title: 'Bgee News',
     meta: {
       title: 'Bgee news',
@@ -394,7 +394,7 @@ const ABOUT = {
     },
   },
   [PATHS.ABOUT.COLLABORATIONS]: {
-    source: CollaborationsFile,
+    // source: CollaborationsFile,
     title: 'Bgee collaborations',
     meta: {
       title: 'Bgee collaborations',
@@ -404,7 +404,7 @@ const ABOUT = {
     },
   },
   [PATHS.ABOUT.PUBLICATION]: {
-    source: PublicationsFile,
+    // source: PublicationsFile,
     title: 'Bgee publications',
     meta: {
       title: 'Bgee publications',
@@ -414,7 +414,7 @@ const ABOUT = {
     },
   },
   [PATHS.ABOUT.SOURCES]: {
-    component: DataSource,
+    // component: DataSource,
     title: 'Bgee sources',
     meta: {
       title: 'Data sources',
@@ -424,7 +424,7 @@ const ABOUT = {
     },
   },
   [PATHS.ABOUT.TEAM]: {
-    source: TeamFile,
+    // source: TeamFile,
     title: 'Bgee team',
     meta: {
       title: 'Bgee team',
@@ -433,7 +433,7 @@ const ABOUT = {
     },
   },
   [PATHS.ABOUT.BGEESAB]: {
-    source: SABFile,
+    // source: SABFile,
     title: 'Bgee SAB',
     meta: {
       title: 'Bgee Scientific Advisory Board',
@@ -442,7 +442,7 @@ const ABOUT = {
     },
   },
   [PATHS.ABOUT.PRIVACY_POLICY]: {
-    source: PrivacyPolicyFile,
+    // source: PrivacyPolicyFile,
     title: 'Bgee privacy notice',
     meta: {
       title: 'Privacy notice',
@@ -456,7 +456,7 @@ const ABOUT = {
 
 const ROUTES = {
   [PATHS.HOME]: {
-    component: Home,
+    // component: Home,
     title: 'Bgee: gene expression data in animals',
   },
   ...ANALYSIS,
@@ -467,7 +467,7 @@ const ROUTES = {
   ...ABOUT,
   [PATHS.ERROR]: {
     title: 'Error',
-    component: Error,
+    // component: Error,
   },
 };
 

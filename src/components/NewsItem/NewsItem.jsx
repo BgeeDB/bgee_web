@@ -1,12 +1,11 @@
-/* eslint-disable react/no-children-prop,no-param-reassign,react/no-danger-with-children */
-import ReactMarkdown from 'react-markdown';
-import { useNavigate } from 'react-router';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeSanitize from 'rehype-sanitize';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
 import Bulma from '../Bulma';
-import rehypeLink from '../../helpers/rehypeLink';
+import { useNavigate } from 'react-router';
+// import ReactMarkdown from 'react-markdown';
+// import rehypeHighlight from 'rehype-highlight';
+// import rehypeSanitize from 'rehype-sanitize';
+// import rehypeRaw from 'rehype-raw';
+// import rehypeSlug from 'rehype-slug';
+// import rehypeLink from '../../helpers/rehypeLink';
 
 const NewsItem = ({ date, News }) => {
   const navigate = useNavigate();
@@ -17,16 +16,17 @@ const NewsItem = ({ date, News }) => {
         <p className="has-text-centered has-text-weight-bold">{date}</p>
       </Bulma.C>
       <Bulma.C size={10}>
-        <ReactMarkdown
+        <News></News>
+        {/* <ReactMarkdown
           children={News}
-          rehypePlugins={[
-            rehypeHighlight,
-            rehypeSanitize,
-            rehypeRaw,
-            rehypeSlug,
-            rehypeLink(navigate),
-          ]}
-        />
+          // rehypePlugins={[
+          //   rehypeHighlight,
+          //   rehypeSanitize,
+          //   rehypeRaw,
+          //   rehypeSlug,
+          //   rehypeLink(navigate),
+          // ]}
+        /> */}
       </Bulma.C>
     </Bulma.Columns>
   );

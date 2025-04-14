@@ -2,6 +2,8 @@
  * TypeScript declarations for custom HTML elements used in the Bgee Web application
  */
 
+declare module "*.md";
+
 declare namespace JSX {
   interface IntrinsicElements {
     // Ionic icon component

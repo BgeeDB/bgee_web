@@ -200,7 +200,7 @@ GSE3842|Transcription profiling of Drosophila LD/DD time course of y w; tim01, c
 
 ## Processed expression (signal intensities) files
 
-The processed expression (signal intensities) files can be retrieved per experiment for a specific species, accessed through [FTP](https://bgee.org/ftp/current/download/processed_expr_values/affymetrix/) or through the [download page](/download/processed-expression-values "Bgee Processed expression values download page") by selecting the species of interest and then by clicking on the button `Download signal intensities`. When using the web page, all processed data for the species are downloaded. The data for each experiment are contained in separate files named using the experiment identifier. Each experiment file includes all processed data of all samples from the experiment. 
+The processed expression (signal intensities) files can be retrieved per experiment for a specific species, accessed through [FTP](https://bgee.org/ftp/current/download/processed_expr_values/affymetrix/) or through the [download page](/download/processed-expression-values "Bgee Processed expression values download page") by selecting the species of interest and then by clicking on the button `Download signal intensities`. When using the web page, all processed data for the species are downloaded. The data for each experiment are contained in separate files named using the experiment identifier. Each experiment file includes all processed data of all samples from the experiment.
 
 #### File format and column descriptions
 
