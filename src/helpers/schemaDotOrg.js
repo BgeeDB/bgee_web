@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router';
 import config from '../config.json';
 import PATHS from '../paths/paths';
 import obolibraryLinkFromID, {
@@ -287,9 +286,9 @@ export const datasetToLdJSON = () => {
 export const speciesToLdJSON = ({
   downloadFilesGroups: { downloadFiles },
   species: { genus, name, speciesName, id },
+  url
 }) => {
-  const {pathname} = useLocation();
-  const url = config.genericDomain + pathname;
+  // const url = config.genericDomain + pathname;
   const json = {
     '@context': 'https://schema.org/',
     '@id': url,

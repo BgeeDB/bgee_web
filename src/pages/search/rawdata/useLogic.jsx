@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
@@ -149,6 +149,9 @@ const BASE_LIMIT = '50';
 
 const useLogic = (isExprCalls) => {
   const navigate = useNavigate();
+  // Add a mounting ref
+  const mountedRef = useRef(false);
+
   // Init from URL
   const loc = useLocation();
   const initSearch = new URLSearchParams(loc.search);
@@ -228,7 +231,7 @@ const useLogic = (isExprCalls) => {
     if (nextPageNumber) {
       setPageNumber(nextPageNumber);
     } else {
-      setPageNumber(1);
+      setPageNumber('1');
     }
 
     // If we are already on the Raw-Data page and we try to access it again in the Header all the search variables will be cleared.
@@ -272,12 +275,11 @@ const useLogic = (isExprCalls) => {
   };
 
   useEffect(() => {
-    if (!isFirstSearch) {
-      triggerSearch();
-    }
-  }, [pageNumber, limit]);
+    // In development mode with StrictMode, this effect runs twice
+    // Use the ref to only execute the side effect once
+    if (mountedRef.current) return;
+    mountedRef.current = true;
 
-  useEffect(() => {
     triggerSearch();
     setIsCountLoading(true);
 
@@ -289,6 +291,12 @@ const useLogic = (isExprCalls) => {
     //   }
     // });
   }, []);
+
+  useEffect(() => {
+    if (!isFirstSearch) {
+      triggerSearch();
+    }
+  }, [pageNumber, limit]);
 
   useEffect(() => {
     if (!isFirstSearch && !isExprCalls) {

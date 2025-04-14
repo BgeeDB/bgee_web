@@ -44,10 +44,24 @@ export function meta() {
     });
 }
 
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const speciesId = url.searchParams.get('species_id');
+  console.log('rrr', speciesId)
+  // You can perform additional data fetching here based on the speciesId
+  // For example:
+  // if (speciesId) {
+  //   const speciesData = await fetchSpeciesData(speciesId);
+  //   return { speciesId, speciesData };
+  // }
+
+  return { speciesId };
+}
 
 const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+
 const RawDataAnnotations = ({ isExprCalls = false }) => {
   const {
     searchResult,

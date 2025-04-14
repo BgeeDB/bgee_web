@@ -19,9 +19,6 @@ export async function loader({ params }) {
       api.search.species.geneList(params.speciesId),
       api.search.species.name(params.speciesId)
     ]);
-    // if (nameResp.data.species.speciesFullNameWithoutSpace !== speciesName) {
-    //     navigate(getCanonicalURL(nameResp.data.species), {replace: true});
-    // }
     const species = speciesRes.data.species
     const speciesScientificName = `${species.genus} ${species.speciesName}`;
     const speciesDisplay = `${speciesScientificName}${species.name ? ` (${species.name})` : ''}`;

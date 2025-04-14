@@ -43,7 +43,7 @@ export function meta({ data }) {
     description: metaDescription,
     keywords: metaKeywords,
     link: metaLink,
-    schemaorg: [speciesToLdJSON(data)],
+    schemaorg: [speciesToLdJSON({...data, url: metaLink})],
   });
 }
 

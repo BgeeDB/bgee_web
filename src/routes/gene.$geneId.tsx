@@ -154,19 +154,19 @@ const GeneDetails = ({loaderData}) => {
                 <Bulma.C size={3}>
                   <p className="has-text-weight-semibold">Gene identifier</p>
                 </Bulma.C>
-                <Bulma.C size={9}>{geneId}</Bulma.C>
+                <Bulma.C size={9}><p>{geneId}</p></Bulma.C>
               </Bulma.Columns>
               <Bulma.Columns className="my-0">
                 <Bulma.C size={3}>
                   <p className="has-text-weight-semibold">Name</p>
                 </Bulma.C>
-                <Bulma.C size={9}>{name}</Bulma.C>
+                <Bulma.C size={9}><p>{name}</p></Bulma.C>
               </Bulma.Columns>
               <Bulma.Columns className="my-0">
                 <Bulma.C size={3}>
                   <p className="has-text-weight-semibold">Description</p>
                 </Bulma.C>
-                <Bulma.C size={9}>{description}</Bulma.C>
+                <Bulma.C size={9}><p>{description}</p></Bulma.C>
               </Bulma.Columns>
               <Bulma.Columns className="my-0">
                 <Bulma.C size={3}>
