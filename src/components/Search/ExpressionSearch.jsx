@@ -14,7 +14,7 @@ const ExpressionSearch = ({ search, setSearch, elements, onRender }) => {
     const clickOutside = () => {
       setShowAuto(false);
     };
-    if (typeof document === 'undefined' && document.getElementById('root')) {
+    if (typeof document === 'undefined' || !document.getElementById('root')) {
       return () => {}
     }
     document.getElementById('root')?.addEventListener('click', clickOutside);

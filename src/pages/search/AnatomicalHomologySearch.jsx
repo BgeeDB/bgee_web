@@ -100,7 +100,7 @@ const AnatomicalHomologySearch = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [anatomicalEntities, setAnatomicalEntities] = React.useState('');
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState('');
   const [selectedSpecies, setSelectedSpecies] = React.useState([]);
   const { search: searchParams, pathname } = useLocation();
   const [results, set] = React.useState(DEFAULT_RESULTS);
@@ -143,7 +143,7 @@ const AnatomicalHomologySearch = () => {
       setError('ae');
       return;
     }
-    setError(false);
+    setError('');
 
     setLoading(true);
     api.search
@@ -169,6 +169,7 @@ const AnatomicalHomologySearch = () => {
         setLoading(false);
       });
   }, [anatomicalEntities, selectedSpecies]);
+
   React.useEffect(() => {
     if (searchParams && searchParams.replace('?', '') !== results?.signature) {
       setLoading(true);
@@ -267,16 +268,15 @@ const AnatomicalHomologySearch = () => {
                     <div className="control checkboxes">
                       <label
                         className="checkbox is-size-7 p-1"
-                        htmlFor="ALL"
-                        onClick={onToggleSpecies('ALL')}
+                        htmlFor="checkbox-ALL"
                       >
                         <input
+                          id="checkbox-ALL"
                           type="checkbox"
                           className="mr-2"
                           name="ALL"
-                          checked={
-                            speciesList.length === selectedSpecies.length
-                          }
+                          checked={speciesList.length === selectedSpecies.length}
+                          onChange={onToggleSpecies('ALL')}
                         />
                         Select All
                       </label>
@@ -284,14 +284,15 @@ const AnatomicalHomologySearch = () => {
                         <label
                           className="checkbox is-size-7 p-1"
                           key={id}
-                          htmlFor={id}
-                          onClick={onToggleSpecies(id)}
+                          htmlFor={`checkbox-${id}`}
                         >
                           <input
+                            id={`checkbox-${id}`}
                             type="checkbox"
                             className="mr-2"
                             name={id}
-                            checked={selectedSpecies.find((s) => s === id)}
+                            checked={selectedSpecies.includes(id)}
+                            onChange={onToggleSpecies(id)}
                           />
                           <i>{name}</i>
                         </label>

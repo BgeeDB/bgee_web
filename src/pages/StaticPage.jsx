@@ -3,6 +3,8 @@ import staticBuilder from '../helpers/staticBuilder';
 import ROUTES from '../paths/routes';
 import config from '../config.json';
 
+// TODO: REMOVE, not used anymore, replaced by react-router 7 SSR routes
+
 const StaticPage = ({ location: { pathname } }) => (
   <>
     {ROUTES[pathname].meta && (

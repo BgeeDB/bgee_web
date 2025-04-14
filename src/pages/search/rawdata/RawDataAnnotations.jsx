@@ -254,11 +254,10 @@ const RawDataAnnotations = ({ isExprCalls = false }) => {
             TAB_PAGE.map((type) => {
               const isActive = type.id === pageType;
               return (
-                <h1>
+                <h1 key={type.id}>
                   <a
                     onClick={(e) => changePageType(e, type.id)}
                     href={`${URL_ROOT}/search/raw-data?pageType=${type.id}${isActive ? filterForAllParameter() : ''}${isActive ? parameterInCurrentUrlWithoutPageType() : parameterFromForm()}`}
-                    key={type.id}
                     className={`ongletPages is-centered py-2 px-5 ${
                       isActive ? 'pageActive' : ''
                     }`}

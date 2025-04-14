@@ -16,13 +16,6 @@ export function meta() {
 
 const DataDumps = () => (
   <>
-    {/* <Helmet>
-      <title>{title}</title>
-      <meta property='og:title' content={title} />
-      <meta name="description" content={description} />
-      <meta property='og:description' content={description} />
-      <meta name="keywords" content="dataset, data download, MySQL, RDF, EasyBgee, gene expression data" />
-    </Helmet> */}
     <div className="content has-text-centered">
       <Bulma.Title size={3}>Bgee data dumps</Bulma.Title>
     </div>

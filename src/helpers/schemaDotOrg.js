@@ -126,7 +126,7 @@ export const geneExpressionToLdJSON = (genes) => {
   return ldJson;
 };
 
-export const fileDownloadProps = (file) => ({
+const fileDownloadProps = (file) => ({
   '@type': 'Dataset',
   'http://purl.org/dc/terms/conformsTo': {
     '@id': 'https://bioschemas.org/profiles/Dataset/1.0-RELEASE',
@@ -154,6 +154,7 @@ export const fileDownloadProps = (file) => ({
 });
 
 export const datasetToLdJSON = () => {
+    const url = config.genericDomain;
     const ldJson = [];
     ldJson.push({
         '@context': 'https://schema.org/',
@@ -198,12 +199,12 @@ export const datasetToLdJSON = () => {
             }],
         }, {
             '@type': 'Dataset',
-            '@id': window.location.href,
+            '@id': url,
             'http://purl.org/dc/terms/conformsTo': {
                 '@id': 'https://bioschemas.org/profiles/Dataset/1.0-RELEASE',
                 '@type': 'CreativeWork',
             },
-            url: window.location.href,
+            url: url,
             name: 'Bgee gene expression data',
             description: 'Bgee is a database for retrieval and comparison of gene expression patterns across multiple animal species. It provides an intuitive answer to the question -where is a gene expressed?- and supports research in cancer and agriculture, as well as evolutionary biology.',
             keywords: ['bgee', 'gene expression', 'evolution', 'ontology', 'anatomy', 'development', 'evo-devo database', 'anatomical ontology', 'developmental ontology', 'gene expression evolution'],

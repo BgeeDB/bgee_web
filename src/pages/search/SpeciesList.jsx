@@ -4,8 +4,6 @@ import api from '~/api';
 import GridSpecies from '~/components/GridSpecies/GridSpecies';
 import config from "~/config.json";
 import { getMetadata } from '~/helpers/metadata';
-import { useLoaderData } from 'react-router';
-
 
 export async function loader() {
   try {
@@ -29,8 +27,8 @@ export function meta({ data }) {
   });
 }
 
-const SpeciesList = () => {
-  const {speciesList} = useLoaderData()
+const SpeciesList = ({ loaderData }) => {
+  const {speciesList} = loaderData;
 
   return (
     <>

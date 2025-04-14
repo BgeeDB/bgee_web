@@ -1,6 +1,4 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
-
-import React, { useState } from 'react';
+import React from 'react';
 import {Link} from "react-router";
 import assets, {heroCounts}  from '../assets';
 import PATHS from '../paths/paths';
@@ -9,9 +7,26 @@ import config from '../config.json';
 import HomeNewsList from '../components/HomeNewsList';
 import api from '../api';
 import LinkExternal from '../components/LinkExternal';
-import schemaDotOrg from '../helpers/schemaDotOrg';
+import {datasetToLdJSON} from '../helpers/schemaDotOrg';
 import imagePath from '../helpers/imagePath';
 import Indexes from "../components/Indexes/Indexes";
+import { getMetadata } from '~/helpers/metadata';
+
+
+export async function loader() {
+  try {
+    const res = await api.search.species.list()
+    return res.data
+  } catch (error) {
+    throw new Response(error.data.message || 'Failed to load species data', { status: 404 });
+  }
+}
+
+export function meta() {
+  return getMetadata({
+    schemaorg: [datasetToLdJSON()],
+  });
+}
 
 const HomeCard = props => {
     const {id, imgUrl, title, desc, linkUrl, linkText} = props;
@@ -35,27 +50,16 @@ const HomeCard = props => {
     );
 };
 
-const Home = () => {
-  const [speciesList, setSpeciesList] = useState([]);
+const Home = ({ loaderData }) => {
+  const {species: speciesList} = loaderData;
 
   React.useEffect(() => {
-    api.search.species.list().then((resp) => {
-      if (resp.code === 200) {
-        setSpeciesList(resp.data.species);
-        schemaDotOrg.setHomeDatasetLdJSON(resp.data.species);
-      } else {
-        setSpeciesList([]);
-      }
-    });
-
     // Add the class to the body element when the component mounts
     document.body.classList.add('homepage');
-
     // Clean up function to remove the class when the component unmounts
     return () => {
       document.body.classList.remove('homepage');
     };
-
   }, []);
 
   return (

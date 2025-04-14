@@ -1,4 +1,4 @@
-import {Link, useLoaderData} from "react-router";
+import {Link} from "react-router";
 import Bulma from '../../components/Bulma';
 import api from '../../api';
 import PATHS from "../../paths/paths";
@@ -39,7 +39,6 @@ export async function loader({ params }) {
 
 export function meta({ data }) {
   const canonicalURL = `${config.genericDomain}${getCanonicalURL(data.species)}`;
-
   return getMetadata({
     title: `${data.speciesDisplay} gene list`,
     description: `List of genes of ${data.speciesScientificName} with expression data available in Bgee`,
@@ -49,8 +48,8 @@ export function meta({ data }) {
   });
 }
 
-const SpeciesGeneList = () => {
-    const { genes, species, speciesDisplay } = useLoaderData()
+const SpeciesGeneList = ({ loaderData }) => {
+    const { genes, species, speciesDisplay } = loaderData;
 
     function getGeneDisplay(element) {
         let text = element.geneId;

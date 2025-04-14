@@ -1,5 +1,4 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import { Link, useLocation } from 'react-router';
 import PATHS from '../../paths/paths';
 import Bulma from '../../components/Bulma';
@@ -9,7 +8,6 @@ import splitWithOccurrences from '../../helpers/splitWithOccurrences';
 import { MEDIA_QUERIES } from '../../helpers/constants/mediaQueries';
 import { customGeneListSorter } from '../../helpers/sortTable';
 import Table from '../../components/Table';
-import config from "../../config.json";
 import { getMetadata } from '~/helpers/metadata';
 
 export function meta() {
@@ -134,29 +132,29 @@ const GeneList = () => {
 
     if (params.get('search')) {
       setSearch(params.get('search'));
-      setResults();
+      setResults(undefined);
       searchResultHandler(params.get('search'));
     } else {
-      setResults();
+      setResults(undefined);
     }
   }, [queryParams]);
 
-  const meta = React.useMemo(
-    () => ({
-      description: results
-        ? `${search} gene search, ${results.totalMatchCount} results in total`
-        : 'Search for a gene in Bgee',
-      keywords: `gene search, gene
-  ${search ? `, ${search}` : ''}`,
-    }),
-    [search, results]
-  );
+  // const meta = React.useMemo(
+  //   () => ({
+  //     description: results
+  //       ? `${search} gene search, ${results.totalMatchCount} results in total`
+  //       : 'Search for a gene in Bgee',
+  //     keywords: `gene search, gene
+  // ${search ? `, ${search}` : ''}`,
+  //   }),
+  //   [search, results]
+  // );
 
   const count = results?.totalMatchCount;
 
   return (
     <>
-      <Helmet>
+      {/* <Helmet>
         <title>{`${search ? `${search} - ` : ''}Gene search`}</title>
         <meta property='og:title' content={`${search ? `${search} - ` : ''}Gene search`} />
         <meta name="description" content={meta.description} />
@@ -164,7 +162,7 @@ const GeneList = () => {
         <meta name="keywords" content={meta.keywords} />
         <meta property="og:url" content={`${config.genericDomain}${PATHS.SEARCH.GENE}`} />
         <link rel="canonical" href={`${config.genericDomain}${PATHS.SEARCH.GENE}`} />
-      </Helmet>
+      </Helmet> */}
       <div className="content has-text-centered">
         <Bulma.Title size={3}>Gene search</Bulma.Title>
       </div>

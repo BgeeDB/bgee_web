@@ -5,6 +5,8 @@ import ROUTES from '../../paths/routes';
 import PATHS from '../../paths/paths';
 import config from '../../config.json';
 
+// TODO: REMOVE, not used anymore, replaced by react-router 7 SSR routes
+
 class Page extends React.PureComponent {
   constructor(props) {
     super(props);

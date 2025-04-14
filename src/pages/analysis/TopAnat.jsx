@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,jsx-a11y/label-has-associated-control */
 import React from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router';
 import PATHS from '../../paths/paths';
@@ -186,6 +185,7 @@ const TopAnat = () => {
         setFlowState(TOP_ANAT_FLOW.ERROR_GET_JOB);
       });
   }, []);
+
   const getResults = React.useCallback((ID) => {
     api.topAnat
       .getResults(ID)

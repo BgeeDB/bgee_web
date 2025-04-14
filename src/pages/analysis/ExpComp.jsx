@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
-import { Helmet } from 'react-helmet';
 import Table from '../../components/Table';
 import Bulma from '../../components/Bulma';
 import api from '../../api';
@@ -460,11 +459,11 @@ const ExpComp = () => {
 
   return (
     <>
-      {searchParams &&
+      {/* {searchParams &&
           <Helmet>
             <meta name="robots" content="noindex"/>
           </Helmet>
-      }
+      } */}
       <div>
         <div className="content has-text-centered">
           <Bulma.Title size={3} className="title is3">

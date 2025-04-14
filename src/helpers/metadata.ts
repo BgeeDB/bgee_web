@@ -1,12 +1,5 @@
 import config from '~/config.json';
-
-interface Metadata {
-  title?: string;
-  name?: string;
-  property?: string;
-  content?: string;
-  [key: string]: any;
-}
+import type { MetaDescriptor } from 'react-router';
 
 /**
  * Generates metadata for the Bgee web application.
@@ -20,7 +13,7 @@ interface Metadata {
  * @param {string} [options.keywords=] - Keywords for the page, comma-separated.
  * @param {string} [options.link] - The canonical URL of the page, used for og:url.
  * @param {Array<Object>} [options.schemaorg] - A list of JSON-LD scripts to add to the page for Schema.org structured data.
- * @returns {Metadata[]} An array of metadata objects to be rendered as meta tags.
+ * @returns {MetaDescriptor[]} An array of metadata objects to be rendered as meta tags.
  */
 export function getMetadata({
   title = "Bgee: gene expression data in animals",
@@ -34,8 +27,8 @@ export function getMetadata({
   keywords?: string;
   link?: string;
   schemaorg?: Array<{ [key: string]: any }>;
-}): Metadata[] {
-  const metadata: Metadata[] = [
+}): MetaDescriptor[] {
+  const metadata: MetaDescriptor[] = [
     { title: title },
     {
       property: "og:title",
@@ -82,10 +75,11 @@ export function getMetadata({
       property: "og:url",
       content: link
     });
-    // metadata.push({
-    //   rel: "canonical",
-    //   href: link
-    // });
+    metadata.push({
+      tagName: "link",
+      rel: "canonical",
+      href: link,
+    });
     // <meta property="og:url" content={meta.link} />
     // <link rel="canonical" href={meta.link} />
   }

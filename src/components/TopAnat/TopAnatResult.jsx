@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
+// import { Helmet } from 'react-helmet';
 import Bulma from '../Bulma';
 import classnames from '../../helpers/classnames';
 import { TOP_ANAT_FLOW } from '../../hooks/useTopAnat';
@@ -56,28 +56,6 @@ const TopAnatResult = ({
   data,
 }) => {
   const [selectedStage, setSelectedStage] = React.useState(MERGE_KEY);
-  const topAnatResults = results?.analysis;
-  const analysisName = data?.jobDescription;
-  const metaTitle = `${
-    jobId
-      ? `analysis ${jobId} running`
-      : `${
-          topAnatResults
-            ? `analysis results ${analysisName}`
-            : ' - Gene expression enrichment analysis'
-        }`
-  }`;
-  const metaDescription = `${
-    jobId
-      ? `A TopAnat analysis is running, this page will be updated when the results are available.`
-      : `${
-          topAnatResults
-            ? `TopAnat analysis results ${
-                analysisName ? `for analysis: ${analysisName}` : ''
-              }`
-            : 'TopAnat: perform GO-like enrichment of anatomical terms, mapped to genes by expression patterns.'
-        }`
-  }`;
   const onRenderCell = React.useCallback(({ cell, key }, defaultRender) => {
     if (key === 0)
       return (
@@ -273,6 +251,29 @@ const TopAnatResult = ({
     [fg, results, dataCsvHref, selectedStage, dataDisplay]
   );
 
+  // const topAnatResults = results?.analysis;
+  // const analysisName = data?.jobDescription;
+  // const metaTitle = `${
+  //   jobId
+  //     ? `analysis ${jobId} running`
+  //     : `${
+  //         topAnatResults
+  //           ? `analysis results ${analysisName}`
+  //           : ' - Gene expression enrichment analysis'
+  //       }`
+  // }`;
+  // const metaDescription = `${
+  //   jobId
+  //     ? `A TopAnat analysis is running, this page will be updated when the results are available.`
+  //     : `${
+  //         topAnatResults
+  //           ? `TopAnat analysis results ${
+  //               analysisName ? `for analysis: ${analysisName}` : ''
+  //             }`
+  //           : 'TopAnat: perform GO-like enrichment of anatomical terms, mapped to genes by expression patterns.'
+  //       }`
+  // }`;
+
   if (
     status === TOP_ANAT_FLOW.GOT_RESULTS &&
     dataDisplay &&
@@ -280,13 +281,13 @@ const TopAnatResult = ({
   )
     return (
       <>
-        <Helmet>
+        {/* <Helmet>
           <title>TopAnat {metaTitle}</title>
           <meta property='og:title' content={`TopAnat ${metaTitle}`} />
           <meta name="description" content={metaDescription} />
           <meta property='og:description' content={metaDescription} />
           <meta name="keywords" content="TopAnat, gene set enrichment analysis, gene expression enrichment analysis, GO-like enrichment analysis, gene expression patterns, topGO, BgeeDB" />
-        </Helmet>
+        </Helmet> */}
         <div className="content has-text-centered">
           <p className="title is-4">{title}</p>
         </div>

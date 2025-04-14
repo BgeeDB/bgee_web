@@ -1,6 +1,4 @@
-/* eslint-disable jsx-a11y/interactive-supports-focus,react/no-array-index-key,react/button-has-type,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,jsx-a11y/label-has-associated-control */
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router';
 import PATHS from '../../paths/paths';
 import useQuery from '../../hooks/useQuery';
@@ -16,13 +14,75 @@ import expressionPageHelper from '../../helpers/expressionPageHelper';
 import LinkExternal from '../../components/LinkExternal';
 import imagePath from '../../helpers/imagePath';
 import config from '../../config.json';
+import { getMetadata } from '~/helpers/metadata';
 
 const FULL_LENGTH_LABEL = "Full length RNA-Seq";
 const DROPLET_BASED_LABEL = "Droplet based RNA-Seq";
-const ProcessedExpressionValues = () => {
+
+export async function loader() {
+  try {
+    const res = await api.search.species.processedValues();
+    const speciesList = res.data.downloadFilesGroups.map((o) => ({
+      ...o,
+      ...o.members[0],
+    }));
+
+    const files = {};
+    speciesList.forEach((s) => {
+      files[s.id.toString()] = {
+        affymetrixData: s.downloadFiles.find(
+          (d) => d.category === 'affy_data'
+        ),
+        affymetrixAnnot: s.downloadFiles.find(
+          (d) => d.category === 'affy_annot'
+        ),
+        rnaSeqData: s.downloadFiles.find((d) => d.category === 'rnaseq_data'),
+        rnaSeqAnnot: s.downloadFiles.find(
+          (d) => d.category === 'rnaseq_annot'
+        ),
+        fullLengthAnnot: s.downloadFiles.find(
+          (d) => d.category === 'full_length_annot'
+        ),
+        fullLengthData: s.downloadFiles.find(
+          (d) => d.category === 'full_length_data'
+        ),
+        fullLengthH5ad: s.downloadFiles.find(
+          (d) => d.category === 'full_length_h5ad'
+        ),
+        dropletBasedAnnot: s.downloadFiles.find(
+          (d) => d.category === 'droplet_based_annot'
+        ),
+        dropletBasedData: s.downloadFiles.find(
+          (d) => d.category === 'droplet_based_data'
+        ),
+        dropletBasedH5ad: s.downloadFiles.find(
+          (d) => d.category === 'droplet_based_h5ad'
+        ),
+      };
+    });
+    return {
+      speciesList,
+      files,
+      kwList: res.data.speciesIdToKeywords,
+      allSpeciesName: speciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
+    }
+  } catch (error) {
+    throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
+  }
+}
+
+export function meta({ data }) {
+  return getMetadata({
+    title: 'Bgee Processed expression values download page',
+    description: 'Download TSV files containing sample annotations, experiment information, and processed expression values',
+    keywords: `dataset, data download, gene expression, RNA-Seq, Affymetrix, ${FULL_LENGTH_LABEL}, scRNA-Seq, expression data annotations, ${data.allSpeciesName}`,
+  });
+}
+
+
+const ProcessedExpressionValues = ({ loaderData }) => {
+  const { speciesList, files, kwList } = loaderData;
   const navigate = useNavigate();
-  const [speciesList, setSpeciesList] = React.useState([]);
-  const [kwList, setKwList] = React.useState({});
   const [search, setSearch] = React.useState('');
   const filteredSpecies = React.useMemo(() => {
     const tmp = JSON.parse(JSON.stringify(speciesList));
@@ -32,71 +92,10 @@ const ProcessedExpressionValues = () => {
       !kwList[id] ? false : Boolean(kwList[id].find((a) => regExp.test(a)))
     );
   }, [speciesList, search, kwList]);
-  const [files, setFiles] = React.useState({});
   const speciesID = useQuery('id');
 
-  React.useEffect(() => {
-    api.search.species.processedValues().then((res) => {
-      const sList = res.data.downloadFilesGroups.map((o) => ({
-        ...o,
-        ...o.members[0],
-      }));
-      setSpeciesList(sList);
-      setKwList(res.data.speciesIdToKeywords);
-
-      const speciesFiles = {};
-      sList.forEach((s) => {
-        speciesFiles[s.id.toString()] = {
-          affymetrixData: s.downloadFiles.find(
-            (d) => d.category === 'affy_data'
-          ),
-          affymetrixAnnot: s.downloadFiles.find(
-            (d) => d.category === 'affy_annot'
-          ),
-          rnaSeqData: s.downloadFiles.find((d) => d.category === 'rnaseq_data'),
-          rnaSeqAnnot: s.downloadFiles.find(
-            (d) => d.category === 'rnaseq_annot'
-          ),
-          fullLengthAnnot: s.downloadFiles.find(
-            (d) => d.category === 'full_length_annot'
-          ),
-          fullLengthData: s.downloadFiles.find(
-            (d) => d.category === 'full_length_data'
-          ),
-          fullLengthH5ad: s.downloadFiles.find(
-            (d) => d.category === 'full_length_h5ad'
-          ),
-          dropletBasedAnnot: s.downloadFiles.find(
-            (d) => d.category === 'droplet_based_annot'
-          ),
-          dropletBasedData: s.downloadFiles.find(
-            (d) => d.category === 'droplet_based_data'
-          ),
-          dropletBasedH5ad: s.downloadFiles.find(
-            (d) => d.category === 'droplet_based_h5ad'
-          ),
-        };
-      });
-      setFiles(speciesFiles);
-    });
-  }, []);
-
-  const allSpeciesName = React.useMemo(
-    () => speciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
-    [speciesList]
-  );
-
-  const title = 'Bgee Processed expression values download page';
-  const description = 'Download TSV files containing sample annotations, experiment information, and processed expression values';
   return (
     <>
-      <Helmet>
-        <title>{title}</title>
-        <meta property='og:title' content={title} />
-        <meta name="description" content={description} />
-        <meta property='og:description' content={description} />
-        <meta name="keywords" content={`dataset, data download, gene expression, RNA-Seq, Affymetrix, ${FULL_LENGTH_LABEL}, scRNA-Seq, expression data annotations, ${allSpeciesName}`} />
-      </Helmet>
       <div className="content has-text-centered">
         <Bulma.Title size={3}>Processed expression values</Bulma.Title>
       </div>

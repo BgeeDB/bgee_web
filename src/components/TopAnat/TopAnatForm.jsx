@@ -145,7 +145,7 @@ const TopAnatForm = ({
                   >
                     <div className="is-flex is-align-items-end is-justify-content-end">
                       <div className="field has-addons">
-                        <p className="control">
+                        <div className="control">
                           <Bulma.Button
                             size="small"
                             className="toggle-button"
@@ -161,8 +161,8 @@ const TopAnatForm = ({
                               rp.fg.list.selectedSpecies
                             ].name
                           }`}</Bulma.Button>
-                        </p>
-                        <p className="control">
+                        </div>
+                        <div className="control">
                           <Bulma.Button
                             size="small"
                             className="toggle-button"
@@ -176,7 +176,7 @@ const TopAnatForm = ({
                           >
                             Custom data
                           </Bulma.Button>
-                        </p>
+                        </div>
                       </div>
                     </div>
                     {rp.customBg && rp.bg && (

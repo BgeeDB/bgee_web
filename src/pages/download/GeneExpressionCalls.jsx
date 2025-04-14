@@ -1,5 +1,4 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router';
 import PATHS from '../../paths/paths';
 import useQuery from '../../hooks/useQuery';
@@ -13,11 +12,62 @@ import ExpressionSearch from '../../components/Search/ExpressionSearch';
 import expressionPageHelper from '../../helpers/expressionPageHelper';
 import LinkExternal from '../../components/LinkExternal';
 import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
 
-const GeneExpressionCalls = () => {
+export async function loader() {
+  try {
+    const res = await api.search.species.exprCalls();
+    const singleSpeciesList = res.data.downloadFilesGroups.map((o) => ({
+      ...o,
+      ...o.members[0],
+    }));
+    const files = {};
+    singleSpeciesList.forEach((s) => {
+      files[s.id.toString()] = {
+        anatSimple: s.downloadFiles.find(
+          (f) =>
+            f.category === 'expr_simple' &&
+            f.conditionParameters.length === 1 &&
+            f.conditionParameters[0] === 'anat_entity'
+        ),
+        anatAdvanced: s.downloadFiles.find(
+          (f) =>
+            f.category === 'expr_advanced' &&
+            f.conditionParameters.length === 1 &&
+            f.conditionParameters[0] === 'anat_entity'
+        ),
+        fullSimple: s.downloadFiles.find(
+          (f) =>
+            f.category === 'expr_simple' && f.conditionParameters.length > 1
+        ),
+        fullAdvanced: s.downloadFiles.find(
+          (f) =>
+            f.category === 'expr_advanced' && f.conditionParameters.length > 1
+        ),
+      };
+    });
+    return {
+      singleSpeciesList,
+      files,
+      kwList: res.data.speciesIdToKeywords,
+      allSpeciesName: singleSpeciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
+    }
+  } catch (error) {
+    throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
+  }
+}
+
+export function meta({ data }) {
+  return getMetadata({
+    title: 'Bgee Gene expression calls download page',
+    description: 'Download TSV files containing present/absent gene expression calls from Bgee',
+    keywords: `dataset, data download, gene expression calls, present/absent expression calls, ${data.allSpeciesName}`
+  });
+}
+
+const GeneExpressionCalls = ({ loaderData }) => {
+  const { singleSpeciesList, files, kwList } = loaderData;
   const navigate = useNavigate();
-  const [singleSpeciesList, setSingleSpeciesList] = React.useState([]);
-  const [kwList, setKwList] = React.useState({});
   const [search, setSearch] = React.useState('');
   const filteredSingleSpecies = React.useMemo(() => {
     const tmp = JSON.parse(JSON.stringify(singleSpeciesList));
@@ -27,63 +77,11 @@ const GeneExpressionCalls = () => {
       !kwList[id] ? false : Boolean(kwList[id].find((a) => regExp.test(a)))
     );
   }, [singleSpeciesList, search, kwList]);
-  const [files, setFiles] = React.useState({});
 
   const speciesID = useQuery('id');
-  React.useEffect(() => {
-    api.search.species.exprCalls().then((res) => {
-      const sList = res.data.downloadFilesGroups.map((o) => ({
-        ...o,
-        ...o.members[0],
-      }));
-      setSingleSpeciesList(sList);
-      setKwList(res.data.speciesIdToKeywords);
-      const speciesFiles = {};
-      sList.forEach((s) => {
-        speciesFiles[s.id.toString()] = {
-          anatSimple: s.downloadFiles.find(
-            (f) =>
-              f.category === 'expr_simple' &&
-              f.conditionParameters.length === 1 &&
-              f.conditionParameters[0] === 'anat_entity'
-          ),
-          anatAdvanced: s.downloadFiles.find(
-            (f) =>
-              f.category === 'expr_advanced' &&
-              f.conditionParameters.length === 1 &&
-              f.conditionParameters[0] === 'anat_entity'
-          ),
-          fullSimple: s.downloadFiles.find(
-            (f) =>
-              f.category === 'expr_simple' && f.conditionParameters.length > 1
-          ),
-          fullAdvanced: s.downloadFiles.find(
-            (f) =>
-              f.category === 'expr_advanced' && f.conditionParameters.length > 1
-          ),
-        };
-      });
-      setFiles(speciesFiles);
-    });
-  }, []);
 
-  const allSpeciesName = React.useMemo(
-    () =>
-      singleSpeciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
-    [singleSpeciesList]
-  );
-
-  const title = 'Bgee Gene expression calls download page';
-  const description = 'Download TSV files containing present/absent gene expression calls from Bgee';
   return (
     <>
-      <Helmet>
-        <title>{title}</title>
-        <meta property='og:title' content={title} />
-        <meta name="description" content={description} />
-        <meta property='og:description' content={description} />
-        <meta name="keywords" content={`dataset, data download, gene expression calls, present/absent expression calls, ${allSpeciesName}`} />
-      </Helmet>
       <div className="content has-text-centered">
         <Bulma.Title size={3}>Gene expression calls</Bulma.Title>
       </div>
@@ -334,7 +332,7 @@ const GeneExpressionCalls = () => {
                               </span>
                               : includes information by data types
                             </p>
-                            <p className=" is-size-7">
+                            <div className=" is-size-7">
                               <a
                                 href="https://creativecommons.org/publicdomain/zero/1.0/"
                                 target="_blank"
@@ -349,7 +347,7 @@ const GeneExpressionCalls = () => {
                                   style={{ margin: 0, padding: 0, textAlign: 'left' }}
                                 />
                               </a>
-                            </p>
+                            </div>
                           </div>
                         </div>
                       </div>
