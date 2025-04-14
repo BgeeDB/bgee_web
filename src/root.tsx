@@ -9,6 +9,7 @@ import {
   useLocation,
 } from "react-router";
 
+
 import type { Route } from "./+types/root";
 // import "./app.css";
 import "./styles/global.scss";
@@ -23,6 +24,7 @@ import Footer from "./components/Layout/Footer/Footer";
 import CookieMessage from "./components/CookieMessage";
 import { NotificationProvider, NotificationContext } from './contexts/NotificationsContext';
 import { setAxiosAddNotif } from "./api/prod/constant";
+import { MDXProvider } from '@mdx-js/react';
 
 
 export const links: Route.LinksFunction = () => [

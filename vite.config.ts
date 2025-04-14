@@ -10,19 +10,12 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 // import remarkFrontmatter from "remark-frontmatter";
 // import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-// import mdPlugin from 'vite-plugin-markdown';
-// import {useMDXComponents} from '~/helpers/mdxComponents';
 
 export default defineConfig({
   plugins: [
     tsconfigPaths(),
     mdx({
-      providerImportSource: '@mdx-js/react',
-      // providerImportSource: "./src/helpers/mdxComponents",
-      // providerImportSource: import.meta.resolve('./src/helpers/mdxComponents.tsx'),
-      // providerImportSource: useMDXComponents,
-      // format: "detect",
-      // include: /\.mdx?$/,
+      providerImportSource: "/src/helpers/mdxComponents.tsx",
       remarkPlugins: [
         remarkGfm,
         remarkToc,
@@ -37,22 +30,6 @@ export default defineConfig({
       ],
     }),
     reactRouter(),
-    // Custom plugin to handle .md files directly
-    // {
-    //   name: "markdown-plain-loader",
-    //   enforce: "pre",
-    //   transform(code, id) {
-    //     if (id.endsWith('.md')) {
-    //       return `export default ${JSON.stringify(code)};`;
-    //     }
-    //   }
-    // },
   ],
   // assetsInclude: ["**/*.md"],
-  // optimizeDeps: {
-  //   include: ['react/jsx-runtime'],
-  // },
-  // resolve: {
-  //   extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.md', '.mdx'],
-  // },
 })

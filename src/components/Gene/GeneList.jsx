@@ -4,6 +4,8 @@ import PATHS from '../../paths/paths';
 import classnames from '../../helpers/classnames';
 import imagePath from '../../helpers/imagePath';
 
+// TODO: REMOVE? check if still used, replaced by src/routes/gene.$geneId.tsx
+
 const GeneList = ({ details, navigate }) => (
   <>
     <Helmet>

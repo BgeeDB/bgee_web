@@ -2,13 +2,12 @@ import Bulma from '~/components/Bulma';
 import classnames from '~/helpers/classnames';
 import type {MDXComponents} from 'mdx/types.js'
 
-
 // https://mdxjs.com/guides/injecting-components/
 export function useMDXComponents(): MDXComponents {
 
     return {
       wrapper: (wrapperProps: any) => {
-        const { children, ...restProps } = wrapperProps;
+        const { children, actionData, loaderData, ...restProps } = wrapperProps;
         return (
           <div className="markdown" {...restProps}>
             {children}

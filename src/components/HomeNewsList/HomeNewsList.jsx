@@ -4,19 +4,11 @@ import Bulma from '../Bulma';
 import NewsItem from '../NewsItem';
 
 const markdownFiles = import.meta.glob('../../markdown/news/*.md', { eager: true });
-// console.log("markdownFiles", markdownFiles)
 const news = Object.entries(markdownFiles).map(([path, module]) => {
-  console.log(`got md`, path, module)
-  // get the filename from the path
   const filename = path.replace(/^.*[/\\]/, '');
   // e.g. News-2023-04-24.md
   const date = filename.replace(/^News-(.*)\.md$/, "$1");
-
-  // Extract the content based on the module format
-  const markdown = module.default;
-
-  // return an object with filename and markdown
-  return { date, markdown };
+  return { date, markdown: module.default };
 });
 const lastNews = news[news.length - 1];
 

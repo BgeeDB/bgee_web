@@ -12,7 +12,7 @@ export default [
 
   // Search routes
   route(PATHS.SEARCH.GENE, './pages/search/GeneList.jsx'),
-  route(PATHS.SEARCH.GENE_ITEM + '/:speciesId?', './pages/search/Gene.jsx'),
+  // route(PATHS.SEARCH.GENE_ITEM + '/:speciesId?', './pages/search/Gene.jsx'),
   route(PATHS.SEARCH.ANATOMICAL_HOMOLOGY, './pages/search/AnatomicalHomologySearch.jsx'),
   route(PATHS.SEARCH.SPECIES, './pages/search/SpeciesList.jsx'),
   route(PATHS.SEARCH.SPECIES_ITEM, './pages/search/Species.jsx'),

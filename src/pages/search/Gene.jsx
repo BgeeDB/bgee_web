@@ -13,11 +13,7 @@ const FLOW = {
   LOADED: 'loaded',
 };
 
-// export async function loader({ params }) {
-//   let team = await fetchTeam(params.geneId);
-//   return { name: team.name };
-// }
-
+// TODO: REMOVE, not used anymore, replaced by src/routes/gene.$geneId.tsx
 
 export async function loader({ params, request }) {
   try {
