@@ -49,7 +49,7 @@ const GridSpecies = ({
         document.getElementById(`species-${speciesID}`)?.scrollIntoView({ behavior: 'smooth' });
       }, 250);
     }
-  }, [speciesID]);
+  }, [speciesID, scrollAt]);
 
   return (
     <div className="species-grid">

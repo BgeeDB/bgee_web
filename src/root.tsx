@@ -40,7 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       ) : (
         <Bulma.Section className="is-flex-grow-1">{children}</Bulma.Section>
       ),
-    [loc]
+    [loc, URL_ROOT, children]
   );
 
   React.useEffect(() => {
@@ -54,7 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return () => {
       setAxiosAddNotif(null);
     };
-  }, []);
+  }, [addNotification]);
 
   return (
     <html lang="en">

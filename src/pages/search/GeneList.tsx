@@ -136,7 +136,7 @@ const GeneList = () => {
     } else {
       setResults(undefined);
     }
-  }, [queryParams]);
+  }, [queryParams, searchResultHandler, setResults]);
 
   // const meta = React.useMemo(
   //   () => ({

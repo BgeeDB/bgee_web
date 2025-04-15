@@ -162,7 +162,7 @@ const Table = ({
           <p className="ml-2">entries</p>
         </div>
       ) : null,
-    [pageSize, currentPage, mappedData, pagination, setCurrentPage, onPageSizeChange]
+    [pageSize, pagination, onPageSizeChange]
   );
 
   const processedData = React.useMemo(() => {
@@ -172,7 +172,7 @@ const Table = ({
       filtered.sort((Array.isArray(sortOption) ? onSortCustom || multiSort : onSortCustom || monoSort)(sortOption));
     }
     return filtered;
-  }, [mappedData, search, sortOption, onSortCustom]);
+  }, [mappedData, search, sortOption, onSortCustom, onFilter]);
 
   const PaginationComponent = isRequestPerPage ? TablePaginationWithoutRefresh : TablePagination;
 

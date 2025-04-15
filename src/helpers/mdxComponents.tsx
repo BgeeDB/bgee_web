@@ -6,7 +6,8 @@ import type { MDXComponents } from 'mdx/types.js';
 export function useMDXComponents(): MDXComponents {
   return {
     wrapper: (wrapperProps: any) => {
-      const { children, actionData, loaderData, ...restProps } = wrapperProps;
+      // const { children, actionData, loaderData, ...restProps } = wrapperProps;
+      const { children, ...restProps } = wrapperProps;
       return (
         <div className="markdown" {...restProps}>
           {children}

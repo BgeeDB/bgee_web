@@ -28,6 +28,7 @@ const useGeneSearch = searchText => {
         setResResultListGenes(null);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [searchText]
   );
 

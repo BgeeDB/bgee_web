@@ -6,10 +6,10 @@ import classnames from '../helpers/classnames';
 // Initialize the context with default values to avoid undefined destructuring
 const NotificationContext = React.createContext({
   notifications: [],
-  addNotification: (data: any) => {},
+  addNotification: () => {},
   addNotifications: () => {},
   cleanNotifications: () => {},
-  closeNotif: (data: any) => {},
+  closeNotif: () => {},
 });
 
 const { Provider } = NotificationContext;
