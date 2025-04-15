@@ -1,15 +1,8 @@
 import Bulma from '../../components/Bulma';
 import GoTop from '../../components/GoTop';
 import NewsItem from '../../components/NewsItem';
+// import { newsToLdJSON } from '~/helpers/schemaDotOrg';
 import { getMetadata } from '~/helpers/metadata';
-
-export function meta() {
-  return getMetadata({
-    title: 'Bgee news',
-    description: 'Bgee news describing each new releases',
-    keywords: 'News, latest, information, releases',
-  });
-}
 
 const markdownFiles = import.meta.glob('../../markdown/news/*.md', { eager: true });
 const news = Object.entries(markdownFiles).map(([path, module]: any) => {
@@ -21,6 +14,17 @@ const news = Object.entries(markdownFiles).map(([path, module]: any) => {
 news.sort((a, b) => {
   return b.date.localeCompare(a.date);
 });
+
+export function meta() {
+  return getMetadata({
+    title: 'Bgee news',
+    description: 'Bgee news describing each new releases',
+    keywords: 'News, latest, information, releases',
+    // schemaorg: [
+    //   newsToLdJSON({news, path: '/about/news'}),
+    // ]
+  });
+}
 
 const NewsPage = () => (
   <>

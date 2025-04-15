@@ -11,6 +11,22 @@ const getFullUrl = (path) => {
   return window.location.href;
 };
 
+// export const newsToLdJSON = ({ news, path }) => ({
+//   '@context': 'https://schema.org/',
+//   '@graph': news.map((item, index)=> {
+//     return {
+//       '@type': 'NewsArticle',
+//       '@id': `${config.genericDomain}${path}#news${index}`,
+//       // 'http://purl.org/dc/terms/conformsTo': {
+//       //   '@id': 'https://bioschemas.org/profiles/Gene/1.0-RELEASE',
+//       //   '@type': 'CreativeWork',
+//       // },
+//       datePublished: item.date,
+//       // articleBody: item.markdown.toString(),
+//     }
+//   })
+// });
+
 // TODO: properly get the full URL in SSR without using window.location.href
 
 export const geneToLdJSON = ({ name, geneId, description, synonyms, species, xRefs, path }) => ({

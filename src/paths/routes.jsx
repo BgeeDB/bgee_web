@@ -56,6 +56,8 @@ import PATHS from './paths';
 // import NewsPage from '../pages/about/NewsPage';
 // import DataSource from '../pages/about/DataSource';
 
+// NOTES: still mostly just used in src/components/Modal/MenuModal.jsx for the menu links label
+
 const ANALYSIS = {
   [PATHS.ANALYSIS.TOP_ANAT]: {
     title: 'TopAnat: Expression enrichment analysis',
