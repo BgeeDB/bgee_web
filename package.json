@@ -9,7 +9,9 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "fmt": "prettier --write . && eslint . --fix",
-    "lint": "prettier --check . && eslint ."
+    "lint": "prettier --check . && eslint .",
+    "prepare": "husky",
+    "upgrade": "npx npm-check-updates -u && npm i"
   },
   "dependencies": {
     "@react-router/fs-routes": "^7.3.0",
@@ -22,7 +24,6 @@
     "isbot": "^5.1.17",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-helmet": "^6.1.0",
     "react-markdown": "^7.1.0",
     "react-router": "^7.3.0",
     "react-select": "^5.7.0",
@@ -45,7 +46,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
-    "lint-staged": "^11.1.2",
+    "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "react-router-devtools": "^1.1.0",
     "remark-frontmatter": "^5.0.0",
