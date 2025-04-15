@@ -417,10 +417,10 @@ $table-cell-border-width: 0;
   max-width: 500px;
 }
 
-th {
-  -ms-user-select: none;
-  -webkit-user-select: none;
-}
+// th {
+//   -ms-user-select: none;
+//   -webkit-user-select: none;
+// }
 table.table {
   &.sortable {
     thead > tr > th {

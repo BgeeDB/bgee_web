@@ -27,8 +27,10 @@ It uses [React Router 7](https://reactrouter.com/home) to serve the pages with s
 
 When creating a new route the file resolving this route can contain special exported functions used for SSR:
 
-- **`loader`** function to preload data
+- **`loader`** function to preload data on the server (the served page will contain the html depending on the data from the loader, so really useful for SEO and load speed)
 - **`meta`** function to define the page metadata (can use the data from `loader`)
+
+Here is an example where we make multiple API calls in parallel in the `loader`, and use its results to define the page metadata and page content:
 
 ```tsx
 import config from '~/config.json';
@@ -108,7 +110,7 @@ The images are stored externally of the project. You will find the path of the i
 
 ### 📥 Installation
 
-We recommend using the latest [NodeJS](https://nodejs.org/en/download) LTS (22+), but anything after 18 should work.
+> Requirements: we recommend using the latest [NodeJS](https://nodejs.org/en/download) LTS (22+), but anything after 18 should work.
 
 Install the dependencies:
 
@@ -134,6 +136,18 @@ npm run lint
 > [!NOTE]
 >
 > Formatting will be run automatically when you commit.
+
+### ⏫ Upgrade dependencies
+
+Upgrade dependencies to their latest available version in the `package.json`.
+
+```sh
+npm run upgrade
+```
+
+> [!WARNING]
+>
+> `bulma` breaks when upgraded to v1+, the rest can be usually upgraded without problem.
 
 ## 🌐 Deployment
 
@@ -191,10 +205,11 @@ docker run -p 3000:3000 bgee-web
 
 https://reactrouter.com/6.30.0/upgrading/v5 / https://reactrouter.com/upgrading/v6
 
-- [x] Enable SSR for most pages requiring it: gene, species, gene-list, experiments. In `raw-data` we moved the search function out of `useLogic` to use it from `loader` (and pass its result to `useLogic` when a `speciesId` alone is detect to present experiments at load) to have SSR for experiments list.
+- [x] Enable SSR for most pages requiring it: gene, species, gene-list, experiments, home, gene expression calls. In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some SSR for experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
 - [ ] In `src/root.tsx` the `<script type="module" src="/js/ionicons-5.5.4/ionicons.esm.js"></script>` lines are used to import ion icons, it creates problem with SSR because they are web components and it's not well supported by SSR.
   - [x] A solution could be to migrate to their "react" approach: https://ionicframework.com/docs/api/icon but it throws errors when we try it and does not work at all.
 - [ ] Issues with hydration in `raw-data` sometimes, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR.
+- [ ] Upgrade the `bulma` dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/7f2324a734e4b8c3f18ac880344372eaf3727320), but still work to do to get the exact same style right (dark theme causes problems for those who have it enabled system-wide)
 
 > Rename `.js` to `.jsx` in folder:
 >

@@ -163,7 +163,7 @@ const AnatEntityCell = ({ cell }) => {
 // PAss to true if you want the two table to be handled separately in the url
 const SEPARATE_DATA_FORM = false;
 
-const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
+const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpressed = false }) => {
   const exprKey = React.useMemo(
     () => (notExpressed && SEPARATE_DATA_FORM ? 'not_expression' : 'expression'),
     [notExpressed]
@@ -425,6 +425,13 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
   );
 
   React.useEffect(() => {
+    if (exprData && !hashExpr && !dataTypeExpr) {
+      // If the expression data is already provided with the components props
+      // then we don't need to call the API
+      setData(exprData);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     const fields = {};
     if (hashExpr) {

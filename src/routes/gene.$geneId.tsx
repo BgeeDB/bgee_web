@@ -22,39 +22,40 @@ export async function loader({ params, request }) {
     // Get general gene information
     const geneInfoResponse = await api.search.genes.getGeneralInformation(params.geneId);
     const geneDetails = geneInfoResponse.data.genes[0]; // Get the first gene
-    // const geneDetails = undefined;
     if (!geneDetails) throw new Error('Page not found');
 
     const { geneId, species } = geneDetails;
     // Get homologs and xrefs in parallel
-    const [homologsResult, xRefsResult]: any = await Promise.allSettled([
+    const [homologsResult, xRefsResult, exprResult, notExprResult]: any = await Promise.allSettled([
       api.search.genes.homologs(geneId, species.id),
       api.search.genes.xrefs(geneId, species.id),
+      api.search.genes.expression(geneId, species.id, {}, ['all'], false),
+      api.search.genes.expression(geneId, species.id, {}, ['all'], true),
     ]);
     // Process homologs and xrefs data
-    let homologs;
-    if (homologsResult.status === 'fulfilled') {
-      homologs = {
-        ...homologsResult.value.data,
-        orthologs: 0,
-        paralogs: 0,
-      };
-      homologsResult.value.data.orthologsByTaxon.forEach((o) => {
-        if (o.genes.length > homologs.orthologs) homologs.orthologs = o.genes.length;
-      });
-      homologsResult.value.data.paralogsByTaxon.forEach((o) => {
-        if (o.genes.length > homologs.paralogs) homologs.paralogs = o.genes.length;
-      });
-    }
-    let xRefs;
-    if (xRefsResult.status === 'fulfilled') {
-      xRefs = xRefsResult.value.data;
-    }
-
+    const homologs =
+      homologsResult.status === 'fulfilled'
+        ? {
+            ...homologsResult.value.data,
+            orthologs: 0,
+            paralogs: 0,
+          }
+        : {};
+    homologsResult.value.data.orthologsByTaxon.forEach((o) => {
+      if (o.genes.length > homologs.orthologs) homologs.orthologs = o.genes.length;
+    });
+    homologsResult.value.data.paralogsByTaxon.forEach((o) => {
+      if (o.genes.length > homologs.paralogs) homologs.paralogs = o.genes.length;
+    });
+    const xRefs = xRefsResult.status === 'fulfilled' ? xRefsResult.value.data : {};
+    const exprData = exprResult.status === 'fulfilled' ? exprResult.value.data : {};
+    const notExprData = notExprResult.status === 'fulfilled' ? notExprResult.value.data : {};
     return {
       details: geneDetails,
       homologs,
       xRefs,
+      exprData,
+      notExprData,
       pathname: new URL(request.url).pathname,
     };
   } catch (error: any) {
@@ -96,7 +97,7 @@ export function meta({ data }) {
 }
 
 const GeneDetails = ({ loaderData }) => {
-  const { details, homologs, xRefs } = loaderData;
+  const { details, homologs, xRefs, exprData, notExprData } = loaderData;
   const { name, geneId, description, species, synonyms } = details;
   const loc = useLocation();
 
@@ -109,7 +110,7 @@ const GeneDetails = ({ loaderData }) => {
             top: element.offsetTop,
             behavior: 'smooth',
           });
-        }, 2500); // wait for all the elements to load and then scroll. Might need an adjustment
+        }, 500); // wait for all the elements to load and then scroll. Might need an adjustment
       }
     }
   }, [loc.hash]);
@@ -245,8 +246,8 @@ const GeneDetails = ({ loaderData }) => {
           </div>
 
           <GeneExpressionGraph geneId={geneId} speciesId={species.id} />
-          <GeneExpressionTable geneId={geneId} speciesId={species.id} />
-          <GeneExpressionTable geneId={geneId} speciesId={species.id} notExpressed />
+          <GeneExpressionTable geneId={geneId} speciesId={species.id} exprData={exprData} />
+          <GeneExpressionTable geneId={geneId} speciesId={species.id} exprData={notExprData} notExpressed />
           <GeneHomologs homologs={homologs} geneId={geneId} isLoading={false} />
           {xRefs && <GeneXRefs data={xRefs} isLoading={false} />}
         </div>
