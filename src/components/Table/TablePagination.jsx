@@ -39,7 +39,7 @@ const TablePagination = () => {
       }`}
     >
       <div>{showEntriesText}</div>
-      {pagination && <Pagination current={currentPage} total={totalPage} isRequestPerPage={isRequestPerPage} />}
+      {pagination && <Pagination current={currentPage} total={totalPage} />}
     </div>
   );
 };

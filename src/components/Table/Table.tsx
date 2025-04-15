@@ -12,7 +12,6 @@ import Select from '../Select';
 import { monoSort, multiSort } from '../../helpers/sortTable';
 import TablePagination from './TablePagination';
 import usePagination from '../../hooks/usePagination';
-import TablePaginationWithoutRefresh from './TablePaginationWithoutRefresh';
 
 const Table = ({
   fullwidth = true,
@@ -174,8 +173,6 @@ const Table = ({
     return filtered;
   }, [mappedData, search, sortOption, onSortCustom, onFilter]);
 
-  const PaginationComponent = isRequestPerPage ? TablePaginationWithoutRefresh : TablePagination;
-
   return (
     <TableProvider
       data={{
@@ -210,7 +207,7 @@ const Table = ({
     >
       <TableHeader />
       <TableTitle />
-      {hasPaginationTop && <PaginationComponent />}
+      {hasPaginationTop && <TablePagination />}
       {processedData.length > 0 ? (
         <div className={`table-container ${hasScrollTop ? 'isTableFlipped' : ''}`}>
           <table
@@ -233,7 +230,7 @@ const Table = ({
       ) : (
         emptyTableMessage
       )}
-      <PaginationComponent />
+      <TablePagination />
     </TableProvider>
   );
 };
