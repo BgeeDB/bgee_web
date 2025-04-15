@@ -16,7 +16,7 @@
     "@react-router/fs-routes": "^7.3.0",
     "@react-router/node": "^7.3.0",
     "@react-router/serve": "^7.3.0",
-    "axios": "0.21.4",
+    "axios": "^1.8.4",
     "bulma": "^0.9.3",
     "d3": "^7.9.0",
     "dlv": "^1.1.3",

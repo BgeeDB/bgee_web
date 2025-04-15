@@ -14,7 +14,7 @@ const Column = ({
   fullhd = {},
   touch = {},
   ...props
-}) => (
+}: any) => (
   <Element
     {...props}
     {...{ mobile, tablet, desktop, widescreen, fullhd, touch }}
