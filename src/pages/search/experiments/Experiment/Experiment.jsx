@@ -26,7 +26,7 @@ export function meta({ data }) {
   });
 }
 
-const getUserFriendlyDataType = dataType => {
+const getUserFriendlyDataType = (dataType) => {
   switch (dataType) {
     case RNA_SEQ:
       return 'RNA-Seq';
@@ -43,7 +43,7 @@ const getUserFriendlyDataType = dataType => {
   }
 };
 
-const formatLargeNumber = largeNumber => {
+const formatLargeNumber = (largeNumber) => {
   const numberToDisplay = new Intl.NumberFormat('en').format(largeNumber || 0);
   return numberToDisplay;
 };
@@ -139,7 +139,7 @@ const Experiment = () => {
             {data?.downloadUrls?.length > 0 && (
               <div className="is-justify-content-flex-end">
                 <div className="has-text-weight-semibold my-1 labelsLeft">Download:</div>
-                {data?.downloadUrls.map(url => (
+                {data?.downloadUrls.map((url) => (
                   <Bulma.Button
                     className="download-btn is-small mt-2"
                     href={url.href}

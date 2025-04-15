@@ -36,10 +36,10 @@ export async function loader({ params, request }) {
         orthologs: 0,
         paralogs: 0,
       };
-      homologsResult.value.data.orthologsByTaxon.forEach(o => {
+      homologsResult.value.data.orthologsByTaxon.forEach((o) => {
         if (o.genes.length > homologs.orthologs) homologs.orthologs = o.genes.length;
       });
-      homologsResult.value.data.paralogsByTaxon.forEach(o => {
+      homologsResult.value.data.paralogsByTaxon.forEach((o) => {
         if (o.genes.length > homologs.paralogs) homologs.paralogs = o.genes.length;
       });
     }
@@ -114,7 +114,7 @@ const Gene = () => {
           setFlowState(FLOW.LOADED);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err.message);
         navigate(PATHS.ERROR, {
           error: {
@@ -128,11 +128,11 @@ const Gene = () => {
 
   if (
     (!urlSpeciesId && geneDetails?.length === 1) ||
-    (urlSpeciesId && geneDetails?.length > 1 && geneDetails?.find(g => g.species.id === urlSpeciesId))
+    (urlSpeciesId && geneDetails?.length > 1 && geneDetails?.find((g) => g.species.id === urlSpeciesId))
   ) {
     return (
       <GeneDetails
-        details={geneDetails.length === 1 ? geneDetails[0] : geneDetails?.find(g => g.species.id === urlSpeciesId)}
+        details={geneDetails.length === 1 ? geneDetails[0] : geneDetails?.find((g) => g.species.id === urlSpeciesId)}
       />
     );
   }

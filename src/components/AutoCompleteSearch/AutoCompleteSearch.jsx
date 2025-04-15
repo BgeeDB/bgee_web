@@ -34,7 +34,7 @@ const AutoCompleteSearch = ({
   const inputRef = useRef();
 
   const onSelectChoice = useCallback(
-    option => () => {
+    (option) => () => {
       if (option === '') return;
 
       if (onSelectOption) {
@@ -54,7 +54,7 @@ const AutoCompleteSearch = ({
   );
 
   const onRemoveChoice = useCallback(
-    option => () => {
+    (option) => () => {
       if (onRemoveOption) {
         onRemoveOption(option);
       }
@@ -63,7 +63,7 @@ const AutoCompleteSearch = ({
   );
 
   const searchHandler = useCallback(
-    val => {
+    (val) => {
       if (val && getOptionsFunction) {
         const valueOrPromise = getOptionsFunction(val);
         if (
@@ -71,7 +71,7 @@ const AutoCompleteSearch = ({
           typeof valueOrPromise.then === 'function' &&
           valueOrPromise[Symbol.toStringTag] === 'Promise'
         ) {
-          valueOrPromise.then(options => {
+          valueOrPromise.then((options) => {
             setAutocompleteList(options);
           });
         } else {
@@ -118,7 +118,7 @@ const AutoCompleteSearch = ({
     };
     if (!document.getElementById('root')) return;
     document.getElementById('root').addEventListener('click', onClick);
-    const onClickInput = e => {
+    const onClickInput = (e) => {
       e.stopPropagation();
     };
     document.getElementById('autocomplete-search').addEventListener('click', onClickInput);
@@ -146,7 +146,7 @@ const AutoCompleteSearch = ({
             placeholder={placeholder}
             value={search}
             onChange={handleSearchChange}
-            onKeyDown={e => {
+            onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 onSelectChoice(search)();
               }

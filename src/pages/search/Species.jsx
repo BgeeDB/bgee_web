@@ -60,46 +60,46 @@ const Species = () => {
 
     if (data) {
       let search = data.downloadFilesGroups.downloadFiles.find(
-        d => d.category === 'expr_simple' && d.conditionParameters.length === 1
+        (d) => d.category === 'expr_simple' && d.conditionParameters.length === 1
       );
       if (search) src.anatOnlyXpr.simple = search;
       search = data.downloadFilesGroups.downloadFiles.find(
-        d => d.category === 'expr_advanced' && d.conditionParameters.length === 1
+        (d) => d.category === 'expr_advanced' && d.conditionParameters.length === 1
       );
       if (search) src.anatOnlyXpr.advanced = search;
 
       search = data.downloadFilesGroups.downloadFiles.find(
-        d => d.category === 'expr_simple' && d.conditionParameters.length > 1
+        (d) => d.category === 'expr_simple' && d.conditionParameters.length > 1
       );
       if (search) src.fullXpr.simple = search;
 
       search = data.downloadFilesGroups.downloadFiles.find(
-        d => d.category === 'expr_advanced' && d.conditionParameters.length > 1
+        (d) => d.category === 'expr_advanced' && d.conditionParameters.length > 1
       );
       if (search) src.fullXpr.advanced = search;
 
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'affy_annot');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'affy_annot');
       if (search) src.affymetrix.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'affy_data');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'affy_data');
       if (search) src.affymetrix.data = search;
 
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'rnaseq_annot');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'rnaseq_annot');
       if (search) src.rnaSeq.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'rnaseq_data');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'rnaseq_data');
       if (search) src.rnaSeq.data = search;
 
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'full_length_annot');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'full_length_annot');
       if (search) src.fullLength.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'full_length_data');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'full_length_data');
       if (search) src.fullLength.data = search;
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'full_length_h5ad');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'full_length_h5ad');
       if (search) src.fullLength.h5ad = search;
 
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'droplet_based_annot');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'droplet_based_annot');
       if (search) src.dropletBased.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'droplet_based_data');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'droplet_based_data');
       if (search) src.dropletBased.data = search;
-      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'droplet_based_h5ad');
+      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'droplet_based_h5ad');
       if (search) src.dropletBased.h5ad = search;
     }
     return src;

@@ -72,25 +72,25 @@ const columnsGenerator = (cFields, data) => () => {
   let c = [];
   if (!data) return null;
 
-  if (data.requestedConditionParameters.find(r => r === 'Anat. entity')) {
+  if (data.requestedConditionParameters.find((r) => r === 'Anat. entity')) {
     c.push({
       key: 'anatEntity',
       text: 'Anatomical entity',
     });
   }
-  if (data.requestedConditionParameters.find(r => r === 'Dev. stage'))
+  if (data.requestedConditionParameters.find((r) => r === 'Dev. stage'))
     c.push({
       key: 'devStage',
       text: 'Dev. stage',
       hide: MEDIA_QUERIES.DESKTOP,
     });
-  if (data.requestedConditionParameters.find(r => r === 'Sex'))
+  if (data.requestedConditionParameters.find((r) => r === 'Sex'))
     c.push({
       key: 'sex',
       text: 'Sex',
       hide: MEDIA_QUERIES.DESKTOP,
     });
-  if (data.requestedConditionParameters.find(r => r === 'Strain'))
+  if (data.requestedConditionParameters.find((r) => r === 'Strain'))
     c.push({
       key: 'strain',
       text: 'Strain',
@@ -179,7 +179,7 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [data, setData] = React.useState();
   const [cFields, setCFields] = React.useState({ anat: true });
-  const [dataType, setDataTypes] = React.useState(DATA_TYPES.map(d => d.key));
+  const [dataType, setDataTypes] = React.useState(DATA_TYPES.map((d) => d.key));
 
   const columns = React.useMemo(columnsGenerator(cFields, data), [cFields, data]);
 
@@ -190,7 +190,7 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
       .sort()
       .join(',');
 
-    const oldDataType = (dataTypeExpr?.split(',') || DATA_TYPES.map(d => d.key)).sort();
+    const oldDataType = (dataTypeExpr?.split(',') || DATA_TYPES.map((d) => d.key)).sort();
 
     return oldQuery === (hashExpr || 'anat') && JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
   }, [cFields, hashExpr, dataType, dataTypeExpr]);
@@ -199,13 +199,13 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
     (searchElement, pageSizeElement) => (
       <>
         <div className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper">
-          {CUSTOM_FIELDS.map(c => (
+          {CUSTOM_FIELDS.map((c) => (
             <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.key}>
               <input
                 type="checkbox"
                 checked={cFields[c.key] || false}
-                onChange={e => {
-                  setCFields(prev => ({
+                onChange={(e) => {
+                  setCFields((prev) => ({
                     ...prev,
                     [c.key]: e.target.checked || undefined,
                   }));
@@ -217,11 +217,11 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
           <Bulma.Button
             className="search-form"
             disabled={
-              JSON.stringify(Object.keys(cFields).sort()) === JSON.stringify(CUSTOM_FIELDS.map(d => d.key).sort())
+              JSON.stringify(Object.keys(cFields).sort()) === JSON.stringify(CUSTOM_FIELDS.map((d) => d.key).sort())
             }
             onClick={() => {
               const obj = {};
-              CUSTOM_FIELDS.forEach(c => {
+              CUSTOM_FIELDS.forEach((c) => {
                 obj[c.key] = true;
               });
               setCFields(obj);
@@ -238,18 +238,18 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
           </Bulma.Button>
         </div>
         <div className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper mt-2">
-          {DATA_TYPES.map(c => (
+          {DATA_TYPES.map((c) => (
             <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.key}>
               <input
                 type="checkbox"
-                checked={dataType.find(d => d === c.key) || false}
-                onChange={e => {
-                  setDataTypes(prev => {
+                checked={dataType.find((d) => d === c.key) || false}
+                onChange={(e) => {
+                  setDataTypes((prev) => {
                     const curr = [...prev];
                     if (e.target.checked) {
                       curr.push(c.key);
                     } else {
-                      const pos = curr.findIndex(d => d === c.key);
+                      const pos = curr.findIndex((d) => d === c.key);
                       if (pos >= 0) curr.splice(pos, 1);
                     }
                     return curr;
@@ -261,8 +261,8 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
           ))}
           <Bulma.Button
             className="search-form"
-            disabled={JSON.stringify(dataType.sort()) === JSON.stringify(DATA_TYPES.map(d => d.key).sort())}
-            onClick={() => setDataTypes(DATA_TYPES.map(d => d.key))}
+            disabled={JSON.stringify(dataType.sort()) === JSON.stringify(DATA_TYPES.map((d) => d.key).sort())}
+            onClick={() => setDataTypes(DATA_TYPES.map((d) => d.key))}
           >
             Select All
           </Bulma.Button>
@@ -283,7 +283,7 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
                   .join(',')
               );
               if (
-                JSON.stringify(dataType.sort()) !== JSON.stringify(DATA_TYPES.map(d => d.key).sort()) &&
+                JSON.stringify(dataType.sort()) !== JSON.stringify(DATA_TYPES.map((d) => d.key).sort()) &&
                 dataType.length > 0
               )
                 queryParams.set(dataTypeKey, dataType.join(','));
@@ -342,20 +342,20 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
           return defaultRender(cell.fdr, key);
         case 'proc_expr_values':
           let searchParams = `pageType=${PROC_EXPR_VALUES}&gene_id=${geneId}&species_id=${speciesId}&cell_type_descendant=true&stage_descendant=true&anat_entity_descendant=true&only_propagated=true`;
-          if (data.requestedConditionParameters.find(r => r === 'Anat. entity')) {
+          if (data.requestedConditionParameters.find((r) => r === 'Anat. entity')) {
             searchParams += `&anat_entity_id=${cell?.condition?.anatEntity?.id}`;
           }
-          if (data.requestedConditionParameters.find(r => r === 'Dev. stage')) {
+          if (data.requestedConditionParameters.find((r) => r === 'Dev. stage')) {
             searchParams += `&stage_id=${cell?.condition?.devStage?.id}`;
           }
 
-          if (data.requestedConditionParameters.find(r => r === 'Sex')) {
+          if (data.requestedConditionParameters.find((r) => r === 'Sex')) {
             searchParams += `&sex=${cell?.condition?.sex}`;
           }
-          if (data.requestedConditionParameters.find(r => r === 'Strain')) {
+          if (data.requestedConditionParameters.find((r) => r === 'Strain')) {
             searchParams += `&strain=${cell?.condition?.strain}`;
           }
-          if (data.requestedConditionParameters.find(r => r === 'Cell type')) {
+          if (data.requestedConditionParameters.find((r) => r === 'Cell type')) {
             // cellType can sometimes be undefined
             if (cell?.condition?.cellType?.id) {
               searchParams += `&cell_type_id=${cell?.condition?.cellType?.id}`;
@@ -367,12 +367,12 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
         case 'sex':
           return defaultRender(cell.condition.sex, key);
         case 'sources':
-          const col = columns.find(c => c.key === key);
+          const col = columns.find((c) => c.key === key);
           const source = {};
-          ALL_DATA_TYPES.forEach(dt => {
+          ALL_DATA_TYPES.forEach((dt) => {
             source[dt.id] = false;
           });
-          cell.dataTypesWithData.forEach(dataTypeString => {
+          cell.dataTypesWithData.forEach((dataTypeString) => {
             switch (dataTypeString) {
               case 'Affymetrix':
                 source[AFFYMETRIX] = true;
@@ -408,7 +408,7 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
     [columns]
   );
   const onFilter = React.useCallback(
-    search => element => {
+    (search) => (element) => {
       const regExp = new RegExp(search, 'i');
       return (
         regExp.test(element?.condition?.anatEntity?.id) ||
@@ -428,7 +428,7 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
     setIsLoading(true);
     const fields = {};
     if (hashExpr) {
-      hashExpr.split(',').forEach(key => {
+      hashExpr.split(',').forEach((key) => {
         fields[key] = true;
       });
     } else fields.anat = true;
@@ -437,17 +437,17 @@ const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
     let dt;
     if (dataTypeExpr) {
       dt = dataTypeExpr.split(',');
-    } else dt = DATA_TYPES.map(d => d.key);
+    } else dt = DATA_TYPES.map((d) => d.key);
     setDataTypes(dt);
 
     api.search.genes
       .expression(geneId, speciesId, fields, !dataTypeExpr ? ['all'] : dt, notExpressed)
-      .then(res => {
+      .then((res) => {
         setData(res.data);
-        if (res.data.requestedConditionParameters.find(r => r === 'Anat. entity'))
+        if (res.data.requestedConditionParameters.find((r) => r === 'Anat. entity'))
           if (!notExpressed) schemaDotOrg.setGeneExpressionLdJSON(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         setData();
       })

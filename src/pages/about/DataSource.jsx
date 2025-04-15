@@ -61,16 +61,16 @@ const DataSource = () => {
       .dataSources()
       .then(({ data }) => {
         const categories = new Set();
-        data.sources.forEach(s => {
+        data.sources.forEach((s) => {
           categories.add(s.category);
         });
         const categorizedSources = {};
-        categories.forEach(category => {
-          categorizedSources[category] = data.sources.filter(s => s.category === category);
+        categories.forEach((category) => {
+          categorizedSources[category] = data.sources.filter((s) => s.category === category);
         });
         setSources(categorizedSources);
       })
-      .catch(err => console.error(err))
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -85,7 +85,7 @@ const DataSource = () => {
           80%
         </progress>
       )}
-      {CATEGORIES.map(c =>
+      {CATEGORIES.map((c) =>
         sources[c.key] ? (
           <React.Fragment key={c.key}>
             <Bulma.Title className="gradient-underline title is-size-4 has-text-primary" renderAs="h2">

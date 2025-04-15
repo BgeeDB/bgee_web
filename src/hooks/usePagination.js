@@ -60,7 +60,7 @@ const usePagination = (
   const pageSize = +(searchParams.get(keyForPageSize) || perPage);
 
   const onPageChange = useCallback(
-    newPage => {
+    (newPage) => {
       const sp = Object.fromEntries(searchParams.entries());
       const newParams = {
         ...sp,
@@ -75,7 +75,7 @@ const usePagination = (
   );
 
   const onPageSizeChange = useCallback(
-    newPageSize => {
+    (newPageSize) => {
       const sp = Object.fromEntries(searchParams.entries());
       const params = {
         ...sp,

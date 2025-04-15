@@ -1,4 +1,4 @@
-const obfuscateMailLink = mail => () => {
+const obfuscateMailLink = (mail) => () => {
   const el = document.createElement('a');
   el.href = `mailto:${mail}`;
   document.body.appendChild(el);

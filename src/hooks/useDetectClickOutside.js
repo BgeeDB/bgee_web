@@ -1,10 +1,10 @@
 import React from 'react';
 
-const useDetectClickOutside = onClickOutside => {
+const useDetectClickOutside = (onClickOutside) => {
   const ref = React.useRef(null);
 
   const clickListener = React.useCallback(
-    e => {
+    (e) => {
       if (ref && ref.current) {
         if (!ref.current.contains(e.target)) {
           onClickOutside?.(e);

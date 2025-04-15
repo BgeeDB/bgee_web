@@ -28,7 +28,7 @@ const onRenderCell =
     switch (key) {
       case 'ae':
         return cell.anatEntities
-          .map(a => (
+          .map((a) => (
             <LinkExternal key={a.id} to={a.link}>
               {a.name}
             </LinkExternal>
@@ -41,7 +41,7 @@ const onRenderCell =
       case 'ss':
         console.log();
         return cell.speciesWithAnatEntityPresence
-          .map(a => (
+          .map((a) => (
             <Link className="internal-link" key={a.id} to={a.link}>
               {a.name}
             </Link>
@@ -71,7 +71,7 @@ const customHeader = (searchElement, pageSizeElement) => (
   </Bulma.Columns>
 );
 
-const onFilter = search => element => {
+const onFilter = (search) => (element) => {
   const regExp = new RegExp(search);
   let matchFilter = regExp.test(element?.ancestralTaxon);
   if (!matchFilter) {
@@ -104,18 +104,18 @@ const AnatomicalHomologySearch = () => {
   const [speciesList, setSpeciesList] = React.useState([]);
 
   const onToggleSpecies = React.useCallback(
-    speciesId => () => {
-      setSelectedSpecies(prev => {
+    (speciesId) => () => {
+      setSelectedSpecies((prev) => {
         let curr = [...prev];
         if (speciesId !== 'ALL') {
-          const pos = curr.findIndex(c => c === speciesId);
+          const pos = curr.findIndex((c) => c === speciesId);
           if (pos >= 0) {
             curr.splice(pos, 1);
           } else {
             curr.push(speciesId);
           }
         } else if (curr.length !== speciesList.length) {
-          curr = speciesList.map(s => s.id);
+          curr = speciesList.map((s) => s.id);
         } else {
           curr = [];
         }
@@ -125,7 +125,7 @@ const AnatomicalHomologySearch = () => {
     [speciesList]
   );
   const setResults = React.useCallback(
-    d => {
+    (d) => {
       set(d || DEFAULT_RESULTS);
     },
     [anatomicalEntities]
@@ -158,7 +158,7 @@ const AnatomicalHomologySearch = () => {
         });
         navigate(`${URL_ROOT}${pathname}?${queryString}`);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         setResults();
       })
@@ -180,10 +180,10 @@ const AnatomicalHomologySearch = () => {
             signature: queryString,
             data,
           });
-          setSelectedSpecies(requestParameters?.species_list.map(s => parseInt(s, 10)));
+          setSelectedSpecies(requestParameters?.species_list.map((s) => parseInt(s, 10)));
           setAnatomicalEntities(requestParameters?.ae_list.join('\n'));
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           setResults({
             ...DEFAULT_RESULTS,
@@ -196,7 +196,7 @@ const AnatomicalHomologySearch = () => {
     }
   }, [searchParams, results]);
   React.useEffect(() => {
-    api.search.species.list().then(r => {
+    api.search.species.list().then((r) => {
       setSpeciesList(
         r.data.species
           .sort((a, b) => a.preferredDisplayOrder - b.preferredDisplayOrder)
@@ -247,7 +247,7 @@ const AnatomicalHomologySearch = () => {
                         name="search-species"
                         rows={10}
                         value={anatomicalEntities}
-                        onChange={e => setAnatomicalEntities(e.target.value)}
+                        onChange={(e) => setAnatomicalEntities(e.target.value)}
                       />
                     </div>
                   </div>

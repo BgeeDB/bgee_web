@@ -107,12 +107,12 @@ const dataTypeConf = [
   },
 ];
 const sortedDataTypes = dataTypeConf
-  .filter(t => !!t.position)
+  .filter((t) => !!t.position)
   .sort((a, b) => a.position - b.position)
-  .map(data => data.type);
+  .map((data) => data.type);
 export const DATA_TYPES = sortedDataTypes;
-export const ALL_DATA_TYPES = dataTypeConf.map(data => data.type);
-export const ALL_DATA_TYPES_ID = ALL_DATA_TYPES.map(d => d.id);
+export const ALL_DATA_TYPES = dataTypeConf.map((data) => data.type);
+export const ALL_DATA_TYPES_ID = ALL_DATA_TYPES.map((d) => d.id);
 const BRONZE = 'BRONZE';
 const SILVER = 'SILVER';
 const GOLD = 'GOLD';
@@ -153,7 +153,7 @@ export const ALL_CALL_TYPE = [
 
 const BASE_LIMIT = '10000';
 
-const useLogic = isExprCalls => {
+const useLogic = (isExprCalls) => {
   const navigate = useNavigate();
   // Init from URL
   const loc = useLocation();
@@ -230,12 +230,12 @@ const useLogic = isExprCalls => {
       term.children.forEach(traverse);
     }
 
-    anatomicalTerms.forEach(item => traverse(item));
+    anatomicalTerms.forEach((item) => traverse(item));
     setAnatomicalTermsProps(newAnatTermsProps);
   }, [anatomicalTerms]);
 
   // prepare term hierarchy from gene expression call data
-  const prepTermHierarchy = expressionCalls => {
+  const prepTermHierarchy = (expressionCalls) => {
     const termProps = {
       'UBERON:0001062-GO:0005575': {
         label: 'anatomical entity',
@@ -253,7 +253,7 @@ const useLogic = isExprCalls => {
     const parents = { [ROOT_TERM_ANAT_ENTITY]: [] };
     const children = { [ROOT_TERM_ANAT_ENTITY]: [] };
     // console.log(`[useLogic.triggerInitialSearch] prepTermHierarchy()`);
-    expressionCalls.forEach(exprCall => {
+    expressionCalls.forEach((exprCall) => {
       const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
       const termIsSingleCell = cellTypeId !== 'GO:0005575';
@@ -285,7 +285,7 @@ const useLogic = isExprCalls => {
     // console.log(`[useLogic.triggerInitialSearch] termProps:\n${JSON.stringify(termProps)}`);
 
     // identify root terms
-    const roots = Object.keys(parents).filter(id => parents[id].length === 0);
+    const roots = Object.keys(parents).filter((id) => parents[id].length === 0);
     // console.log(`root terms:\n${JSON.stringify(roots)}`);
     // console.log(`root terms:\n${JSON.stringify(roots.map(id => ({'id': id, 'label': termProps[id]})))}`);
 
@@ -315,7 +315,7 @@ const useLogic = isExprCalls => {
 
       // If the term has children, recursively create their nested structure
       if (children[termId]) {
-        nestedTerm.children = children[termId].map(childId => createNestedStructure(childId, depth + 1));
+        nestedTerm.children = children[termId].map((childId) => createNestedStructure(childId, depth + 1));
       }
 
       return nestedTerm;
@@ -324,7 +324,7 @@ const useLogic = isExprCalls => {
     // Create the nested structure for each root term
     // console.log(`[useLogic.prepTermHierarchy] termProps:\n${JSON.stringify(termProps)}`);
     // console.log(`[useLogic.prepTermHierarchy] roots:\n${JSON.stringify(roots)}`);
-    const anatTerms = roots.map(root => createNestedStructure(root));
+    const anatTerms = roots.map((root) => createNestedStructure(root));
     // console.log(`[useLogic.triggerInitialSearch] anatTerms (top-level):\n${JSON.stringify(anatTerms, null, 2)}`);
 
     return { anatTerms, termProps };
@@ -336,11 +336,11 @@ const useLogic = isExprCalls => {
     const newTerms = {};
 
     // Helper function to recursively find the term by id and add children
-    const addChildren = term => {
+    const addChildren = (term) => {
       // Check if the current term's id matches the parentId
       if (term.id === parentId) {
         // Loop through each expressionCall and add children to the term
-        expressionCalls.forEach(call => {
+        expressionCalls.forEach((call) => {
           const { anatEntity, cellType } = call.condition;
           if (!(anatEntity.id in terms) && !(anatEntity.id in newTerms)) {
             const newChild = {
@@ -364,12 +364,12 @@ const useLogic = isExprCalls => {
         });
       } else {
         // If not the matching term, recurse into its children
-        term.children.forEach(child => addChildren(child));
+        term.children.forEach((child) => addChildren(child));
       }
     };
 
     // Start the recursive search from each root term in the nested structure
-    nestedStructure.forEach(root => addChildren(root, root.depth));
+    nestedStructure.forEach((root) => addChildren(root, root.depth));
 
     // Return the updated termProps
     return newTerms;
@@ -383,7 +383,7 @@ const useLogic = isExprCalls => {
     }
   };
 
-  const onChangeSpecies = newSpecies => {
+  const onChangeSpecies = (newSpecies) => {
     updateSelectedSpecies(newSpecies, false); // Don't preserve genes for manual species changes
   };
 
@@ -398,7 +398,7 @@ const useLogic = isExprCalls => {
     triggerInitialSearch();
   };
 
-  const addConditionalParam = id => {
+  const addConditionalParam = (id) => {
     const indexOfValue = conditionalParam2.indexOf(id);
     if (indexOfValue === -1) {
       setConditionalParam2([...conditionalParam2, id]);
@@ -438,7 +438,7 @@ const useLogic = isExprCalls => {
 
     // Genes - only set if not preserving existing genes
     if (!preserveGenes && requestDetails?.requestedGenes?.length > 0) {
-      const initGenes = requestDetails?.requestedGenes.map(g => ({
+      const initGenes = requestDetails?.requestedGenes.map((g) => ({
         label: getGeneLabel(g),
         value: g.geneId,
       }));
@@ -451,8 +451,8 @@ const useLogic = isExprCalls => {
       const initTissues = [];
       // HD: add top-level anatomical terms
 
-      requestParameters?.anat_entity_id.forEach(tissueId => {
-        const foundTissue = cellTypesAndTissues.find(t => t.id === tissueId);
+      requestParameters?.anat_entity_id.forEach((tissueId) => {
+        const foundTissue = cellTypesAndTissues.find((t) => t.id === tissueId);
         if (foundTissue) {
           initTissues.push({
             label: getIdAndNameLabel(foundTissue),
@@ -466,8 +466,8 @@ const useLogic = isExprCalls => {
     // Cell types
     if (requestParameters?.cell_type_id?.length > 0) {
       const initCelleTypes = [];
-      requestParameters?.cell_type_id.forEach(cellTypeId => {
-        const foundCellType = cellTypesAndTissues.find(t => t.id === cellTypeId);
+      requestParameters?.cell_type_id.forEach((cellTypeId) => {
+        const foundCellType = cellTypesAndTissues.find((t) => t.id === cellTypeId);
         if (foundCellType) {
           initCelleTypes.push({
             label: getIdAndNameLabel(foundCellType),
@@ -482,8 +482,8 @@ const useLogic = isExprCalls => {
     if (requestParameters?.stage_id?.length > 0) {
       const initDevStage = [];
       const flattenedList = flattenDevStagesList(requestDetails?.requestedSpeciesDevStageOntology);
-      requestParameters?.stage_id.forEach(devStageId => {
-        const foundDevStage = flattenedList.find(t => t.id === devStageId);
+      requestParameters?.stage_id.forEach((devStageId) => {
+        const foundDevStage = flattenedList.find((t) => t.id === devStageId);
         if (foundDevStage) {
           initDevStage.push({
             label: getIdAndNameLabel(foundDevStage),
@@ -501,14 +501,14 @@ const useLogic = isExprCalls => {
 
     // Strain
     if (requestParameters?.strain?.length > 0) {
-      setSelectedStrain(requestParameters?.strain.map(s => ({ value: s, label: s })));
+      setSelectedStrain(requestParameters?.strain.map((s) => ({ value: s, label: s })));
     }
 
     // Exp or Assay ID
     if (requestParameters?.exp_assay_id?.length > 0) {
       const initExpOrAssay = [];
-      requestParameters?.exp_assay_id.forEach(expOrAssayId => {
-        const foundExpOrAssay = requestDetails?.requestedExperimentAndAssays?.find(t => t.id === expOrAssayId);
+      requestParameters?.exp_assay_id.forEach((expOrAssayId) => {
+        const foundExpOrAssay = requestDetails?.requestedExperimentAndAssays?.find((t) => t.id === expOrAssayId);
         if (foundExpOrAssay) {
           initExpOrAssay.push({
             label: getIdAndNameLabel(foundExpOrAssay),
@@ -533,7 +533,7 @@ const useLogic = isExprCalls => {
     const initFilters = {};
     Object.entries(filtersToCheck).forEach(([_, f]) => {
       const ids = searchParams.getAll(f.urlParameterName);
-      const nextValues = f.values.filter(v => ids.includes(v.id));
+      const nextValues = f.values.filter((v) => ids.includes(v.id));
 
       const nextValuesMapped = getOptionsForFilter(nextValues, f?.informativeId, f?.informativeName);
       initFilters[f.urlParameterName] = nextValuesMapped;
@@ -591,13 +591,13 @@ const useLogic = isExprCalls => {
       initSearch,
       pageType,
       dataType: [dataType],
-      selectedExpOrAssay: selectedExpOrAssay.map(exp => exp.value),
+      selectedExpOrAssay: selectedExpOrAssay.map((exp) => exp.value),
       selectedSpecies: selectedSpecies.value,
-      selectedCellTypes: selectedCellTypes.map(ct => ct.value),
-      selectedGene: selectedGene.map(g => g.value),
-      selectedStrain: selectedStrain.map(s => s.value),
-      selectedTissue: selectedTissue.map(t => t.value),
-      selectedDevStages: selectedDevStages.map(ds => ds.value),
+      selectedCellTypes: selectedCellTypes.map((ct) => ct.value),
+      selectedGene: selectedGene.map((g) => g.value),
+      selectedStrain: selectedStrain.map((s) => s.value),
+      selectedTissue: selectedTissue.map((t) => t.value),
+      selectedDevStages: selectedDevStages.map((ds) => ds.value),
       selectedSexes: selectedSexes.length > 0 ? selectedSexes : ['all'],
       hasCellTypeSubStructure,
       hasDevStageSubStructure,
@@ -621,7 +621,7 @@ const useLogic = isExprCalls => {
 
   // API QUERY 1: Get gene expression data for top-level anatomical terms
   // TODO: factor out repetitive code (between this function and triggerSearch, triggerInitialSearchComplementary)
-  const triggerInitialSearch = async initParams => {
+  const triggerInitialSearch = async (initParams) => {
     const params = initParams || getSearchParams();
 
     // console.log(`[useLogic.triggerInitialSearch] selected gene:\n${JSON.stringify(params.selectedGene)}`);
@@ -676,7 +676,7 @@ const useLogic = isExprCalls => {
         const newHash = resp1?.requestParameters?.data;
         if (newHash) {
           searchParams.delete('data');
-          resp1?.requestParameters?.storableParameters?.forEach(key => {
+          resp1?.requestParameters?.storableParameters?.forEach((key) => {
             if (key !== 'data_type') {
               searchParams.delete(key);
             }
@@ -756,12 +756,12 @@ const useLogic = isExprCalls => {
     if (params.selectedGene.length === 1) {
       const geneId = params.selectedGene[0];
       const speciesId = params.selectedSpecies;
-      api.search.genes.homologs(geneId, speciesId).then(result => {
+      api.search.genes.homologs(geneId, speciesId).then((result) => {
         // console.log(`[useLogic.triggerSearch] homologs:\n${JSON.stringify(result.data)}`);
 
         // collect homologous genes
-        result.data.orthologsByTaxon.forEach(entry => {
-          entry.genes.forEach(gene => {
+        result.data.orthologsByTaxon.forEach((entry) => {
+          entry.genes.forEach((gene) => {
             queryGenes.add(
               JSON.stringify({
                 geneId: gene.geneId,
@@ -815,7 +815,7 @@ const useLogic = isExprCalls => {
             // We delete the potential old hash
             searchParams.delete('data');
 
-            resp?.requestParameters?.storableParameters?.forEach(key => {
+            resp?.requestParameters?.storableParameters?.forEach((key) => {
               if (key !== 'data_type') {
                 searchParams.delete(key);
               }
@@ -952,7 +952,7 @@ const useLogic = isExprCalls => {
               // We delete the potential old hash
               searchParams.delete('data');
 
-              resp?.requestParameters?.storableParameters?.forEach(key => {
+              resp?.requestParameters?.storableParameters?.forEach((key) => {
                 if (key !== 'data_type') {
                   searchParams.delete(key);
                 }
@@ -995,7 +995,7 @@ const useLogic = isExprCalls => {
 
           // update anatomical terms
           const newChildTerms = new Set();
-          resp?.data.expressionData.expressionCalls.forEach(exprCall => {
+          resp?.data.expressionData.expressionCalls.forEach((exprCall) => {
             const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
             const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
             const isSingleCell = cellTypeId !== 'GO:0005575';
@@ -1027,12 +1027,12 @@ const useLogic = isExprCalls => {
               if (!node || !Array.isArray(node)) return []; // break condition
 
               // Add property to each element in the current level
-              return node.map(item => {
+              return node.map((item) => {
                 const newItem = { ...item };
                 if (item.id === termId) {
                   // add children
                   // console.log(`[Heatmap useLogic] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
-                  children.forEach(childStr => {
+                  children.forEach((childStr) => {
                     const child = JSON.parse(childStr);
                     if (child.id !== newItem.id)
                       newItem.children.push({
@@ -1070,7 +1070,7 @@ const useLogic = isExprCalls => {
             setAnatomicalTerms(newAnatTerms);
             // add term props for new terms
             const newAnatTermsProps = { ...anatomicalTermsProps };
-            newChildTerms.forEach(child => {
+            newChildTerms.forEach((child) => {
               if (!(child.id in newAnatTermsProps)) {
                 newAnatTermsProps[child.id] = {
                   isTopLevel: child.isTopLevelTerm,
@@ -1108,7 +1108,7 @@ const useLogic = isExprCalls => {
   };
 
   const getSexesAndDevStageForSpecies = () => {
-    api.search.species.speciesDevelopmentSexe(selectedSpecies.value).then(resp => {
+    api.search.species.speciesDevelopmentSexe(selectedSpecies.value).then((resp) => {
       if (resp.code === 200) {
         setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
         setDevStages(resp.data?.requestDetails?.requestedSpeciesDevStageOntology);
@@ -1120,9 +1120,9 @@ const useLogic = isExprCalls => {
 
   const AutoCompleteByType = (type, mappingFn) =>
     useCallback(
-      async query => {
+      async (query) => {
         if (query) {
-          return api.search.genes.AutoCompleteByType(type, query, selectedSpecies.value).then(resp => {
+          return api.search.genes.AutoCompleteByType(type, query, selectedSpecies.value).then((resp) => {
             if (resp.code === 200) {
               const results = resp.data.result.searchMatches || resp.data.result.geneMatches;
               let list = [];
@@ -1138,14 +1138,14 @@ const useLogic = isExprCalls => {
       [selectedSpecies.value]
     );
 
-  const getSpeciesLabel = specie => {
+  const getSpeciesLabel = (specie) => {
     if (specie.name !== '') {
       return `${specie.genus} ${specie.speciesName} - ${specie.name}`;
     }
     return `${specie.genus} ${specie.speciesName}`;
   };
 
-  const toggleSex = sexName => {
+  const toggleSex = (sexName) => {
     const i = selectedSexes.indexOf(sexName);
     // Edge case where "all" is set
     if (selectedSexes.length === 1 && selectedSexes[0] === 'all') {
@@ -1161,7 +1161,7 @@ const useLogic = isExprCalls => {
     }
   };
 
-  const setSelectedSpeciesFromUrl = species => {
+  const setSelectedSpeciesFromUrl = (species) => {
     setSelectedSpecies(species);
     if (species.value !== EMPTY_SPECIES_VALUE.value) {
       getSexesAndDevStageForSpecies();
@@ -1206,11 +1206,11 @@ const useLogic = isExprCalls => {
         Object.entries(simpleParams).forEach(([key, value]) => {
           if (key === 'gene_id' || key === 'cond_param2') {
             // multiple values possible
-            value.forEach(geneId => {
+            value.forEach((geneId) => {
               searchParamsNew.append(key, geneId);
             });
           } else if (key === 'anat_entity_id' || key === 'cell_type_id') {
-            value.forEach(id => {
+            value.forEach((id) => {
               if (id !== 'SUMMARY') {
                 searchParamsNew.append(key, id);
               }
@@ -1239,7 +1239,7 @@ const useLogic = isExprCalls => {
           // Set genes after species
           if (requestedGenes?.length > 0) {
             setSelectedGene(
-              requestedGenes.map(gene => ({
+              requestedGenes.map((gene) => ({
                 label: getGeneLabel(gene),
                 value: gene.geneId,
               }))
@@ -1305,7 +1305,7 @@ const useLogic = isExprCalls => {
   };
 
   // Expand or collapse a term
-  const onToggleExpandCollapse = term => {
+  const onToggleExpandCollapse = (term) => {
     // console.log(`[useLogic] onToggleExpandCollapse:\n${JSON.stringify(term)}`);
 
     function updateExpandedStateHierarchically(terms) {
@@ -1316,7 +1316,7 @@ const useLogic = isExprCalls => {
         if (!node || !Array.isArray(node)) return []; // break condition
 
         // Add property to each element in the current level
-        return node.map(item => {
+        return node.map((item) => {
           const newItem = JSON.parse(JSON.stringify(item));
           if (item.id === term.id) {
             // get data for descendants
@@ -1357,7 +1357,7 @@ const useLogic = isExprCalls => {
   };
 
   // Add function to process gene list
-  const processGeneList = async geneListParam => {
+  const processGeneList = async (geneListParam) => {
     if (!geneListParam) return;
 
     setIsProcessingGeneList(true);
@@ -1365,11 +1365,11 @@ const useLogic = isExprCalls => {
 
     try {
       // Get search results for all genes
-      const searchResults = await Promise.all(geneIds.map(geneId => api.search.genes.geneSearchResult(geneId)));
+      const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
 
       // Process results
       const validResults = searchResults.filter(
-        result => result.code === 200 && result.data.result.totalMatchCount === 1
+        (result) => result.code === 200 && result.data.result.totalMatchCount === 1
       );
 
       if (validResults.length === 0) {
@@ -1382,7 +1382,7 @@ const useLogic = isExprCalls => {
 
       // Verify all genes are from same species
       const allSameSpecies = validResults.every(
-        result => result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
+        (result) => result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
       );
 
       if (!allSameSpecies) {
@@ -1397,7 +1397,7 @@ const useLogic = isExprCalls => {
       };
 
       // Set genes
-      const genes = validResults.map(result => {
+      const genes = validResults.map((result) => {
         const { gene } = result.data.result.geneMatches[0];
         return {
           label: getGeneLabel(gene),

@@ -11,13 +11,13 @@ const Tissues = ({
   setHasTissueSubStructure,
   addConditionalParam,
 }) => {
-  const getTissueOptions = AutoCompleteByType('anat_entity', result => ({
+  const getTissueOptions = AutoCompleteByType('anat_entity', (result) => ({
     label: getIdAndNameLabel(result?.object),
     value: result?.object?.id,
     result,
   }));
 
-  const onSelect = nextValue => {
+  const onSelect = (nextValue) => {
     setSelectedTissue(nextValue);
     if (nextValue.length > 0) addConditionalParam(COND_PARAM2_ANAT_KEY);
   };
@@ -36,7 +36,7 @@ const Tissues = ({
           id="hasTissueSubStructure"
           type="checkbox"
           checked={hasTissueSubStructure ? 'checked' : ''}
-          onChange={() => setHasTissueSubStructure(current => !current)}
+          onChange={() => setHasTissueSubStructure((current) => !current)}
         />
         <label htmlFor="hasTissueSubStructure">Including substructures</label>
         <HelpIcon

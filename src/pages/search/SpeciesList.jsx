@@ -19,7 +19,7 @@ export function meta({ data }) {
   return getMetadata({
     title: 'Bgee Species list',
     description: 'List of species with expression data available in Bgee',
-    keywords: data.speciesList.map(s => `${s.genus} ${s.speciesName} ${s.name ? `, ${s.name}` : ''}`).join(', '),
+    keywords: data.speciesList.map((s) => `${s.genus} ${s.speciesName} ${s.name ? `, ${s.name}` : ''}`).join(', '),
     link: `${config.genericDomain}${PATHS.SEARCH.SPECIES}`,
   });
 }
@@ -34,7 +34,10 @@ const SpeciesList = ({ loaderData }) => {
       </div>
       <div className="content">
         <div className="grid-species">
-          <GridSpecies speciesList={speciesList} to={species => PATHS.SEARCH.SPECIES_ITEM.replace(':id', species.id)} />
+          <GridSpecies
+            speciesList={speciesList}
+            to={(species) => PATHS.SEARCH.SPECIES_ITEM.replace(':id', species.id)}
+          />
         </div>
       </div>
       <Bulma.Section>

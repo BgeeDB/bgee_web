@@ -26,7 +26,7 @@ export function meta({ data }) {
 }
 
 const onRenderCell =
-  search =>
+  (search) =>
   ({ cell, key, keyRow }, defaultRender) => {
     switch (key) {
       case 'id':
@@ -92,7 +92,7 @@ const GeneList = () => {
   const { resResultListGenes: results, searchResultHandler, setResults, isLoading } = useGeneSearch();
 
   const objMapping = React.useCallback(
-    element => ({
+    (element) => ({
       id: element.gene.geneId,
       gene: element.gene,
       speciesId: element.gene.species.id,
@@ -107,7 +107,7 @@ const GeneList = () => {
   );
 
   const onFilter = React.useCallback(
-    searchReg => element => {
+    (searchReg) => (element) => {
       const regExp = new RegExp(
         searchReg,
         'i'

@@ -85,7 +85,7 @@ const GenesCell = ({ genes }) => {
 const SpeciesCell = ({ genes }) => {
   // const { width } = useWindowSize();
   const expandContentSpecies = genes.reduce((r, a) => {
-    const pos = r.findIndex(g => g.id === a.species.id);
+    const pos = r.findIndex((g) => g.id === a.species.id);
     if (pos === -1)
       r.push({
         id: a.species.id,
@@ -160,7 +160,7 @@ const GeneHomologs = ({ homologs, geneId, isLoading }) => {
     []
   );
   const onFilter = React.useCallback(
-    search => element => {
+    (search) => (element) => {
       const regExp = new RegExp(search, 'i');
       let isFound = regExp.test(element.taxon.scientificName);
       for (let i = 0; !isFound && i < element.genes.length; i += 1) {

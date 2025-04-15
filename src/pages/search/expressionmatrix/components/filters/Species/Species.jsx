@@ -12,7 +12,7 @@ const Species = ({ selectedSpecies, onChangeSpecies, getSpeciesLabel }) => {
   const [speciesList, setSpeciesList] = useState([]);
 
   const speciesOptions = useMemo(() => {
-    const list = speciesList.map(s => ({
+    const list = speciesList.map((s) => ({
       label: getSpeciesLabel(s),
       value: s.id,
     }));
@@ -21,7 +21,7 @@ const Species = ({ selectedSpecies, onChangeSpecies, getSpeciesLabel }) => {
   }, [speciesList]);
 
   useEffect(() => {
-    api.search.species.list().then(resp => {
+    api.search.species.list().then((resp) => {
       if (resp.code === 200) {
         setSpeciesList(resp.data.species);
       } else {

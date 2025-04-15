@@ -9,7 +9,7 @@ export const monoSort =
     return 0;
   };
 
-export const multiSort = sortOpts => (a, b) => {
+export const multiSort = (sortOpts) => (a, b) => {
   for (let i = 0; i < sortOpts.length; i += 1) {
     const diff = monoSort(sortOpts[i])(a, b);
     if (diff !== 0) return diff;
@@ -17,7 +17,7 @@ export const multiSort = sortOpts => (a, b) => {
   return 0;
 };
 
-const geneListObjFormatter = o => ({
+const geneListObjFormatter = (o) => ({
   id: o.gene.id,
   name: o.gene.name,
   description: o.gene.description,
@@ -26,7 +26,7 @@ const geneListObjFormatter = o => ({
   }`,
   match: o.match,
 });
-export const customGeneListSorter = sortOpts => (aNotFormatted, bNotFormatted) => {
+export const customGeneListSorter = (sortOpts) => (aNotFormatted, bNotFormatted) => {
   const a = geneListObjFormatter(aNotFormatted);
   const b = geneListObjFormatter(bNotFormatted);
 
@@ -41,7 +41,7 @@ export const customGeneListSorter = sortOpts => (aNotFormatted, bNotFormatted) =
   return 0;
 };
 
-export const customRawListSorter = sortOpts => (aNotFormatted, bNotFormatted) => {
+export const customRawListSorter = (sortOpts) => (aNotFormatted, bNotFormatted) => {
   const a = { [sortOpts.key]: aNotFormatted[sortOpts.key].content };
   const b = { [sortOpts.key]: bNotFormatted[sortOpts.key].content };
 
@@ -56,7 +56,7 @@ export const customRawListSorter = sortOpts => (aNotFormatted, bNotFormatted) =>
   return 0;
 };
 
-export const topAnatSorter = sortOpts => (aNotFormatted, bNotFormatted) => {
+export const topAnatSorter = (sortOpts) => (aNotFormatted, bNotFormatted) => {
   const KEY_POS = {
     anatEntityId: 0,
     anatEntityName: 1,
@@ -78,7 +78,7 @@ export const topAnatSorter = sortOpts => (aNotFormatted, bNotFormatted) => {
   return (Array.isArray(sortOpts) ? multiSort : monoSort)(sortOpts)(a, b);
 };
 
-export const customAnatomicalHomologySorter = sortOpts => (a, b) => {
+export const customAnatomicalHomologySorter = (sortOpts) => (a, b) => {
   if (Array.isArray(sortOpts)) {
     for (let i = 0; i < sortOpts.length; i += 1) {
       const diff = (Array.isArray(sortOpts) ? multiSort : monoSort)({

@@ -12,11 +12,11 @@ const Wrapper = ({ species, selectedSpecies, setSelectedSpecies, onClick, onRend
   return (
     <div
       id={`species-${species.id}`}
-      onClick={e => {
+      onClick={(e) => {
         e.nativeEvent.preventDefault();
         if (onClick) onClick(species, selectedSpecies !== species.id);
         if (onRenderSelection && setSelectedSpecies)
-          setSelectedSpecies(prev => (prev === species.id ? undefined : species.id));
+          setSelectedSpecies((prev) => (prev === species.id ? undefined : species.id));
       }}
       className={classnames('center-in-grid is-flex is-justify-content-center', {
         active: selectedSpecies === species.id,
@@ -53,7 +53,7 @@ const GridSpecies = ({
 
   return (
     <div className="species-grid">
-      {speciesList.map(species => (
+      {speciesList.map((species) => (
         <React.Fragment key={species.id}>
           <Wrapper
             to={to}

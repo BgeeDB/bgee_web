@@ -50,9 +50,9 @@ const ModalContent = ({ history, onRemove, onLoad, hideModal }) => (
 
 export const addTopAnatHistory = (id, speciesId, speciesName, title = '') => {
   const h = JSON.parse(window.localStorage.getItem(HISTORY_KEY) || '[]');
-  if (h.find(e => e.id === id)) return;
+  if (h.find((e) => e.id === id)) return;
   const t = new Date();
-  const paddedValue = v => String(v).padStart(2, '0');
+  const paddedValue = (v) => String(v).padStart(2, '0');
   h.push({
     id,
     speciesId,
@@ -84,18 +84,18 @@ const TopAnatHistoryModal = () => {
   }, []);
 
   const onLoad = React.useCallback(
-    id => () => {
+    (id) => () => {
       hideModal();
       navigate(PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(':id', id));
     },
     []
   );
   const onRemove = React.useCallback(
-    id => () => {
+    (id) => () => {
       const h = JSON.parse(window.localStorage.getItem(HISTORY_KEY) || '[]');
-      if (h.find(e => e.id === id)) {
+      if (h.find((e) => e.id === id)) {
         h.splice(
-          h.findIndex(e => e.id === id),
+          h.findIndex((e) => e.id === id),
           1
         );
         setHistory(h);

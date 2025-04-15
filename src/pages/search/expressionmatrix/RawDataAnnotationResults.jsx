@@ -21,7 +21,7 @@ const LINK_TO_RAW_DATA_ANNOTS = 'LINK_TO_RAW_DATA_ANNOTS';
 const LINK_TO_PROC_EXPR_VALUES = 'LINK_TO_PROC_EXPR_VALUES';
 const LINK_CALL_TO_PROC_EXPR_VALUES = 'LINK_CALL_TO_PROC_EXPR_VALUES';
 
-const replaceNAOrUndefined = txt => {
+const replaceNAOrUndefined = (txt) => {
   if (!txt || txt?.toLowerCase() === 'na') {
     return '';
   }
@@ -82,15 +82,15 @@ const RawDataAnnotationResults = ({
 
   const mappedResults = useMemo(
     () =>
-      results.map(result => {
-        const row = columnDescriptions.map(col => {
+      results.map((result) => {
+        const row = columnDescriptions.map((col) => {
           const attribute0 = col?.attributes?.[0];
           const valueFromFirstAttribute = getChildValueFromAttribute(result, attribute0);
           switch (col.columnType) {
             case 'STRING': {
               return {
                 type: col.columnType,
-                content: col.attributes.map(att => getChildValueFromAttribute(result, att)).join(' '),
+                content: col.attributes.map((att) => getChildValueFromAttribute(result, att)).join(' '),
               };
             }
             case 'INTERNAL_LINK': {
@@ -147,7 +147,7 @@ const RawDataAnnotationResults = ({
             case LINK_CALL_TO_PROC_EXPR_VALUES: {
               const nextPageType = col.columnType === LINK_TO_RAW_DATA_ANNOTS ? RAW_DATA_ANNOTS : PROC_EXPR_VALUES;
               const currentSP = new URLSearchParams(loc.search);
-              col?.filterTargets?.forEach(filter => {
+              col?.filterTargets?.forEach((filter) => {
                 const filterValue = getChildValueFromAttribute(result, filter?.valueAttributeName);
                 if (filterValue) {
                   currentSP.append(filter?.urlParameterName, filterValue);
@@ -189,8 +189,8 @@ const RawDataAnnotationResults = ({
 
     // We create column headers by filtering the export = false
     columnDescriptions
-      .filter(col => col.export)
-      .forEach(column => {
+      .filter((col) => col.export)
+      .forEach((column) => {
         colHeaders.push(column.title);
       });
     let tsv = colHeaders.join('%09');
@@ -198,11 +198,11 @@ const RawDataAnnotationResults = ({
 
     const columnsToExport = columnDescriptions
       .map((c, i) => ({ ...c, indexForExport: i })) // We are adding indexes to know where to get our value in result
-      .filter(col => col.export); // filtering export = false
+      .filter((col) => col.export); // filtering export = false
 
-    mappedResults.forEach(row => {
+    mappedResults.forEach((row) => {
       const rowTxt = columnsToExport
-        .map(col => encodeURIComponent(row[col.indexForExport].content)) // We get the result only from the column we need to export
+        .map((col) => encodeURIComponent(row[col.indexForExport].content)) // We get the result only from the column we need to export
         .join('%09');
       tsv += `${rowTxt}%0D%0A`; // carriage return
     });

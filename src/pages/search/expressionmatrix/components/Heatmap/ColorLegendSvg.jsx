@@ -26,7 +26,7 @@ export const ColorLegendSvg = ({ posX, posY, height, colorScale, width, interact
   const max = domain[domain.length - 1];
   const xScale = d3.scaleLinear().range([0, boundsWidth]).domain([0, max]);
 
-  const allTicks = xScale.ticks(4).map(tick => (
+  const allTicks = xScale.ticks(4).map((tick) => (
     <g key={`ColorLegendTick-${tick}`}>
       <line x1={posX + xScale(tick)} x2={posX + xScale(tick)} y1={posY} y2={posY + boundsHeight + 10} stroke="black" />
       <text x={posX + xScale(tick)} y={posY + boundsHeight + 20} fontSize={9} textAnchor="middle">

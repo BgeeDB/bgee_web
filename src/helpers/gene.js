@@ -1,1 +1,1 @@
-export const getGeneLabel = g => `${g?.geneId}${g?.name ? ` - ${g?.name}` : ''}`;
+export const getGeneLabel = (g) => `${g?.geneId}${g?.name ? ` - ${g?.name}` : ''}`;

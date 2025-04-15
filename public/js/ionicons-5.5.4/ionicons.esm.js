@@ -3,7 +3,7 @@ import { p as i, b as a } from './p-9c97a69a.js';
   const a = import.meta.url,
     e = {};
   return '' !== a && (e.resourcesUrl = new URL('.', a).href), i(e);
-})().then(i =>
+})().then((i) =>
   a(
     [
       [

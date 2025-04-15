@@ -89,7 +89,7 @@ const GenesCell = ({ genes }) => (
   <div style={{}}>
     <GeneItemNb itemTab={genes} />
     <div className="expand-content">
-      {genes.map(item => (
+      {genes.map((item) => (
         <div key={item.geneId}>
           <Link
             className="internal-link"
@@ -110,10 +110,10 @@ const GenesCell = ({ genes }) => (
 
 const SpeciesCell = ({ genes }) => {
   const speciesList = [];
-  genes.forEach(item => {
+  genes.forEach((item) => {
     if (speciesList.length === 0) {
       speciesList.push(item.species);
-    } else if (speciesList.find(element => element.id === item.species.id) === undefined) {
+    } else if (speciesList.find((element) => element.id === item.species.id) === undefined) {
       speciesList.push(item.species);
     }
   });
@@ -126,7 +126,7 @@ const SpeciesCell = ({ genes }) => {
     >
       <span>{speciesList.length} species</span>
       <div className="expand-content">
-        {speciesList.map(item => (
+        {speciesList.map((item) => (
           <div key={item.id}>
             <Link className="internal-link" content={item.id} to={PATHS.SEARCH.SPECIES_ITEM.replace(':id', item.id)}>
               <span style={{ fontSize: 12 }}>
@@ -164,15 +164,16 @@ const onRenderCell = ({ cell, key }, defaultRender, { expandAction }) => {
       return null;
   }
 };
-const dataToTsv = data => {
+const dataToTsv = (data) => {
   let tsv =
     'Anatomical entities%09Conservation score%09Max expression score%09Genes with presence of expression%09Genes with absence of expression%09Genes with no data%09Species with presence of expression%09Species with absence of expression%09Anatomical entity IDs%09Gene count with presence of expression%09Gene count with absence of expression%09Gene count with no data%09Species count with presence of expression%09Species count with absence of expression%0D%0A';
 
-  data.forEach(d => {
+  data.forEach((d) => {
     let ids = '';
     if (d.multiSpeciesCondition) {
-      if (d.multiSpeciesCondition.cellTypes) ids = `${d.multiSpeciesCondition.cellTypes.map(a => a.id).join(', ')} in `;
-      ids += d.multiSpeciesCondition.anatEntities.map(a => a.id).join(', ');
+      if (d.multiSpeciesCondition.cellTypes)
+        ids = `${d.multiSpeciesCondition.cellTypes.map((a) => a.id).join(', ')} in `;
+      ids += d.multiSpeciesCondition.anatEntities.map((a) => a.id).join(', ');
     } else if (d.condition) {
       if (d.condition.cellType) ids = `${d.condition.cellType.id} in `;
       ids += d.condition.anatEntity.id;
@@ -181,11 +182,11 @@ const dataToTsv = data => {
       d.filterAnatEntities,
       d.conservationScore,
       d.maxExpressionScore,
-      d.genesExpressionPresent.map(g => g.geneId).join(', '),
-      d.genesExpressionAbsent.map(g => g.geneId).join(', '),
-      d.genesNoData.map(g => g.geneId).join(', '),
-      d.genesExpressionPresent.map(g => `${g.species.genus} ${g.species.speciesName}`).join(', '),
-      d.genesExpressionAbsent.map(g => `${g.species.genus} ${g.species.speciesName}`).join(', '),
+      d.genesExpressionPresent.map((g) => g.geneId).join(', '),
+      d.genesExpressionAbsent.map((g) => g.geneId).join(', '),
+      d.genesNoData.map((g) => g.geneId).join(', '),
+      d.genesExpressionPresent.map((g) => `${g.species.genus} ${g.species.speciesName}`).join(', '),
+      d.genesExpressionAbsent.map((g) => `${g.species.genus} ${g.species.speciesName}`).join(', '),
       ids,
       d.countGenesExprPresent,
       d.countGenesExprAbsent,
@@ -226,7 +227,7 @@ const customHeader = () => (searchElement, pageSizeElement, data) => {
   );
 };
 
-const onFilter = search => element => {
+const onFilter = (search) => (element) => {
   const regExp = new RegExp(search, 'i');
   let hasMatch = regExp.test(element.conservationScore) || regExp.test(element.maxExpressionScore);
 
@@ -296,7 +297,7 @@ const onSortField = ({ key, sort }, aEl, bEl) => {
   if (sort === 'descending') return a < b ? 1 : -1;
   return 0;
 };
-const onSort = sortOpts => (a, b) => {
+const onSort = (sortOpts) => (a, b) => {
   if (Array.isArray(sortOpts)) {
     for (let i = 0; i < sortOpts.length; i += 1) {
       const diff = onSortField(sortOpts[i], a, b);
@@ -317,7 +318,7 @@ const ExpComp = () => {
   const [results, set] = React.useState(DEFAULT_RESULTS);
   const { search: searchParams } = useLocation();
 
-  const setResults = React.useCallback(d => {
+  const setResults = React.useCallback((d) => {
     set(d || DEFAULT_RESULTS);
   }, []);
 
@@ -325,7 +326,7 @@ const ExpComp = () => {
 
   React.useEffect(() => {
     if (searchValue !== '') {
-      api.topAnat.autoCompleteGenes(searchValue).then(res => {
+      api.topAnat.autoCompleteGenes(searchValue).then((res) => {
         setGeneInfo({ ...res.data.fg_list, message: res.message });
       });
     } else setGeneInfo(undefined);
@@ -333,7 +334,7 @@ const ExpComp = () => {
 
   const handlerClickSearch = () => {
     if (searchValue && searchValue !== '') {
-      if (searchValue.split('\n').filter(a => a !== '').length < 2) {
+      if (searchValue.split('\n').filter((a) => a !== '').length < 2) {
         setError(true);
         return;
       }
@@ -350,7 +351,7 @@ const ExpComp = () => {
             navigate(`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${storableParams?.queryString}`, { replace: true });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           setResults();
         })
@@ -372,7 +373,7 @@ const ExpComp = () => {
           });
           setSearchValue(requestParameters?.gene_list.join('\n'));
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           setResults({
             ...DEFAULT_RESULTS,
@@ -422,7 +423,7 @@ const ExpComp = () => {
                         placeholder="Enter a list of gene identifiers, one ID per line, no quotes, no comma"
                         rows={10}
                         value={searchValue}
-                        onChange={e => setSearchValue(e.target.value)}
+                        onChange={(e) => setSearchValue(e.target.value)}
                       />
                     </div>
                   </div>

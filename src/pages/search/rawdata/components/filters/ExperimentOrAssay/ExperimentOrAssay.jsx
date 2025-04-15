@@ -2,7 +2,7 @@ import SelectMultipleWithAutoComplete from '../../../../../../components/SelectM
 import { getIdAndNameLabel } from '../../../../../../helpers/selects';
 
 const ExperimentOrAssay = ({ selectedExpOrAssay, setSelectedExpOrAssay, AutoCompleteByType }) => {
-  const getExpOrAssayOptions = AutoCompleteByType('experiment_assay', result => ({
+  const getExpOrAssayOptions = AutoCompleteByType('experiment_assay', (result) => ({
     label: getIdAndNameLabel(result?.object),
     value: result?.object?.id,
     result,

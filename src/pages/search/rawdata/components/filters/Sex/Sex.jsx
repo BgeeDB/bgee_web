@@ -1,7 +1,7 @@
 import { COND_PARAM2_SEX_KEY } from '../../../useLogic';
 
 const Sex = ({ speciesSexes, selectedSexes, toggleSex, addConditionalParam }) => {
-  const onSelect = name => {
+  const onSelect = (name) => {
     toggleSex(name);
     addConditionalParam(COND_PARAM2_SEX_KEY);
   };
@@ -12,7 +12,7 @@ const Sex = ({ speciesSexes, selectedSexes, toggleSex, addConditionalParam }) =>
         <span>Sex</span>
       </label>
       <div className="sex-container">
-        {speciesSexes.map(sex => {
+        {speciesSexes.map((sex) => {
           const isChecked = selectedSexes.indexOf(sex.name) !== -1;
           return (
             <div id={sex.name} key={sex.name} className="sex-input-name">

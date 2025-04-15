@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { EXPERIMENTS, PROC_EXPR_VALUES, RAW_DATA_ANNOTS } from '../useLogic';
 
-const formatLargeNumber = largeNumber => {
+const formatLargeNumber = (largeNumber) => {
   const numberToDisplay = new Intl.NumberFormat('en').format(largeNumber || 0);
   return numberToDisplay;
 };
@@ -22,7 +22,7 @@ const ResultTabs = ({ dataTypes, dataType, allCounts, setDataType, pageType, isC
 
   return (
     <div className="is-flex ongletWrapper is-centered">
-      {dataTypes.map(type => {
+      {dataTypes.map((type) => {
         const isActive = type.id === dataType;
         const inactiveCount =
           allCounts?.[type.id]?.[resultKey] !== undefined ? allCounts?.[type.id]?.[resultKey] : 'No data';

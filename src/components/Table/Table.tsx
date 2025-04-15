@@ -30,7 +30,7 @@ const Table = ({
   pagination = false,
   defaultPaginationSize = 20,
   customHeader,
-  mappingObj = obj => obj,
+  mappingObj = (obj) => obj,
   name,
   identifierAtFilter = false,
   emptyTableMessage = 'No data',
@@ -54,14 +54,14 @@ const Table = ({
   const [sortOption, setSortOption] = React.useState(initialSorting);
 
   const defineSortOption = React.useCallback(
-    key => event => {
+    (key) => (event) => {
       if (sortable) {
         if (multiSortable && event.shiftKey) {
           let newSort;
           if (!Array.isArray(sortOption)) newSort = [{ key, sort: 'ascending' }];
           else {
             newSort = [...sortOption];
-            const pos = newSort.findIndex(f => f.key === key);
+            const pos = newSort.findIndex((f) => f.key === key);
             if (pos >= 0) {
               if (newSort[pos].sort === 'ascending') newSort[pos].sort = 'descending';
               else newSort.splice(pos, 1);
@@ -87,8 +87,8 @@ const Table = ({
   const [isExpanded, setIsExpanded] = React.useState({});
 
   const expandAction = React.useCallback(
-    key => () =>
-      setIsExpanded(prev => ({
+    (key) => () =>
+      setIsExpanded((prev) => ({
         ...prev,
         [key]: !prev[key],
       })),
@@ -109,7 +109,7 @@ const Table = ({
   );
 
   const setCurrentPage = React.useCallback(
-    page => {
+    (page) => {
       onPageChange(page);
       setIsExpanded({});
     },
@@ -133,7 +133,7 @@ const Table = ({
         <Input
           id={`filtering${inputId}`}
           value={search}
-          onChange={e => {
+          onChange={(e) => {
             setSearch(e.target.value);
             if (currentPage !== 1) setCurrentPage(1);
           }}
@@ -153,7 +153,7 @@ const Table = ({
             // id="show-entries-select"
             value={pageSize}
             options={[10, 20, 50, { value: 100, text: 100 }, 500, 1000]}
-            onChange={p => {
+            onChange={(p) => {
               // setCurrentPage(1) is already done in onPageSizeChange
               onPageSizeChange(parseInt(p, 10));
             }}

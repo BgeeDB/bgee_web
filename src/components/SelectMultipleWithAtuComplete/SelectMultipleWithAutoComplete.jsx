@@ -6,7 +6,7 @@ import classnames from '../../helpers/classnames';
 
 const MAX_OPTIONS_LENGTH = 200;
 
-const escapeRegexp = str => str.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+const escapeRegexp = (str) => str.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
 
 const SelectMultipleWithAutoComplete = ({
   getOptionsFunction,
@@ -29,7 +29,7 @@ const SelectMultipleWithAutoComplete = ({
   const inputRef = useRef();
 
   const searchHandler = useCallback(
-    val => {
+    (val) => {
       if ((val || !minCharToSearch) && getOptionsFunction) {
         setIsLoading(true);
 
@@ -46,7 +46,7 @@ const SelectMultipleWithAutoComplete = ({
           typeof valueOrPromise.then === 'function' &&
           valueOrPromise[Symbol.toStringTag] === 'Promise'
         ) {
-          valueOrPromise.then(options => {
+          valueOrPromise.then((options) => {
             setIsLoading(false);
             let list = [...options];
             if (list.length > MAX_OPTIONS_LENGTH) {
@@ -157,7 +157,7 @@ const SelectMultipleWithAutoComplete = ({
           isMulti
           placeholder={placeholder}
           ref={inputRef}
-          onChange={allSelected => {
+          onChange={(allSelected) => {
             setSelectedOptions(allSelected);
           }}
           value={selectedOptions}

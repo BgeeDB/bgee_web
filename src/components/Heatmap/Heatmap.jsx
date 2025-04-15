@@ -72,7 +72,7 @@ const Heatmap = ({
   const visibleTermIds = useMemo(() => {
     const ids = new Set();
 
-    const traverse = term => {
+    const traverse = (term) => {
       ids.add(term.id);
       if (term.isExpanded && term.children) {
         term.children.forEach(traverse);
@@ -87,15 +87,15 @@ const Heatmap = ({
   const colorScale = useMemo(() => {
     // Filter values to only include visible terms
     const visibleValues = data
-      .filter(d => visibleTermIds.has(d.y))
-      .map(d => d.value)
-      .filter(d => d !== null);
+      .filter((d) => visibleTermIds.has(d.y))
+      .map((d) => d.value)
+      .filter((d) => d !== null);
 
     const maxValue = useAdaptiveScale ? Math.max(...visibleValues, 0) : 100;
 
     return d3
       .scaleLinear()
-      .domain(THRESHOLDS.map(t => t * maxValue))
+      .domain(THRESHOLDS.map((t) => t * maxValue))
       .range(COLORS[colorPalette]);
   }, [data, visibleTermIds, colorPalette, useAdaptiveScale]);
 
@@ -227,7 +227,7 @@ const Heatmap = ({
     const headerString = headers.join('\t');
 
     // Convert each JSON object to a tab-separated string
-    const dataStrings = data.map(obj => headers.map(header => obj[header]).join('\t'));
+    const dataStrings = data.map((obj) => headers.map((header) => obj[header]).join('\t'));
 
     // Combine headers and data strings into a single string
     const tsvString = [headerString, ...dataStrings].join('\n');
@@ -287,7 +287,7 @@ const Heatmap = ({
       ctx.drawImage(img, 0, 0);
 
       // Convert canvas to PNG and trigger download
-      canvas.toBlob(blob => {
+      canvas.toBlob((blob) => {
         const pngUrl = URL.createObjectURL(blob);
         const downloadLink = document.createElement('a');
         downloadLink.href = pngUrl;

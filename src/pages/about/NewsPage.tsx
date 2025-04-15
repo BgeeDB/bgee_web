@@ -28,7 +28,7 @@ const NewsPage = () => (
       <Bulma.Title className="title is-3">News</Bulma.Title>
     </div>
     <div className="content">
-      {news.map(item => (
+      {news.map((item) => (
         <div key={item.date}>
           <NewsItem date={item.date} News={item.markdown} />
           <div className="separator" />

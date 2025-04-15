@@ -6,13 +6,13 @@ const l = 'undefined' != typeof window ? window : {},
   o = {
     t: 0,
     l: '',
-    jmp: e => e(),
-    raf: e => requestAnimationFrame(e),
+    jmp: (e) => e(),
+    raf: (e) => requestAnimationFrame(e),
     ael: (e, t, n, l) => e.addEventListener(t, n, l),
     rel: (e, t, n, l) => e.removeEventListener(t, n, l),
     ce: (e, t) => new CustomEvent(e, t),
   },
-  c = e => Promise.resolve(e),
+  c = (e) => Promise.resolve(e),
   i = (() => {
     try {
       return new CSSStyleSheet(), 'function' == typeof new CSSStyleSheet().replace;
@@ -20,15 +20,15 @@ const l = 'undefined' != typeof window ? window : {},
     return !1;
   })(),
   r = new WeakMap(),
-  a = e => 'sc-' + e.o,
+  a = (e) => 'sc-' + e.o,
   u = {},
-  f = e => 'object' == (e = typeof e) || 'function' === e,
+  f = (e) => 'object' == (e = typeof e) || 'function' === e,
   h = (e, t, ...n) => {
     let l = null,
       s = !1,
       o = !1,
       c = [];
-    const i = t => {
+    const i = (t) => {
       for (let n = 0; n < t.length; n++)
         (l = t[n]),
           Array.isArray(l)
@@ -46,7 +46,7 @@ const l = 'undefined' != typeof window ? window : {},
           'object' != typeof e
             ? e
             : Object.keys(e)
-                .filter(t => e[t])
+                .filter((t) => e[t])
                 .join(' '));
     }
     const r = $(e, null);
@@ -61,7 +61,7 @@ const l = 'undefined' != typeof window ? window : {},
         const t = e.classList,
           s = m(n),
           o = m(l);
-        t.remove(...s.filter(e => e && !o.includes(e))), t.add(...o.filter(e => e && !s.includes(e)));
+        t.remove(...s.filter((e) => e && !o.includes(e))), t.add(...o.filter((e) => e && !s.includes(e)));
       } else {
         const i = f(l);
         if ((c || (i && null !== l)) && !s)
@@ -79,7 +79,7 @@ const l = 'undefined' != typeof window ? window : {},
     }
   },
   p = /\s/,
-  m = e => (e ? e.split(p) : []),
+  m = (e) => (e ? e.split(p) : []),
   b = (e, t, n, l) => {
     const s = 11 === t.p.nodeType && t.p.host ? t.p.host : t.p,
       o = (e && e.u) || u,
@@ -155,9 +155,9 @@ const l = 'undefined' != typeof window ? window : {},
             : null !== l && g(l, 0, l.length - 1))
       : e.i !== o && (n.data = o);
   },
-  v = e => N(e).m,
+  v = (e) => N(e).m,
   C = (e, t) => {
-    t && !e.S && t['s-p'] && t['s-p'].push(new Promise(t => (e.S = t)));
+    t && !e.S && t['s-p'] && t['s-p'].push(new Promise((t) => (e.S = t)));
   },
   M = (e, t) => {
     if (((e.t |= 16), !(4 & e.t))) return C(e, e.g), ee(() => O(e, t));
@@ -171,7 +171,7 @@ const l = 'undefined' != typeof window ? window : {},
     const l = e.m,
       o = l['s-rc'];
     n &&
-      (e => {
+      ((e) => {
         const t = e.k,
           n = e.m,
           l = t.t,
@@ -193,7 +193,7 @@ const l = 'undefined' != typeof window ? window : {},
           })(n.shadowRoot ? n.shadowRoot : n.getRootNode(), t);
         10 & l && ((n['s-sc'] = o), n.classList.add(o + '-h'));
       })(e);
-    x(e, t), o && (o.map(e => e()), (l['s-rc'] = void 0));
+    x(e, t), o && (o.map((e) => e()), (l['s-rc'] = void 0));
     {
       const t = l['s-p'],
         n = () => E(e);
@@ -209,7 +209,7 @@ const l = 'undefined' != typeof window ? window : {},
           const s = n.m,
             o = n.k,
             c = n.v || $(null, null),
-            i = (e => e && e.$ === d)(l) ? l : h(null, null, l);
+            i = ((e) => e && e.$ === d)(l) ? l : h(null, null, l);
           (t = s.tagName),
             o.C && ((i.u = i.u || {}), o.C.map(([e, t]) => (i.u[t] = s[e]))),
             (i.$ = null),
@@ -224,7 +224,7 @@ const l = 'undefined' != typeof window ? window : {},
     }
     return null;
   },
-  E = e => {
+  E = (e) => {
     const t = e.m,
       n = e.g;
     64 & e.t || ((e.t |= 64), U(t), e.M(t), n || L()),
@@ -235,7 +235,7 @@ const l = 'undefined' != typeof window ? window : {},
   L = () => {
     U(s.documentElement),
       Z(() =>
-        (e => {
+        ((e) => {
           const t = o.ce('appload', { detail: { namespace: 'ionicons' } });
           return e.dispatchEvent(t), t;
         })(l)
@@ -250,7 +250,7 @@ const l = 'undefined' != typeof window ? window : {},
       }
   },
   T = (e, t) => (e && e.then ? e.then(t) : t()),
-  U = e => e.classList.add('hydrated'),
+  U = (e) => e.classList.add('hydrated'),
   A = (e, t, n) => {
     if (t.O) {
       e.watchers && (t.P = e.watchers);
@@ -281,7 +281,7 @@ const l = 'undefined' != typeof window ? window : {},
                     if (l.P && 128 & i) {
                       const e = l.P[t];
                       e &&
-                        e.map(e => {
+                        e.map((e) => {
                           try {
                             r[e](n, c, t);
                           } catch (e) {
@@ -318,7 +318,7 @@ const l = 'undefined' != typeof window ? window : {},
     }
     return e;
   },
-  H = e => {
+  H = (e) => {
     R(e, 'connectedCallback');
   },
   W = (e, t = {}) => {
@@ -333,8 +333,8 @@ const l = 'undefined' != typeof window ? window : {},
       y = !0;
     Object.assign(o, t),
       (o.l = new URL(t.resourcesUrl || './', s.baseURI).href),
-      e.map(e => {
-        e[1].map(t => {
+      e.map((e) => {
+        e[1].map((t) => {
           const l = { t: t[0], o: t[1], O: t[2], R: t[3] };
           (l.O = t[2]), (l.C = []), (l.P = {});
           const s = l.o,
@@ -347,7 +347,7 @@ const l = 'undefined' != typeof window ? window : {},
                   y
                     ? $.push(this)
                     : o.jmp(() =>
-                        (e => {
+                        ((e) => {
                           if (0 == (1 & o.t)) {
                             const t = N(e),
                               n = t.k,
@@ -429,35 +429,35 @@ const l = 'undefined' != typeof window ? window : {},
       h.setAttribute('data-styles', ''),
       u.insertBefore(h, f ? f.nextSibling : u.firstChild),
       (y = !1),
-      $.length ? $.map(e => e.connectedCallback()) : o.jmp(() => (d = setTimeout(L, 30)));
+      $.length ? $.map((e) => e.connectedCallback()) : o.jmp(() => (d = setTimeout(L, 30)));
   },
-  q = e => {
+  q = (e) => {
     const t = new URL(e, o.l);
     return t.origin !== l.location.origin ? t.href : t.pathname;
   },
   F = new WeakMap(),
-  N = e => F.get(e),
+  N = (e) => F.get(e),
   V = (e, t) => F.set((t.j = e), t),
   _ = (e, t) => {
     const n = { t: 0, m: e, k: t, L: new Map() };
-    return (n.T = new Promise(e => (n.M = e))), (e['s-p'] = []), (e['s-rc'] = []), F.set(e, n);
+    return (n.T = new Promise((e) => (n.M = e))), (e['s-p'] = []), (e['s-rc'] = []), F.set(e, n);
   },
   z = (e, t) => t in e,
   B = (e, t) => (0, console.error)(e, t),
   D = new Map(),
-  G = e => {
+  G = (e) => {
     const t = e.o.replace(/-/g, '_'),
       n = e.U,
       l = D.get(n);
-    return l ? l[t] : import(`./${n}.entry.js`).then(e => (D.set(n, e), e[t]), B);
+    return l ? l[t] : import(`./${n}.entry.js`).then((e) => (D.set(n, e), e[t]), B);
   },
   I = new Map(),
   J = [],
   K = [],
-  Q = (e, t) => l => {
+  Q = (e, t) => (l) => {
     e.push(l), n || ((n = !0), t && 4 & o.t ? Z(Y) : o.raf(Y));
   },
-  X = e => {
+  X = (e) => {
     for (let t = 0; t < e.length; t++)
       try {
         e[t](performance.now());
@@ -469,6 +469,6 @@ const l = 'undefined' != typeof window ? window : {},
   Y = () => {
     X(J), X(K), (n = J.length > 0) && o.raf(Y);
   },
-  Z = e => c().then(e),
+  Z = (e) => c().then(e),
   ee = Q(K, !0);
 export { d as H, v as a, W as b, q as g, h, c as p, V as r };

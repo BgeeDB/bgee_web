@@ -124,7 +124,7 @@ const TopAnatForm = ({
                             size="small"
                             className="toggle-button"
                             color={!rp.customBg && 'danger'}
-                            onClick={() => setRP(prev => ({ ...prev, customBg: false }))}
+                            onClick={() => setRP((prev) => ({ ...prev, customBg: false }))}
                             disabled={formDisabled || (!formDisabled && !rp.customBg)}
                           >{`Bgee data for ${
                             rp.fg.list.detectedSpecies[rp.fg.list.selectedSpecies].name
@@ -135,7 +135,7 @@ const TopAnatForm = ({
                             size="small"
                             className="toggle-button"
                             color={rp.customBg && 'danger'}
-                            onClick={() => setRP(prev => ({ ...prev, customBg: true }))}
+                            onClick={() => setRP((prev) => ({ ...prev, customBg: true }))}
                             disabled={formDisabled || (!formDisabled && rp.customBg)}
                           >
                             Custom data
@@ -322,7 +322,7 @@ const TopAnatForm = ({
                 {rp?.fg?.list?.stages && Array.isArray(formData.stages) && (
                   <div className="field">
                     <div className="control">
-                      {rp?.fg?.list?.stages.map(s => (
+                      {rp?.fg?.list?.stages.map((s) => (
                         <div className="control" key={s.id}>
                           <label className="checkbox">
                             <input
@@ -330,7 +330,7 @@ const TopAnatForm = ({
                               className="mr-2"
                               disabled={formDisabled}
                               onChange={onSelectCustomStage(s.id)}
-                              checked={formData.stages.findIndex(a => a === s.id) >= 0}
+                              checked={formData.stages.findIndex((a) => a === s.id) >= 0}
                             />
                             {s.name}
                           </label>
@@ -368,7 +368,7 @@ const TopAnatForm = ({
                             { value: 'gold', text: 'Gold confidence' },
                           ]}
                           value={formData.dataQuality}
-                          onChange={handleChange('dataQuality', v => v)}
+                          onChange={handleChange('dataQuality', (v) => v)}
                           error={errors.dataQuality}
                           disabled={formDisabled}
                         />
@@ -415,7 +415,7 @@ const TopAnatForm = ({
                           { value: 'parent-child', text: 'Parent-child' },
                         ]}
                         value={formData.decorrelationType}
-                        onChange={handleChange('decorrelationType', v => v)}
+                        onChange={handleChange('decorrelationType', (v) => v)}
                         error={errors.decorrelationType}
                       />
                     </div>

@@ -13,7 +13,7 @@ const GeneExpressionMatrixResults = ({
   // console.log(`[GeneExpressionMatrixResults] results:\n${JSON.stringify(results, null, 2)}`);
   // console.log(`[GeneExpressionMatrixResults] anatomicalTerms:\n${JSON.stringify(anatomicalTerms, null, 2)}`);
   // console.log(`[GeneExpressionMatrixResults] anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
-  const heatmapData = results.map(result => {
+  const heatmapData = results.map((result) => {
     const { geneId, name: geneName } = result.gene;
     const speciesId = result.gene.species.id;
     const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;

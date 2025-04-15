@@ -76,7 +76,7 @@ const Pagination = ({ current, total }) => {
             <span className="pagination-ellipsis">&hellip;</span>
           </li>
         )}
-        {center.map(page => (
+        {center.map((page) => (
           <li key={page}>
             <Link
               className={`pagination-link  ${current === page ? 'is-current' : ''}`}

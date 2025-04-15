@@ -33,7 +33,7 @@ const DATA_TYPES = [
     text: 'scRNA-Seq',
   },
 ];
-export const ALL_DATA_TYPES = DATA_TYPES.map(data => data.key);
+export const ALL_DATA_TYPES = DATA_TYPES.map((data) => data.key);
 export const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
 export const BASE_LIMIT = '10000';
 export const EXPR_CALLS = 'expr_calls';
@@ -63,7 +63,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
 
   // In order to disable the search button if the search has already been made
   const formSearchButtonIsDisabled = useMemo(() => {
-    const oldDataType = (dataTypeExpr?.split(',') || DATA_TYPES.map(d => d.key)).sort();
+    const oldDataType = (dataTypeExpr?.split(',') || DATA_TYPES.map((d) => d.key)).sort();
 
     return JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
   }, [dataType, dataTypeExpr]);
@@ -93,7 +93,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   };
 
   // prepare term hierarchy from gene expression call data
-  const prepTermHierarchy = expressionCalls => {
+  const prepTermHierarchy = (expressionCalls) => {
     const termProps = {
       'UBERON:0001062-GO:0005575': {
         label: 'anatomical entity',
@@ -110,7 +110,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
     };
     const parents = { [ROOT_TERM_ANAT_ENTITY]: [] };
     const children = { [ROOT_TERM_ANAT_ENTITY]: [] };
-    expressionCalls.forEach(exprCall => {
+    expressionCalls.forEach((exprCall) => {
       const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
       const termIsSingleCell = cellTypeId !== 'GO:0005575';
@@ -138,7 +138,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
     });
 
     // identify root terms
-    const roots = Object.keys(parents).filter(id => parents[id].length === 0);
+    const roots = Object.keys(parents).filter((id) => parents[id].length === 0);
 
     function createNestedStructure(termId, depth = 0) {
       // console.log(`[createNestedStructure] ${termId} - ${depth}`);
@@ -166,7 +166,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
 
       // If the term has children, recursively create their nested structure
       if (children[termId]) {
-        nestedTerm.children = children[termId].map(childId => createNestedStructure(childId, depth + 1));
+        nestedTerm.children = children[termId].map((childId) => createNestedStructure(childId, depth + 1));
       }
 
       return nestedTerm;
@@ -175,7 +175,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
     // Create the nested structure for each root term
     // console.log(`[GeneExpressionGraph.prepTermHierarchy] termProps:\n${JSON.stringify(termProps)}`);
     // console.log(`[GeneExpressionGraph.prepTermHierarchy] roots:\n${JSON.stringify(roots)}`);
-    const anatTerms = roots.map(root => createNestedStructure(root));
+    const anatTerms = roots.map((root) => createNestedStructure(root));
     // console.log(`[GeneExpressionGraph.triggerInitialSearch] anatTerms (top-level):\n${JSON.stringify(anatTerms, null, 2)}`);
 
     return { anatTerms, termProps };
@@ -187,11 +187,11 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
     const newTerms = {};
 
     // Helper function to recursively find the term by id and add children
-    const addChildren = term => {
+    const addChildren = (term) => {
       // Check if the current term's id matches the parentId
       if (term.id === parentId) {
         // Loop through each expressionCall and add children to the term
-        expressionCalls.forEach(call => {
+        expressionCalls.forEach((call) => {
           const { anatEntity, cellType } = call.condition;
           const termId = `${anatEntity.id}-${cellType.id}`;
           const termLabel = cellType.id !== 'GO:0005575' ? `${anatEntity.name} : ${cellType.name}` : anatEntity.name;
@@ -217,12 +217,12 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
         });
       } else {
         // If not the matching term, recurse into its children
-        term.children.forEach(child => addChildren(child));
+        term.children.forEach((child) => addChildren(child));
       }
     };
 
     // Start the recursive search from each root term in the nested structure
-    nestedStructure.forEach(root => addChildren(root, root.depth));
+    nestedStructure.forEach((root) => addChildren(root, root.depth));
 
     // Return the updated termProps
     return newTerms;
@@ -334,7 +334,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
             // We delete the potential old hash
             searchParams.delete('data');
 
-            resp?.requestParameters?.storableParameters?.forEach(key => {
+            resp?.requestParameters?.storableParameters?.forEach((key) => {
               if (key !== 'data_type') {
                 searchParams.delete(key);
               }
@@ -347,7 +347,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
 
         // update anatomical terms
         const newChildTerms = new Set();
-        resp?.data.expressionData.expressionCalls.forEach(exprCall => {
+        resp?.data.expressionData.expressionCalls.forEach((exprCall) => {
           const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
           const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
           const isSingleCell = cellTypeId !== 'GO:0005575';
@@ -378,12 +378,12 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
             if (!node || !Array.isArray(node)) return []; // break condition
 
             // Add property to each element in the current level
-            return node.map(item => {
+            return node.map((item) => {
               const newItem = { ...item };
               if (item.id === termId) {
                 // add children
                 // console.log(`[Heatmap GeneExpressionGraph] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
-                children.forEach(childStr => {
+                children.forEach((childStr) => {
                   const child = JSON.parse(childStr);
                   if (child.id !== newItem.id)
                     newItem.children.push({
@@ -423,7 +423,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
           setAnatomicalTerms(newAnatTerms);
           // add term props for new terms
           const newAnatTermsProps = { ...anatomicalTermsProps };
-          newChildTerms.forEach(childStr => {
+          newChildTerms.forEach((childStr) => {
             const child = JSON.parse(childStr); // Parse the stringified child object
             if (!(child.id in newAnatTermsProps)) {
               newAnatTermsProps[child.id] = {
@@ -452,14 +452,14 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
         // Finally, we set the values we are interested in
         setIsLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(`[GeneExpressionGraph] triggerSearchChildren - ERROR:\n${JSON.stringify(error)}`);
         setIsLoading(false);
       });
   };
 
   // updates component state!
-  const onToggleExpandCollapse = term => {
+  const onToggleExpandCollapse = (term) => {
     // console.log(`[GeneExpressionGraph] onToggleExpandCollapse:\n${JSON.stringify(term)}`);
 
     function updateExpandedStateHierarchically(terms) {
@@ -469,7 +469,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
         if (!node || !Array.isArray(node)) return []; // break condition
 
         // Add property to each element in the current level
-        return node.map(item => {
+        return node.map((item) => {
           const newItem = JSON.parse(JSON.stringify(item)); // { ...item };
           if (item.id === term.id) {
             // get data for descendants
@@ -508,7 +508,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   };
 
   const heatmapData =
-    searchResult?.expressionData?.expressionCalls?.map(result => {
+    searchResult?.expressionData?.expressionCalls?.map((result) => {
       const { geneId: gId, name: gName } = result.gene;
       const specId = result.gene.species.id;
       const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;
@@ -554,18 +554,18 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
         )}
 
         <div className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper mt-2">
-          {DATA_TYPES.map(c => (
+          {DATA_TYPES.map((c) => (
             <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.key}>
               <input
                 type="checkbox"
-                checked={dataType.find(d => d === c.key) || false}
-                onChange={e => {
-                  setDataTypes(prev => {
+                checked={dataType.find((d) => d === c.key) || false}
+                onChange={(e) => {
+                  setDataTypes((prev) => {
                     const curr = [...prev];
                     if (e.target.checked) {
                       curr.push(c.key);
                     } else {
-                      const pos = curr.findIndex(d => d === c.key);
+                      const pos = curr.findIndex((d) => d === c.key);
                       if (pos >= 0) curr.splice(pos, 1);
                     }
                     return curr;
@@ -577,8 +577,8 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
           ))}
           <Bulma.Button
             className="search-form"
-            disabled={JSON.stringify(dataType.sort()) === JSON.stringify(DATA_TYPES.map(d => d.key).sort())}
-            onClick={() => setDataTypes(DATA_TYPES.map(d => d.key))}
+            disabled={JSON.stringify(dataType.sort()) === JSON.stringify(DATA_TYPES.map((d) => d.key).sort())}
+            onClick={() => setDataTypes(DATA_TYPES.map((d) => d.key))}
           >
             Select All
           </Bulma.Button>
@@ -593,7 +593,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
             onClick={() => {
               const queryParams = new URLSearchParams(window.location.search);
               if (
-                JSON.stringify(dataType.sort()) !== JSON.stringify(DATA_TYPES.map(d => d.key).sort()) &&
+                JSON.stringify(dataType.sort()) !== JSON.stringify(DATA_TYPES.map((d) => d.key).sort()) &&
                 dataType.length > 0
               )
                 queryParams.set(dataTypeKey, dataType.join(','));

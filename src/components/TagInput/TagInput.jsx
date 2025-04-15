@@ -4,7 +4,7 @@ import './tagInput.scss';
 const TagInput = () => {
   const [tags, setTags] = useState([]);
 
-  const handleKeyDown = e => {
+  const handleKeyDown = (e) => {
     if (e.key !== 'Enter') return;
     const value = e.target.value;
     if (!value.trim()) return;
@@ -12,7 +12,7 @@ const TagInput = () => {
     e.target.value = '';
   };
 
-  const removeTag = index => {
+  const removeTag = (index) => {
     setTags(tags.filter((el, i) => i !== index));
   };
 

@@ -110,7 +110,7 @@ const Header = () => {
                       key={key}
                       to={path}
                       className="navbar-item"
-                      onClick={event => {
+                      onClick={(event) => {
                         event.target.blur();
                         setHamburgerActive(false);
                       }}

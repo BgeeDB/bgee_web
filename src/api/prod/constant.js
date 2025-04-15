@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 });
 
 let axiosAddNotif = null;
-export const setAxiosAddNotif = fct => {
+export const setAxiosAddNotif = (fct) => {
   axiosAddNotif = fct;
 };
 export const getAxiosAddNotif = () => axiosAddNotif || (() => () => {});

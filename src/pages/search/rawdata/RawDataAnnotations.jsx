@@ -167,7 +167,7 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData = undefined }) => 
 
   const maxPage = Math.ceil((localCount?.[countResultKey()] || 0) / limit);
 
-  const detailedData = isExprCalls ? TAB_PAGE_EXPR_CALL : TAB_PAGE.find(d => d.id === pageType);
+  const detailedData = isExprCalls ? TAB_PAGE_EXPR_CALL : TAB_PAGE.find((d) => d.id === pageType);
 
   useEffect(() => {
     const params = getSearchParams();
@@ -183,7 +183,7 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData = undefined }) => 
     setPageType(newPageType);
   };
 
-  const formatLargeNumber = largeNumber => {
+  const formatLargeNumber = (largeNumber) => {
     const numberToDisplay = new Intl.NumberFormat('en').format(largeNumber || 0);
     return numberToDisplay;
   };
@@ -227,25 +227,25 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData = undefined }) => 
     if (params.selectedSpecies) {
       urlParamsWithoutPageType += `&species_id=${params.selectedSpecies}`;
     }
-    params.selectedGene.forEach(gene => {
+    params.selectedGene.forEach((gene) => {
       urlParamsWithoutPageType += `&gene_id=${gene}`;
     });
-    params.selectedTissue.forEach(tissue => {
+    params.selectedTissue.forEach((tissue) => {
       urlParamsWithoutPageType += `&anat_entity_id=${tissue}`;
     });
-    params.selectedCellTypes.forEach(cell => {
+    params.selectedCellTypes.forEach((cell) => {
       urlParamsWithoutPageType += `&cell_type_id=${cell}`;
     });
-    params.selectedDevStages.forEach(stage => {
+    params.selectedDevStages.forEach((stage) => {
       urlParamsWithoutPageType += `&stage_id=${stage}`;
     });
-    params.selectedStrain.forEach(strain => {
+    params.selectedStrain.forEach((strain) => {
       urlParamsWithoutPageType += `&strain=${strain}`;
     });
-    params.selectedExpOrAssay.forEach(expOrAssay => {
+    params.selectedExpOrAssay.forEach((expOrAssay) => {
       urlParamsWithoutPageType += `&exp_assay_id=${expOrAssay}`;
     });
-    params.selectedSexes.forEach(sexe => {
+    params.selectedSexes.forEach((sexe) => {
       urlParamsWithoutPageType += `&sex=${sexe}`;
     });
     urlParamsWithoutPageType += `&anat_entity_descendant=${params.hasTissueSubStructure}`;
@@ -279,12 +279,12 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData = undefined }) => 
           {isExprCalls ? (
             <h1 className="ongletPages pageActive">{TAB_PAGE_EXPR_CALL.label}</h1>
           ) : (
-            TAB_PAGE.map(type => {
+            TAB_PAGE.map((type) => {
               const isActive = type.id === pageType;
               return (
                 <h1 key={type.id}>
                   <a
-                    onClick={e => changePageType(e, type.id)}
+                    onClick={(e) => changePageType(e, type.id)}
                     href={`${URL_ROOT}/search/raw-data?pageType=${type.id}${isActive ? filterForAllParameter() : ''}${isActive ? parameterInCurrentUrlWithoutPageType() : parameterFromForm()}`}
                     className={`ongletPages is-centered py-2 px-5 ${isActive ? 'pageActive' : ''}`}
                   >

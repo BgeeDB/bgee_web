@@ -9,14 +9,14 @@ import { PROC_EXPR_VALUES } from '../../rawdata/useLogic';
 
 const getColumnValues = (cell, attributes = []) =>
   attributes
-    .map(attribute => {
+    .map((attribute) => {
       const attributeParts = attribute.split('.');
       attributeParts.shift();
       return attributeParts.reduce((result, attr) => result[attr], cell);
     })
-    .filter(x => x !== undefined);
+    .filter((x) => x !== undefined);
 
-const useLogic = data => {
+const useLogic = (data) => {
   const loc = useLocation();
 
   const columns = useMemo(
@@ -54,7 +54,7 @@ const useLogic = data => {
           );
         case COLUMN_TYPES.LINK_TO_PROC_EXPR_VALUES: {
           const currentSP = new URLSearchParams(loc.search);
-          filterTargets?.forEach(filter => {
+          filterTargets?.forEach((filter) => {
             const filterValue = getChildValueFromAttribute(cell, filter?.valueAttributeName);
             if (filterValue) {
               currentSP.append(filter?.urlParameterName, filterValue);
@@ -76,7 +76,7 @@ const useLogic = data => {
   );
 
   const onFilter = useCallback(
-    keyword => row => {
+    (keyword) => (row) => {
       const regExp = new RegExp(keyword.trim(), 'gi');
 
       return (data?.columnDescriptions || []).some(({ attributes }) => {

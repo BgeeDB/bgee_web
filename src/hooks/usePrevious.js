@@ -1,6 +1,6 @@
 import React from 'react';
 
-const usePrevious = value => {
+const usePrevious = (value) => {
   // The ref object is a generic container whose current property is mutable ...
   // ... and can hold any value, similar to an instance property on a class
   const ref = React.useRef(value);

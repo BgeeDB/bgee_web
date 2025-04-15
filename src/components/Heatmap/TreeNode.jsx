@@ -35,7 +35,7 @@ const TreeNode = ({ node, depth, index, yScale, toggleCollapse, labelFont }) => 
   const yPos = y + yScale.bandwidth() / 2;
   const bandwidth = yScale.bandwidth();
   // const lastChildYPos = Math.max(...node.children.map(n => yScale(n.label)));
-  const lastChildYPos = Math.max(...node.children.map(n => yScale(n.id)));
+  const lastChildYPos = Math.max(...node.children.map((n) => yScale(n.id)));
 
   return (
     // <g ref={gRef} id={node.id} transform={`translate(0, ${(index + depth) * 20})`}>
@@ -50,7 +50,7 @@ const TreeNode = ({ node, depth, index, yScale, toggleCollapse, labelFont }) => 
           fontSize="12"
           {...(hasChildren || node.isTopLevelTerm
             ? {
-                onClick: e => onToggleClick(e, node),
+                onClick: (e) => onToggleClick(e, node),
                 style: { cursor: 'pointer' },
               }
             : {})}

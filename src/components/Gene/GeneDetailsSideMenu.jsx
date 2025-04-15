@@ -13,7 +13,7 @@ const GeneDetailsSideMenu = ({ homologs = null, xRefs }) => {
   const location = useLocation();
 
   const handlerMenuClick = React.useCallback(
-    id => {
+    (id) => {
       navigate(`${URL_ROOT}${location.pathname}${location.search}#${id}`, { replace: true });
     },
     [location]

@@ -273,7 +273,7 @@ const ModalCard = ({ active, toggle }) => (
       <Link
         className="menu-modal-brand "
         to={PATHS.HOME}
-        onClick={event => {
+        onClick={(event) => {
           event.target.blur();
           toggle();
         }}
@@ -321,7 +321,7 @@ const ModalCard = ({ active, toggle }) => (
                       <Link
                         to={childProps.path}
                         className="navbar-item custom"
-                        onClick={event => {
+                        onClick={(event) => {
                           event.target.blur();
                           toggle();
                         }}

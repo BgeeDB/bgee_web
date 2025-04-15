@@ -66,12 +66,12 @@ export const Heatmap = ({
   );
 
   // handle display property changes
-  const updateGraphWidth = event => {
+  const updateGraphWidth = (event) => {
     const { value } = event.target;
     setGraphWidth(value);
     localStorage.setItem(STORAGE_KEYS.GRAPH_WIDTH, value);
   };
-  const updateGraphHeight = event => {
+  const updateGraphHeight = (event) => {
     const { value } = event.target;
     setGraphHeight(value);
     localStorage.setItem(STORAGE_KEYS.GRAPH_HEIGHT, value);
@@ -81,28 +81,28 @@ export const Heatmap = ({
     setShowLegend(value);
     localStorage.setItem(STORAGE_KEYS.SHOW_LEGEND, JSON.stringify(value));
   };
-  const updateYLabelWidth = event => {
+  const updateYLabelWidth = (event) => {
     setMarginLeft(event.target.value);
   };
-  const updateXLabelRotation = event => {
+  const updateXLabelRotation = (event) => {
     try {
       setXLabelRotation(parseInt(event.target.value, 10));
     } catch (error) {
       console.error(`[Heatmap] updateXLabelRotation: ${error}`);
     }
   };
-  const updateYLabelAlign = event => {
+  const updateYLabelAlign = (event) => {
     setYLabelAlign(event.target.value);
   };
-  const updateColorPalette = event => {
+  const updateColorPalette = (event) => {
     const { value } = event.target;
     setColorPalette(value);
     localStorage.setItem(STORAGE_KEYS.COLOR_PALETTE, value);
   };
-  const updateBgColor = event => {
+  const updateBgColor = (event) => {
     setBgColor(event.target.value);
   };
-  const updateShowDescMax = event => {
+  const updateShowDescMax = (event) => {
     setShowDescMax(event.target.value);
   };
   const updateShowMissingData = () => {
@@ -165,7 +165,7 @@ export const Heatmap = ({
   const visibleTermIds = useMemo(() => {
     const ids = new Set();
 
-    const traverse = term => {
+    const traverse = (term) => {
       ids.add(term.id);
       if (term.isExpanded && term.children) {
         term.children.forEach(traverse);
@@ -179,15 +179,15 @@ export const Heatmap = ({
   // Memoize the filtered values and color scale
   const colorScale = useMemo(() => {
     const visibleValues = data
-      .filter(d => visibleTermIds.has(d.y))
-      .map(d => d.value)
-      .filter(d => d !== null);
+      .filter((d) => visibleTermIds.has(d.y))
+      .map((d) => d.value)
+      .filter((d) => d !== null);
 
     const maxValue = useAdaptiveScale ? Math.max(...visibleValues, 0) : 100;
 
     return d3
       .scaleLinear()
-      .domain(THRESHOLDS.map(t => t * maxValue))
+      .domain(THRESHOLDS.map((t) => t * maxValue))
       .range(COLORS[colorPalette]);
   }, [data, visibleTermIds, useAdaptiveScale, colorPalette]);
 
@@ -204,7 +204,7 @@ export const Heatmap = ({
     const headerString = headers.join('\t');
 
     // Convert each JSON object to a tab-separated string
-    const dataStrings = data.map(obj => headers.map(header => obj[header]).join('\t'));
+    const dataStrings = data.map((obj) => headers.map((header) => obj[header]).join('\t'));
 
     // Combine headers and data strings into a single string
     const tsvString = [headerString, ...dataStrings].join('\n');
@@ -264,7 +264,7 @@ export const Heatmap = ({
       ctx.drawImage(img, 0, 0);
 
       // Convert canvas to PNG and trigger download
-      canvas.toBlob(blob => {
+      canvas.toBlob((blob) => {
         const pngUrl = URL.createObjectURL(blob);
         const downloadLink = document.createElement('a');
         downloadLink.href = pngUrl;
@@ -296,7 +296,7 @@ export const Heatmap = ({
     setUseAdaptiveScale(false);
 
     // Clear all stored settings
-    Object.values(STORAGE_KEYS).forEach(key => {
+    Object.values(STORAGE_KEYS).forEach((key) => {
       localStorage.removeItem(key);
     });
   };

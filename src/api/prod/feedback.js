@@ -15,7 +15,7 @@ const feedback = {
       axiosInstance
         .post('/?page=feedback', data)
         .then(({ data: responseData }) => resolve(responseData))
-        .catch(error => {
+        .catch((error) => {
           errorHandler(error);
           reject(error?.response);
         });

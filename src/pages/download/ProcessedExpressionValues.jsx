@@ -22,31 +22,31 @@ const DROPLET_BASED_LABEL = 'Droplet based RNA-Seq';
 export async function loader() {
   try {
     const res = await api.search.species.processedValues();
-    const speciesList = res.data.downloadFilesGroups.map(o => ({
+    const speciesList = res.data.downloadFilesGroups.map((o) => ({
       ...o,
       ...o.members[0],
     }));
 
     const files = {};
-    speciesList.forEach(s => {
+    speciesList.forEach((s) => {
       files[s.id.toString()] = {
-        affymetrixData: s.downloadFiles.find(d => d.category === 'affy_data'),
-        affymetrixAnnot: s.downloadFiles.find(d => d.category === 'affy_annot'),
-        rnaSeqData: s.downloadFiles.find(d => d.category === 'rnaseq_data'),
-        rnaSeqAnnot: s.downloadFiles.find(d => d.category === 'rnaseq_annot'),
-        fullLengthAnnot: s.downloadFiles.find(d => d.category === 'full_length_annot'),
-        fullLengthData: s.downloadFiles.find(d => d.category === 'full_length_data'),
-        fullLengthH5ad: s.downloadFiles.find(d => d.category === 'full_length_h5ad'),
-        dropletBasedAnnot: s.downloadFiles.find(d => d.category === 'droplet_based_annot'),
-        dropletBasedData: s.downloadFiles.find(d => d.category === 'droplet_based_data'),
-        dropletBasedH5ad: s.downloadFiles.find(d => d.category === 'droplet_based_h5ad'),
+        affymetrixData: s.downloadFiles.find((d) => d.category === 'affy_data'),
+        affymetrixAnnot: s.downloadFiles.find((d) => d.category === 'affy_annot'),
+        rnaSeqData: s.downloadFiles.find((d) => d.category === 'rnaseq_data'),
+        rnaSeqAnnot: s.downloadFiles.find((d) => d.category === 'rnaseq_annot'),
+        fullLengthAnnot: s.downloadFiles.find((d) => d.category === 'full_length_annot'),
+        fullLengthData: s.downloadFiles.find((d) => d.category === 'full_length_data'),
+        fullLengthH5ad: s.downloadFiles.find((d) => d.category === 'full_length_h5ad'),
+        dropletBasedAnnot: s.downloadFiles.find((d) => d.category === 'droplet_based_annot'),
+        dropletBasedData: s.downloadFiles.find((d) => d.category === 'droplet_based_data'),
+        dropletBasedH5ad: s.downloadFiles.find((d) => d.category === 'droplet_based_h5ad'),
       };
     });
     return {
       speciesList,
       files,
       kwList: res.data.speciesIdToKeywords,
-      allSpeciesName: speciesList.map(s => ` ${s.name} ${s.speciesName}`).join(', '),
+      allSpeciesName: speciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
     };
   } catch (error) {
     throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
@@ -70,7 +70,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
     const tmp = JSON.parse(JSON.stringify(speciesList));
     if (search === '') return tmp;
     const regExp = new RegExp(search, 'i');
-    return tmp.filter(({ id }) => (!kwList[id] ? false : Boolean(kwList[id].find(a => regExp.test(a)))));
+    return tmp.filter(({ id }) => (!kwList[id] ? false : Boolean(kwList[id].find((a) => regExp.test(a)))));
   }, [speciesList, search, kwList]);
   const speciesID = useQuery('id');
 

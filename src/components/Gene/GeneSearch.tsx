@@ -39,7 +39,7 @@ const GeneSearch = ({ classNames, children, searchTerm = '' }: any) => {
     );
   }, []);
 
-  const getOptionsFunction = useCallback(async search => {
+  const getOptionsFunction = useCallback(async (search) => {
     if (search) {
       return api.search.genes.autoComplete(search).then((resp: any) => {
         if (resp.code === 200 && resp.data.matchCount !== 0) {
@@ -52,7 +52,7 @@ const GeneSearch = ({ classNames, children, searchTerm = '' }: any) => {
   }, []);
 
   const onSelectOption = useCallback(
-    option => {
+    (option) => {
       navigate(`${PATHS.SEARCH.GENE}?search=${option}`);
     },
     [navigate]

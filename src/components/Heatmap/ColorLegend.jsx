@@ -26,7 +26,7 @@ export const ColorLegend = ({ height, colorScale, width, interactionData }) => {
   const max = domain[domain.length - 1];
   const xScale = d3.scaleLinear().range([0, boundsWidth]).domain([0, max]);
 
-  const allTicks = xScale.ticks(4).map(tick => (
+  const allTicks = xScale.ticks(4).map((tick) => (
     <>
       <line x1={xScale(tick)} x2={xScale(tick)} y1={0} y2={boundsHeight + 10} stroke="black" />
       <text x={xScale(tick)} y={boundsHeight + 20} fontSize={9} textAnchor="middle">

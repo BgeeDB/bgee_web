@@ -39,10 +39,10 @@ export async function loader({ params, request }) {
         orthologs: 0,
         paralogs: 0,
       };
-      homologsResult.value.data.orthologsByTaxon.forEach(o => {
+      homologsResult.value.data.orthologsByTaxon.forEach((o) => {
         if (o.genes.length > homologs.orthologs) homologs.orthologs = o.genes.length;
       });
-      homologsResult.value.data.paralogsByTaxon.forEach(o => {
+      homologsResult.value.data.paralogsByTaxon.forEach((o) => {
         if (o.genes.length > homologs.paralogs) homologs.paralogs = o.genes.length;
       });
     }

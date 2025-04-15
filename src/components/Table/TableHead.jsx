@@ -10,7 +10,7 @@ const cssSortOption = (key, sortOpts) => {
   let type;
   if (sortOpts) {
     if (Array.isArray(sortOpts)) {
-      pos = sortOpts.findIndex(s => s.key === key);
+      pos = sortOpts.findIndex((s) => s.key === key);
       if (pos >= 0) {
         type = sortOpts[pos].sort;
         pos += 1;

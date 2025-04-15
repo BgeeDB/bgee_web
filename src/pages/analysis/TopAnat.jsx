@@ -68,7 +68,7 @@ const TopAnat = () => {
   const getJobStatus = React.useCallback((ID, jobID, requestParams = true) => {
     api.topAnat
       .getJob(ID, jobID, requestParams)
-      .then(res => {
+      .then((res) => {
         if (res.data.jobResponse.jobStatus === 'UNDEFINED') {
           if (res.data?.jobResponse?.data)
             navigate(PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(':id', res.data.jobResponse.data));
@@ -86,7 +86,7 @@ const TopAnat = () => {
           getJobStatusTimeOut = setTimeout(() => getJobStatus(ID, jobID, false), 7000);
           setResults({ jobId: res.data.jobResponse.jobId });
           if (requestParams) {
-            setData(prev => ({
+            setData((prev) => ({
               ...prev,
               genes: (res.requestParameters.fg_list || []).join('\n'),
               genesBg: (res.requestParameters?.bg_list || []).join('\n'),
@@ -99,11 +99,11 @@ const TopAnat = () => {
               nbNode: res.requestParameters.nb_node || '',
               fdrThreshold: res.requestParameters.fdr_thr || '',
               pValueThreshold: res.requestParameters.p_value_thr || '',
-              rnaSeq: Boolean(res?.requestParameters?.data_type?.find(f => f === 'RNA_SEQ')),
-              affymetrix: Boolean(res?.requestParameters?.data_type?.find(f => f === 'AFFYMETRIX')),
-              inSitu: Boolean(res?.requestParameters?.data_type?.find(f => f === 'IN_SITU')),
-              full: Boolean(res?.requestParameters?.data_type?.find(f => f === ID_FULL_LENGTH)),
-              est: Boolean(res?.requestParameters?.data_type?.find(f => f === 'EST')),
+              rnaSeq: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'RNA_SEQ')),
+              affymetrix: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'AFFYMETRIX')),
+              inSitu: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'IN_SITU')),
+              full: Boolean(res?.requestParameters?.data_type?.find((f) => f === ID_FULL_LENGTH)),
+              est: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'EST')),
             }));
             requestParameters.set({
               TOP_ANAT_DEFAULT_RP,
@@ -112,8 +112,8 @@ const TopAnat = () => {
 
             api.topAnat
               .autoCompleteGenes(res.requestParameters.fg_list.join('\n'))
-              .then(r => {
-                requestParameters.set(prev => ({
+              .then((r) => {
+                requestParameters.set((prev) => ({
                   ...(prev || {}),
                   fg: {
                     list: r.data.fg_list,
@@ -121,14 +121,14 @@ const TopAnat = () => {
                   },
                 }));
               })
-              .catch(err => {
+              .catch((err) => {
                 console.debug('[ERROR] api.topAnat.autoComplete', err);
               });
             if (res.requestParameters.bg_list)
               api.topAnat
                 .autoCompleteGenes(res.requestParameters.bg_list.join('\n'), false)
-                .then(r => {
-                  requestParameters.set(prev => ({
+                .then((r) => {
+                  requestParameters.set((prev) => ({
                     ...(prev || {}),
                     bg: {
                       list: r.data.bg_list,
@@ -136,7 +136,7 @@ const TopAnat = () => {
                     },
                   }));
                 })
-                .catch(err => {
+                .catch((err) => {
                   console.debug('[ERROR] api.topAnat.autoComplete', err);
                 });
           }
@@ -145,16 +145,16 @@ const TopAnat = () => {
           navigate(PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(':id', res.data.jobResponse.data));
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.debug('[ERROR] api.topAnat.getResults(%s)', ID, err);
         setFlowState(TOP_ANAT_FLOW.ERROR_GET_JOB);
       });
   }, []);
 
-  const getResults = React.useCallback(ID => {
+  const getResults = React.useCallback((ID) => {
     api.topAnat
       .getResults(ID)
-      .then(res => {
+      .then((res) => {
         const rp = res.requestParameters;
         addTopAnatHistory(
           ID,
@@ -171,7 +171,7 @@ const TopAnat = () => {
         });
         setFlowState(TOP_ANAT_FLOW.GOT_RESULTS);
       })
-      .catch(err => {
+      .catch((err) => {
         if (err?.data?.data.exceptionType === 'JobResultNotFoundException' && err.data.code === 400) {
           const rp = err.data.requestParameters;
           const formData = ApiReducer.topAnatForm(rp)({});
@@ -181,7 +181,7 @@ const TopAnat = () => {
           setFlowState(TOP_ANAT_FLOW.LAUNCHING_JOB);
           api.topAnat
             .runJob(formData)
-            .then(res => {
+            .then((res) => {
               navigate(
                 PATHS.ANALYSIS[
                   res.data.jobResponse.jobStatus === 'RUNNING' ? 'TOP_ANAT_RESULT_JOB_ID' : 'TOP_ANAT_RESULT'
@@ -190,7 +190,7 @@ const TopAnat = () => {
                   .replace(':jobId', res.data.jobResponse.jobId)
               );
             })
-            .catch(error => {
+            .catch((error) => {
               console.debug('[ERROR] api.topAnat.runJob', data, error);
               setFlowState(TOP_ANAT_FLOW.ERROR_LAUNCH_JOB);
             });

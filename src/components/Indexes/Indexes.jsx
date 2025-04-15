@@ -12,7 +12,7 @@ const Indexes = ({ speciesList }) => (
     <Bulma.Card.Body>
       <Bulma.Columns>
         {speciesList &&
-          speciesList.map(species => (
+          speciesList.map((species) => (
             <Bulma.C
               key={`${species.id}-indexes`}
               className="p-0 is-one-quarter-fullhd is-one-third-desktop is-half-tablet is-full-mobile"

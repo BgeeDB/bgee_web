@@ -2,7 +2,7 @@ import config from '../config.json';
 import PATHS from '../paths/paths';
 import obolibraryLinkFromID, { obolibraryNCBITaxonLinkFromID } from './obolibraryLinkFromID';
 
-const getFullUrl = path => {
+const getFullUrl = (path) => {
   // During SSR, use the configured domain
   if (typeof window === 'undefined') {
     return config.permanentVersionedDomain + path;
@@ -46,9 +46,9 @@ export const geneToLdJSON = ({ name, geneId, description, synonyms, species, xRe
   }, []),
 });
 
-export const geneHomologsToLdJSON = homo => {
+export const geneHomologsToLdJSON = (homo) => {
   const ldJson = [];
-  homo.forEach(h => {
+  homo.forEach((h) => {
     ldJson.push({
       '@context': 'https://schema.org/',
       '@type': 'https://schema.org/Taxon',
@@ -66,9 +66,9 @@ export const geneHomologsToLdJSON = homo => {
   return ldJson;
 };
 
-export const geneExpressionToLdJSON = genes => {
+export const geneExpressionToLdJSON = (genes) => {
   const ldJson = [];
-  genes.forEach(g => {
+  genes.forEach((g) => {
     const { anatEntity, cellType } = g.condition;
     if (g.condition.cellType)
       ldJson.push({
@@ -111,7 +111,7 @@ export const geneExpressionToLdJSON = genes => {
   return ldJson;
 };
 
-const fileDownloadProps = file => ({
+const fileDownloadProps = (file) => ({
   '@type': 'Dataset',
   'http://purl.org/dc/terms/conformsTo': {
     '@id': 'https://bioschemas.org/profiles/Dataset/1.0-RELEASE',
@@ -487,8 +487,9 @@ export const speciesToLdJSON = ({
               {
                 '@type': 'DataDownload',
                 encodingFormat: 'TSV',
-                contentUrl: downloadFiles.find(d => d.category === 'expr_simple' && d.conditionParameters.length === 1)
-                  .path,
+                contentUrl: downloadFiles.find(
+                  (d) => d.category === 'expr_simple' && d.conditionParameters.length === 1
+                ).path,
               },
             ],
           },
@@ -514,7 +515,7 @@ export const speciesToLdJSON = ({
                 '@type': 'DataDownload',
                 encodingFormat: 'TSV',
                 contentUrl: downloadFiles.find(
-                  d => d.category === 'expr_advanced' && d.conditionParameters.length === 1
+                  (d) => d.category === 'expr_advanced' && d.conditionParameters.length === 1
                 ).path,
               },
             ],
@@ -540,7 +541,7 @@ export const speciesToLdJSON = ({
               {
                 '@type': 'DataDownload',
                 encodingFormat: 'TSV',
-                contentUrl: downloadFiles.find(d => d.category === 'expr_simple' && d.conditionParameters.length > 1)
+                contentUrl: downloadFiles.find((d) => d.category === 'expr_simple' && d.conditionParameters.length > 1)
                   .path,
               },
             ],
@@ -566,8 +567,9 @@ export const speciesToLdJSON = ({
               {
                 '@type': 'DataDownload',
                 encodingFormat: 'TSV',
-                contentUrl: downloadFiles.find(d => d.category === 'expr_advanced' && d.conditionParameters.length > 1)
-                  .path,
+                contentUrl: downloadFiles.find(
+                  (d) => d.category === 'expr_advanced' && d.conditionParameters.length > 1
+                ).path,
               },
             ],
           },
@@ -614,7 +616,7 @@ export const speciesToLdJSON = ({
     ],
   };
 
-  let file = downloadFiles.find(d => d.category === 'affy_annot');
+  let file = downloadFiles.find((d) => d.category === 'affy_annot');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -624,7 +626,7 @@ export const speciesToLdJSON = ({
       url: `${url}#proc-values-affymetrix`,
     });
   }
-  file = downloadFiles.find(d => d.category === 'affy_data');
+  file = downloadFiles.find((d) => d.category === 'affy_data');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -634,7 +636,7 @@ export const speciesToLdJSON = ({
     });
   }
 
-  file = downloadFiles.find(d => d.category === 'rnaseq_annot');
+  file = downloadFiles.find((d) => d.category === 'rnaseq_annot');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -644,7 +646,7 @@ export const speciesToLdJSON = ({
       url: `${url}#proc-values-rna-seq`,
     });
   }
-  file = downloadFiles.find(d => d.category === 'rnaseq_data');
+  file = downloadFiles.find((d) => d.category === 'rnaseq_data');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -655,7 +657,7 @@ export const speciesToLdJSON = ({
     });
   }
 
-  file = downloadFiles.find(d => d.category === 'full_length_annot');
+  file = downloadFiles.find((d) => d.category === 'full_length_annot');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -665,7 +667,7 @@ export const speciesToLdJSON = ({
       url: `${url}#proc-values-fl-scrna-seq`,
     });
   }
-  file = downloadFiles.find(d => d.category === 'full_length_data');
+  file = downloadFiles.find((d) => d.category === 'full_length_data');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -675,7 +677,7 @@ export const speciesToLdJSON = ({
       url: `${url}#proc-values-fl-scrna-seq`,
     });
   }
-  file = downloadFiles.find(d => d.category === 'full_length_h5ad');
+  file = downloadFiles.find((d) => d.category === 'full_length_h5ad');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -687,7 +689,7 @@ export const speciesToLdJSON = ({
     });
   }
 
-  file = downloadFiles.find(d => d.category === 'droplet_based_annot');
+  file = downloadFiles.find((d) => d.category === 'droplet_based_annot');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -697,7 +699,7 @@ export const speciesToLdJSON = ({
       url: `${url}#proc-values-db-scrna-seq`,
     });
   }
-  file = downloadFiles.find(d => d.category === 'droplet_based_data');
+  file = downloadFiles.find((d) => d.category === 'droplet_based_data');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -707,7 +709,7 @@ export const speciesToLdJSON = ({
       url: `${url}#proc-values-db-scrna-seq`,
     });
   }
-  file = downloadFiles.find(d => d.category === 'droplet_based_h5ad');
+  file = downloadFiles.find((d) => d.category === 'droplet_based_h5ad');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),
@@ -723,7 +725,7 @@ export const speciesToLdJSON = ({
 };
 
 export const schemaDotOrg = {
-  setHomeDatasetLdJSON: species => {
+  setHomeDatasetLdJSON: (species) => {
     /* add ld+json @ bottom of body */
     const script = document.createElement('script');
     script.type = 'application/ld+json';
@@ -736,7 +738,7 @@ export const schemaDotOrg = {
     /* remove ld+json @ bottom of body */
     document.getElementById('dataset-ld+json')?.remove();
   },
-  setSpeciesLdJSON: species => {
+  setSpeciesLdJSON: (species) => {
     /* add ld+json @ bottom of body */
     const script = document.createElement('script');
     script.type = 'application/ld+json';
@@ -749,7 +751,7 @@ export const schemaDotOrg = {
     /* remove ld+json @ bottom of body */
     document.getElementById('species-ld+json')?.remove();
   },
-  setGeneLdJSON: gene => {
+  setGeneLdJSON: (gene) => {
     /* add ld+json @ bottom of body */
     const script = document.createElement('script');
     script.type = 'application/ld+json';
@@ -762,7 +764,7 @@ export const schemaDotOrg = {
     /* remove ld+json @ bottom of body */
     document.getElementById('gene-ld+json')?.remove();
   },
-  setGeneHomologsLdJSON: gene => {
+  setGeneHomologsLdJSON: (gene) => {
     /* add ld+json @ bottom of body */
     const script = document.createElement('script');
     script.type = 'application/ld+json';
@@ -775,7 +777,7 @@ export const schemaDotOrg = {
     /* remove ld+json @ bottom of body */
     document.getElementById('gene_homologs-ld+json')?.remove();
   },
-  setGeneExpressionLdJSON: genes => {
+  setGeneExpressionLdJSON: (genes) => {
     /* add ld+json @ bottom of body */
     const script = document.createElement('script');
     script.type = 'application/ld+json';

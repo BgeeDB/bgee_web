@@ -190,7 +190,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  onClick={event => {
+                  onClick={(event) => {
                     event.preventDefault();
                     copyToClipboard(permanentLink);
                     addNotification({
@@ -203,7 +203,7 @@ const Footer = () => {
                       className: 'is-success',
                     });
                   }}
-                  onKeyPress={event => {
+                  onKeyPress={(event) => {
                     if (event.key === 'Enter') {
                       event.preventDefault();
                       copyToClipboard(permanentLink);

@@ -9,7 +9,7 @@ const Select = ({ title = 'defaultTitle', defaultValue = '', options, onChange, 
   const hasValueProps = typeof value !== 'undefined' && value !== null;
 
   const onChangeSelect = React.useCallback(
-    e => {
+    (e) => {
       if (!hasValueProps) {
         setActive(e.target.value);
       }
@@ -21,8 +21,8 @@ const Select = ({ title = 'defaultTitle', defaultValue = '', options, onChange, 
   return (
     <div className="select">
       <select title={title} value={hasValueProps ? value : active} onChange={onChangeSelect}>
-        {options.map(opt =>
-          ['string', 'number'].find(t => t === typeof opt) ? (
+        {options.map((opt) =>
+          ['string', 'number'].find((t) => t === typeof opt) ? (
             <option key={opt} value={opt}>
               {opt}
             </option>

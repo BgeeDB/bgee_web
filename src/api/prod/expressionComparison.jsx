@@ -7,7 +7,7 @@ export const EXPRESSION_COMPARISON_API = {
   getResults: null,
 };
 
-const DEFAULT_PARAMETERS = queryBase => {
+const DEFAULT_PARAMETERS = (queryBase) => {
   const params = new URLSearchParams(queryBase);
   params.append('page', 'expression_comparison');
 
@@ -23,7 +23,7 @@ const expressionComparison = {
       params.append('display_type', 'json');
       axiosInstance
         .get(`/?${params.toString()}`, {
-          cancelToken: new axios.CancelToken(c => {
+          cancelToken: new axios.CancelToken((c) => {
             EXPRESSION_COMPARISON_API.getResults = c;
           }),
         })
@@ -31,7 +31,7 @@ const expressionComparison = {
           const formatted = JSON.parse(JSON.stringify(data));
           let speciesAbsent;
           let speciesPresent;
-          formatted.data.comparisonResults = formatted.data.comparisonResults.map(r => {
+          formatted.data.comparisonResults = formatted.data.comparisonResults.map((r) => {
             speciesAbsent = new Set();
             speciesPresent = new Set();
             let filterAnatEntities = '';
@@ -40,9 +40,9 @@ const expressionComparison = {
               filterAnatEntities += r.condition.anatEntity.name;
             } else if (r.multiSpeciesCondition) {
               if (r.multiSpeciesCondition.cellTypes && r.multiSpeciesCondition.cellTypes.length > 0) {
-                filterAnatEntities = `${r.multiSpeciesCondition.cellTypes.map(a => a.name).join(', ')} in `;
+                filterAnatEntities = `${r.multiSpeciesCondition.cellTypes.map((a) => a.name).join(', ')} in `;
               }
-              filterAnatEntities += r.multiSpeciesCondition.anatEntities.map(a => a.name).join(', ');
+              filterAnatEntities += r.multiSpeciesCondition.anatEntities.map((a) => a.name).join(', ');
             }
             return {
               ...r,
@@ -51,15 +51,15 @@ const expressionComparison = {
               countGenesExprPresent: r.genesExpressionPresent.length,
               countGenesNoData: r.genesNoData.length,
               countSpeciesExprAbsent: r.genesExpressionAbsent
-                .map(g => g.species)
-                .filter(el => {
+                .map((g) => g.species)
+                .filter((el) => {
                   const duplicate = speciesAbsent.has(el.id);
                   speciesAbsent.add(el.id);
                   return !duplicate;
                 }).length,
               countSpeciesExprPresent: r.genesExpressionPresent
-                .map(g => g.species)
-                .filter(el => {
+                .map((g) => g.species)
+                .filter((el) => {
                   const duplicate = speciesPresent.has(el.id);
                   speciesPresent.add(el.id);
                   return !duplicate;
@@ -68,7 +68,7 @@ const expressionComparison = {
           });
           resolve(formatted);
         })
-        .catch(error => {
+        .catch((error) => {
           if (
             error?.response?.data?.code === 400 &&
             error?.response?.data?.data?.exceptionType === 'JobResultNotFoundException'

@@ -12,7 +12,7 @@ const PlusModalCell = ({ row, defaultRender }) => {
   const { columns, onRenderCell, showTableModalButton } = useContext(TableContext);
 
   const showModalDetails = React.useCallback(
-    item => () => {
+    (item) => () => {
       console.log(columns, item);
       let titleModal = 'Details';
       if (item?.condition?.anatEntity) titleModal += ` in ${item?.condition?.anatEntity.name}`;
@@ -25,7 +25,7 @@ const PlusModalCell = ({ row, defaultRender }) => {
           </Bulma.Modal.Card.Header>
           <Bulma.Modal.Card.Body>
             <div className="gene-expression-modal-grid">
-              {columns.map(col => (
+              {columns.map((col) => (
                 <React.Fragment key={col.key}>
                   <div className="label">{col.text}</div>
                   <div>
@@ -68,9 +68,9 @@ const TableBody = () => {
   const defaultRender = React.useCallback(
     (cell, key) => {
       let style;
-      const col = columns.find(c => c?.key === key);
+      const col = columns.find((c) => c?.key === key);
       if (col && col.style) {
-        style = columns.find(c => c?.key === key).style;
+        style = columns.find((c) => c?.key === key).style;
       }
       if (typeof cell === 'string' || typeof cell === 'number')
         return (

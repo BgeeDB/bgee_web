@@ -14,7 +14,7 @@ const GeneXRefs = ({ isLoading, data }) => (
           80%
         </progress>
       ) : (
-        data?.gene?.xRefs.map(xref => (
+        data?.gene?.xRefs.map((xref) => (
           <Bulma.Columns key={xref.source.name} className="my-0">
             <Bulma.C size={3}>
               <p className="has-text-weight-semibold">{xref.source.name}</p>

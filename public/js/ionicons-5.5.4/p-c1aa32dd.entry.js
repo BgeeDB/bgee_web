@@ -1,6 +1,6 @@
 import { r as o, h as i, H as t, a as n } from './p-9c97a69a.js';
 import { i as s, g as r, b as e } from './p-85f22907.js';
-const c = o => {
+const c = (o) => {
     if (1 === o.nodeType) {
       if ('script' === o.nodeName.toLowerCase()) return !1;
       for (let i = 0; i < o.attributes.length; i++) {
@@ -33,7 +33,7 @@ let h = class {
   waitUntilVisible(o, i, t) {
     if (this.lazy && 'undefined' != typeof window && window.IntersectionObserver) {
       const n = (this.io = new window.IntersectionObserver(
-        o => {
+        (o) => {
           o[0].isIntersecting && (n.disconnect(), (this.io = void 0), t());
         },
         { rootMargin: i }
@@ -52,12 +52,12 @@ let h = class {
               if (!t) {
                 if ('undefined' == typeof fetch || 'undefined' == typeof document)
                   return a.set(o, ''), Promise.resolve();
-                (t = fetch(o).then(t => {
+                (t = fetch(o).then((t) => {
                   if (t.ok)
-                    return t.text().then(t => {
+                    return t.text().then((t) => {
                       t &&
                         !1 !== i &&
-                        (t = (o => {
+                        (t = ((o) => {
                           const i = document.createElement('div');
                           i.innerHTML = o;
                           for (let o = i.childNodes.length - 1; o >= 0; o--)
@@ -108,7 +108,7 @@ let h = class {
   }
 };
 const d = () => ('undefined' != typeof document && document.documentElement.getAttribute('mode')) || 'md',
-  f = o => (o ? { 'ion-color': !0, [`ion-color-${o}`]: !0 } : null);
+  f = (o) => (o ? { 'ion-color': !0, [`ion-color-${o}`]: !0 } : null);
 h.style =
   ':host{display:inline-block;width:1em;height:1em;contain:strict;fill:currentColor;-webkit-box-sizing:content-box !important;box-sizing:content-box !important}:host .ionicon{stroke:currentColor}.ionicon-fill-none{fill:none}.ionicon-stroke-width{stroke-width:32px;stroke-width:var(--ionicon-stroke-width, 32px)}.icon-inner,.ionicon,svg{display:block;height:100%;width:100%}:host(.flip-rtl) .icon-inner{-webkit-transform:scaleX(-1);transform:scaleX(-1)}:host(.icon-small){font-size:18px !important}:host(.icon-large){font-size:32px !important}:host(.ion-color){color:var(--ion-color-base) !important}:host(.ion-color-primary){--ion-color-base:var(--ion-color-primary, #3880ff)}:host(.ion-color-secondary){--ion-color-base:var(--ion-color-secondary, #0cd1e8)}:host(.ion-color-tertiary){--ion-color-base:var(--ion-color-tertiary, #f4a942)}:host(.ion-color-success){--ion-color-base:var(--ion-color-success, #10dc60)}:host(.ion-color-warning){--ion-color-base:var(--ion-color-warning, #ffce00)}:host(.ion-color-danger){--ion-color-base:var(--ion-color-danger, #f14141)}:host(.ion-color-light){--ion-color-base:var(--ion-color-light, #f4f5f8)}:host(.ion-color-medium){--ion-color-base:var(--ion-color-medium, #989aa2)}:host(.ion-color-dark){--ion-color-base:var(--ion-color-dark, #222428)}';
 export { h as ion_icon };

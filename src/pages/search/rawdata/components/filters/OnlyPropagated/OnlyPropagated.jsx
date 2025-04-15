@@ -23,7 +23,7 @@ const OnlyPropagated = ({ onlyPropagated, setOnlyPropagated }) => (
         id="onlyPropagated"
         type="checkbox"
         checked={onlyPropagated ? 'checked' : ''}
-        onChange={() => setOnlyPropagated(value => !value)}
+        onChange={() => setOnlyPropagated((value) => !value)}
       />
       <label htmlFor="onlyPropagated">Used in gene expression calls</label>
     </div>

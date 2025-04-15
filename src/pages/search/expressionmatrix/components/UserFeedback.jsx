@@ -42,7 +42,7 @@ const UserFeedback = () => {
       <h4 className="title is-5 mb-3">Rate this page</h4>
 
       <div className="stars mb-3">
-        {[1, 2, 3, 4, 5].map(star => (
+        {[1, 2, 3, 4, 5].map((star) => (
           <button type="button" key={star} className="button is-ghost p-1" onClick={() => setRating(star)}>
             <span className="icon">
               <ion-icon
@@ -60,7 +60,7 @@ const UserFeedback = () => {
           <textarea
             className="textarea"
             value={feedback}
-            onChange={e => setFeedback(e.target.value)}
+            onChange={(e) => setFeedback(e.target.value)}
             placeholder="Your feedback helps us improve"
           />
         </div>
@@ -73,7 +73,7 @@ const UserFeedback = () => {
             type="email"
             className="input"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email if you'd like us to follow up"
           />
         </div>

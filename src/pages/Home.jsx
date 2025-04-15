@@ -27,7 +27,7 @@ export function meta() {
   });
 }
 
-const HomeCard = props => {
+const HomeCard = (props) => {
   const { id, imgUrl, title, desc, linkUrl, linkText } = props;
   return (
     <Bulma.C size={6}>
@@ -278,7 +278,7 @@ const Home = ({ loaderData }) => {
               <Bulma.C size={3}>
                 View archive sites:
                 <p className="is-size-7 archived-link">
-                  {config.archivedVersion.map(archived => (
+                  {config.archivedVersion.map((archived) => (
                     <LinkExternal key={archived.version} to={archived.url}>
                       {`${archived.version}`}
                     </LinkExternal>

@@ -69,7 +69,7 @@ export const TOP_ANAT_DEFAULT_VALUES = {
   fdrThreshold: '0.2',
   pValueThreshold: '1',
 };
-export const topAnatAdvancedOptsNotDefault = opts => {
+export const topAnatAdvancedOptsNotDefault = (opts) => {
   let isNotDefault = false;
   Object.entries(TOP_ANAT_DEFAULT_VALUES).forEach(([opt, value]) => {
     if (

@@ -31,14 +31,14 @@ const ExpressionSearch = ({ search, setSearch, elements, onRender }) => {
         name="search-species"
         placeholder="Scientific name, common name, ..."
         value={search}
-        onKeyDown={e => {
+        onKeyDown={(e) => {
           if (e.key === 'Enter') setShowAuto(false);
         }}
-        onChange={e => setSearch(e.target.value)}
+        onChange={(e) => setSearch(e.target.value)}
       />
       {showAuto && (
         <div className="autocomplete-wrapper">
-          {elements.map(s =>
+          {elements.map((s) =>
             typeof onRender === 'function'
               ? onRender(s, () => {
                   setShowAuto(false);

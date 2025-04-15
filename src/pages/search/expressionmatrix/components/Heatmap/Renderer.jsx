@@ -62,11 +62,11 @@ export const Renderer = forwardRef(
 
         // collect low-level children
         const childrenLowLvl = children
-          .filter(child => !child.isTopLevelTerm)
+          .filter((child) => !child.isTopLevelTerm)
           .sort((a, b) => a.label.localeCompare(b.label));
         // collect high-level children
         const childrenHighLvl = children
-          .filter(child => child.isTopLevelTerm)
+          .filter((child) => child.isTopLevelTerm)
           .sort((a, b) => a.label.localeCompare(b.label));
 
         // Sort the children based on the label
@@ -84,7 +84,7 @@ export const Renderer = forwardRef(
               isPopulated: child.isPopulated,
               isExpanded: child.isExpanded,
               isLastChild: idx === arr.length - 1,
-              embeddedInLvls: idx === arr.length - 1 ? [...embedLvls.filter(x => x !== depth)] : [...embedLvls],
+              embeddedInLvls: idx === arr.length - 1 ? [...embedLvls.filter((x) => x !== depth)] : [...embedLvls],
             };
             orderedLabels.push(newLabel);
             traverse(child.children, depth + 1, child.isExpanded, [...newLabel.embeddedInLvls, depth + 1]);
@@ -102,7 +102,7 @@ export const Renderer = forwardRef(
     }
 
     // sort x-axis labels alphabetically
-    const xLabels = useMemo(() => [...new Set(dataShow.map(d => d.x))], [dataShow]);
+    const xLabels = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
     const xLabelsOrdered = xLabels.sort((a, b) => a.localeCompare(b));
 
     // sort y-axis labels hierarchically
@@ -117,7 +117,7 @@ export const Renderer = forwardRef(
     // const allYGroups = useMemo(() => [...new Set(dataShow.map((d) => d.y))], [dataShow]);
     const allXGroups = xLabelsOrdered;
     // const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.label))], [yLblOrdered]);
-    const allYGroups = useMemo(() => [...new Set(yLblOrdered.map(d => d.id))], [yLblOrdered]);
+    const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 
     const xScale = useMemo(() => {
       // Calculate required width based on minimum cell width, including 4px margin
@@ -205,7 +205,7 @@ export const Renderer = forwardRef(
               rx={5}
               stroke={strokeColour}
               strokeWidth={4}
-              onMouseEnter={e => {
+              onMouseEnter={(e) => {
                 setHoveredCell({
                   xLabel: `${d.geneId} - ${d.geneName}`,
                   yLabel: `${d.termId} - ${d.termName}`,
@@ -236,7 +236,7 @@ export const Renderer = forwardRef(
                 fill={fillColour}
                 rx={5}
                 strokeWidth={1}
-                onMouseEnter={e => {
+                onMouseEnter={(e) => {
                   setHoveredCell({
                     xLabel: `${d.geneId} - ${d.geneName}`,
                     yLabel: `${d.termId} - ${d.termName}`,
@@ -311,7 +311,7 @@ export const Renderer = forwardRef(
               rx={5}
               stroke="white"
               strokeWidth={2}
-              onMouseEnter={e => {
+              onMouseEnter={(e) => {
                 setHoveredCell({
                   xLabel: `${d.geneId} - ${d.geneName}`,
                   yLabel: `${d.termId} - ${d.termName}`,
@@ -463,7 +463,7 @@ export const Renderer = forwardRef(
     const stopsIdx = Array(101)
       .fill()
       .map((_, index) => index);
-    const colorLegendStops = stopsIdx.map(idx => (
+    const colorLegendStops = stopsIdx.map((idx) => (
       <stop key={`colorLegendStop-${idx}`} stopColor={colorScale((max * idx) / 100)} offset={`${idx}%`} />
     ));
     const colorLegendPosX = 0;

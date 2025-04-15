@@ -10,9 +10,9 @@ const expressionPageHelper = {
     kwList &&
     list?.map &&
     list
-      .map(s => ({
+      .map((s) => ({
         info: s,
-        word: kwList?.[s.id]?.find(kw => new RegExp(search, 'gi').test(kw)),
+        word: kwList?.[s.id]?.find((kw) => new RegExp(search, 'gi').test(kw)),
       }))
       ?.sort((a, b) => a?.word?.localeCompare(b.word)),
   autocompleteSpeciesRender: (setSearch, navigate) => (s, closeAutoComplete) => (

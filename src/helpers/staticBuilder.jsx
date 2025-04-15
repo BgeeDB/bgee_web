@@ -245,7 +245,7 @@ const staticBuilder = (json, prefixKey = '') =>
       case 'ordered_list':
         return (
           <ol key={`${prefixKey}-${key}`} id={id} className={classnames('ordered', classNames)}>
-            {props.children.map(element => (
+            {props.children.map((element) => (
               <li>{staticBuilder([element])}</li>
             ))}
           </ol>

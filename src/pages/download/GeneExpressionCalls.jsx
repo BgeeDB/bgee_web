@@ -17,34 +17,34 @@ import { getMetadata } from '~/helpers/metadata';
 export async function loader() {
   try {
     const res = await api.search.species.exprCalls();
-    const singleSpeciesList = res.data.downloadFilesGroups.map(o => ({
+    const singleSpeciesList = res.data.downloadFilesGroups.map((o) => ({
       ...o,
       ...o.members[0],
     }));
     const files = {};
-    singleSpeciesList.forEach(s => {
+    singleSpeciesList.forEach((s) => {
       files[s.id.toString()] = {
         anatSimple: s.downloadFiles.find(
-          f =>
+          (f) =>
             f.category === 'expr_simple' &&
             f.conditionParameters.length === 1 &&
             f.conditionParameters[0] === 'anat_entity'
         ),
         anatAdvanced: s.downloadFiles.find(
-          f =>
+          (f) =>
             f.category === 'expr_advanced' &&
             f.conditionParameters.length === 1 &&
             f.conditionParameters[0] === 'anat_entity'
         ),
-        fullSimple: s.downloadFiles.find(f => f.category === 'expr_simple' && f.conditionParameters.length > 1),
-        fullAdvanced: s.downloadFiles.find(f => f.category === 'expr_advanced' && f.conditionParameters.length > 1),
+        fullSimple: s.downloadFiles.find((f) => f.category === 'expr_simple' && f.conditionParameters.length > 1),
+        fullAdvanced: s.downloadFiles.find((f) => f.category === 'expr_advanced' && f.conditionParameters.length > 1),
       };
     });
     return {
       singleSpeciesList,
       files,
       kwList: res.data.speciesIdToKeywords,
-      allSpeciesName: singleSpeciesList.map(s => ` ${s.name} ${s.speciesName}`).join(', '),
+      allSpeciesName: singleSpeciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
     };
   } catch (error) {
     throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
@@ -67,7 +67,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
     const tmp = JSON.parse(JSON.stringify(singleSpeciesList));
     if (search === '') return tmp;
     const regExp = new RegExp(search, 'i');
-    return tmp.filter(({ id }) => (!kwList[id] ? false : Boolean(kwList[id].find(a => regExp.test(a)))));
+    return tmp.filter(({ id }) => (!kwList[id] ? false : Boolean(kwList[id].find((a) => regExp.test(a)))));
   }, [singleSpeciesList, search, kwList]);
 
   const speciesID = useQuery('id');

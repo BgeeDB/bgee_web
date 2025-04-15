@@ -10,14 +10,14 @@ const SelectCustom = ({ onChange, multiple = false, value, elements = [] }) => {
   const ref = useDetectClickOutside(() => setActive(false));
 
   const toggle = React.useCallback(
-    e => {
+    (e) => {
       e.stopPropagation();
       setActive(!active);
     },
     [active]
   );
   const onClickItem = React.useCallback(
-    val => e => {
+    (val) => (e) => {
       e.stopPropagation();
       const tmp = multiple ? [...value, val] : val;
       if (onChange) onChange(tmp);
@@ -25,9 +25,9 @@ const SelectCustom = ({ onChange, multiple = false, value, elements = [] }) => {
     },
     [multiple, onChange, value]
   );
-  const isSelected = key => {
+  const isSelected = (key) => {
     if (!multiple) return value === key;
-    return value.findIndex(v => v === key) !== -1;
+    return value.findIndex((v) => v === key) !== -1;
   };
 
   return (
@@ -37,7 +37,7 @@ const SelectCustom = ({ onChange, multiple = false, value, elements = [] }) => {
         <p>{Array.isArray(value) ? value.join(', ') : value}</p>
       </div>
       <div className="select-body">
-        {elements.map(e => (
+        {elements.map((e) => (
           <div
             key={e.key}
             className={`select-item ${isSelected(e.key) ? 'selected' : ''}`}

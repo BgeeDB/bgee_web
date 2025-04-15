@@ -9,7 +9,7 @@ const RawDataAnnotationsFilters = ({ filters, setFilters, triggerSearch, dataFil
   const [hasChanged, setHasChanged] = useState(false);
   const eraseFilters = () => {
     if (filters[dataType] !== {} && filters[dataType] !== undefined) {
-      setFilters(old => ({ ...old, [dataType]: {} }));
+      setFilters((old) => ({ ...old, [dataType]: {} }));
       triggerSearch(true, true);
       setHasChanged(false);
     }
@@ -22,7 +22,7 @@ const RawDataAnnotationsFilters = ({ filters, setFilters, triggerSearch, dataFil
 
   const onSelect = (keyAPI, newSelected) => {
     setHasChanged(true);
-    setFilters(old => ({
+    setFilters((old) => ({
       ...old,
       [dataType]: { ...old[dataType], [keyAPI]: newSelected },
     }));
@@ -31,7 +31,7 @@ const RawDataAnnotationsFilters = ({ filters, setFilters, triggerSearch, dataFil
   return (
     <div className="filters">
       {!isEmpty(dataFilters) &&
-        Object.keys(dataFilters).map(filterKey => {
+        Object.keys(dataFilters).map((filterKey) => {
           const dataFilter = dataFilters[filterKey];
           const keyAPI = dataFilter?.urlParameterName;
           const filterByDataType = filters[dataType];
@@ -48,7 +48,7 @@ const RawDataAnnotationsFilters = ({ filters, setFilters, triggerSearch, dataFil
               placeholder={dataFilter.filterName}
               getOptionsFunction={() => options}
               selectedOptions={filterByDataType?.[keyAPI] || []}
-              setSelectedOptions={newSelected => onSelect(keyAPI, newSelected)}
+              setSelectedOptions={(newSelected) => onSelect(keyAPI, newSelected)}
               className="filterSelect my-2"
             />
           );

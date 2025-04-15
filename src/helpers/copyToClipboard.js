@@ -1,4 +1,4 @@
-const copyToClipboard = text => {
+const copyToClipboard = (text) => {
   const el = document.createElement('textarea');
   const iOS = window.navigator.userAgent.match(/ipad|iphone/i);
   const yPosition = window.pageYOffset || document.documentElement.scrollTop;

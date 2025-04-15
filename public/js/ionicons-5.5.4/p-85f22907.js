@@ -8,11 +8,11 @@ const t = () => {
     }
     return r;
   },
-  e = n => {
+  e = (n) => {
     const r = t();
-    Object.keys(n).forEach(t => r.set(t, n[t]));
+    Object.keys(n).forEach((t) => r.set(t, n[t]));
   },
-  i = n => {
+  i = (n) => {
     let r = u(n.src);
     if (r) return r;
     if (((r = o(n.name, n.icon, n.mode, n.ios, n.md)), r)) return s(r);
@@ -22,14 +22,14 @@ const t = () => {
     }
     return null;
   },
-  s = r => t().get(r) || n(`svg/${r}.svg`),
+  s = (r) => t().get(r) || n(`svg/${r}.svg`),
   o = (n, r, t, e, i) => (
     (t = 'ios' === (t && l(t)) ? 'ios' : 'md'),
     e && 'ios' === t ? (n = l(e)) : i && 'md' === t ? (n = l(i)) : (n || !r || a(r) || (n = r), f(n) && (n = l(n))),
     f(n) && '' !== n.trim() ? ('' !== n.replace(/[a-z]|-|\d/gi, '') ? null : n) : null
   ),
-  u = n => (f(n) && ((n = n.trim()), a(n)) ? n : null),
-  a = n => n.length > 0 && /(\/|\.)/.test(n),
-  f = n => 'string' == typeof n,
-  l = n => n.toLowerCase();
+  u = (n) => (f(n) && ((n = n.trim()), a(n)) ? n : null),
+  a = (n) => n.length > 0 && /(\/|\.)/.test(n),
+  f = (n) => 'string' == typeof n,
+  l = (n) => n.toLowerCase();
 export { e as a, o as b, i as g, f as i };

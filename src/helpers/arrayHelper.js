@@ -38,14 +38,14 @@ const equalsIgnoreOrder = (a, b) => {
   const uniqueValues = new Set([...a, ...b]);
 
   for (const v of uniqueValues) {
-    const aCount = a.filter(e => e === v).length;
-    const bCount = b.filter(e => e === v).length;
+    const aCount = a.filter((e) => e === v).length;
+    const bCount = b.filter((e) => e === v).length;
     if (aCount !== bCount) return false;
   }
   return true;
 };
 
-export const isEmpty = value =>
+export const isEmpty = (value) =>
   value === undefined ||
   value === null ||
   (typeof value === 'object' && Object.keys(value).length === 0) ||
