@@ -94,7 +94,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </ModalProvider>
         <ScrollRestoration />
         <Scripts />
-        {/* TODO: the module below is at the origin of hydration errors */}
+        {/* Script for matomo analysis */}
+        <script>
+          {`
+          var _mtm = window._mtm = window._mtm || [];
+          _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+          g.async=true; g.src='https://matomo.sib.swiss/js/container_F5WPJc2X.js'; s.parentNode.insertBefore(g,s);
+        `}
+        </script>
+        {/* NOTE: the module below is at the origin of hydration errors */}
         <script type="module" src="/js/ionicons-5.5.4/ionicons.esm.js"></script>
         <script noModule src="/js/ionicons-5.5.4/ionicons.js"></script>
       </body>

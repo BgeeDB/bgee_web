@@ -10,9 +10,8 @@ export default [
   route(PATHS.ANALYSIS.TOP_ANAT + '/:id?/:jobId?', './pages/analysis/TopAnat.jsx'),
   route(PATHS.ANALYSIS.EXPRESSION_COMPARISON, './pages/analysis/ExpComp.jsx'),
 
-  // Search routes
+  // Search routes (gene resolution is in the routes/ folder)
   route(PATHS.SEARCH.GENE, './pages/search/GeneList.tsx'),
-  // route(PATHS.SEARCH.GENE_ITEM + '/:speciesId?', './pages/search/Gene.jsx'),
   route(PATHS.SEARCH.ANATOMICAL_HOMOLOGY, './pages/search/AnatomicalHomologySearch.jsx'),
   route(PATHS.SEARCH.SPECIES, './pages/search/SpeciesList.jsx'),
   route(PATHS.SEARCH.SPECIES_ITEM, './pages/search/Species.jsx'),
@@ -47,7 +46,6 @@ export default [
   route(PATHS.ABOUT.BGEESAB, './static/about/bgeesab.js'),
   route(PATHS.ABOUT.PRIVACY_POLICY, './static/about/privacyPolicy.js'),
 
-  // TODO: Error route
-  // route(PATHS.ERROR, './pages/Error.jsx'),
+  // https://reactrouter.com/how-to/file-route-conventions
   ...(await flatRoutes()),
 ] satisfies RouteConfig;

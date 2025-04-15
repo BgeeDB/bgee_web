@@ -10,10 +10,12 @@ declare module '*.md';
 declare namespace JSX {
   interface IntrinsicElements {
     'ion-icon': any;
+    'sparql-editor': any;
   }
 }
 
 // Make sure React knows about custom elements
 interface HTMLElementTagNameMap {
   'ion-icon': HTMLElement;
+  'sparql-editor': HTMLElement;
 }

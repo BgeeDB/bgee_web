@@ -2,15 +2,6 @@ import config from '../config.json';
 import PATHS from '../paths/paths';
 import obolibraryLinkFromID, { obolibraryNCBITaxonLinkFromID } from './obolibraryLinkFromID';
 
-const getFullUrl = (path) => {
-  // During SSR, use the configured domain
-  if (typeof window === 'undefined') {
-    return config.permanentVersionedDomain + path;
-  }
-  // In browser, use the current URL
-  return window.location.href;
-};
-
 // export const newsToLdJSON = ({ news, path }) => ({
 //   '@context': 'https://schema.org/',
 //   '@graph': news.map((item, index)=> {
@@ -27,13 +18,10 @@ const getFullUrl = (path) => {
 //   })
 // });
 
-// TODO: properly get the full URL in SSR without using window.location.href
-
 export const geneToLdJSON = ({ name, geneId, description, synonyms, species, xRefs, path }) => ({
   '@context': 'https://schema.org/',
   '@type': 'Gene',
-  // '@id': window.location.href,
-  '@id': getFullUrl(path),
+  '@id': config.genericDomain + path,
   'http://purl.org/dc/terms/conformsTo': {
     '@id': 'https://bioschemas.org/profiles/Gene/1.0-RELEASE',
     '@type': 'CreativeWork',

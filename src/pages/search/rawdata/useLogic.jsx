@@ -654,10 +654,8 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       setFilters({});
     }
     setIsLoading(true);
-    // TODO: if we want to implement SSR we need to move this call to the loader() function
     try {
       const { resp, searchParams } = await searchRawData(params);
-      // console.log('resp = ', resp, searchParams);
       // After First search ( => hash !== null ) we update the filters via detailed_rp
       if (isFirstSearch) {
         try {
@@ -696,115 +694,6 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       setIsLoading(false);
     }
     setIsFirstSearch(false);
-
-    // return api.search.rawData
-    //   .search(params, false)
-    //   .then(({ resp, paramsURLCalled }) => {
-    //     if (resp.code === 200) {
-    //       // After First search ( => hash !== null ) we update the filters via detailed_rp
-    //       if (isFirstSearch) {
-    //         try {
-    //           initFormFromDetailedRP(resp);
-    //         } catch (e) {
-    //           console.error('Error when parsing URL e = ', e);
-    //         }
-    //       }
-
-    //       // "Mirroring" management in URL's parameter (with & without hash)
-    //       const searchParams = new URLSearchParams(paramsURLCalled);
-    //       // If there is a hash we put it in the URL
-    //       // And as all next data are "coded" in the Hash...
-    //       // We can clear the URL from those (aka storableParams)
-    //       const newHash = resp?.requestParameters?.data;
-    //       if (newHash) {
-    //         // We delete the potential old hash
-    //         searchParams.delete('data');
-
-    //         resp?.requestParameters?.storableParameters?.forEach((key) => {
-    //           if (key !== 'data_type') {
-    //             searchParams.delete(key);
-    //           }
-    //         });
-
-    //         // Adding Hash (in "data" key)
-    //         searchParams.append('data', newHash);
-    //       }
-
-    //       // We can always clean those "tech" parameters from the URL
-    //       searchParams.delete('display_type');
-    //       searchParams.delete('page');
-    //       searchParams.delete('action');
-    //       searchParams.delete('get_results');
-    //       searchParams.delete('get_column_definition');
-    //       searchParams.delete('get_filters');
-    //       searchParams.delete('display_rp');
-    //       searchParams.delete('detailed_rp');
-    //       searchParams.delete('offset');
-    //       searchParams.delete('get_result_count');
-    //       searchParams.delete('filters_for_all');
-
-    //       // The following code clean the url of any default value
-    //       if (searchParams.get('limit') === '50') {
-    //         searchParams.delete('limit');
-    //       }
-    //       if (searchParams.get('pageType') === 'experiments') {
-    //         searchParams.delete('pageType');
-    //       }
-    //       if (searchParams.get('pageNumber') === '1') {
-    //         searchParams.delete('pageNumber');
-    //       }
-    //       if (searchParams.get('sex') === 'all') {
-    //         searchParams.delete('sex');
-    //       }
-    //       if (searchParams.get('cell_type_descendant') === 'true') {
-    //         searchParams.delete('cell_type_descendant');
-    //       }
-    //       if (searchParams.get('stage_descendant') === 'true') {
-    //         searchParams.delete('stage_descendant');
-    //       }
-    //       if (searchParams.get('anat_entity_descendant') === 'true') {
-    //         searchParams.delete('anat_entity_descendant');
-    //       }
-    //       if (searchParams.get('only_propagated') === 'false') {
-    //         searchParams.delete('only_propagated');
-    //       }
-    //       if (isFirstSearch) {
-    //         navigate({
-    //           search: searchParams.toString(),
-    //           pathname: `${URL_ROOT}${loc.pathname}`,
-    //         }, {replace: true});
-    //       } else {
-    //         navigate({
-    //           search: searchParams.toString(),
-    //           pathname: `${URL_ROOT}${loc.pathname}`,
-    //         });
-    //       }
-    //     }
-
-    //     // The search form will be collapsed if this is not the first time we're on the page
-    //     if (!isFirstSearch) {
-    //       setShow(false);
-    //     }
-
-    //     // Finally, we set the values we are interested in
-    //     setIsLoading(false);
-    //     setSearchResult(resp?.data);
-    //     setLocalCount(
-    //       isExprCalls
-    //         ? { assayCount: resp?.data?.expressionCallCount }
-    //         : resp?.data?.resultCount?.[dataType]
-    //     );
-    //   })
-    //   .catch(() => {
-    //     // We remove all the parameters that we may have sent
-    //     navigate(`${URL_ROOT}${loc.pathname}`, {replace: true});
-    //     setIsLoading(false);
-    //   })
-    //   .finally(() => {
-    //     // The next searches will not be considered as the first
-    //     // --> Filters will now be used for the next requests
-    //     setIsFirstSearch(false);
-    //   });
   };
 
   const triggerCounts = async (cleanFilters = false, bypassInitSearchParam = false) => {

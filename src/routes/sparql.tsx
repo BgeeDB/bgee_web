@@ -1,0 +1,29 @@
+import { useState, useEffect } from 'react';
+import { getMetadata } from '~/helpers/metadata';
+
+export function meta() {
+  return getMetadata({
+    title: 'SPARQL editor for Bgee',
+    description: 'SPARQL editor for the Bgee endpoint',
+    keywords: 'SPARQL endpoint, gene expression',
+  });
+}
+
+export default function Page() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // Only import the component on the client side, web components breaks in SSR
+    import('@sib-swiss/sparql-editor');
+    setIsMounted(true);
+  }, []);
+
+  return (
+    <>
+      {isMounted && (
+        // @ts-expect-error Property 'sparql-editor' does not exist on type 'JSX.IntrinsicElements'
+        <sparql-editor endpoint="https://www.bgee.org/sparql/"></sparql-editor>
+      )}
+    </>
+  );
+}

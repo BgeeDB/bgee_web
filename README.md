@@ -9,6 +9,103 @@ Code for the Bgee website available at [https://www.bgee.org](https://www.bgee.o
 
 It uses [React Router 7](https://reactrouter.com/home) to serve the pages with server-side rendering (SSR).
 
+## 🛠️ Development
+
+### 📥 Installation
+
+> Requirements: we recommend using the latest [NodeJS](https://nodejs.org/en/download) LTS (22+), but anything after 18 should work.
+
+Install the dependencies:
+
+```bash
+npm i
+```
+
+### 🔨 Development server
+
+Start the development server at http://localhost:5173:
+
+```bash
+npm run dev
+```
+
+### 🧹 Format and lint
+
+```sh
+npm run fmt
+npm run lint
+```
+
+> [!NOTE]
+>
+> Formatting will be run automatically when you commit.
+
+### ⏫ Upgrade dependencies
+
+Upgrade dependencies to their latest available version in the `package.json`.
+
+```sh
+npm run upgrade
+```
+
+> [!WARNING]
+>
+> `bulma` breaks when upgraded to v1+, the rest can be usually upgraded without problem.
+
+## 🌐 Deployment
+
+### 📦 Build for production
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+Start the production server:
+
+```sh
+npm start
+```
+
+<details><summary>If you're familiar with deploying Node applications, the built-in app server is production-ready.</summary>
+
+Make sure to deploy the output of `npm run build`
+
+```
+├── package.json
+├── package-lock.json
+├── build/
+│   ├── client/  # Static assets
+│   └── server/  # Server-side code
+```
+
+</details>
+
+Prepare the application to be deployed as an archive:
+
+```shell
+npm run archive
+```
+
+> [!IMPORTANT]
+>
+> Be careful with the version set in `config.json`, it will impact the app in production or in archive.
+
+### 🐳 Docker deployment
+
+Build:
+
+```bash
+docker build -t bgee-web .
+```
+
+Run:
+
+```sh
+docker run -p 3000:3000 bgee-web
+```
+
 ## 💡 FAQ
 
 ### 📄 Add a new page
@@ -106,110 +203,20 @@ $size-3: 1.5rem (= 21px)
 
 The images are stored externally of the project. You will find the path of the images in the `src/config.json` file at the key `imageDomain`. Be careful, the image used for the 'external icon' link is directly defined in the SCSS. If you are moving it, don't forget to change the path.
 
-## 🛠️ Development
+## ☑️ To do
 
-### 📥 Installation
+https://reactrouter.com/6.30.0/upgrading/v5 | https://reactrouter.com/upgrading/v6
 
-> Requirements: we recommend using the latest [NodeJS](https://nodejs.org/en/download) LTS (22+), but anything after 18 should work.
+- [x] Enable SSR for most pages requiring it: gene, species, gene-list, experiments, home, gene expression calls.
 
-Install the dependencies:
+  - [x] In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some SSR for experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
+  - [x] Migrated from `react-markdown` to `mdx` to render markdown (use same plugins and style)
 
-```bash
-npm i
-```
-
-### 🔨 Development server
-
-Start the development server at http://localhost:5173:
-
-```bash
-npm run dev
-```
-
-### 🧹 Format and lint
-
-```sh
-npm run fmt
-npm run lint
-```
-
-> [!NOTE]
->
-> Formatting will be run automatically when you commit.
-
-### ⏫ Upgrade dependencies
-
-Upgrade dependencies to their latest available version in the `package.json`.
-
-```sh
-npm run upgrade
-```
-
-> [!WARNING]
->
-> `bulma` breaks when upgraded to v1+, the rest can be usually upgraded without problem.
-
-## 🌐 Deployment
-
-### 📦 Build for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-Start the production server:
-
-```sh
-npm start
-```
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json
-├── build/
-│   ├── client/  # Static assets
-│   └── server/  # Server-side code
-```
-
-Prepare the application to be deployed as an archive:
-
-```shell
-npm run archive
-```
-
-> [!IMPORTANT]
->
-> Be careful with the version set in config.json, it will impact the app in production or in archive.
-
-### 🐳 Docker Deployment
-
-Build:
-
-```bash
-docker build -t bgee-web .
-```
-
-Run:
-
-```sh
-docker run -p 3000:3000 bgee-web
-```
-
-### ☑️ To do
-
-https://reactrouter.com/6.30.0/upgrading/v5 / https://reactrouter.com/upgrading/v6
-
-- [x] Enable SSR for most pages requiring it: gene, species, gene-list, experiments, home, gene expression calls. In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some SSR for experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
 - [ ] In `src/root.tsx` the `<script type="module" src="/js/ionicons-5.5.4/ionicons.esm.js"></script>` lines are used to import ion icons, it creates problem with SSR because they are web components and it's not well supported by SSR.
   - [x] A solution could be to migrate to their "react" approach: https://ionicframework.com/docs/api/icon but it throws errors when we try it and does not work at all.
 - [ ] Issues with hydration in `raw-data` sometimes, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR.
-- [ ] Upgrade the `bulma` dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/7f2324a734e4b8c3f18ac880344372eaf3727320), but still work to do to get the exact same style right (dark theme causes problems for those who have it enabled system-wide)
+- [ ] Upgrade the `bulma` dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/7f2324a734e4b8c3f18ac880344372eaf3727320), but still work to do to get the exact same style right (dark theme causes problems for those who have it enabled system-wide).
+- [ ] If you want to improve the code base quality, set `checkJs` to `true` in `tsconfig.json`, and start fixing the type issues.
 
 > Rename `.js` to `.jsx` in folder:
 >

@@ -1,6 +1,6 @@
 {
   "include": ["**/*", "**/.server/**/*", "**/.client/**/*", ".react-router/types/**/*"],
-  "exclude": ["node_modules/**", "build"],
+  "exclude": ["node_modules", "build"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": ["node", "vite/client"],
@@ -13,17 +13,15 @@
     "paths": {
       "~/*": ["./src/*"]
     },
+    "strict": false,
+    "allowJs": true,
+    "checkJs": false,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
-    "noImplicitAny": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": false,
-    "exactOptionalPropertyTypes": false,
-    "allowJs": true,
-    "checkJs": false,
-    "noUnusedParameters": false,
+    "noImplicitAny": false,
     "jsxImportSource": "react"
   }
 }

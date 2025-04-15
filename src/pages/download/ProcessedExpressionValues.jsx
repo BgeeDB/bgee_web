@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import PATHS from '../../paths/paths';
 import useQuery from '../../hooks/useQuery';
 import Bulma from '../../components/Bulma';
@@ -65,6 +65,7 @@ export function meta({ data }) {
 const ProcessedExpressionValues = ({ loaderData }) => {
   const { speciesList, files, kwList } = loaderData;
   const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = React.useState('');
   const filteredSpecies = React.useMemo(() => {
     const tmp = JSON.parse(JSON.stringify(speciesList));
@@ -109,7 +110,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                   search={search}
                   setSearch={setSearch}
                   elements={expressionPageHelper.autocompleteSpecies(filteredSpecies, kwList, search)}
-                  onRender={expressionPageHelper.autocompleteSpeciesRender(setSearch, navigate)}
+                  onRender={expressionPageHelper.autocompleteSpeciesRender(setSearch, navigate, location)}
                 />
               </div>
             </div>

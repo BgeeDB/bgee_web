@@ -15,14 +15,13 @@ const expressionPageHelper = {
         word: kwList?.[s.id]?.find((kw) => new RegExp(search, 'gi').test(kw)),
       }))
       ?.sort((a, b) => a?.word?.localeCompare(b.word)),
-  autocompleteSpeciesRender: (setSearch, navigate) => (s, closeAutoComplete) => (
-    // TODO: fix history to get location from args
+  autocompleteSpeciesRender: (setSearch, navigate, location) => (s, closeAutoComplete) => (
     <div
       key={s.info.id}
       role="button"
       onClick={() => {
         setSearch(s.word);
-        navigate(`${URL_ROOT}${history.location.pathname}?id=${s.info.id}`, { replace: true });
+        navigate(`${URL_ROOT}${location.pathname}?id=${s.info.id}`, { replace: true });
         setTimeout(() => {
           closeAutoComplete();
         }, 100);
