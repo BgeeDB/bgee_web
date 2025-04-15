@@ -15,7 +15,7 @@ const Image = ({
   imgClassnames,
   renderAs = 'figure',
   ...props
-}) => {
+}: any) => {
   const [state, setState] = useState({ src });
   useEffect(() => {
     setState({ src });

@@ -9,7 +9,7 @@ const Tile = ({
   size,
   color,
   ...props
-}) => (
+}: any) => (
   <Element
     {...props}
     className={classnames('tile', className, {

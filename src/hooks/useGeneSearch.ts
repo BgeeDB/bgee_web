@@ -2,8 +2,8 @@ import React from 'react';
 import api from '../api';
 
 const useGeneSearch = (searchText) => {
-  const [resResultListGenes, setResResultListGenes] = React.useState();
-  const [isLoading, setIsLoading] = React.useState();
+  const [resResultListGenes, setResResultListGenes]: any = React.useState();
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const searchResultHandler = React.useCallback(
     (val) => {
@@ -11,7 +11,7 @@ const useGeneSearch = (searchText) => {
         setIsLoading(true);
         api.search.genes
           .geneSearchResult(val)
-          .then((resp) => {
+          .then((resp: any) => {
             if (resp.code === 200) {
               setResResultListGenes(resp.data.result);
             } else {
@@ -19,7 +19,7 @@ const useGeneSearch = (searchText) => {
             }
           })
           .catch(() => {
-            setResResultListGenes();
+            setResResultListGenes(undefined);
           })
           .finally(() => {
             setIsLoading(false);

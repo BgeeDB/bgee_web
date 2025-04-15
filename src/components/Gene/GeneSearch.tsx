@@ -6,7 +6,7 @@ import api from '../../api';
 import PATHS from '../../paths/paths';
 import AutoCompleteSearch from '../AutoCompleteSearch/AutoCompleteSearch';
 
-const GeneSearch = ({ classNames, children, searchTerm = '' }) => {
+const GeneSearch = ({ classNames, children, searchTerm = '' }: any) => {
   const navigate = useNavigate();
 
   const renderOption = useCallback((option, search) => {
@@ -36,7 +36,7 @@ const GeneSearch = ({ classNames, children, searchTerm = '' }) => {
 
   const getOptionsFunction = useCallback(async (search) => {
     if (search) {
-      return api.search.genes.autoComplete(search).then((resp) => {
+      return api.search.genes.autoComplete(search).then((resp: any) => {
         if (resp.code === 200 && resp.data.matchCount !== 0) {
           return resp.data.match;
         }

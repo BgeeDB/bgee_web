@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/no-redundant-roles */
-/* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
 import React, { useContext } from 'react';
 import { Link } from 'react-router';
 import { TableContext } from '../../contexts/TableContext';
@@ -8,8 +6,7 @@ import { usePaginationLink } from '../../hooks/usePagination';
 const disabledStyle = { pointerEvents: 'none' as const, opacity: 0.5, cursor: 'not-allowed' };
 
 const Pagination = ({ current, total }) => {
-  const { paginationParamPageKey, paginationResultCountKey } =
-    useContext(TableContext);
+  const { paginationParamPageKey, paginationResultCountKey }: any = useContext(TableContext);
   const { generatePaginationLink } = usePaginationLink(
     paginationParamPageKey,
     paginationResultCountKey

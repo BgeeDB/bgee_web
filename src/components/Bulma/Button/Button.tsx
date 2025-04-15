@@ -25,7 +25,7 @@ const Button = ({
   light,
   text,
   ...props
-}) => {
+}: any) => {
   let otherProps = {};
   if (submit) {
     otherProps = {

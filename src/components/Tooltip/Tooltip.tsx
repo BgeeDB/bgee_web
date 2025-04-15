@@ -7,7 +7,7 @@ const Tooltip = ({
   style,
   className,
   isLeft = false,
-}) => (
+}: any) => (
   <div className={classnames('tooltip', className)} style={style}>
     {children}
     <span className={classnames('tooltip-content', isLeft && 'isLeft')}>

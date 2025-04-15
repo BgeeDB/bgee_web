@@ -49,7 +49,7 @@ const GridSpecies = ({
   expandable,
   defaultSelection,
   scrollAt = true,
-}) => {
+}: any) => {
   const speciesID = useQuery('id');
 
   const [selectedSpecies, setSelectedSpecies] = React.useState(
@@ -58,7 +58,7 @@ const GridSpecies = ({
 
   React.useEffect(() => {
     if (speciesID && scrollAt) {
-      setSelectedSpecies(parseInt(speciesID, 10));
+      setSelectedSpecies(parseInt(speciesID.toString(), 10));
       setTimeout(() => {
         document
           .getElementById(`species-${speciesID}`)
@@ -88,7 +88,7 @@ const GridSpecies = ({
             onRenderSelection(species, {
               onClose: () => {
                 if (onClick) onClick(species, false);
-                setSelectedSpecies();
+                setSelectedSpecies(undefined);
               },
             })}
         </React.Fragment>

@@ -1,7 +1,7 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const CardBody = ({ className, ...props }) => (
+const CardBody = ({ className, ...props }: any) => (
   <Element {...props} className={classnames('card-content', className)} />
 );
 

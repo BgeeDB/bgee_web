@@ -1,16 +1,18 @@
 import React, { useContext } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate, useLocation, Link } from 'react-router';
 import { TableContext } from '../../contexts/TableContext';
 import { usePaginationLink } from '../../hooks/usePagination';
 import config from '../../config.json';
+
+// TODO: use <Link> instead of <a>
+// const disabledStyle = { pointerEvents: 'none' as const, opacity: 0.5, cursor: 'not-allowed' };
 
 const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
 const PaginationWithoutRefresh = ({ current, total }) => {
-  const { paginationParamPageKey, paginationResultCountKey } =
-    useContext(TableContext);
+  const { paginationParamPageKey, paginationResultCountKey }: any = useContext(TableContext);
   const { generatePaginationLink } = usePaginationLink(
     paginationParamPageKey,
     paginationResultCountKey
@@ -68,6 +70,7 @@ const PaginationWithoutRefresh = ({ current, total }) => {
         className="pagination-previous"
         role="link"
         disabled={disabledPrevious}
+        // style={disabledPrevious ? disabledStyle : {}}
         onClick={(e) => !disabledPrevious && goToPage(e, current - 1)}
       >
         Previous

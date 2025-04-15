@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Helmet } from 'react-helmet';
 import Bulma from '../Bulma';
 import classnames from '../../helpers/classnames';
 import { TOP_ANAT_FLOW } from '../../hooks/useTopAnat';
@@ -281,13 +280,6 @@ const TopAnatResult = ({
   )
     return (
       <>
-        {/* <Helmet>
-          <title>TopAnat {metaTitle}</title>
-          <meta property='og:title' content={`TopAnat ${metaTitle}`} />
-          <meta name="description" content={metaDescription} />
-          <meta property='og:description' content={metaDescription} />
-          <meta name="keywords" content="TopAnat, gene set enrichment analysis, gene expression enrichment analysis, GO-like enrichment analysis, gene expression patterns, topGO, BgeeDB" />
-        </Helmet> */}
         <div className="content has-text-centered">
           <p className="title is-4">{title}</p>
         </div>

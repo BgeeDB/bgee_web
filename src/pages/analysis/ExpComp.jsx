@@ -395,7 +395,7 @@ const ExpComp = () => {
       api.topAnat.autoCompleteGenes(searchValue).then((res) => {
         setGeneInfo({ ...res.data.fg_list, message: res.message });
       });
-    } else setGeneInfo();
+    } else setGeneInfo(undefined);
   }, [searchValue]);
 
   const handlerClickSearch = () => {
@@ -496,7 +496,7 @@ const ExpComp = () => {
                       <textarea
                         className="textarea is-small"
                         placeholder="Enter a list of gene identifiers, one ID per line, no quotes, no comma"
-                        rows="10"
+                        rows={10}
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
                       />

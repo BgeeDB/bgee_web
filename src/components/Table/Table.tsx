@@ -43,7 +43,7 @@ const Table = ({
   minThWidth = null,
   hasPaginationTop = false,
   hasScrollTop = false,
-}) => {
+}: any) => {
   const mappedData = React.useMemo(
     () =>
       data

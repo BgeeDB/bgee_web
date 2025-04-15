@@ -7,7 +7,7 @@ const HelpIcon = ({
   className,
   isLeft = false,
   iconName = 'help-circle',
-}) => (
+}: any) => (
   <Tooltip
     title={title}
     content={content}

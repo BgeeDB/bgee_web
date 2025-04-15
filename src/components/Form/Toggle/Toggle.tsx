@@ -5,7 +5,7 @@ const Toggle = ({
   onChange,
   error,
   disabled,
-}) => (
+}: any) => (
   <div className={`control ${controlClassName || ''}`}>
     <div className="field has-addons">
       {elements.map((element) => (

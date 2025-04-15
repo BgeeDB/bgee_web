@@ -4,7 +4,7 @@ const TextArea = ({
   onChange,
   error,
   ...props
-}) => (
+}: any) => (
   <div className={`control ${controlClassName || ''}`}>
     <textarea
       className={`textarea ${className || ''} ${error ? 'is-danger' : ''}`}

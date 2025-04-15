@@ -27,7 +27,7 @@ export async function loader({ params, request }) {
 
     const { geneId, species } = geneDetails;
     // Get homologs and xrefs in parallel
-    const [homologsResult, xRefsResult] = await Promise.allSettled([
+    const [homologsResult, xRefsResult]: any = await Promise.allSettled([
       api.search.genes.homologs(geneId, species.id),
       api.search.genes.xrefs(geneId, species.id),
     ]);
@@ -129,7 +129,7 @@ const GeneDetails = ({loaderData}) => {
         </div>
         <div id="gene-body">
           <div className="is-flex head">
-            <GeneSearch />
+            <GeneSearch></GeneSearch>
             <div className="content is-align-items-center is-flex">
               <Bulma.Image
                 className="m-0 mr-2 species-img"

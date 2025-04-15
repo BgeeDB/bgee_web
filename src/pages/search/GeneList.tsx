@@ -157,7 +157,8 @@ const GeneList = () => {
   //   [search, results]
   // );
 
-  const count = results?.totalMatchCount;
+
+  const count = results.totalMatchCount;
 
   return (
     <>

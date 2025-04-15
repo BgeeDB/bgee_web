@@ -174,7 +174,7 @@ const AnatEntityCell = ({ cell }) => {
 // PAss to true if you want the two table to be handled separately in the url
 const SEPARATE_DATA_FORM = false;
 
-const GeneExpressionTable = ({ geneId, speciesId, notExpressed }) => {
+const GeneExpressionTable = ({ geneId, speciesId, notExpressed = false }) => {
   const exprKey = React.useMemo(
     () =>
       notExpressed && SEPARATE_DATA_FORM ? 'not_expression' : 'expression',

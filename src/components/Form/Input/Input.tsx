@@ -5,7 +5,7 @@ const Input = ({
   onChange,
   error,
   ...props
-}) => (
+}: any) => (
   <div className={`control ${controlClassName || ''}`}>
     <input
       className={`input ${className || ''} ${error ? 'is-danger' : ''}`}

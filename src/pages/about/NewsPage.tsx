@@ -12,7 +12,7 @@ export function meta() {
 }
 
 const markdownFiles = import.meta.glob('../../markdown/news/*.md', { eager: true });
-const news = Object.entries(markdownFiles).map(([path, module]) => {
+const news = Object.entries(markdownFiles).map(([path, module]: any) => {
   const filename = path.replace(/^.*[/\\]/, '');
   const date = filename.replace(/^News-(.*)\.md$/, "$1");
   return { date, markdown: module.default };

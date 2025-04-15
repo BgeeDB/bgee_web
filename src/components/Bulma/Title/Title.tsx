@@ -12,7 +12,7 @@ const Title = ({
   colorClassName,
   renderAs = 'h1',
   ...props
-}) => (
+}: any) => (
   <Element
     {...props}
     renderAs={renderAs}

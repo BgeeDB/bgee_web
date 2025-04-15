@@ -52,7 +52,6 @@ export async function loader({ request }) {
   const url = new URL(request.url);
   const speciesId = url.searchParams.get('species_id');
   // const isExprCalls = url.searchParams.get('pageType') === TAB_PAGE_EXPR_CALL.id || url.pathname.includes('/expression-calls');
-  console.log('species', speciesId)
   if (speciesId && url.searchParams.size === 1) {
     // Preload when species ID provided for SEO
     const {resp, searchParams} = await searchRawData({
@@ -146,7 +145,6 @@ const RawDataAnnotations = ({ isExprCalls = false}) => {
     setPageType,
     addConditionalParam,
     getSearchParams,
-  // } = useLogic(isExprCalls);
   } = useLogic(isExprCalls, initSearchResult);
 
   const loc = useLocation();

@@ -625,7 +625,7 @@ export const schemaDotOrg = {
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.id = 'dataset-ld+json';
-    script.text = JSON.stringify(datasetToLdJSON(species), null, 4);
+    script.text = JSON.stringify(datasetToLdJSON(), null, 4);
     const body = document.querySelector('body');
     body.appendChild(script);
   },

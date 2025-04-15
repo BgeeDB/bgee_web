@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import { useEffect, useRef } from 'react';
 import Bulma from '../Bulma';
 import isPlural from '../../helpers/isPlural';

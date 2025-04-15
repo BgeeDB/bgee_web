@@ -40,7 +40,7 @@ const DEFAULT_PARAMETERS = (page, action) => {
 
 const search = {
   anatomicalHomology: (
-    { type, query },
+    { type, query }: any,
     species = undefined,
     aeList = undefined
   ) =>
@@ -173,7 +173,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    getGeneralInformation: (geneId) =>
+    getGeneralInformation: (geneId: string): any =>
       new Promise((resolve, reject) => {
         // https://www.bgee.org/api/?page=gene&action=general_info&gene_id=GENE_ID&display_type=json
         const params = DEFAULT_PARAMETERS('gene', 'general_info');
@@ -257,7 +257,7 @@ const search = {
       }),
   },
   species: {
-    exprCalls: () =>
+    exprCalls: (): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('download', 'expr_calls');
         axiosInstance
@@ -273,7 +273,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    processedValues: () =>
+    processedValues: (): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('download', 'proc_values');
         axiosInstance
@@ -289,7 +289,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    species: (speciesId) =>
+    species: (speciesId): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('species');
         params.append('species_id', speciesId);
@@ -306,7 +306,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    list: () =>
+    list: (): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('species');
         axiosInstance
@@ -339,7 +339,7 @@ const search = {
             reject(error?.response);
           });
       }),
-      name: (speciesId) =>
+      name: (speciesId): any =>
           new Promise((resolve, reject) => {
               const params = DEFAULT_PARAMETERS('species', 'name');
               params.append('species_id', speciesId);
@@ -355,7 +355,7 @@ const search = {
                       reject(error?.response);
                   });
           }),
-      geneList: (speciesId) =>
+      geneList: (speciesId): any =>
           new Promise((resolve, reject) => {
               const params = DEFAULT_PARAMETERS('gene', 'species_list');
               params.append('species_id', speciesId);
@@ -396,7 +396,7 @@ const search = {
           params.append('display_rp', '1');
 
           const offset = form?.limit * (form?.pageNumber - 1);
-          params.append('offset', offset);
+          params.append('offset', offset.toString());
           params.append('limit', form?.limit);
           // Warning : useless for API call but usefull for prefilling pagination
           params.append('pageNumber', form?.pageNumber);
@@ -465,7 +465,6 @@ const search = {
           // We apply the filters
           // If filters_for_all we apply all filters EVEN IF there is OnlyCount
           if ( (form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all')) ) {
-            // eslint-disable-next-line no-restricted-syntax
             for (const [key, values] of Object.entries(form.filters)) {
               values.forEach((obj) => params.append(key, obj.value));
             }
@@ -504,7 +503,7 @@ const search = {
       }),
   },
   experiments: {
-    getExperiment: (experimentId) =>
+    getExperiment: (experimentId): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('data');
         params.append('exp_id', experimentId);

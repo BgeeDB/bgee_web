@@ -1,7 +1,7 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const Notification = ({ className, color, light, ...props }) => (
+const Notification = ({ className, color, light, ...props }: any) => (
   <Element
     {...props}
     className={classnames(
