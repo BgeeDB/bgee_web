@@ -89,7 +89,7 @@ const customHeader = (searchElement, pageSizeElement) => (
 const GeneList = () => {
   const { search: queryParams } = useLocation();
   const [search, setSearch] = React.useState('');
-  const { resResultListGenes: results, searchResultHandler, setResults, isLoading } = useGeneSearch(search);
+  const { resResultListGenes: results, searchResultHandler, setResults, isLoading } = useGeneSearch();
 
   const objMapping = React.useCallback(
     element => ({

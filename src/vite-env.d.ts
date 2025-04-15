@@ -9,13 +9,7 @@ declare module '*.md';
  */
 declare namespace JSX {
   interface IntrinsicElements {
-    'ion-icon': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-      name?: string;
-      size?: string;
-      mode?: string;
-      color?: string;
-      [key: string]: any;
-    };
+    'ion-icon': any;
   }
 }
 

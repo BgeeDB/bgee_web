@@ -9,7 +9,9 @@ const NotificationContext = React.createContext({
   addNotification: () => {},
   addNotifications: () => {},
   cleanNotifications: () => {},
-  closeNotif: (_: any) => {},
+  closeNotif: (data: any) => {
+    console.debug(`closeNotif ${data}`);
+  },
 });
 
 const { Provider } = NotificationContext;

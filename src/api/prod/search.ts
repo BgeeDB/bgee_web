@@ -441,9 +441,7 @@ const search = {
           // If filters_for_all we apply all filters EVEN IF there is OnlyCount
           if ((form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all'))) {
             for (const [key, values] of Object.entries(form.filters)) {
-              // if (Array.isArray(values)) {
-              values.forEach(obj => params.append(key, obj.value));
-              // }
+              if (Array.isArray(values)) values.forEach(obj => params.append(key, obj.value));
             }
           }
         }
@@ -781,7 +779,7 @@ const search = {
           // If filters_for_all we apply all filters EVEN IF there is OnlyCount
           if ((form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all'))) {
             for (const [key, values] of Object.entries(form.filters)) {
-              values.forEach(obj => params.append(key, obj.value));
+              if (Array.isArray(values)) values.forEach(obj => params.append(key, obj.value));
             }
           }
         }
