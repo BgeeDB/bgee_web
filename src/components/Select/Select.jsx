@@ -22,7 +22,6 @@ const Select = ({ title = 'defaultTitle', defaultValue, options, onChange, value
     <div className="select">
       <select title={title} value={hasValueProps ? value : active} onChange={onChangeSelect}>
         {options.map(opt =>
-          // eslint-disable-next-line valid-typeof
           ['string', 'number'].find(t => t === typeof opt) ? (
             <option key={opt} value={opt}>
               {opt}

@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { COND_PARAM2_SEX_KEY } from '../../../useLogic';
 
 const Sex = ({ speciesSexes, selectedSexes, toggleSex, addConditionalParam }) => {

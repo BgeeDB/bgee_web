@@ -45,7 +45,6 @@ const TableHead = ({ minThWidth }) => {
   return (
     <thead>
       <tr>
-        {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
         {showTableModalButton && <th />}
         {columns.map((item, key) => {
           const itemStyle = item.style ? item.style : {};

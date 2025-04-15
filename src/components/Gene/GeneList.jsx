@@ -17,7 +17,6 @@
 //     <p>The search gene ID is found in several species. Select the desired gene:</p>
 //     <div className="is-flex is-justify-content-center">
 //       {details.map(e => (
-//         // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
 //         <div
 //           key={e.species.id}
 //           onClick={() => {

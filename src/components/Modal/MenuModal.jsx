@@ -291,7 +291,6 @@ const ModalCard = ({ active, toggle }) => (
                 switch (type) {
                   case 'mail':
                     link = (
-                      // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
                       <a className="navbar-item custom" onClick={obfuscateMailLink(childProps.mail)}>
                         {pageTitle}
                       </a>

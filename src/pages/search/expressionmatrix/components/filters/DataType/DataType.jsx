@@ -1,5 +1,3 @@
-/* eslint-disable import/no-useless-path-segments */
-/* eslint-disable import/named */
 import HelpIcon from '../../../../../../components/HelpIcon';
 import Bulma from '../../../../../../components/Bulma';
 import { ALL_DATA_TYPES, ALL_DATA_TYPES_ID } from '../../../../rawdata/useLogic';

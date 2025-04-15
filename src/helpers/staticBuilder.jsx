@@ -61,7 +61,6 @@ export const richTextBuilder = (elements, prefixKey = '') =>
         );
       case 'link_mail':
         return (
-          // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
           <a
             key={`${prefixKey}-${key}`}
             onClick={obfuscateMailLink(props.email)}

@@ -531,7 +531,6 @@ const useLogic = isExprCalls => {
     const filtersToCheck = (isExprCalls ? data?.filters : data?.filters?.[nextDataType]) || {};
     const searchParams = new URLSearchParams(requestParameters);
     const initFilters = {};
-    // eslint-disable-next-line no-unused-vars
     Object.entries(filtersToCheck).forEach(([_, f]) => {
       const ids = searchParams.getAll(f.urlParameterName);
       const nextValues = f.values.filter(v => ids.includes(v.id));

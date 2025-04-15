@@ -21,7 +21,6 @@ const PlusModalCell = ({ row, defaultRender }) => {
         <Bulma.Modal.Card.Wrapper>
           <Bulma.Modal.Card.Header>
             <Bulma.Modal.Card.Title>{titleModal}</Bulma.Modal.Card.Title>
-            {/* eslint-disable-next-line react/button-has-type */}
             <button className="delete" aria-label="close" onClick={hideModal} />
           </Bulma.Modal.Card.Header>
           <Bulma.Modal.Card.Body>

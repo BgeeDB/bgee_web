@@ -183,7 +183,6 @@ const Footer = () => {
             <div className="nav-footer-col-head">Share &amp; Social</div>
             <ul>
               <li>
-                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
                 <a onClick={obfuscateMailLink(config.contactEmail)} className="nav_a">
                   Contact us
                 </a>
@@ -227,7 +226,6 @@ const Footer = () => {
               </li>
               <li>
                 <div className="right-wrapper">
-                  {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
                   {NAVBAR_RIGHT.map(({ href, alt, ...imgProps }) => (
                     <a key={href} href={href} target="_blank" rel="noopener noreferrer">
                       <Bulma.Image alt={alt} {...imgProps} />

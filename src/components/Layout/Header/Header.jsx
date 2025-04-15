@@ -76,7 +76,6 @@ const Header = () => {
         </Link>
 
         {!config?.isRawDataOnly && (
-          /* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/interactive-supports-focus */
           <a
             role="button"
             className="navbar-burger"

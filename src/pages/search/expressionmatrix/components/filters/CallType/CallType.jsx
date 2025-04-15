@@ -1,5 +1,3 @@
-/* eslint-disable import/no-useless-path-segments */
-/* eslint-disable import/named */
 import HelpIcon from '../../../../../../components/HelpIcon';
 // import { ALL_CALL_TYPE } from '../../../../rawdata/useLogic';
 import { ALL_CALL_TYPE } from '../../../useLogic';

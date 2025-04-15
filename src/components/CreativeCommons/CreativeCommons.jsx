@@ -1189,7 +1189,6 @@ const CreativeCommons = () => {
             href="http://gompel.org/images-2/drosophilidae"
             className="external-link"
           >
-            {/* eslint-disable-next-line react/no-unescaped-entities */}
             See <i>D. simulans</i> picture via Nicolas Gompel's lab website
           </a>
         </p>

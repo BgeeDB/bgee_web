@@ -93,7 +93,6 @@ const SpeciesCell = ({ genes }) => {
         name: a.species.name,
         nbGenes: 1,
       });
-    // eslint-disable-next-line no-param-reassign
     else r[pos].nbGenes += 1;
     return r;
   }, []);
