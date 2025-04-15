@@ -9,10 +9,12 @@ const Tag = ({
   size,
   rounded,
   remove,
+  renderAs = 'span',
   ...props
 }) => (
   <Element
     {...props}
+    renderAs={renderAs}
     className={classnames('tag', className, {
       [`is-${size}`]: size,
       [`is-${color}`]: color,
@@ -25,9 +27,5 @@ const Tag = ({
 );
 
 Tag.Group = TagGroup;
-
-Tag.defaultProps = {
-  renderAs: 'span',
-};
 
 export default Tag;

@@ -13,6 +13,7 @@ const Image = ({
   width,
   height,
   imgClassnames,
+  renderAs = 'figure',
   ...props
 }) => {
   const [state, setState] = useState({ src });
@@ -27,6 +28,7 @@ const Image = ({
   return (
     <Element
       {...props}
+      renderAs={renderAs}
       className={classnames('image', className, {
         [`is-${s}`]: s,
         'is-fullwidth': fullwidth,
@@ -46,10 +48,6 @@ const Image = ({
       />
     </Element>
   );
-};
-
-Image.defaultProps = {
-  renderAs: 'figure',
 };
 
 export default Image;

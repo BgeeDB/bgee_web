@@ -10,10 +10,12 @@ const Title = ({
   spaced,
   heading,
   colorClassName,
+  renderAs = 'h1',
   ...props
 }) => (
   <Element
     {...props}
+    renderAs={renderAs}
     className={classnames(
       className,
       {
@@ -30,9 +32,5 @@ const Title = ({
     {children}
   </Element>
 );
-
-Title.defaultProps = {
-  renderAs: 'h1',
-};
 
 export default Title;

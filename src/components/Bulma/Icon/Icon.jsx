@@ -1,9 +1,10 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const Icon = ({ size, color, className, align, text, ...props }) => (
+const Icon = ({ size, color, className, align, text, renderAs = 'span', ...props }) => (
   <Element
     {...props}
+    renderAs={renderAs}
     className={classnames('icon', className, {
       [`is-${size}`]: size,
       [`is-${align}`]: align,
@@ -11,11 +12,6 @@ const Icon = ({ size, color, className, align, text, ...props }) => (
     })}
   />
 );
-
-Icon.defaultProps = {
-  renderAs: 'span',
-};
-
 // Icon.Text = Text;
 
 export default Icon;

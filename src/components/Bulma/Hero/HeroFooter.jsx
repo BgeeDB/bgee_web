@@ -1,12 +1,8 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const HeroFooter = ({ className, ...props }) => (
-  <Element {...props} className={classnames(className, 'hero-foot')} />
+const HeroFooter = ({ className, renderAs = 'footer', ...props }) => (
+  <Element {...props} renderAs={renderAs} className={classnames(className, 'hero-foot')} />
 );
-
-HeroFooter.defaultProps = {
-  renderAs: 'footer',
-};
 
 export default HeroFooter;

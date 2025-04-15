@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLoaderData, useLocation } from 'react-router';
 
 import Button from '../../../components/Bulma/Button/Button';
 import PATHS from '../../../paths/paths';
@@ -12,6 +12,7 @@ import DevelopmentalAndLifeStages from './components/filters/DevelopmentalAndLif
 import Species from './components/filters/Species/Species';
 import useLogic, {
   AFFYMETRIX,
+  ALL_DATA_TYPES_ID,
   DATA_TYPES,
   EST,
   EXPERIMENTS,
@@ -19,6 +20,7 @@ import useLogic, {
   RAW_DATA_ANNOTS,
   TAB_PAGE,
   TAB_PAGE_EXPR_CALL,
+  searchRawData,
 } from './useLogic';
 import CellTypes from './components/filters/CellTypes';
 import Tissues from './components/filters/Tissues/Tissues';
@@ -33,7 +35,7 @@ import ResultTabs from './components/ResultTabs';
 import DataQualityParameter from './components/filters/DataQualityParameter';
 import CallType from './components/filters/CallType';
 import OnlyPropagated from './components/filters/OnlyPropagated/OnlyPropagated';
-import config from '../../../config.json';
+import config from '~/config.json';
 import { getMetadata } from '~/helpers/metadata';
 
 export function meta() {
@@ -44,25 +46,48 @@ export function meta() {
     });
 }
 
+// Enabled basic SSR for when a species_id is provided in the URL, to help SEO to find experiments links
+// But the search is retriggered on the client side to get all data
 export async function loader({ request }) {
   const url = new URL(request.url);
   const speciesId = url.searchParams.get('species_id');
-  console.log('rrr', speciesId)
-  // You can perform additional data fetching here based on the speciesId
-  // For example:
-  // if (speciesId) {
-  //   const speciesData = await fetchSpeciesData(speciesId);
-  //   return { speciesId, speciesData };
-  // }
-
-  return { speciesId };
+  // const isExprCalls = url.searchParams.get('pageType') === TAB_PAGE_EXPR_CALL.id || url.pathname.includes('/expression-calls');
+  console.log('species', speciesId)
+  if (speciesId && url.searchParams.size === 1) {
+    // Preload when species ID provided for SEO
+    const {resp, searchParams} = await searchRawData({
+      hash: '',
+      isFirstSearch: true,
+      initSearch: url.searchParams,
+      pageType: url.searchParams.get('pageType') || EXPERIMENTS,
+      selectedSpecies: speciesId,
+      dataType: [url.searchParams.get('data_type') || DATA_TYPES[0].id],
+      // dataType: ALL_DATA_TYPES_ID,
+      selectedExpOrAssay: [],
+      selectedCellTypes: [],
+      selectedGene: [],
+      selectedStrain: [],
+      selectedTissue: [],
+      selectedDevStages: [],
+      selectedSexes: ['all'],
+      hasCellTypeSubStructure: true,
+      hasDevStageSubStructure: true,
+      hasTissueSubStructure: true,
+      onlyPropagated: true,
+      pageNumber: '1',
+      limit: url.searchParams.get('limit') || '50',
+    });
+    return { initSearchResult: {...resp.data, searchParams, initSpecies: speciesId} };
+  }
+  return { initSearchResult: {} };
 }
 
 const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
-const RawDataAnnotations = ({ isExprCalls = false }) => {
+const RawDataAnnotations = ({ isExprCalls = false}) => {
+  const {initSearchResult} = useLoaderData();
   const {
     searchResult,
     allCounts,
@@ -121,7 +146,8 @@ const RawDataAnnotations = ({ isExprCalls = false }) => {
     setPageType,
     addConditionalParam,
     getSearchParams,
-  } = useLogic(isExprCalls);
+  // } = useLogic(isExprCalls);
+  } = useLogic(isExprCalls, initSearchResult);
 
   const loc = useLocation();
   const [pageIsBrowseResult, setPageIsBrowseResult] = useState(false);

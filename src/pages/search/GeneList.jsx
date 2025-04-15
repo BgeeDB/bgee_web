@@ -8,13 +8,20 @@ import splitWithOccurrences from '../../helpers/splitWithOccurrences';
 import { MEDIA_QUERIES } from '../../helpers/constants/mediaQueries';
 import { customGeneListSorter } from '../../helpers/sortTable';
 import Table from '../../components/Table';
+import config from '~/config.json';
 import { getMetadata } from '~/helpers/metadata';
 
-export function meta() {
+export function loader({ request }) {
+  const searchParams = new URL(request.url).searchParams;
+  return {search: searchParams.get("search")}
+}
+
+export function meta({ data }) {
   return getMetadata({
-    title: 'Gene search',
-    description: 'Search for a gene in Bgee',
-    keywords: 'gene search, gene',
+    title: `${data.search ? `${data.search} - ` : ''}Gene search`,
+    description: data.search ? `${data.search} gene search` : 'Search for a gene in Bgee',
+    keywords: `gene search, gene${data.search ? `, ${data.search}` : ''}`,
+    link: `${config.genericDomain}${PATHS.SEARCH.GENE}`,
   });
 }
 
@@ -154,15 +161,6 @@ const GeneList = () => {
 
   return (
     <>
-      {/* <Helmet>
-        <title>{`${search ? `${search} - ` : ''}Gene search`}</title>
-        <meta property='og:title' content={`${search ? `${search} - ` : ''}Gene search`} />
-        <meta name="description" content={meta.description} />
-        <meta property='og:description' content={meta.description} />
-        <meta name="keywords" content={meta.keywords} />
-        <meta property="og:url" content={`${config.genericDomain}${PATHS.SEARCH.GENE}`} />
-        <link rel="canonical" href={`${config.genericDomain}${PATHS.SEARCH.GENE}`} />
-      </Helmet> */}
       <div className="content has-text-centered">
         <Bulma.Title size={3}>Gene search</Bulma.Title>
       </div>
@@ -219,7 +217,7 @@ const GeneList = () => {
             <Table
               pagination
               sortable
-              classNamesTable="is-striped"
+              // classNamesTable="is-striped"
               columns={[
                 { text: 'Gene ID', key: 'id', hide: MEDIA_QUERIES.MOBILE_P },
                 { text: 'Name', key: 'name' },

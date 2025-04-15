@@ -3,9 +3,10 @@ import classnames from '../../../helpers/classnames';
 import MessageBody from './MessageBody';
 import MessageHeader from './MessageHeader';
 
-const Message = ({ children, className, color, size, ...props }) => (
+const Message = ({ children, className, color, size, renderAs = 'article', ...props }) => (
   <Element
     {...props}
+    renderAs={renderAs}
     className={classnames('message', className, {
       [`is-${color}`]: color,
       [`is-${size}`]: size,
@@ -18,9 +19,5 @@ const Message = ({ children, className, color, size, ...props }) => (
 Message.Body = MessageBody;
 
 Message.Header = MessageHeader;
-
-Message.defaultProps = {
-  renderAs: 'article',
-};
 
 export default Message;

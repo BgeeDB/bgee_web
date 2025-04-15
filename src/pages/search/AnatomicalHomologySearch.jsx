@@ -255,7 +255,7 @@ const AnatomicalHomologySearch = () => {
                       <textarea
                         className="textarea has-fixed-size"
                         name="search-species"
-                        rows="10"
+                        rows={10}
                         value={anatomicalEntities}
                         onChange={(e) => setAnatomicalEntities(e.target.value)}
                       />
@@ -392,7 +392,7 @@ const AnatomicalHomologySearch = () => {
             multiSortable
             onSortCustom={customAnatomicalHomologySorter}
             onFilter={onFilter}
-            classNamesTable="is-striped"
+            // classNamesTable="is-striped"
             columns={[
               {
                 text: 'Anatomical entities',

@@ -13,8 +13,4 @@ const ButtonGroup = ({ className, hasAddons, align, size, ...props }) => (
   />
 );
 
-ButtonGroup.defaultProps = {
-  renderAs: 'div',
-};
-
 export default ButtonGroup;

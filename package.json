@@ -8,8 +8,8 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "fmt": "eslint . --fix",
-    "lint": "eslint ."
+    "fmt": "prettier --write && eslint . --fix",
+    "lint": "prettier --check . && eslint ."
   },
   "dependencies": {
     "@creativebulma/bulma-collapsible": "^1.0.4",
@@ -36,18 +36,18 @@
     "remark-toc": "^9.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.21.0",
+    "@eslint/js": "^9.24.0",
     "@mdx-js/rollup": "^3.1.0",
     "@react-router/dev": "^7.3.0",
     "@types/node": "^22",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
-    "eslint": "^9.21.0",
+    "eslint": "^9.24.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "lint-staged": "^11.1.2",
-    "prettier": "2.4.1",
+    "prettier": "^3.5.3",
     "react-router-devtools": "^1.1.0",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.1.0",
@@ -58,5 +58,21 @@
     "vite": "^6.2.4",
     "vite-plugin-markdown": "^2.2.0",
     "vite-tsconfig-paths": "^5.1.4"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "semi": true,
+    "bracketSpacing": true,
+    "arrowParens": "avoid",
+    "useTabs": false,
+    "printWidth": 120
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md,mdx,html}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   }
 }

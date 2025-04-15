@@ -1,5 +1,5 @@
 import Bulma from '../Bulma';
-import { useNavigate } from 'react-router';
+// import { useNavigate } from 'react-router';
 // import ReactMarkdown from 'react-markdown';
 // import rehypeHighlight from 'rehype-highlight';
 // import rehypeSanitize from 'rehype-sanitize';
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router';
 // import rehypeLink from '../../helpers/rehypeLink';
 
 const NewsItem = ({ date, News }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   return (
     <Bulma.Columns>

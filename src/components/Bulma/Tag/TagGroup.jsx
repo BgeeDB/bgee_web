@@ -1,9 +1,10 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const TagGroup = ({ children, className, hasAddons, ...props }) => (
+const TagGroup = ({ children, className, hasAddons, renderAs = 'span', ...props }) => (
   <Element
     {...props}
+    renderAs={renderAs}
     className={classnames('tags', className, {
       'has-addons': hasAddons,
     })}
@@ -11,9 +12,5 @@ const TagGroup = ({ children, className, hasAddons, ...props }) => (
     {children}
   </Element>
 );
-
-TagGroup.defaultProps = {
-  renderAs: 'span',
-};
 
 export default TagGroup;

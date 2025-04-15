@@ -11,7 +11,6 @@ import {
 
 
 import type { Route } from "./+types/root";
-// import "./app.css";
 import "./styles/global.scss";
 
 import { ModalProvider } from './contexts/ModalContext';
@@ -24,7 +23,6 @@ import Footer from "./components/Layout/Footer/Footer";
 import CookieMessage from "./components/CookieMessage";
 import { NotificationProvider, NotificationContext } from './contexts/NotificationsContext';
 import { setAxiosAddNotif } from "./api/prod/constant";
-import { MDXProvider } from '@mdx-js/react';
 
 
 export const links: Route.LinksFunction = () => [
@@ -117,11 +115,11 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
+  let message = "Error";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? "404" : message;
     details = error.data || details
       // error.status === 404
       //   ? "The requested page could not be found."

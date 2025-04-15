@@ -18,6 +18,4 @@ Card.Footer = CardFooter;
 
 Card.propTypes = {};
 
-Card.defaultProps = {};
-
 export default Card;

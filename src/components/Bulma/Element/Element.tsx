@@ -16,8 +16,4 @@ const Element = ({ className, renderAs = 'div', domRef, children, ...allProps }:
   );
 };
 
-// Element.defaultProps = {
-//   renderAs: 'div',
-// };
-
 export default Element;

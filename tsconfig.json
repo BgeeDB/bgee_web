@@ -27,6 +27,7 @@
     "exactOptionalPropertyTypes": false,
     "allowJs": true,
     "checkJs": true,
+    "noUnusedParameters": false,
     "jsxImportSource": "react"
   }
 }

@@ -7,6 +7,4 @@ const Block = ({ className, ...props }) => (
 
 Block.propTypes = {};
 
-Block.defaultProps = {};
-
 export default Block;

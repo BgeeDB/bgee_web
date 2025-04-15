@@ -1,9 +1,10 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const Section = ({ children, className, size, ...props }) => (
+const Section = ({ children, className, size, renderAs = 'section', ...props }) => (
   <Element
     {...props}
+    renderAs={renderAs}
     className={classnames('section', className, {
       [`is-${size}`]: size,
     })}
@@ -11,9 +12,5 @@ const Section = ({ children, className, size, ...props }) => (
     {children}
   </Element>
 );
-
-Section.defaultProps = {
-  renderAs: 'section',
-};
 
 export default Section;

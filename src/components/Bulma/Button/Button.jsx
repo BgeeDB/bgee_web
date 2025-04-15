@@ -6,7 +6,7 @@ import ButtonGroup from './ButtonGroup';
 const Button = ({
   children,
   className,
-  renderAs,
+  renderAs = 'button',
   color,
   size,
   outlined,
@@ -77,9 +77,5 @@ const Button = ({
 };
 
 Button.Group = ButtonGroup;
-
-Button.defaultProps = {
-  renderAs: 'button',
-};
 
 export default Button;
