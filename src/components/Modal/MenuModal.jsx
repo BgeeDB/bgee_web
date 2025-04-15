@@ -69,13 +69,13 @@ const SIDE_MENU = [
                 key: 'page.browse.raw-data-annotations.test',
                 title: 'Raw data annotations',
                 type: 'fullinternal',
-                path: `${config.genericDomain}${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=raw_data_annots`,
+                path: `${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=raw_data_annots`,
             },
             {
                 key: 'page.browse.raw-data-processed-expression-values.test',
                 title: 'Processed expression values',
                 type: 'fullinternal',
-                path: `${config.genericDomain}${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=proc_expr_values`,
+                path: `${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=proc_expr_values`,
             },
             {
                 key: 'page.browse.presence-absence-expression-calls.test',

@@ -85,8 +85,8 @@ const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
-const RawDataAnnotations = ({ isExprCalls = false}) => {
-  const {initSearchResult} = useLoaderData();
+const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
+  const initSearchResult = (loaderData) ? loaderData.initSearchResult : {};
   const {
     searchResult,
     allCounts,

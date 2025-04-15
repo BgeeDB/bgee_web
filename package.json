@@ -8,7 +8,7 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "fmt": "prettier --write && eslint . --fix",
+    "fmt": "prettier --write . && eslint . --fix",
     "lint": "prettier --check . && eslint ."
   },
   "dependencies": {
