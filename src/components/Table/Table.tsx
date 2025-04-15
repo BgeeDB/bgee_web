@@ -46,7 +46,7 @@ const Table = ({
     () => data.map((obj, key) => ({ ...obj, identifierRow: key + 1 })).map(mappingObj),
     [data, mappingObj]
   );
-  const table = React.useRef();
+  const table = React.useRef<HTMLTableElement | null>(null);
   const inputId = React.useId();
   const { width } = useWindowSize();
   const usedWidth = React.useMemo(() => table?.current?.offsetWidth || width, [table, width]);
@@ -150,7 +150,7 @@ const Table = ({
           <p className="mr-2">Show</p>
           <Select
             title="show-entries-select"
-            id="show-entries-select"
+            // id="show-entries-select"
             value={pageSize}
             options={[10, 20, 50, { value: 100, text: 100 }, 500, 1000]}
             onChange={p => {

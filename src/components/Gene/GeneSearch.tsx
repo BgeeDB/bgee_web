@@ -15,15 +15,20 @@ const GeneSearch = ({ classNames, children, searchTerm = '' }: any) => {
     let lastPart;
 
     if (search) {
-      const firstIndex = option.indexOf(search);
+      console.log('option', option, search);
+      const firstIndex = option.toLowerCase().indexOf(search.toLowerCase());
       if (firstIndex === 0) {
         redPart = option.substring(firstIndex, search.length);
         lastPart = option.substring(search.length, option.length);
-      } else {
+      } else if (firstIndex > 0) {
         firstPart = option.substring(0, firstIndex);
-        redPart = option.substring(firstIndex, search.length + 1);
-        lastPart = option.substring(search.length + 1, option.length);
+        redPart = option.substring(firstIndex, firstIndex + search.length);
+        lastPart = option.substring(firstIndex + search.length, option.length);
+      } else {
+        firstPart = option;
       }
+    } else {
+      redPart = option;
     }
     return (
       <span>

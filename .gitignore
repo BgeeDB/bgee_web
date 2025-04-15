@@ -27,7 +27,6 @@
 .settings/
 # Eclipse CodeMix
 .jsbeautifyrc
-.vscode/
 
 npm-debug.log*
 yarn-debug.log*

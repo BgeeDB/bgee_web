@@ -28,7 +28,7 @@ export const SEARCH_CANCEL_API = {
   },
 };
 
-const DEFAULT_PARAMETERS = (page, action) => {
+const DEFAULT_PARAMETERS = (page, action = undefined) => {
   const params = new URLSearchParams();
 
   params.append('display_type', 'json');
@@ -50,7 +50,7 @@ const search = {
 
         params.append('display_type', 'json');
         params.append('page', 'anat_similarities');
-        params.append('display_rp', 1);
+        params.append('display_rp', '1');
       } else {
         reject(new Error('invalid format'));
       }
@@ -103,7 +103,7 @@ const search = {
       }),
     AutoCompleteByType: (searchType, query, speciesId) =>
       new Promise((resolve, reject) => {
-        let params = {};
+        let params = new URLSearchParams();
 
         //! /!\ Destined to change once all search_autcomplete are the same
         //! The (if gene...) should then be removed
@@ -116,7 +116,7 @@ const search = {
           params.append('species_id', speciesId);
         }
         params.append('query', `${query}`);
-        params.append('limit', 20);
+        params.append('limit', '20');
 
         // Allows to cancel last request if the wasn't finished
         // (convenient for an autocomplete that trigger at each character)
@@ -441,7 +441,9 @@ const search = {
           // If filters_for_all we apply all filters EVEN IF there is OnlyCount
           if ((form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all'))) {
             for (const [key, values] of Object.entries(form.filters)) {
+              // if (Array.isArray(values)) {
               values.forEach(obj => params.append(key, obj.value));
+              // }
             }
           }
         }
@@ -694,7 +696,7 @@ const search = {
       }),
 
     // TODO: remove "isOnlyCounts" param + related code
-    search: (form, isOnlyCounts = false, bypassInitSearchParam = false) =>
+    search: (form, isOnlyCounts = false, bypassInitSearchParam = false): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('data', form.pageType);
 

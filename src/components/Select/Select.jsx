@@ -3,8 +3,8 @@ import React from 'react';
 /*
 options {Array} of string or {value, text}
  */
-const Select = ({ title = 'defaultTitle', defaultValue, options, onChange, value }) => {
-  const [active, setActive] = React.useState(defaultValue || '');
+const Select = ({ title = 'defaultTitle', defaultValue = '', options, onChange, value }) => {
+  const [active, setActive] = React.useState(defaultValue);
 
   const hasValueProps = typeof value !== 'undefined' && value !== null;
 
