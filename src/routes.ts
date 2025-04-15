@@ -11,7 +11,7 @@ export default [
   route(PATHS.ANALYSIS.EXPRESSION_COMPARISON, './pages/analysis/ExpComp.jsx'),
 
   // Search routes
-  route(PATHS.SEARCH.GENE, './pages/search/GeneList.jsx'),
+  route(PATHS.SEARCH.GENE, './pages/search/GeneList.tsx'),
   // route(PATHS.SEARCH.GENE_ITEM + '/:speciesId?', './pages/search/Gene.jsx'),
   route(PATHS.SEARCH.ANATOMICAL_HOMOLOGY, './pages/search/AnatomicalHomologySearch.jsx'),
   route(PATHS.SEARCH.SPECIES, './pages/search/SpeciesList.jsx'),
@@ -38,7 +38,7 @@ export default [
   route(PATHS.SUPPORT.VIDEOS, './static/support/videos.js'),
 
   // About routes
-  route(PATHS.ABOUT.NEWS, './pages/about/NewsPage.jsx'),
+  route(PATHS.ABOUT.NEWS, './pages/about/NewsPage.tsx'),
   route(PATHS.ABOUT.SOURCES, './pages/about/DataSource.jsx'),
   route(PATHS.ABOUT.ABOUT, './static/about/about.js'),
   route(PATHS.ABOUT.COLLABORATIONS, './static/about/collaborations.js'),

@@ -105,6 +105,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </ModalProvider>
         <ScrollRestoration />
         <Scripts />
+        {/* TODO: the module below is at the origin of hydration errors */}
+        <script type="module" src="/js/ionicons-5.5.4/ionicons.esm.js"></script>
+        <script noModule src="/js/ionicons-5.5.4/ionicons.js"></script>
       </body>
     </html>
   );

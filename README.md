@@ -249,12 +249,14 @@ docker run -p 3000:3000 bgee-web
 
 - [x] https://reactrouter.com/6.30.0/upgrading/v5 / https://reactrouter.com/upgrading/v6
 
-- [ ] In `public/index.html` there was these lines to import icons, it creates problem with SSR because they are web components and it's not well supported by SSR.
+- [ ] In `public/index.html` there was these lines to import ion icons, it creates problem with SSR because they are web components and it's not well supported by SSR.
 
   ```html
   <script type="module" src="/js/ionicons-5.5.4/ionicons.esm.js"></script>
   <script nomodule src="/js/ionicons-5.5.4/ionicons.js"></script>
   ```
+
+  A solution could be to migrate to their "react" approach: https://ionicframework.com/docs/api/icon 
 
 - [ ] Issues with hydration in `raw-data` sometimes, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR.
 
@@ -265,4 +267,3 @@ docker run -p 3000:3000 bgee-web
 > ```bash
 > find . -type f -name "*.js" -exec bash -c 'mv "$0" "${0%.js}.jsx"' {} \;
 > ```
->

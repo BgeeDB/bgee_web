@@ -1,6 +1,5 @@
-/* eslint-disable react/no-string-refs */
 import React from 'react';
-import bulmaCollapsible from '@creativebulma/bulma-collapsible/src/js';
+// import bulmaCollapsible from '@creativebulma/bulma-collapsible/src/js';
 import uuid from '../../helpers/uuid';
 import Bulma from '../Bulma';
 
@@ -11,12 +10,11 @@ class Accordion extends React.Component {
     this.myRef = React.createRef();
   }
 
-  componentDidMount() {
-    // eslint-disable-next-line no-undef
-    this.collapsibles = bulmaCollapsible.attach('.is-collapsible', {
-      container: this.myRef.current,
-    });
-  }
+  // componentDidMount() {
+  //   this.collapsibles = bulmaCollapsible.attach('.is-collapsible', {
+  //     container: this.myRef.current,
+  //   });
+  // }
 
   render() {
     const { elements } = this.props;

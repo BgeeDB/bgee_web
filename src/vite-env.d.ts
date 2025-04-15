@@ -4,18 +4,22 @@
 
 declare module "*.md";
 
+/**
+ * Define types for Ionic Icons to properly work with TypeScript JSX
+ */
 declare namespace JSX {
   interface IntrinsicElements {
-    // Ionic icon component
     'ion-icon': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
       name?: string;
       size?: string;
       mode?: string;
       color?: string;
+      [key: string]: any;
     };
-
-    // Add any other custom elements you might be using
-    // For example:
-    // 'custom-element': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
   }
+}
+
+// Make sure React knows about custom elements
+interface HTMLElementTagNameMap {
+  'ion-icon': HTMLElement;
 }

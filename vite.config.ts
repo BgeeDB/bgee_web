@@ -32,7 +32,9 @@ export default defineConfig({
     reactRouter(),
   ],
   optimizeDeps: {
-    include: ['react/jsx-runtime'],
+    include: [
+      'react/jsx-runtime',
+    ],
   },
   // assetsInclude: ["**/*.md"],
 })
