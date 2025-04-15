@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import classnames from '../../helpers/classnames';
 import { hasColumnsTableHidden } from '../../helpers/constants/mediaQueries';
@@ -129,7 +128,6 @@ const Table = ({
   const searchInput = React.useMemo(
     () => (
       <div className="control table-search is-flex is-flex-direction-row is-align-items-center">
-        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label htmlFor={`filtering${inputId}`} className="mr-1">
           Filter:
         </label>
@@ -143,7 +141,7 @@ const Table = ({
         />
       </div>
     ),
-    [search, currentPage, setCurrentPage]
+    [search, currentPage, setCurrentPage, inputId]
   );
 
   const pageSizeSelector = React.useMemo(

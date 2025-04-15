@@ -1,5 +1,3 @@
-/* eslint-disable react/destructuring-assignment,jsx-a11y/interactive-supports-focus,react/no-array-index-key,react/button-has-type,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,jsx-a11y/label-has-associated-control */
-import { replace } from 'react-router';
 import config from '../config.json';
 
 const APP_VERSION = config.version;
@@ -18,6 +16,7 @@ const expressionPageHelper = {
       }))
       ?.sort((a, b) => a?.word?.localeCompare(b.word)),
   autocompleteSpeciesRender: (setSearch, navigate) => (s, closeAutoComplete) => (
+    // TODO: fix history to get location from args
     <div
       key={s.info.id}
       role="button"

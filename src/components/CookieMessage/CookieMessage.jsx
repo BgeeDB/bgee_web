@@ -48,7 +48,6 @@ const CookieMessage = () => {
         </span>
       </div>
       <div className="right">
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
         <a className="is-underlined color-white" onClick={acceptMessage}>
           Do not show this banner again
         </a>

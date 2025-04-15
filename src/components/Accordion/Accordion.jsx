@@ -21,7 +21,6 @@ class Accordion extends React.Component {
     return (
       <div ref={this.myRef} id={this.id} className="custom-accordion" key={this.id}>
         {elements.map(({ title, body }, key) => (
-          // eslint-disable-next-line react/no-array-index-key
           <Bulma.Message key={`${this.id}-${key}`}>
             <Bulma.Message.Header renderAs="a" href={`#collapsible-message-accordion-${key}`} data-action="collapse">
               {title}

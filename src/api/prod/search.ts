@@ -391,8 +391,8 @@ const search = {
           // We send all value contained in the URL
           // => InitSearch combined with the basics parameters
           // (Basics parameters are the one originally filled when opening the page for the first time)
-          // eslint-disable-next-line no-restricted-syntax
-          for (const [key, val] of form?.initSearch) {
+
+          for (const [key, val] of form.initSearch) {
             if (
               key !== 'data_type' &&
               key !== 'offset' &&
@@ -503,8 +503,8 @@ const search = {
         // are we using a dataHash?
         if (form.initSearch) {
           // -> use initSearch params
-          // eslint-disable-next-line no-restricted-syntax
-          for (const [key, val] of form?.initSearch) {
+
+          for (const [key, val] of form.initSearch) {
             if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               params.append(key, val);
             }
@@ -543,8 +543,8 @@ const search = {
         // are we using a dataHash?
         if (form.initSearch && form.initSearch.length > 0) {
           // -> use initSearch params
-          // eslint-disable-next-line no-restricted-syntax
-          for (const [key, val] of form?.initSearch) {
+
+          for (const [key, val] of form.initSearch) {
             if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               params.append(key, val);
             }
@@ -654,8 +654,7 @@ const search = {
           // -> use initSearch params
           params.append('display_rp', '1');
 
-          // eslint-disable-next-line no-restricted-syntax
-          for (const [key, val] of form?.initSearch) {
+          for (const [key, val] of form.initSearch) {
             if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               params.append(key, val);
             }
@@ -723,8 +722,8 @@ const search = {
           // We send all value contained in the URL
           // => InitSearch combined with the basics parameters
           // (Basics parameters are the one originally filled when opening the page for the first time)
-          // eslint-disable-next-line no-restricted-syntax
-          for (const [key, val] of form?.initSearch) {
+
+          for (const [key, val] of form.initSearch) {
             if (
               key !== 'data_type' &&
               // key !== 'offset' &&
@@ -779,7 +778,6 @@ const search = {
           // We apply the filters
           // If filters_for_all we apply all filters EVEN IF there is OnlyCount
           if ((form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all'))) {
-            // eslint-disable-next-line no-restricted-syntax
             for (const [key, values] of Object.entries(form.filters)) {
               values.forEach(obj => params.append(key, obj.value));
             }

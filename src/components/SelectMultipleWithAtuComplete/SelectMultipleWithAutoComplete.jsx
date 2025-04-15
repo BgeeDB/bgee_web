@@ -1,7 +1,3 @@
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import './SelectMultipleWithAutoComplete.scss';
 import Select, { components } from 'react-select';

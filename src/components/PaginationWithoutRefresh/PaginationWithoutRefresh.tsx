@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import { TableContext } from '../../contexts/TableContext';
 import { usePaginationLink } from '../../hooks/usePagination';
 import config from '../../config.json';
@@ -23,7 +23,6 @@ const PaginationWithoutRefresh = ({ current, total }) => {
     const pages = [];
     const pageBtw = total - 2;
     if (pageBtw <= 3) {
-      // eslint-disable-next-line no-plusplus
       for (let i = 1; i <= pageBtw; ++i) pages.push(i + 1);
     } else if (current === 1) {
       pages.push(current + 1);

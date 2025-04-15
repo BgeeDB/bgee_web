@@ -50,8 +50,7 @@ const onRenderCell =
             (r, a, idx) =>
               idx + 1 === cell.speciesWithAnatEntityPresence.length
                 ? r.concat(a)
-                : // eslint-disable-next-line react/no-array-index-key
-                  r.concat(a, <span key={`ss-${idx}-comma`}>, </span>),
+                : r.concat(a, <span key={`ss-${idx}-comma`}>, </span>),
             []
           );
       case 'at':

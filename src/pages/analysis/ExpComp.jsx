@@ -473,7 +473,6 @@ const ExpComp = () => {
         <p>
           Unknown gene IDs:{' '}
           {geneInfo.undeterminedGeneIds.map((g, key) => (
-            // eslint-disable-next-line react/no-array-index-key
             <React.Fragment key={`UG-${key}`}>{`'${g}'${
               key + 1 !== geneInfo.undeterminedGeneIds.length ? ', ' : ''
             }`}</React.Fragment>

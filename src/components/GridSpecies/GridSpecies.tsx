@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import { Link } from 'react-router';
 import classnames from '../../helpers/classnames';

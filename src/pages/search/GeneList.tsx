@@ -52,7 +52,7 @@ const onRenderCell =
             {cell[key]}
           </Link>
         );
-      case 'match':
+      case 'match': {
         const match = splitWithOccurrences(cell.match, search);
         return (
           <span key={`${key}-${keyRow}`}>
@@ -68,6 +68,7 @@ const onRenderCell =
             ({cell.matchSource})
           </span>
         );
+      }
       case 'description':
       default:
         return defaultRender(cell[key]);

@@ -4,7 +4,6 @@ import copyToClipboard from '../helpers/copyToClipboard';
 function useCopyClipboard(successDuration = 2000) {
   const [isCopied, setIsCopied] = useState(false);
 
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (isCopied) {
       const id = setTimeout(() => {

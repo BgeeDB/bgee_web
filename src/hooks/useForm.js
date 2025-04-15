@@ -38,7 +38,6 @@ const useForm = opts => {
     if (validations) {
       let valid = true;
       const newErrors = {};
-      // eslint-disable-next-line guard-for-in,no-restricted-syntax
 
       const valArray = Object.entries(validations);
       for (let idx = 0; idx < valArray.length; idx += 1) {

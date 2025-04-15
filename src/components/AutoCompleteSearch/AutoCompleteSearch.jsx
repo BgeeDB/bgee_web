@@ -1,6 +1,3 @@
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import './autoCompleteSearch.scss';
 
@@ -100,14 +97,7 @@ const AutoCompleteSearch = ({
   const options = useMemo(
     () =>
       autocompleteList.map((option, index) => (
-        <div
-          // eslint-disable-next-line react/no-array-index-key
-          key={index}
-          onClick={onSelectChoice(option)}
-          role="button"
-          tabIndex={index}
-          className="rowSearch"
-        >
+        <div key={index} onClick={onSelectChoice(option)} role="button" tabIndex={index} className="rowSearch">
           {renderOption ? renderOption(option, search) : option}
         </div>
       )),

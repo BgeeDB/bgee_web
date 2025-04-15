@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export const getIdAndNameLabel = obj => `${obj?.id}${obj?.name ? ` - ${obj?.name}` : ''}`;
 
 export const getOptionsForFilter = (values, shouldPrintId = true, shouldPrintName = true) => {
@@ -18,7 +17,7 @@ export const getChildValueFromAttribute = (obj = {}, attributes = '') => {
   if (attributeTab[0] === 'result') {
     attributeTab.splice(0, 1);
   }
-  // eslint-disable-next-line no-plusplus
+
   for (let i = 0; i < attributeTab.length; i++) {
     current = current?.[attributeTab[i]];
   }

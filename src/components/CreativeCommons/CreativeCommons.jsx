@@ -7,7 +7,6 @@ const CreativeCommons = () => {
     <>
       <p className="is-size-7">
         {`Images from Wikimedia Commons. In most cases, pictures corresponds to the sequenced strains.  `}
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
         <a onClick={() => setIsOpen(!isOpen)}>Show information about original images.</a>
       </p>
       <div id="creativecommons" className={isOpen ? 'is-open' : ''}>

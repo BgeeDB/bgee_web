@@ -112,7 +112,7 @@ const GeneDetails = ({ loaderData }) => {
         }, 2500); // wait for all the elements to load and then scroll. Might need an adjustment
       }
     }
-  }, []);
+  }, [loc.hash]);
 
   return (
     <>

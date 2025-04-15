@@ -1,6 +1,4 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './tagInput.scss';
 
 const TagInput = () => {
@@ -8,7 +6,6 @@ const TagInput = () => {
 
   const handleKeyDown = e => {
     if (e.key !== 'Enter') return;
-    // eslint-disable-next-line prefer-destructuring
     const value = e.target.value;
     if (!value.trim()) return;
     setTags([...tags, value]);
@@ -26,7 +23,6 @@ const TagInput = () => {
       </div>
       <div className="conteneur-result">
         {tags.map((tag, index) => (
-          // eslint-disable-next-line react/no-array-index-key
           <div className="tag-item" key={index}>
             <span className="text">{tag}</span>
             <span className="close" onClick={() => removeTag(index)}>

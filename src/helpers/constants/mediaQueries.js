@@ -1,5 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-
 export const MEDIA_QUERIES = {
   DESKTOP_HOMOLOGS: 'desktop-homologs',
   DESKTOP: 'desktop',

@@ -46,9 +46,12 @@ const GeneSearch = ({ classNames, children, searchTerm = '' }: any) => {
     return [];
   }, []);
 
-  const onSelectOption = useCallback(option => {
-    navigate(`${PATHS.SEARCH.GENE}?search=${option}`);
-  }, []);
+  const onSelectOption = useCallback(
+    option => {
+      navigate(`${PATHS.SEARCH.GENE}?search=${option}`);
+    },
+    [navigate]
+  );
 
   return (
     <Bulma.Card className={classnames(classNames, 'form')}>

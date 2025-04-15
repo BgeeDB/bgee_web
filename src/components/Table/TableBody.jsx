@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key,jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */
 import React, { useContext } from 'react';
 import classnames from '../../helpers/classnames';
 import { isHideMediaQuery } from '../../helpers/constants/mediaQueries';

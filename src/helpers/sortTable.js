@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export const monoSort =
   ({ key, sort }) =>
   ({ [key]: a }, { [key]: b }) => {

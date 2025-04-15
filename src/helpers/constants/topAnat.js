@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 import classnames from '../classnames';
 
 export const TOP_ANAT_DEFAULT_RP = {

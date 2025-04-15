@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export const COLUMN_TYPES = {
   STRING: 'STRING',
   NUMERIC: 'NUMERIC',

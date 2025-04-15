@@ -9,7 +9,6 @@ const Columns = ({
   multiline = true,
   centered,
   vCentered,
-  variableGap,
   mobile = {},
   tablet = {},
   desktop = {},

@@ -6,7 +6,6 @@ function useHover() {
   const handleMouseOver = () => setValue(true);
   const handleMouseOut = () => setValue(false);
   React.useEffect(
-    // eslint-disable-next-line consistent-return
     () => {
       const node = ref.current;
       if (node) {

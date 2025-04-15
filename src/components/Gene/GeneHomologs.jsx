@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary,jsx-a11y/label-has-associated-control,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions, no-case-declarations, react/no-array-index-key */
 import React from 'react';
 import { Link } from 'react-router';
 import LinkExternal from '../LinkExternal';
