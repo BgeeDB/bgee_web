@@ -5,17 +5,11 @@ import './rawDataAnnotations.scss';
 import { getOptionsForFilter } from '../../../helpers/selects';
 import classnames from '../../../helpers/classnames';
 
-const RawDataAnnotationsFilters = ({
-  filters,
-  setFilters,
-  triggerSearch,
-  dataFilters = {},
-  dataType,
-}) => {
+const RawDataAnnotationsFilters = ({ filters, setFilters, triggerSearch, dataFilters = {}, dataType }) => {
   const [hasChanged, setHasChanged] = useState(false);
   const eraseFilters = () => {
     if (filters[dataType] !== {} && filters[dataType] !== undefined) {
-      setFilters((old) => ({ ...old, [dataType]: {} }));
+      setFilters(old => ({ ...old, [dataType]: {} }));
       triggerSearch(true, true);
       setHasChanged(false);
     }
@@ -28,7 +22,7 @@ const RawDataAnnotationsFilters = ({
 
   const onSelect = (keyAPI, newSelected) => {
     setHasChanged(true);
-    setFilters((old) => ({
+    setFilters(old => ({
       ...old,
       [dataType]: { ...old[dataType], [keyAPI]: newSelected },
     }));
@@ -37,7 +31,7 @@ const RawDataAnnotationsFilters = ({
   return (
     <div className="filters">
       {!isEmpty(dataFilters) &&
-        Object.keys(dataFilters).map((filterKey) => {
+        Object.keys(dataFilters).map(filterKey => {
           const dataFilter = dataFilters[filterKey];
           const keyAPI = dataFilter?.urlParameterName;
           const filterByDataType = filters[dataType];
@@ -54,9 +48,7 @@ const RawDataAnnotationsFilters = ({
               placeholder={dataFilter.filterName}
               getOptionsFunction={() => options}
               selectedOptions={filterByDataType?.[keyAPI] || []}
-              setSelectedOptions={(newSelected) =>
-                onSelect(keyAPI, newSelected)
-              }
+              setSelectedOptions={newSelected => onSelect(keyAPI, newSelected)}
               className="filterSelect my-2"
             />
           );
@@ -64,21 +56,14 @@ const RawDataAnnotationsFilters = ({
       {!isEmpty(dataFilters) && (
         <div className="marginAutoBtn">
           <button
-            className={classnames(
-              ' button is-small is-info mt-2',
-              !hasChanged && 'is-light'
-            )}
+            className={classnames(' button is-small is-info mt-2', !hasChanged && 'is-light')}
             type="button"
             onClick={onApplyFilter}
             disabled={!hasChanged}
           >
             Apply filters
           </button>
-          <button
-            className="button is-small is-danger is-light mt-2 ml-2"
-            type="button"
-            onClick={eraseFilters}
-          >
+          <button className="button is-small is-danger is-light mt-2 ml-2" type="button" onClick={eraseFilters}>
             <ion-icon name="trash" tooltop />
           </button>
         </div>

@@ -32,7 +32,7 @@ const Table = ({
   pagination = false,
   defaultPaginationSize = 20,
   customHeader,
-  mappingObj = (obj) => obj,
+  mappingObj = obj => obj,
   name,
   identifierAtFilter = false,
   emptyTableMessage = 'No data',
@@ -45,35 +45,27 @@ const Table = ({
   hasScrollTop = false,
 }: any) => {
   const mappedData = React.useMemo(
-    () =>
-      data
-        .map((obj, key) => ({ ...obj, identifierRow: key + 1 }))
-        .map(mappingObj),
+    () => data.map((obj, key) => ({ ...obj, identifierRow: key + 1 })).map(mappingObj),
     [data, mappingObj]
   );
   const table = React.useRef();
   const inputId = React.useId();
   const { width } = useWindowSize();
-  const usedWidth = React.useMemo(
-    () => table?.current?.offsetWidth || width,
-    [table, width]
-  );
+  const usedWidth = React.useMemo(() => table?.current?.offsetWidth || width, [table, width]);
 
   const [sortOption, setSortOption] = React.useState(initialSorting);
 
   const defineSortOption = React.useCallback(
-    (key) => (event) => {
+    key => event => {
       if (sortable) {
         if (multiSortable && event.shiftKey) {
           let newSort;
-          if (!Array.isArray(sortOption))
-            newSort = [{ key, sort: 'ascending' }];
+          if (!Array.isArray(sortOption)) newSort = [{ key, sort: 'ascending' }];
           else {
             newSort = [...sortOption];
-            const pos = newSort.findIndex((f) => f.key === key);
+            const pos = newSort.findIndex(f => f.key === key);
             if (pos >= 0) {
-              if (newSort[pos].sort === 'ascending')
-                newSort[pos].sort = 'descending';
+              if (newSort[pos].sort === 'ascending') newSort[pos].sort = 'descending';
               else newSort.splice(pos, 1);
             } else {
               newSort.push({ key, sort: 'ascending' });
@@ -97,18 +89,15 @@ const Table = ({
   const [isExpanded, setIsExpanded] = React.useState({});
 
   const expandAction = React.useCallback(
-    (key) => () =>
-      setIsExpanded((prev) => ({
+    key => () =>
+      setIsExpanded(prev => ({
         ...prev,
         [key]: !prev[key],
       })),
     []
   );
 
-  const showTableModalButton = React.useMemo(
-    () => hasColumnsTableHidden(usedWidth, columns),
-    [usedWidth, columns]
-  );
+  const showTableModalButton = React.useMemo(() => hasColumnsTableHidden(usedWidth, columns), [usedWidth, columns]);
 
   const {
     page: currentPage,
@@ -122,7 +111,7 @@ const Table = ({
   );
 
   const setCurrentPage = React.useCallback(
-    (page) => {
+    page => {
       onPageChange(page);
       setIsExpanded({});
     },
@@ -133,9 +122,7 @@ const Table = ({
 
   const definiteColumns = React.useMemo(
     () =>
-      search !== '' && identifierAtFilter
-        ? [{ key: 'identifierRow', text: 'Row Number' }, ...columns]
-        : [...columns],
+      search !== '' && identifierAtFilter ? [{ key: 'identifierRow', text: 'Row Number' }, ...columns] : [...columns],
     [identifierAtFilter, columns, search]
   );
 
@@ -143,11 +130,13 @@ const Table = ({
     () => (
       <div className="control table-search is-flex is-flex-direction-row is-align-items-center">
         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-        <label htmlFor={`filtering${inputId}`} className="mr-1">Filter:</label>
+        <label htmlFor={`filtering${inputId}`} className="mr-1">
+          Filter:
+        </label>
         <Input
           id={`filtering${inputId}`}
           value={search}
-          onChange={(e) => {
+          onChange={e => {
             setSearch(e.target.value);
             if (currentPage !== 1) setCurrentPage(1);
           }}
@@ -167,7 +156,7 @@ const Table = ({
             id="show-entries-select"
             value={pageSize}
             options={[10, 20, 50, { value: 100, text: 100 }, 500, 1000]}
-            onChange={(p) => {
+            onChange={p => {
               // setCurrentPage(1) is already done in onPageSizeChange
               onPageSizeChange(parseInt(p, 10));
             }}
@@ -175,33 +164,19 @@ const Table = ({
           <p className="ml-2">entries</p>
         </div>
       ) : null,
-    [
-      pageSize,
-      currentPage,
-      mappedData,
-      pagination,
-      setCurrentPage,
-      onPageSizeChange,
-    ]
+    [pageSize, currentPage, mappedData, pagination, setCurrentPage, onPageSizeChange]
   );
 
   const processedData = React.useMemo(() => {
     const clone = JSON.parse(JSON.stringify(mappedData));
-    const filtered =
-      (search === '' || !onFilter) ? clone : clone.filter(onFilter(search));
+    const filtered = search === '' || !onFilter ? clone : clone.filter(onFilter(search));
     if (sortOption) {
-      filtered.sort(
-        (Array.isArray(sortOption)
-          ? onSortCustom || multiSort
-          : onSortCustom || monoSort)(sortOption)
-      );
+      filtered.sort((Array.isArray(sortOption) ? onSortCustom || multiSort : onSortCustom || monoSort)(sortOption));
     }
     return filtered;
   }, [mappedData, search, sortOption, onSortCustom]);
 
-  const PaginationComponent = isRequestPerPage
-    ? TablePaginationWithoutRefresh
-    : TablePagination;
+  const PaginationComponent = isRequestPerPage ? TablePaginationWithoutRefresh : TablePagination;
 
   return (
     <TableProvider
@@ -239,9 +214,7 @@ const Table = ({
       <TableTitle />
       {hasPaginationTop && <PaginationComponent />}
       {processedData.length > 0 ? (
-        <div
-          className={`table-container ${hasScrollTop ? 'isTableFlipped' : ''}`}
-        >
+        <div className={`table-container ${hasScrollTop ? 'isTableFlipped' : ''}`}>
           <table
             ref={table}
             className={classnames(

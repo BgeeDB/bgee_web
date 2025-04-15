@@ -4,7 +4,7 @@ import config from '../config.json';
 const { ID_FULL_LENGTH } = config.dataTypeIds;
 
 const ApiReducer = {
-  topAnatForm: (rp) => (prev) => ({
+  topAnatForm: rp => prev => ({
     ...prev,
     genes: rp.fg_list.join('\n'),
     genesBg: (rp.bg_list || []).join('\n'),
@@ -17,23 +17,20 @@ const ApiReducer = {
     nbNode: rp.nb_node || '',
     fdrThreshold: rp.fdr_thr || '',
     pValueThreshold: rp.p_value_thr || '',
-    rnaSeq: Boolean(rp.data_type.find((f) => f === 'RNA_SEQ')),
-    full: Boolean(rp.data_type.find((f) => f === ID_FULL_LENGTH)),
-    affymetrix: Boolean(rp.data_type.find((f) => f === 'AFFYMETRIX')),
-    inSitu: Boolean(rp.data_type.find((f) => f === 'IN_SITU')),
-    est: Boolean(rp.data_type.find((f) => f === 'EST')),
+    rnaSeq: Boolean(rp.data_type.find(f => f === 'RNA_SEQ')),
+    full: Boolean(rp.data_type.find(f => f === ID_FULL_LENGTH)),
+    affymetrix: Boolean(rp.data_type.find(f => f === 'AFFYMETRIX')),
+    inSitu: Boolean(rp.data_type.find(f => f === 'IN_SITU')),
+    est: Boolean(rp.data_type.find(f => f === 'EST')),
   }),
-  topAnatRequestParameters: (res, rp) => (prev) => {
+  topAnatRequestParameters: (res, rp) => prev => {
     const curr = JSON.parse(JSON.stringify(prev));
 
     curr.fg = {
       list: res.data.fg_list,
       message: `${rp.fg_list.length} IDs provided, ${
         res.data.fg_list.geneCount[res.data.fg_list.selectedSpecies]
-      } unique ${isPlural(
-        'gene',
-        res.data.fg_list.geneCount[res.data.fg_list.selectedSpecies]
-      )} found in ${
+      } unique ${isPlural('gene', res.data.fg_list.geneCount[res.data.fg_list.selectedSpecies])} found in ${
         res.data.fg_list.detectedSpecies[res.data.fg_list.selectedSpecies].name
       }`,
     };
@@ -44,12 +41,8 @@ const ApiReducer = {
             list: res.data.bg_list,
             message: `${rp.bg_list.length} IDs provided, ${
               res.data.bg_list.geneCount[res.data.bg_list.selectedSpecies]
-            } unique ${isPlural(
-              'gene',
-              res.data.bg_list.geneCount[res.data.bg_list.selectedSpecies]
-            )} found in ${
-              res.data.bg_list.detectedSpecies[res.data.bg_list.selectedSpecies]
-                .name
+            } unique ${isPlural('gene', res.data.bg_list.geneCount[res.data.bg_list.selectedSpecies])} found in ${
+              res.data.bg_list.detectedSpecies[res.data.bg_list.selectedSpecies].name
             }`,
           }
         : null;

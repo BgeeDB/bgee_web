@@ -1,11 +1,11 @@
 import React from 'react';
-import {Link} from "react-router";
+import { Link } from 'react-router';
 import assets from '../../../assets';
 import PATHS from '../../../paths/paths';
 import Bulma from '../../Bulma';
 import config from '../../../config.json';
 import ROUTES from '../../../paths/routes';
-import MenuModal from "../../Modal/MenuModal";
+import MenuModal from '../../Modal/MenuModal';
 
 const NAVBAR_LEFT = [
   {
@@ -69,87 +69,76 @@ const Header = () => {
   const [hamburgerActive, setHamburgerActive] = React.useState(false);
 
   return (
-      <nav className="navbar py-3 is-bgee-inverted" aria-label="main navigation">
-        <div className="navbar-brand">
-          <Link className="" to={PATHS.HOME}>
-            <Bulma.Image
-                alt="Bgee logo"
-                className="logo"
-                src={assets.bgeeLogo}
-                height={50}
-            />
-          </Link>
-
-          {!config?.isRawDataOnly && (
-              /* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/interactive-supports-focus */
-              <a
-                  role="button"
-                  className="navbar-burger"
-                  aria-label="menu"
-                  aria-expanded="false"
-                  data-target="navbarBasicExample"
-                  onClick={() => setHamburgerActive(!hamburgerActive)}
-              >
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-              </a>
-          )}
-        </div>
+    <nav className="navbar py-3 is-bgee-inverted" aria-label="main navigation">
+      <div className="navbar-brand">
+        <Link className="" to={PATHS.HOME}>
+          <Bulma.Image alt="Bgee logo" className="logo" src={assets.bgeeLogo} height={50} />
+        </Link>
 
         {!config?.isRawDataOnly && (
-            <div className={`navbar-menu ${hamburgerActive ? 'is-active' : ''}`}>
-              <MenuModal />
-              <div className="navbar-start">
-                {NAVBAR_LEFT.map(({ key, title, type, path }) => {
-                  switch (type) {
-                    case 'external':
-                      return (
-                          <a
-                              key={key}
-                              className="navbar-item"
-                              href={path}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                          >
-                            {title}
-                          </a>
-                      );
-                    case 'internal':
-                    default:
-                      return (
-                          <Link
-                              key={key}
-                              to={path}
-                              className="navbar-item"
-                              onClick={(event) => {
-                                event.target.blur();
-                                setHamburgerActive(false);
-                              }}
-                          >
-                            {title}
-                          </Link>
-                      );
-                  }
-                })}
-              </div>
-
-              <div className="navbar-end">
-                {NAVBAR_RIGHT.map(({ href, alt, ...imgProps }) => (
-                    <a
-                        key={href}
-                        // className="navbar-item"
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                      <Bulma.Image alt={alt} {...imgProps} className="logo-associations" />
-                    </a>
-                ))}
-              </div>
-            </div>
+          /* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/interactive-supports-focus */
+          <a
+            role="button"
+            className="navbar-burger"
+            aria-label="menu"
+            aria-expanded="false"
+            data-target="navbarBasicExample"
+            onClick={() => setHamburgerActive(!hamburgerActive)}
+          >
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+          </a>
         )}
-      </nav>
+      </div>
+
+      {!config?.isRawDataOnly && (
+        <div className={`navbar-menu ${hamburgerActive ? 'is-active' : ''}`}>
+          <MenuModal />
+          <div className="navbar-start">
+            {NAVBAR_LEFT.map(({ key, title, type, path }) => {
+              switch (type) {
+                case 'external':
+                  return (
+                    <a key={key} className="navbar-item" href={path} target="_blank" rel="noopener noreferrer">
+                      {title}
+                    </a>
+                  );
+                case 'internal':
+                default:
+                  return (
+                    <Link
+                      key={key}
+                      to={path}
+                      className="navbar-item"
+                      onClick={event => {
+                        event.target.blur();
+                        setHamburgerActive(false);
+                      }}
+                    >
+                      {title}
+                    </Link>
+                  );
+              }
+            })}
+          </div>
+
+          <div className="navbar-end">
+            {NAVBAR_RIGHT.map(({ href, alt, ...imgProps }) => (
+              <a
+                key={href}
+                // className="navbar-item"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Bulma.Image alt={alt} {...imgProps} className="logo-associations" />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
   );
 };
 

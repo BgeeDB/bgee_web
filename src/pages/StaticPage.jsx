@@ -10,9 +10,9 @@ const StaticPage = ({ location: { pathname } }) => (
     {ROUTES[pathname].meta && (
       <Helmet>
         <title>{ROUTES[pathname].meta.title}</title>
-        <meta property='og:title' content={ROUTES[pathname].meta.title} />
+        <meta property="og:title" content={ROUTES[pathname].meta.title} />
         <meta name="decription" content={ROUTES[pathname].meta.description} />
-        <meta property='og:description' content={ROUTES[pathname].meta.description} />
+        <meta property="og:description" content={ROUTES[pathname].meta.description} />
         <meta name="keywords" content={ROUTES[pathname].meta.keywords} />
         <meta property="og:url" content={`${config.genericDomain}${pathname}`} />
       </Helmet>

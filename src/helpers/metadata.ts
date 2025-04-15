@@ -16,10 +16,10 @@ import type { MetaDescriptor } from 'react-router';
  * @returns {MetaDescriptor[]} An array of metadata objects to be rendered as meta tags.
  */
 export function getMetadata({
-  title = "Bgee: gene expression data in animals",
-  description = "Bgee is a database for retrieval and comparison of gene expression patterns across multiple animal species. It provides an intuitive answer to the question -where is a gene expressed?- and supports research in cancer and agriculture, as well as evolutionary biology.",
-  keywords = "bgee, gene expression, evolution, ontology, anatomy, development, evo-devo database, anatomical ontology, developmental ontology, gene expression evolution",
-  link = "",
+  title = 'Bgee: gene expression data in animals',
+  description = 'Bgee is a database for retrieval and comparison of gene expression patterns across multiple animal species. It provides an intuitive answer to the question -where is a gene expressed?- and supports research in cancer and agriculture, as well as evolutionary biology.',
+  keywords = 'bgee, gene expression, evolution, ontology, anatomy, development, evo-devo database, anatomical ontology, developmental ontology, gene expression evolution',
+  link = '',
   schemaorg = [],
 }: {
   title?: string;
@@ -31,53 +31,53 @@ export function getMetadata({
   const metadata: MetaDescriptor[] = [
     { title: title },
     {
-      property: "og:title",
-      content: title
+      property: 'og:title',
+      content: title,
     },
     {
-      name: "description",
-      content: description
+      name: 'description',
+      content: description,
     },
     {
-      property: "og:description",
-      content: description
+      property: 'og:description',
+      content: description,
     },
     {
-      name: "keywords",
-      content: keywords
+      name: 'keywords',
+      content: keywords,
     },
     {
-      property: "og:type",
-      content: "website"
+      property: 'og:type',
+      content: 'website',
     },
     {
-      property: "og:site_name",
-      content: "Bgee"
+      property: 'og:site_name',
+      content: 'Bgee',
     },
     {
-      property: "og:logo",
-      content: `${config.genericDomain}/img/logo/bgee13-logo.png`
+      property: 'og:logo',
+      content: `${config.genericDomain}/img/logo/bgee13-logo.png`,
     },
     {
-      property: "og:image",
-      content: `${config.genericDomain}/img/logo/bgee13-logo.png`
+      property: 'og:image',
+      content: `${config.genericDomain}/img/logo/bgee13-logo.png`,
     },
 
     // TODO: this is what they use originally, but I think it should be DC.rights https://datatracker.ietf.org/doc/html/rfc2731
     {
-      name: "dcterms.rights",
-      content: `Bgee copyright 2007/${new Date().getFullYear()} SIB/UNIL`
+      name: 'dcterms.rights',
+      content: `Bgee copyright 2007/${new Date().getFullYear()} SIB/UNIL`,
     },
   ];
 
   if (link) {
     metadata.push({
-      property: "og:url",
-      content: link
+      property: 'og:url',
+      content: link,
     });
     metadata.push({
-      tagName: "link",
-      rel: "canonical",
+      tagName: 'link',
+      rel: 'canonical',
       href: link,
     });
     // <meta property="og:url" content={meta.link} />
@@ -87,7 +87,7 @@ export function getMetadata({
   // Add Schema.org structured data if provided
   for (const key in schemaorg) {
     metadata.push({
-      "script:ld+json": JSON.stringify(schemaorg[key]),
+      'script:ld+json': JSON.stringify(schemaorg[key]),
     });
   }
   return metadata;

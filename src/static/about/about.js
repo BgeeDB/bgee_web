@@ -12,7 +12,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(about)
+  return staticBuilder(about);
 }
 
 const about = [
@@ -88,8 +88,7 @@ const about = [
         type: 'rich_text',
         content: [
           {
-            content:
-              'Bgee provides several tools on this website to study gene expression:',
+            content: 'Bgee provides several tools on this website to study gene expression:',
             type: 'bold',
           },
         ],
@@ -110,8 +109,7 @@ const about = [
                 type: 'link_internal',
               },
               {
-                content:
-                  ', to retrieve the preferred conditions of expression of any gene in Bgee',
+                content: ', to retrieve the preferred conditions of expression of any gene in Bgee',
                 type: 'text',
               },
             ],
@@ -140,8 +138,7 @@ const about = [
                 type: 'link_internal',
               },
               {
-                content:
-                  ', to compare expression between genes, within a given species or between multiple species',
+                content: ', to compare expression between genes, within a given species or between multiple species',
                 type: 'text',
               },
             ],
@@ -152,8 +149,7 @@ const about = [
         type: 'rich_text',
         content: [
           {
-            content:
-              'Bgee also provides two Bioconductor R packages for your analyses:',
+            content: 'Bgee also provides two Bioconductor R packages for your analyses:',
             type: 'bold',
           },
         ],
@@ -197,8 +193,7 @@ const about = [
         type: 'rich_text',
         content: [
           {
-            content:
-              'All Bgee data can also be directly downloaded from the relevant pages:',
+            content: 'All Bgee data can also be directly downloaded from the relevant pages:',
             type: 'bold',
           },
         ],
@@ -230,8 +225,7 @@ const about = [
                 type: 'link_internal',
               },
               {
-                content:
-                  ', allowing you to download the raw data used by Bgee along with their annotations',
+                content: ', allowing you to download the raw data used by Bgee along with their annotations',
                 type: 'text',
               },
             ],
@@ -245,8 +239,7 @@ const about = [
                 type: 'link_internal',
               },
               {
-                content:
-                  ', for more advanced users, providing SQL and RDF dumps of the data found in Bgee.',
+                content: ', for more advanced users, providing SQL and RDF dumps of the data found in Bgee.',
                 type: 'text',
               },
             ],
@@ -288,8 +281,7 @@ const about = [
                 type: 'link_external',
               },
               {
-                content:
-                  ', an interview of the group leaders of Bgee, retracing its evolutions',
+                content: ', an interview of the group leaders of Bgee, retracing its evolutions',
                 type: 'text',
               },
             ],
@@ -390,7 +382,7 @@ const about = [
           {
             type: 'text',
             content:
-              ' from Switzerland. Although CC0 doesn\'t legally require users of the data to cite the source, if you intend to use data from Bgee, it would be nice to cite us.',
+              " from Switzerland. Although CC0 doesn't legally require users of the data to cite the source, if you intend to use data from Bgee, it would be nice to cite us.",
           },
         ],
       },
@@ -418,8 +410,7 @@ const about = [
         content: [
           {
             type: 'text',
-            content:
-              'You can find all details about our privacy policy in the dedicated page ',
+            content: 'You can find all details about our privacy policy in the dedicated page ',
           },
           {
             type: 'link_internal',
@@ -443,8 +434,7 @@ const about = [
         content: [
           {
             type: 'text',
-            content:
-              'Our pipeline source code, as well as our curation and ontology resources can be browsed on ',
+            content: 'Our pipeline source code, as well as our curation and ontology resources can be browsed on ',
           },
           {
             type: 'link_external',
@@ -462,8 +452,7 @@ const about = [
         content: [
           {
             type: 'text',
-            content:
-              'The Bgee blog can be found ',
+            content: 'The Bgee blog can be found ',
           },
           {
             type: 'link_external',

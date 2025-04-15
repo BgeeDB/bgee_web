@@ -15,10 +15,9 @@ const DevelopmentalAndLifeStages = ({
 }) => {
   const { getOptionsFunction } = useLogic({ devStages });
 
-  const onSelect = (nextValue) => {
+  const onSelect = nextValue => {
     setSelectedOptions(nextValue);
-    if(nextValue.length > 0)
-      addConditionalParam(COND_PARAM2_DEVSTAGE_KEY);
+    if (nextValue.length > 0) addConditionalParam(COND_PARAM2_DEVSTAGE_KEY);
   };
 
   return (
@@ -36,7 +35,7 @@ const DevelopmentalAndLifeStages = ({
           id="hasDevStageSubStructure"
           type="checkbox"
           checked={hasDevStageSubStructure ? 'checked' : ''}
-          onChange={() => setDevStageSubStructure((value) => !value)}
+          onChange={() => setDevStageSubStructure(value => !value)}
         />
         <label htmlFor="hasDevStageSubStructure">Including child terms</label>
         <HelpIcon
@@ -45,8 +44,8 @@ const DevelopmentalAndLifeStages = ({
           }}
           content={
             <>
-              Retrieve data in the child terms of the selected terms, for
-              instance to retrieve data for all specific ages in adult.
+              Retrieve data in the child terms of the selected terms, for instance to retrieve data for all specific
+              ages in adult.
             </>
           }
         />

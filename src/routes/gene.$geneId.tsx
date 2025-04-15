@@ -39,10 +39,10 @@ export async function loader({ params, request }) {
         orthologs: 0,
         paralogs: 0,
       };
-      homologsResult.value.data.orthologsByTaxon.forEach((o) => {
+      homologsResult.value.data.orthologsByTaxon.forEach(o => {
         if (o.genes.length > homologs.orthologs) homologs.orthologs = o.genes.length;
       });
-      homologsResult.value.data.paralogsByTaxon.forEach((o) => {
+      homologsResult.value.data.paralogsByTaxon.forEach(o => {
         if (o.genes.length > homologs.paralogs) homologs.paralogs = o.genes.length;
       });
     }
@@ -55,7 +55,7 @@ export async function loader({ params, request }) {
       details: geneDetails,
       homologs,
       xRefs,
-      pathname: new URL(request.url).pathname
+      pathname: new URL(request.url).pathname,
     };
   } catch (error: any) {
     // console.error('Error loading gene data:', error);
@@ -68,16 +68,13 @@ export function meta({ data }) {
   const { name, geneId, species, synonyms } = data.details;
 
   const latinName = `${species.genus} ${species.speciesName}`;
-  const speciesName = species.name
-    ? species.name
-    : `${species.genus} ${species.speciesName}`;
+  const speciesName = species.name ? species.name : `${species.genus} ${species.speciesName}`;
   const hasNameOpener = name ? `${name} (` : '';
   const hasNameCloser = name ? `)` : '';
   const speciesNameBrackets = species.name ? ` (${species.name})` : '';
   const nameExpr = name ? `${name}, ${name} expression, ` : '';
   const synonymsExpr = synonyms ? `, ${synonyms.join(', ')}` : '';
-  const canonicalLink = `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES
-    .replace(':geneId', geneId)
+  const canonicalLink = `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', geneId)
     .replace(':speciesId', species.id)
     // .replace(':speciesId', geneMappedToSameGeneIdCount === 1 ? '' : species.id)
     .replace(/\/$/, '')}`;
@@ -93,12 +90,12 @@ export function meta({ data }) {
         xRefs: data.xRefs?.gene?.xRefs,
         path: data.pathname,
       }),
-      geneHomologsToLdJSON([...data.homologs.orthologsByTaxon, ...data.homologs.paralogsByTaxon])
-    ]
+      geneHomologsToLdJSON([...data.homologs.orthologsByTaxon, ...data.homologs.paralogsByTaxon]),
+    ],
   });
 }
 
-const GeneDetails = ({loaderData}) => {
+const GeneDetails = ({ loaderData }) => {
   const { details, homologs, xRefs } = loaderData;
   const { name, geneId, description, species, synonyms } = details;
   const loc = useLocation();
@@ -154,19 +151,25 @@ const GeneDetails = ({loaderData}) => {
                 <Bulma.C size={3}>
                   <p className="has-text-weight-semibold">Gene identifier</p>
                 </Bulma.C>
-                <Bulma.C size={9}><p>{geneId}</p></Bulma.C>
+                <Bulma.C size={9}>
+                  <p>{geneId}</p>
+                </Bulma.C>
               </Bulma.Columns>
               <Bulma.Columns className="my-0">
                 <Bulma.C size={3}>
                   <p className="has-text-weight-semibold">Name</p>
                 </Bulma.C>
-                <Bulma.C size={9}><p>{name}</p></Bulma.C>
+                <Bulma.C size={9}>
+                  <p>{name}</p>
+                </Bulma.C>
               </Bulma.Columns>
               <Bulma.Columns className="my-0">
                 <Bulma.C size={3}>
                   <p className="has-text-weight-semibold">Description</p>
                 </Bulma.C>
-                <Bulma.C size={9}><p>{description}</p></Bulma.C>
+                <Bulma.C size={9}>
+                  <p>{description}</p>
+                </Bulma.C>
               </Bulma.Columns>
               <Bulma.Columns className="my-0">
                 <Bulma.C size={3}>
@@ -174,10 +177,7 @@ const GeneDetails = ({loaderData}) => {
                 </Bulma.C>
                 <Bulma.C size={9}>
                   <p>
-                    <Link
-                      to={PATHS.SEARCH.SPECIES_ITEM.replace(':id', species.id)}
-                      className="internal-link"
-                    >
+                    <Link to={PATHS.SEARCH.SPECIES_ITEM.replace(':id', species.id)} className="internal-link">
                       <i>{`${species.genus} ${species.speciesName}`}</i>
                       {species.name ? ` (${species.name})` : ''}
                     </Link>
@@ -194,11 +194,7 @@ const GeneDetails = ({loaderData}) => {
                     renderElement={(ref, key, elements) => (
                       <span key={ref}>
                         {ref}
-                        {key !== elements.length - 1 ? (
-                          <span className="mr-1">,</span>
-                        ) : (
-                          ''
-                        )}
+                        {key !== elements.length - 1 ? <span className="mr-1">,</span> : ''}
                       </span>
                     )}
                   />
@@ -251,11 +247,7 @@ const GeneDetails = ({loaderData}) => {
           <GeneExpressionGraph geneId={geneId} speciesId={species.id} />
           <GeneExpressionTable geneId={geneId} speciesId={species.id} />
           <GeneExpressionTable geneId={geneId} speciesId={species.id} notExpressed />
-          <GeneHomologs
-            homologs={homologs}
-            geneId={geneId}
-            isLoading={false}
-          />
+          <GeneHomologs homologs={homologs} geneId={geneId} isLoading={false} />
           {xRefs && <GeneXRefs data={xRefs} isLoading={false} />}
         </div>
       </div>

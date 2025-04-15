@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/prefer-default-export
-export const normalizeAlign = (align) => {
+export const normalizeAlign = align => {
   const map = {
     justify: 'justifyed',
     center: 'centered',
@@ -7,7 +7,7 @@ export const normalizeAlign = (align) => {
   return map[align] || align;
 };
 
-export const normalizeStatus = (status) => {
+export const normalizeStatus = status => {
   const map = {
     focus: 'focused',
     hover: 'hovered',

@@ -7,10 +7,7 @@ const disabledStyle = { pointerEvents: 'none' as const, opacity: 0.5, cursor: 'n
 
 const Pagination = ({ current, total }) => {
   const { paginationParamPageKey, paginationResultCountKey }: any = useContext(TableContext);
-  const { generatePaginationLink } = usePaginationLink(
-    paginationParamPageKey,
-    paginationResultCountKey
-  );
+  const { generatePaginationLink } = usePaginationLink(paginationParamPageKey, paginationResultCountKey);
 
   const center = React.useMemo(() => {
     const pages = [];
@@ -79,12 +76,10 @@ const Pagination = ({ current, total }) => {
             <span className="pagination-ellipsis">&hellip;</span>
           </li>
         )}
-        {center.map((page) => (
+        {center.map(page => (
           <li key={page}>
             <Link
-              className={`pagination-link  ${
-                current === page ? 'is-current' : ''
-              }`}
+              className={`pagination-link  ${current === page ? 'is-current' : ''}`}
               aria-label={`Go to page ${page}`}
               to={generatePaginationLink(page)}
             >
@@ -99,9 +94,7 @@ const Pagination = ({ current, total }) => {
         )}
         <li>
           <Link
-            className={`pagination-link  ${
-              current === total ? 'is-current' : ''
-            }`}
+            className={`pagination-link  ${current === total ? 'is-current' : ''}`}
             aria-label={`Goto page ${total}`}
             to={generatePaginationLink(total)}
           >

@@ -22,19 +22,13 @@ const Router = () => (
               <Route
                 exact
                 path={PATHS.HOME}
-                render={(props) => (
-                  <Page {...props} Component={ROUTES[PATHS.HOME].component} />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.HOME].component} />}
               />
 
               <Route
                 exact
-                path={[
-                  PATHS.ANALYSIS.TOP_ANAT,
-                  PATHS.ANALYSIS.TOP_ANAT_RESULT,
-                  PATHS.ANALYSIS.TOP_ANAT_RESULT_JOB_ID,
-                ]}
-                render={(props) => (
+                path={[PATHS.ANALYSIS.TOP_ANAT, PATHS.ANALYSIS.TOP_ANAT_RESULT, PATHS.ANALYSIS.TOP_ANAT_RESULT_JOB_ID]}
+                render={props => (
                   <Page
                     {...props}
                     title={ROUTES[PATHS.ANALYSIS.TOP_ANAT].name}
@@ -45,195 +39,94 @@ const Router = () => (
               <Route
                 exact
                 path={PATHS.ANALYSIS.TOP_ANAT_RESULT}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.ANALYSIS.TOP_ANAT_RESULT].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.ANALYSIS.TOP_ANAT_RESULT].component} />}
               />
               <Route
                 exact
-                path={[
-                  PATHS.ANALYSIS.EXPRESSION_COMPARISON,
-                ]}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={
-                      ROUTES[PATHS.ANALYSIS.EXPRESSION_COMPARISON].component
-                    }
-                  />
-                )}
+                path={[PATHS.ANALYSIS.EXPRESSION_COMPARISON]}
+                render={props => <Page {...props} Component={ROUTES[PATHS.ANALYSIS.EXPRESSION_COMPARISON].component} />}
               />
 
               <Route
                 exact
                 path={PATHS.SEARCH.GENE}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.SEARCH.GENE].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.GENE].component} />}
               />
               <Route
                 exact
-                path={[
-                  PATHS.SEARCH.GENE_ITEM,
-                  PATHS.SEARCH.GENE_ITEM_BY_SPECIES,
-                ]}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.SEARCH.GENE_ITEM].component}
-                  />
-                )}
+                path={[PATHS.SEARCH.GENE_ITEM, PATHS.SEARCH.GENE_ITEM_BY_SPECIES]}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.GENE_ITEM].component} />}
               />
               <Route
                 exact
                 path={PATHS.SEARCH.ANATOMICAL_HOMOLOGY}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={
-                      ROUTES[PATHS.SEARCH.ANATOMICAL_HOMOLOGY].component
-                    }
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.ANATOMICAL_HOMOLOGY].component} />}
               />
               <Route
                 exact
                 path={PATHS.SEARCH.SPECIES}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.SEARCH.SPECIES].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.SPECIES].component} />}
               />
               <Route
                 exact
                 path={PATHS.SEARCH.SPECIES_ITEM}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.SEARCH.SPECIES_ITEM].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.SPECIES_ITEM].component} />}
               />
               <Route
                 exact
-                path={[
-                    PATHS.SEARCH.GENE_LIST_ITEM,
-                    PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES]}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES].component}
-                  />
+                path={[PATHS.SEARCH.GENE_LIST_ITEM, PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES]}
+                render={props => (
+                  <Page {...props} Component={ROUTES[PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES].component} />
                 )}
               />
               <Route
                 exact
                 path={PATHS.SEARCH.RAW_DATA_ANNOTATIONS}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={
-                      ROUTES[PATHS.SEARCH.RAW_DATA_ANNOTATIONS].component
-                    }
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.RAW_DATA_ANNOTATIONS].component} />}
               />
               <Route
                 exact
                 path={PATHS.SEARCH.EXPRESSION_MATRIX}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={
-                      ROUTES[PATHS.SEARCH.EXPRESSION_MATRIX].component
-                    }
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.EXPRESSION_MATRIX].component} />}
               />
               <Route
                 exact
                 path={PATHS.SEARCH.EXPRESSION_CALLS}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.SEARCH.EXPRESSION_CALLS].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.EXPRESSION_CALLS].component} />}
               />
               <Route
                 exact
                 path={PATHS.SEARCH.EXPERIMENT}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.SEARCH.EXPERIMENT].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.SEARCH.EXPERIMENT].component} />}
               />
 
               <Route
                 exact
                 path={PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={
-                      ROUTES[PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS].component
-                    }
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS].component} />}
               />
               <Route
                 exact
                 path={PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={
-                      ROUTES[PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES]
-                        .component
-                    }
-                  />
+                render={props => (
+                  <Page {...props} Component={ROUTES[PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES].component} />
                 )}
               />
               <Route
                 exact
                 path={PATHS.DOWNLOAD.DATA_DUMPS}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.DOWNLOAD.DATA_DUMPS].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.DOWNLOAD.DATA_DUMPS].component} />}
               />
 
               <Route
                 exact
                 path={PATHS.ABOUT.NEWS}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.ABOUT.NEWS].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.ABOUT.NEWS].component} />}
               />
               <Route
                 exact
                 path={PATHS.ABOUT.SOURCES}
-                render={(props) => (
-                  <Page
-                    {...props}
-                    Component={ROUTES[PATHS.ABOUT.SOURCES].component}
-                  />
-                )}
+                render={props => <Page {...props} Component={ROUTES[PATHS.ABOUT.SOURCES].component} />}
               />
 
               <Route
@@ -252,7 +145,7 @@ const Router = () => (
                   PATHS.ABOUT.BGEESAB,
                   PATHS.ABOUT.PRIVACY_POLICY,
                 ]}
-                render={(props) => <Page {...props} Component={StaticPage} />}
+                render={props => <Page {...props} Component={StaticPage} />}
               />
               <Route
                 exact
@@ -275,14 +168,12 @@ const Router = () => (
                   PATHS.SUPPORT.TUTORIAL_GENE_EXPR,
                   PATHS.SUPPORT.FAQ,
                 ]}
-                render={(props) => (
-                  <Page {...props} Component={MarkdownReader} />
-                )}
+                render={props => <Page {...props} Component={MarkdownReader} />}
               />
 
               <Route path={PATHS.ERROR} component={Error} />
 
-              <Redirect to={{ pathname: PATHS.ERROR, state: { error: { message: 404} } }} />
+              <Redirect to={{ pathname: PATHS.ERROR, state: { error: { message: 404 } } }} />
             </Switch>
           </Layout>
         </NotificationProvider>

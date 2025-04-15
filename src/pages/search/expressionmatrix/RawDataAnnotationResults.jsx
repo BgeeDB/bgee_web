@@ -21,7 +21,7 @@ const LINK_TO_RAW_DATA_ANNOTS = 'LINK_TO_RAW_DATA_ANNOTS';
 const LINK_TO_PROC_EXPR_VALUES = 'LINK_TO_PROC_EXPR_VALUES';
 const LINK_CALL_TO_PROC_EXPR_VALUES = 'LINK_CALL_TO_PROC_EXPR_VALUES';
 
-const replaceNAOrUndefined = (txt) => {
+const replaceNAOrUndefined = txt => {
   if (!txt || txt?.toLowerCase() === 'na') {
     return '';
   }
@@ -44,7 +44,7 @@ const RawDataAnnotationResults = ({
   dataType,
   pageNumber,
   isExprCalls,
-  searchParams
+  searchParams,
 }) => {
   const loc = useLocation();
 
@@ -67,11 +67,7 @@ const RawDataAnnotationResults = ({
       case 'ANAT_ENTITY': {
         const content = cell[key].content;
         const path = cell[key].path;
-        const renderAnatLink = content ? (
-          <LinkExternal to={path} text={content} />
-        ) : (
-          ''
-        );
+        const renderAnatLink = content ? <LinkExternal to={path} text={content} /> : '';
 
         return <>{renderAnatLink}</>;
       }
@@ -86,20 +82,15 @@ const RawDataAnnotationResults = ({
 
   const mappedResults = useMemo(
     () =>
-      results.map((result) => {
-        const row = columnDescriptions.map((col) => {
+      results.map(result => {
+        const row = columnDescriptions.map(col => {
           const attribute0 = col?.attributes?.[0];
-          const valueFromFirstAttribute = getChildValueFromAttribute(
-            result,
-            attribute0
-          );
+          const valueFromFirstAttribute = getChildValueFromAttribute(result, attribute0);
           switch (col.columnType) {
             case 'STRING': {
               return {
                 type: col.columnType,
-                content: col.attributes
-                  .map((att) => getChildValueFromAttribute(result, att))
-                  .join(' '),
+                content: col.attributes.map(att => getChildValueFromAttribute(result, att)).join(' '),
               };
             }
             case 'INTERNAL_LINK': {
@@ -111,10 +102,7 @@ const RawDataAnnotationResults = ({
                 );
 
                 if (geneMappedToSameGeneIdCount > 1) {
-                  const specieId = getChildValueFromAttribute(
-                    result,
-                    col?.geneSpeciesIdResultAttribute
-                  );
+                  const specieId = getChildValueFromAttribute(result, col?.geneSpeciesIdResultAttribute);
 
                   path += `/${specieId}`;
                 }
@@ -143,13 +131,11 @@ const RawDataAnnotationResults = ({
             }
             case 'DATA_TYPE_SOURCE': {
               let source = '';
-              Object.entries(valueFromFirstAttribute).forEach(
-                ([key, value]) => {
-                  if (value) {
-                    source += `${key} - `;
-                  }
+              Object.entries(valueFromFirstAttribute).forEach(([key, value]) => {
+                if (value) {
+                  source += `${key} - `;
                 }
-              );
+              });
               return {
                 type: col.columnType,
                 content: source.slice(0, -2),
@@ -159,16 +145,10 @@ const RawDataAnnotationResults = ({
             case LINK_TO_RAW_DATA_ANNOTS:
             case LINK_TO_PROC_EXPR_VALUES:
             case LINK_CALL_TO_PROC_EXPR_VALUES: {
-              const nextPageType =
-                col.columnType === LINK_TO_RAW_DATA_ANNOTS
-                  ? RAW_DATA_ANNOTS
-                  : PROC_EXPR_VALUES;
+              const nextPageType = col.columnType === LINK_TO_RAW_DATA_ANNOTS ? RAW_DATA_ANNOTS : PROC_EXPR_VALUES;
               const currentSP = new URLSearchParams(loc.search);
-              col?.filterTargets?.forEach((filter) => {
-                const filterValue = getChildValueFromAttribute(
-                  result,
-                  filter?.valueAttributeName
-                );
+              col?.filterTargets?.forEach(filter => {
+                const filterValue = getChildValueFromAttribute(result, filter?.valueAttributeName);
                 if (filterValue) {
                   currentSP.append(filter?.urlParameterName, filterValue);
                 }
@@ -179,10 +159,7 @@ const RawDataAnnotationResults = ({
               currentSP.append('filters_for_all', '1');
 
               currentSP.delete('data_type');
-              currentSP.append(
-                'data_type',
-                isExprCalls ? DATA_TYPES[0].id : dataType
-              );
+              currentSP.append('data_type', isExprCalls ? DATA_TYPES[0].id : dataType);
 
               currentSP.delete('cell_type_descendant');
               currentSP.append('cell_type_descendant', searchParams().hasCellTypeSubStructure ?? false);
@@ -194,9 +171,7 @@ const RawDataAnnotationResults = ({
               return {
                 type: col.columnType,
                 content: 'Browse results',
-                to: `${
-                  PATHS.SEARCH.RAW_DATA_ANNOTATIONS
-                }?${currentSP.toString()}`,
+                to: `${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?${currentSP.toString()}`,
               };
             }
             default:
@@ -214,8 +189,8 @@ const RawDataAnnotationResults = ({
 
     // We create column headers by filtering the export = false
     columnDescriptions
-      .filter((col) => col.export)
-      .forEach((column) => {
+      .filter(col => col.export)
+      .forEach(column => {
         colHeaders.push(column.title);
       });
     let tsv = colHeaders.join('%09');
@@ -223,11 +198,11 @@ const RawDataAnnotationResults = ({
 
     const columnsToExport = columnDescriptions
       .map((c, i) => ({ ...c, indexForExport: i })) // We are adding indexes to know where to get our value in result
-      .filter((col) => col.export); // filtering export = false
+      .filter(col => col.export); // filtering export = false
 
-    mappedResults.forEach((row) => {
+    mappedResults.forEach(row => {
       const rowTxt = columnsToExport
-        .map((col) => encodeURIComponent(row[col.indexForExport].content)) // We get the result only from the column we need to export
+        .map(col => encodeURIComponent(row[col.indexForExport].content)) // We get the result only from the column we need to export
         .join('%09');
       tsv += `${rowTxt}%0D%0A`; // carriage return
     });
@@ -247,9 +222,7 @@ const RawDataAnnotationResults = ({
             className="download-btn is-small"
             href={buildTSVhref}
             renderAs="a"
-            download={`Bgee-${pageType}_${
-              isExprCalls ? '' : `${dataType}_`
-            }${pageNumber}.tsv`}
+            download={`Bgee-${pageType}_${isExprCalls ? '' : `${dataType}_`}${pageNumber}.tsv`}
             target="_blank"
             rel="noreferrer"
           >
@@ -261,11 +234,7 @@ const RawDataAnnotationResults = ({
         </div>
       )}
       <Table
-        title={
-          isExprCalls
-            ? 'Order of results is independent of expression level'
-            : null
-        }
+        title={isExprCalls ? 'Order of results is independent of expression level' : null}
         pagination
         defaultPaginationSize={50}
         classNamesTable="is-striped"

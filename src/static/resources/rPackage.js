@@ -11,7 +11,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(rPackage)
+  return staticBuilder(rPackage);
 }
 
 const rPackage = [

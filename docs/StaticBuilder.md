@@ -9,6 +9,7 @@ class helpers. (ex: notification with `is-danger` or `is-primary`)
 ### Elements
 
 There are 21 different elements, with their properties:
+
 - Accordion
 
 ```
@@ -17,6 +18,7 @@ There are 21 different elements, with their properties:
     children: Array of {title: string, body: Array of Elements}
 }
 ```
+
 - Break Line
 
 ```
@@ -24,6 +26,7 @@ There are 21 different elements, with their properties:
     type: 'break_line',
 }
 ```
+
 - Bold
 
 ```
@@ -32,6 +35,7 @@ There are 21 different elements, with their properties:
     content: string
 }
 ```
+
 - Card
 
 ```
@@ -47,6 +51,7 @@ There are 21 different elements, with their properties:
     richDescription: Array of Elements,
 }
 ```
+
 - Columns
 
 ```
@@ -59,6 +64,7 @@ There are 21 different elements, with their properties:
    }
 }
 ```
+
 - Grid
 
 ```
@@ -69,6 +75,7 @@ There are 21 different elements, with their properties:
     fillRow: boolean, // fill the row with empty column or expand elements
 }
 ```
+
 - Link Anchor
 
 ```
@@ -78,6 +85,7 @@ There are 21 different elements, with their properties:
     text: string
 }
 ```
+
 - Link External
 
 ```
@@ -87,6 +95,7 @@ There are 21 different elements, with their properties:
     text: string
 }
 ```
+
 - Link Image
 
 ```
@@ -96,7 +105,9 @@ There are 21 different elements, with their properties:
     text: string
 }
 ```
+
 - Image (only)
+
 ```
 {
     type: 'only_image',
@@ -105,6 +116,7 @@ There are 21 different elements, with their properties:
     style: string
 }
 ```
+
 - Link Internal
 
 ```
@@ -114,6 +126,7 @@ There are 21 different elements, with their properties:
     text: string
 }
 ```
+
 - Notification
 
 ```
@@ -122,6 +135,7 @@ There are 21 different elements, with their properties:
     content: string,
 }
 ```
+
 - Ordered List
 
 ```
@@ -130,6 +144,7 @@ There are 21 different elements, with their properties:
     children: Array of Elements,
 }
 ```
+
 - Pre-formatted Code
 
 ```
@@ -138,6 +153,7 @@ There are 21 different elements, with their properties:
     content: string,
 }
 ```
+
 - Rich Text
 
 ```
@@ -146,6 +162,7 @@ There are 21 different elements, with their properties:
     content: Array of Rich Elements,
 }
 ```
+
 - Section
 
 ```
@@ -155,6 +172,7 @@ There are 21 different elements, with their properties:
     children: Array of Elements
 }
 ```
+
 - Separator
 
 ```
@@ -166,6 +184,7 @@ There are 21 different elements, with their properties:
 - Table
 
 For a better understanding, please check the Table component.
+
 ```
 {
     type: 'table',
@@ -180,6 +199,7 @@ For a better understanding, please check the Table component.
         }, defaultRender) => null | string | JSX.Element,
 }
 ```
+
 - Text
 
 ```
@@ -188,6 +208,7 @@ For a better understanding, please check the Table component.
     content: string
 }
 ```
+
 - Title
 
 ```
@@ -196,6 +217,7 @@ For a better understanding, please check the Table component.
     content: string,
 }
 ```
+
 - Unordered List
 
 ```
@@ -205,116 +227,127 @@ For a better understanding, please check the Table component.
 }
 ```
 
-
 #### Rich Elements
 
 You can find all the elements that can be used in the Rich Text Elements.
 Some are similar to the previous Elements.
 
 - Break Line
-````
+
+```
 {
     type: 'break_line',
 }
-````
+```
 
 - Bold
-````
+
+```
 {
     type: 'bold',
     content: string
 }
-````
+```
 
 - Code
-````
+
+```
 {
     type: 'code',
     content: string
 }
-````
+```
 
 - Italic
-````
+
+```
 {
     type: 'italic',
     content: string
 }
-````
+```
 
 - Link Anchor
-````
+
+```
 {
     type: 'link_anchor',
     selector: string
     text: string
 }
-````
+```
 
 - Link Internal
-````
+
+```
 {
     type: 'link_internal',
     path: string
     text: string
 }
-````
+```
 
 - Link External
-````
+
+```
 {
     type: 'link_external',
     path: string
     text: string
 }
-````
+```
 
 - Link Mail
-````
+
+```
 {
     type: 'link_mail',
     email: string
     text: string
 }
-````
+```
 
 - Link Phone Number
-````
+
+```
 {
     type: 'link_phone_number',
     phoneNumber: string
     text: string
 }
-````
+```
 
 - Pre-formatted Code
-````
+
+```
 {
     type: 'xxx',
 }
-````
+```
 
 - Rich Text
-````
+
+```
 {
     type: 'rich_text',
     content: Array of Rich Text Elements
 }
-````
+```
 
 - Text
-````
+
+```
 {
     type: 'text',
     content: string
 }
-````
+```
 
 - Underline
-````
+
+```
 {
     type: 'underline',
     content: string
 }
-````
-
+```

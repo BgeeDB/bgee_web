@@ -9,18 +9,17 @@ const Tissues = ({
   AutoCompleteByType,
   hasTissueSubStructure,
   setHasTissueSubStructure,
-  addConditionalParam
+  addConditionalParam,
 }) => {
-  const getTissueOptions = AutoCompleteByType('anat_entity', (result) => ({
+  const getTissueOptions = AutoCompleteByType('anat_entity', result => ({
     label: getIdAndNameLabel(result?.object),
     value: result?.object?.id,
     result,
   }));
 
-  const onSelect = (nextValue) => {
+  const onSelect = nextValue => {
     setSelectedTissue(nextValue);
-    if(nextValue.length > 0)
-      addConditionalParam(COND_PARAM2_ANAT_KEY);
+    if (nextValue.length > 0) addConditionalParam(COND_PARAM2_ANAT_KEY);
   };
 
   return (
@@ -37,7 +36,7 @@ const Tissues = ({
           id="hasTissueSubStructure"
           type="checkbox"
           checked={hasTissueSubStructure ? 'checked' : ''}
-          onChange={() => setHasTissueSubStructure((current) => !current)}
+          onChange={() => setHasTissueSubStructure(current => !current)}
         />
         <label htmlFor="hasTissueSubStructure">Including substructures</label>
         <HelpIcon
@@ -46,8 +45,8 @@ const Tissues = ({
           }}
           content={
             <>
-              Retrieve data in the substructures of the selected terms, for
-              instance to retrieve data in all subparts of the brain.
+              Retrieve data in the substructures of the selected terms, for instance to retrieve data in all subparts of
+              the brain.
             </>
           }
         />

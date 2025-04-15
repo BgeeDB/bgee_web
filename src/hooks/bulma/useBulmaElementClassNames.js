@@ -1,16 +1,12 @@
 import classnames from '../../helpers/classnames';
 import { normalizeAlign } from '../../helpers/bulma';
 
-const buildResponsiveness = (
-  currentViewport,
-  { display, textAlign, textSize, only, invisible } = {}
-) => {
+const buildResponsiveness = (currentViewport, { display, textAlign, textSize, only, invisible } = {}) => {
   const suffix = only ? '-only' : '';
 
   return classnames({
     [`is-${display}-${currentViewport}${suffix}`]: display,
-    [`has-text-${normalizeAlign(textAlign)}-${currentViewport}${suffix}`]:
-      textAlign,
+    [`has-text-${normalizeAlign(textAlign)}-${currentViewport}${suffix}`]: textAlign,
     [`is-size-${textSize}-${currentViewport}${suffix}`]: textSize,
     [`is-invisible-${currentViewport}${suffix}`]: invisible,
   });

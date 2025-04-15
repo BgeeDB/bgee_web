@@ -45,34 +45,22 @@ const COLUMNS = [
 ];
 const MERGE_KEY = 'merge';
 
-const TopAnatResult = ({
-  results,
-  searchId,
-  fg,
-  status,
-  title,
-  jobId,
-  data,
-}) => {
+const TopAnatResult = ({ results, searchId, fg, status, title, jobId, data }) => {
   const [selectedStage, setSelectedStage] = React.useState(MERGE_KEY);
   const onRenderCell = React.useCallback(({ cell, key }, defaultRender) => {
-    if (key === 0)
-      return (
-        <LinkExternal to={obolibraryLinkFromID(cell)}>{cell}</LinkExternal>
-      );
+    if (key === 0) return <LinkExternal to={obolibraryLinkFromID(cell)}>{cell}</LinkExternal>;
     return defaultRender(cell, key);
   }, []);
   const onFilter = React.useCallback(
-    (search) => (element) =>
-      Boolean(new RegExp(search, 'i').test(element[0])) ||
-      Boolean(new RegExp(search, 'i').test(element[1])),
+    search => element =>
+      Boolean(new RegExp(search, 'i').test(element[0])) || Boolean(new RegExp(search, 'i').test(element[1])),
     []
   );
   const dataCsvHref = React.useMemo(() => {
     let csvContent =
       'data:text/tab-separated-values;charset=utf-8,Anat Entity ID%09Anat Entity ID%09Annotated%09Significant%09Expected%09Fold Enrichment%09P value%09Fdr%0D%0A';
     if (results?.data)
-      results?.data.forEach((row) => {
+      results?.data.forEach(row => {
         csvContent += `${[
           row.anatEntityId,
           row.anatEntityName,
@@ -87,28 +75,10 @@ const TopAnatResult = ({
 
     return csvContent;
   }, [results]);
-  const mappingObj = React.useCallback((obj) => {
+  const mappingObj = React.useCallback(obj => {
     try {
-      const {
-        anatEntityId,
-        anatEntityName,
-        annotated,
-        significant,
-        expected,
-        foldEnrichment,
-        pValue,
-        FDR,
-      } = obj;
-      return [
-        anatEntityId,
-        anatEntityName,
-        annotated,
-        significant,
-        expected,
-        foldEnrichment,
-        pValue,
-        FDR,
-      ];
+      const { anatEntityId, anatEntityName, annotated, significant, expected, foldEnrichment, pValue, FDR } = obj;
+      return [anatEntityId, anatEntityName, annotated, significant, expected, foldEnrichment, pValue, FDR];
     } catch (e) {
       console.log(e);
     }
@@ -120,10 +90,7 @@ const TopAnatResult = ({
     if (!results || !results.analysis) return null;
     if (selectedStage === MERGE_KEY) return results.data;
 
-    return (
-      results.analysis.find((a) => a.devStageId === selectedStage)?.results ||
-      null
-    );
+    return results.analysis.find(a => a.devStageId === selectedStage)?.results || null;
   }, [status, results, selectedStage]);
 
   const customHeader = React.useCallback(
@@ -155,14 +122,12 @@ const TopAnatResult = ({
                   </Bulma.Button>
                 </GaEvent>
                 {results.analysis.length > 1 &&
-                  results.analysis.map((r) => (
+                  results.analysis.map(r => (
                     <GaEvent
                       key={r.zipFile}
                       category="Top Anat"
                       action="Download R scripts and data"
-                      label={`${
-                        fg.list.stages.find((s) => s.id === r.devStageId)?.name
-                      } - ${r.zipFile}`}
+                      label={`${fg.list.stages.find(s => s.id === r.devStageId)?.name} - ${r.zipFile}`}
                     >
                       <Bulma.Button
                         href={r.zipFile}
@@ -175,8 +140,7 @@ const TopAnatResult = ({
                         className="mt-1"
                       >
                         {`${
-                          fg.list.stages.find((s) => s.id === r.devStageId)
-                            ?.name
+                          fg.list.stages.find(s => s.id === r.devStageId)?.name
                         }, expression type "Present" (${r.results.length})`}
                         <span className="icon is-small">
                           <ion-icon name="download-outline" size="large" />
@@ -217,29 +181,22 @@ const TopAnatResult = ({
                     'is-active': selectedStage === MERGE_KEY,
                   })}
                   onClick={() => {
-                    if (selectedStage !== MERGE_KEY)
-                      setSelectedStage(MERGE_KEY);
+                    if (selectedStage !== MERGE_KEY) setSelectedStage(MERGE_KEY);
                   }}
                 >
                   <a>All stages</a>
                 </li>
-                {results.analysis.map((analysis) => (
+                {results.analysis.map(analysis => (
                   <li
                     key={analysis.devStageId}
                     className={classnames({
                       'is-active': selectedStage === analysis.devStageId,
                     })}
                     onClick={() => {
-                      if (selectedStage !== analysis.devStageId)
-                        setSelectedStage(analysis.devStageId);
+                      if (selectedStage !== analysis.devStageId) setSelectedStage(analysis.devStageId);
                     }}
                   >
-                    <a>
-                      {
-                        fg.list.stages.find((s) => s.id === analysis.devStageId)
-                          ?.name
-                      }
-                    </a>
+                    <a>{fg.list.stages.find(s => s.id === analysis.devStageId)?.name}</a>
                   </li>
                 ))}
               </ul>
@@ -273,11 +230,7 @@ const TopAnatResult = ({
   //       }`
   // }`;
 
-  if (
-    status === TOP_ANAT_FLOW.GOT_RESULTS &&
-    dataDisplay &&
-    dataDisplay.length > 0
-  )
+  if (status === TOP_ANAT_FLOW.GOT_RESULTS && dataDisplay && dataDisplay.length > 0)
     return (
       <>
         <div className="content has-text-centered">

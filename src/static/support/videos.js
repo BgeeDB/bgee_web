@@ -12,7 +12,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(videos)
+  return staticBuilder(videos);
 }
 
 const videos = [
@@ -22,8 +22,7 @@ const videos = [
   },
   {
     type: 'text',
-    content:
-      '',
+    content: '',
   },
   {
     type: 'section',
@@ -62,9 +61,9 @@ const videos = [
         alt: 'All About Bgee',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [
@@ -102,9 +101,9 @@ const videos = [
         alt: 'Bgee Course 2024: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [
@@ -122,9 +121,9 @@ const videos = [
         alt: 'Bgee Course 2023: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [
@@ -142,9 +141,9 @@ const videos = [
         alt: 'Bgee Course 2022: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [
@@ -162,9 +161,9 @@ const videos = [
         alt: 'Bgee Course 2020: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [
@@ -182,9 +181,9 @@ const videos = [
         alt: 'Bgee Comparative Genomics',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [
@@ -202,9 +201,9 @@ const videos = [
         alt: 'Accessing Bgee with Semantic Queries',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [
@@ -222,9 +221,9 @@ const videos = [
         alt: 'Bgee and scFAIR',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [

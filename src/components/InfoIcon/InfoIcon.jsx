@@ -6,11 +6,7 @@ const InfoIcon = ({ title, content, tooltip }) => {
 
   return (
     <>
-      <button
-        type="button"
-        className="button is-ghost"
-        onClick={() => setIsOpen(true)}
-      >
+      <button type="button" className="button is-ghost" onClick={() => setIsOpen(true)}>
         <span title={tooltip}>
           <Bulma.IonIcon name="information-circle" size="large" />
         </span>
@@ -23,11 +19,7 @@ const InfoIcon = ({ title, content, tooltip }) => {
             <header className="modal-card-head">
               <p className="modal-card-title">{title}</p>
               {/* eslint-disable-next-line react/button-has-type */}
-              <button
-                className="delete"
-                aria-label="close"
-                onClick={() => setIsOpen(false)}
-              />
+              <button className="delete" aria-label="close" onClick={() => setIsOpen(false)} />
             </header>
           )}
           <div className="modal-card-body">{content}</div>

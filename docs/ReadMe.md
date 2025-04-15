@@ -96,4 +96,3 @@ Performs automated scans of your JavaScript files for common syntax and style er
 
 Scans files for style issues and automatically reformats the code to ensure
 consistent rules are being followed on the project.
-

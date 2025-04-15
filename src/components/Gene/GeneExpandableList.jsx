@@ -16,16 +16,9 @@ const GeneExpandableList = ({ items, renderElement }) => {
       <div className="tags">
         {elements.map((ref, key) => renderElement(ref, key, elements))}
         {items.length > MAX_ELEMENTS && (
-          <Bulma.Button
-            size="small"
-            className="ml-3"
-            onClick={() => setExpand((prev) => !prev)}
-          >
+          <Bulma.Button size="small" className="ml-3" onClick={() => setExpand(prev => !prev)}>
             <span className="icon">
-              <ion-icon
-                name={expand ? 'remove-outline' : 'add-outline'}
-                size="large"
-              />
+              <ion-icon name={expand ? 'remove-outline' : 'add-outline'} size="large" />
             </span>
           </Bulma.Button>
         )}

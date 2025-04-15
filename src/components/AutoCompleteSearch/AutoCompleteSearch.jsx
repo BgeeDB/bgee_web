@@ -1,13 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import './autoCompleteSearch.scss';
 
 /**
@@ -43,7 +37,7 @@ const AutoCompleteSearch = ({
   const inputRef = useRef();
 
   const onSelectChoice = useCallback(
-    (option) => () => {
+    option => () => {
       if (option === '') return;
 
       if (onSelectOption) {
@@ -52,11 +46,7 @@ const AutoCompleteSearch = ({
 
       // If not multiple selection
       if (!selectedOptions) {
-        setSearch(
-          typeof option !== 'string' && renderOption
-            ? renderOption(option)
-            : option
-        );
+        setSearch(typeof option !== 'string' && renderOption ? renderOption(option) : option);
       } else {
         setSearch('');
       }
@@ -67,7 +57,7 @@ const AutoCompleteSearch = ({
   );
 
   const onRemoveChoice = useCallback(
-    (option) => () => {
+    option => () => {
       if (onRemoveOption) {
         onRemoveOption(option);
       }
@@ -76,7 +66,7 @@ const AutoCompleteSearch = ({
   );
 
   const searchHandler = useCallback(
-    (val) => {
+    val => {
       if (val && getOptionsFunction) {
         const valueOrPromise = getOptionsFunction(val);
         if (
@@ -84,7 +74,7 @@ const AutoCompleteSearch = ({
           typeof valueOrPromise.then === 'function' &&
           valueOrPromise[Symbol.toStringTag] === 'Promise'
         ) {
-          valueOrPromise.then((options) => {
+          valueOrPromise.then(options => {
             setAutocompleteList(options);
           });
         } else {
@@ -105,10 +95,7 @@ const AutoCompleteSearch = ({
     [searchHandler]
   );
 
-  const hasResults = useMemo(
-    () => autocompleteList.length > 0 && search.length > 0,
-    [autocompleteList, search]
-  );
+  const hasResults = useMemo(() => autocompleteList.length > 0 && search.length > 0, [autocompleteList, search]);
 
   const options = useMemo(
     () =>
@@ -141,17 +128,13 @@ const AutoCompleteSearch = ({
     };
     if (!document.getElementById('root')) return;
     document.getElementById('root').addEventListener('click', onClick);
-    const onClickInput = (e) => {
+    const onClickInput = e => {
       e.stopPropagation();
     };
-    document
-      .getElementById('autocomplete-search')
-      .addEventListener('click', onClickInput);
+    document.getElementById('autocomplete-search').addEventListener('click', onClickInput);
     return () => {
       document.getElementById('root').removeEventListener('click', onClick);
-      document
-        .getElementById('autocomplete-search')
-        ?.removeEventListener('click', onClickInput);
+      document.getElementById('autocomplete-search')?.removeEventListener('click', onClickInput);
     };
   }, []);
 
@@ -173,7 +156,7 @@ const AutoCompleteSearch = ({
             placeholder={placeholder}
             value={search}
             onChange={handleSearchChange}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === 'Enter') {
                 onSelectChoice(search)();
               }
@@ -186,9 +169,7 @@ const AutoCompleteSearch = ({
         <div className="result">
           {selectedOptions.map((option, index) => (
             <div className="render" key={index}>
-              {typeof option !== 'string' && renderOption
-                ? renderOption(option)
-                : option}{' '}
+              {typeof option !== 'string' && renderOption ? renderOption(option) : option}{' '}
               <span className="span-x" onClick={onRemoveChoice(option)}>
                 X
               </span>
@@ -199,11 +180,7 @@ const AutoCompleteSearch = ({
       {hasSearchButton && (
         <div className="field">
           <div className="control is-flex is-align-items-center">
-            <button
-              className="button mr-2 search-form"
-              type="button"
-              onClick={onSelectChoice(search)}
-            >
+            <button className="button mr-2 search-form" type="button" onClick={onSelectChoice(search)}>
               Search
             </button>
             {children}

@@ -9,7 +9,7 @@ const hasOwn = {}.hasOwnProperty;
 const classnames = (...args) => {
   const classes = [];
 
-  args.forEach((arg) => {
+  args.forEach(arg => {
     const argType = typeof arg;
 
     if (argType === 'string' || argType === 'number') {

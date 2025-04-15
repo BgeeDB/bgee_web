@@ -3,15 +3,7 @@
 import { useMemo } from 'react';
 import { EXPERIMENTS, PROC_EXPR_VALUES, RAW_DATA_ANNOTS } from '../../rawdata/useLogic';
 
-const ResultTabs = ({
-  dataTypes,
-  dataType,
-  allCounts,
-  setDataType,
-  pageType,
-  isCountLoading,
-  localCount,
-}) => {
+const ResultTabs = ({ dataTypes, dataType, allCounts, setDataType, pageType, isCountLoading, localCount }) => {
   const resultKey = useMemo(() => {
     switch (pageType) {
       case EXPERIMENTS:
@@ -27,26 +19,18 @@ const ResultTabs = ({
 
   return (
     <div className="is-flex ongletWrapper is-centered">
-      {dataTypes.map((type) => {
+      {dataTypes.map(type => {
         const isActive = type.id === dataType;
         const inactiveCount =
-          allCounts?.[type.id]?.[resultKey] !== undefined
-            ? allCounts?.[type.id]?.[resultKey]
-            : 'No data';
+          allCounts?.[type.id]?.[resultKey] !== undefined ? allCounts?.[type.id]?.[resultKey] : 'No data';
         const nb = isActive ? localCount?.[resultKey] : inactiveCount;
         return (
           <div
             key={type.id}
             onClick={() => setDataType(type.id)}
-            className={`onglet column is-centered ${
-              isActive && 'ongletActive'
-            }`}
+            className={`onglet column is-centered ${isActive && 'ongletActive'}`}
           >
-            {nb > 0 ? (
-              <span style={{fontWeight: 'bold'}}>{type.label}</span>
-            ) : (
-              <span>{type.label}</span>
-            )}
+            {nb > 0 ? <span style={{ fontWeight: 'bold' }}>{type.label}</span> : <span>{type.label}</span>}
             {isCountLoading || nb === undefined ? (
               <progress
                 className="progress is-small is-primary"

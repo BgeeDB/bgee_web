@@ -22,11 +22,7 @@ module.exports = {
         },
       };
 
-      addAfterLoader(
-        webpackConfig,
-        loaderByName('postcss-loader'),
-        resolveUrlLoader
-      );
+      addAfterLoader(webpackConfig, loaderByName('postcss-loader'), resolveUrlLoader);
 
       return webpackConfig;
     },

@@ -17,41 +17,35 @@ import { getMetadata } from '~/helpers/metadata';
 export async function loader() {
   try {
     const res = await api.search.species.exprCalls();
-    const singleSpeciesList = res.data.downloadFilesGroups.map((o) => ({
+    const singleSpeciesList = res.data.downloadFilesGroups.map(o => ({
       ...o,
       ...o.members[0],
     }));
     const files = {};
-    singleSpeciesList.forEach((s) => {
+    singleSpeciesList.forEach(s => {
       files[s.id.toString()] = {
         anatSimple: s.downloadFiles.find(
-          (f) =>
+          f =>
             f.category === 'expr_simple' &&
             f.conditionParameters.length === 1 &&
             f.conditionParameters[0] === 'anat_entity'
         ),
         anatAdvanced: s.downloadFiles.find(
-          (f) =>
+          f =>
             f.category === 'expr_advanced' &&
             f.conditionParameters.length === 1 &&
             f.conditionParameters[0] === 'anat_entity'
         ),
-        fullSimple: s.downloadFiles.find(
-          (f) =>
-            f.category === 'expr_simple' && f.conditionParameters.length > 1
-        ),
-        fullAdvanced: s.downloadFiles.find(
-          (f) =>
-            f.category === 'expr_advanced' && f.conditionParameters.length > 1
-        ),
+        fullSimple: s.downloadFiles.find(f => f.category === 'expr_simple' && f.conditionParameters.length > 1),
+        fullAdvanced: s.downloadFiles.find(f => f.category === 'expr_advanced' && f.conditionParameters.length > 1),
       };
     });
     return {
       singleSpeciesList,
       files,
       kwList: res.data.speciesIdToKeywords,
-      allSpeciesName: singleSpeciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
-    }
+      allSpeciesName: singleSpeciesList.map(s => ` ${s.name} ${s.speciesName}`).join(', '),
+    };
   } catch (error) {
     throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
   }
@@ -61,7 +55,7 @@ export function meta({ data }) {
   return getMetadata({
     title: 'Bgee Gene expression calls download page',
     description: 'Download TSV files containing present/absent gene expression calls from Bgee',
-    keywords: `dataset, data download, gene expression calls, present/absent expression calls, ${data.allSpeciesName}`
+    keywords: `dataset, data download, gene expression calls, present/absent expression calls, ${data.allSpeciesName}`,
   });
 }
 
@@ -73,9 +67,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
     const tmp = JSON.parse(JSON.stringify(singleSpeciesList));
     if (search === '') return tmp;
     const regExp = new RegExp(search, 'i');
-    return tmp.filter(({ id }) =>
-      !kwList[id] ? false : Boolean(kwList[id].find((a) => regExp.test(a)))
-    );
+    return tmp.filter(({ id }) => (!kwList[id] ? false : Boolean(kwList[id].find(a => regExp.test(a)))));
   }, [singleSpeciesList, search, kwList]);
 
   const speciesID = useQuery('id');
@@ -86,21 +78,14 @@ const GeneExpressionCalls = ({ loaderData }) => {
         <Bulma.Title size={3}>Gene expression calls</Bulma.Title>
       </div>
       <p className="is-size-5">
-        This page provides calls of baseline presence/absence of expression, and
-        of differential over-/under-expression, either in single species, or
-        made comparable between multiple species. Click on a species or a group
-        of species to browse files available for download. It is possible to
-        download these data directly into R using our{' '}
-        <LinkExternal to="https://bioconductor.org/packages/BgeeDB/">
-          R package
-        </LinkExternal>
-        . See also{' '}
-        <Link
-          to={PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES}
-          className="internal-link"
-        >
+        This page provides calls of baseline presence/absence of expression, and of differential over-/under-expression,
+        either in single species, or made comparable between multiple species. Click on a species or a group of species
+        to browse files available for download. It is possible to download these data directly into R using our{' '}
+        <LinkExternal to="https://bioconductor.org/packages/BgeeDB/">R package</LinkExternal>. See also{' '}
+        <Link to={PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES} className="internal-link">
           processed expression values
-        </Link>.
+        </Link>
+        .
       </p>
       <p className="is-size-5">
         All data are available under the{' '}
@@ -119,15 +104,8 @@ const GeneExpressionCalls = ({ loaderData }) => {
               <ExpressionSearch
                 search={search}
                 setSearch={setSearch}
-                elements={expressionPageHelper.autocompleteSpecies(
-                  filteredSingleSpecies,
-                  kwList,
-                  search
-                )}
-                onRender={expressionPageHelper.autocompleteSpeciesRender(
-                  setSearch,
-                  navigate
-                )}
+                elements={expressionPageHelper.autocompleteSpecies(filteredSingleSpecies, kwList, search)}
+                onRender={expressionPageHelper.autocompleteSpeciesRender(setSearch, navigate)}
               />
             </div>
           </div>
@@ -136,10 +114,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
       <Bulma.Card className="mt-4">
         <Bulma.Card.Header>
           <Bulma.Card.Header.Title className="is-size-4 has-text-primary">
-            Single-species{' '}
-            <span className="ml-2 has-text-grey is-size-7">
-              (click on species to see more details)
-            </span>
+            Single-species <span className="ml-2 has-text-grey is-size-7">(click on species to see more details)</span>
           </Bulma.Card.Header.Title>
         </Bulma.Card.Header>
         <Bulma.Card.Body>
@@ -152,15 +127,12 @@ const GeneExpressionCalls = ({ loaderData }) => {
                   navigate(
                     isSelected
                       ? `${PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}?id=${species.id}`
-                      : PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS
-                  , {replace: true});
+                      : PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS,
+                    { replace: true }
+                  );
                 }}
                 onRenderSelection={(species, { onClose }) => (
-                  <div
-                    className={classnames(
-                      'expression-species is-flex is-flex-direction-row p-4'
-                    )}
-                  >
+                  <div className={classnames('expression-species is-flex is-flex-direction-row p-4')}>
                     <div className="image-container">
                       <Bulma.Image
                         className="m-0"
@@ -205,57 +177,32 @@ const GeneExpressionCalls = ({ loaderData }) => {
                           </p>
                           <div>
                             <div>
-                              <p className="has-text-weight-semibold mt-3">
-                                Anatomical entities only
-                              </p>
+                              <p className="has-text-weight-semibold mt-3">Anatomical entities only</p>
                               <div className="field has-addons">
                                 {files?.[species.id.toString()]?.anatSimple && (
                                   <p className="control">
                                     <GaEvent
                                       category="Gene Expression Calls"
                                       action="download_anat-only_simple-file"
-                                      label={
-                                        files[species.id.toString()].anatSimple
-                                          .path
-                                      }
+                                      label={files[species.id.toString()].anatSimple.path}
                                     >
-                                      <a
-                                        className="button"
-                                        href={
-                                          files[species.id.toString()]
-                                            .anatSimple.path
-                                        }
-                                      >
+                                      <a className="button" href={files[species.id.toString()].anatSimple.path}>
                                         <ion-icon name="download-outline" />
-                                        <span className="is-size-7 ml-2">
-                                          Simple file
-                                        </span>
+                                        <span className="is-size-7 ml-2">Simple file</span>
                                       </a>
                                     </GaEvent>
                                   </p>
                                 )}
-                                {files?.[species.id.toString()]
-                                  ?.anatAdvanced && (
+                                {files?.[species.id.toString()]?.anatAdvanced && (
                                   <p className="control">
                                     <GaEvent
                                       category="Gene Expression Calls"
                                       action="download_anat-only_advanced-file"
-                                      label={
-                                        files[species.id.toString()]
-                                          .anatAdvanced.path
-                                      }
+                                      label={files[species.id.toString()].anatAdvanced.path}
                                     >
-                                      <a
-                                        className="button"
-                                        href={
-                                          files[species.id.toString()]
-                                            .anatAdvanced.path
-                                        }
-                                      >
+                                      <a className="button" href={files[species.id.toString()].anatAdvanced.path}>
                                         <ion-icon name="download-outline" />
-                                        <span className="is-size-7 ml-2">
-                                          Advanced File
-                                        </span>
+                                        <span className="is-size-7 ml-2">Advanced File</span>
                                       </a>
                                     </GaEvent>
                                   </p>
@@ -263,57 +210,32 @@ const GeneExpressionCalls = ({ loaderData }) => {
                               </div>
                             </div>
                             <div>
-                              <p className="has-text-weight-semibold mt-3">
-                                All conditions parameters
-                              </p>
+                              <p className="has-text-weight-semibold mt-3">All conditions parameters</p>
                               <div className="field has-addons">
                                 {files?.[species.id.toString()]?.fullSimple && (
                                   <p className="control">
                                     <GaEvent
                                       category="Gene Expression Calls"
                                       action="download_all-conditions-parameters_simple-file"
-                                      label={
-                                        files[species.id.toString()].fullSimple
-                                          .path
-                                      }
+                                      label={files[species.id.toString()].fullSimple.path}
                                     >
-                                      <a
-                                        className="button"
-                                        href={
-                                          files[species.id.toString()]
-                                            .fullSimple.path
-                                        }
-                                      >
+                                      <a className="button" href={files[species.id.toString()].fullSimple.path}>
                                         <ion-icon name="download-outline" />
-                                        <span className="is-size-7 ml-2">
-                                          Simple file
-                                        </span>
+                                        <span className="is-size-7 ml-2">Simple file</span>
                                       </a>
                                     </GaEvent>
                                   </p>
                                 )}
-                                {files?.[species.id.toString()]
-                                  ?.fullAdvanced && (
+                                {files?.[species.id.toString()]?.fullAdvanced && (
                                   <p className="control">
                                     <GaEvent
                                       category="Gene Expression Calls"
                                       action="download_all-conditions-parameters_advanced-file"
-                                      label={
-                                        files[species.id.toString()]
-                                          .fullAdvanced.path
-                                      }
+                                      label={files[species.id.toString()].fullAdvanced.path}
                                     >
-                                      <a
-                                        className="button"
-                                        href={
-                                          files[species.id.toString()]
-                                            .fullAdvanced.path
-                                        }
-                                      >
+                                      <a className="button" href={files[species.id.toString()].fullAdvanced.path}>
                                         <ion-icon name="download-outline" />
-                                        <span className="is-size-7 ml-2">
-                                          Advanced File
-                                        </span>
+                                        <span className="is-size-7 ml-2">Advanced File</span>
                                       </a>
                                     </GaEvent>
                                   </p>
@@ -321,16 +243,12 @@ const GeneExpressionCalls = ({ loaderData }) => {
                               </div>
                             </div>
                             <p className=" is-size-7 mt-2">
-                              <span className="is-underlined is-italic has-text-weight-semibold">
-                                All conditions
-                              </span>
-                              : combinations anatomy-development-sex-strain
+                              <span className="is-underlined is-italic has-text-weight-semibold">All conditions</span>:
+                              combinations anatomy-development-sex-strain
                             </p>
                             <p className=" is-size-7">
-                              <span className="is-underlined is-italic has-text-weight-semibold">
-                                Advanced file
-                              </span>
-                              : includes information by data types
+                              <span className="is-underlined is-italic has-text-weight-semibold">Advanced file</span>:
+                              includes information by data types
                             </p>
                             <div className=" is-size-7">
                               <a

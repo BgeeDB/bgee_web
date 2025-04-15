@@ -36,10 +36,10 @@ export async function loader({ params, request }) {
         orthologs: 0,
         paralogs: 0,
       };
-      homologsResult.value.data.orthologsByTaxon.forEach((o) => {
+      homologsResult.value.data.orthologsByTaxon.forEach(o => {
         if (o.genes.length > homologs.orthologs) homologs.orthologs = o.genes.length;
       });
-      homologsResult.value.data.paralogsByTaxon.forEach((o) => {
+      homologsResult.value.data.paralogsByTaxon.forEach(o => {
         if (o.genes.length > homologs.paralogs) homologs.paralogs = o.genes.length;
       });
     }
@@ -52,7 +52,7 @@ export async function loader({ params, request }) {
       details: geneDetails,
       homologs,
       xRefs,
-      pathname: new URL(request.url).pathname
+      pathname: new URL(request.url).pathname,
     };
   } catch (error) {
     console.error('Error loading gene data:', error.data.message);
@@ -65,16 +65,13 @@ export function meta({ data }) {
   const { name, geneId, species, synonyms } = data.details;
 
   const latinName = `${species.genus} ${species.speciesName}`;
-  const speciesName = species.name
-    ? species.name
-    : `${species.genus} ${species.speciesName}`;
+  const speciesName = species.name ? species.name : `${species.genus} ${species.speciesName}`;
   const hasNameOpener = name ? `${name} (` : '';
   const hasNameCloser = name ? `)` : '';
   const speciesNameBrackets = species.name ? ` (${species.name})` : '';
   const nameExpr = name ? `${name}, ${name} expression, ` : '';
   const synonymsExpr = synonyms ? `, ${synonyms.join(', ')}` : '';
-  const canonicalLink = `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES
-    .replace(':geneId', geneId)
+  const canonicalLink = `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', geneId)
     .replace(':speciesId', species.id)
     // .replace(':speciesId', geneMappedToSameGeneIdCount === 1 ? '' : species.id)
     .replace(/\/$/, '')}`;
@@ -90,8 +87,8 @@ export function meta({ data }) {
         xRefs: data.xRefs?.gene?.xRefs,
         path: data.pathname,
       }),
-      geneHomologsToLdJSON([...data.homologs.orthologsByTaxon, ...data.homologs.paralogsByTaxon])
-    ]
+      geneHomologsToLdJSON([...data.homologs.orthologsByTaxon, ...data.homologs.paralogsByTaxon]),
+    ],
   });
 }
 
@@ -117,7 +114,7 @@ const Gene = () => {
           setFlowState(FLOW.LOADED);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err.message);
         navigate(PATHS.ERROR, {
           error: {
@@ -131,17 +128,11 @@ const Gene = () => {
 
   if (
     (!urlSpeciesId && geneDetails?.length === 1) ||
-    (urlSpeciesId &&
-      geneDetails?.length > 1 &&
-      geneDetails?.find((g) => g.species.id === urlSpeciesId))
+    (urlSpeciesId && geneDetails?.length > 1 && geneDetails?.find(g => g.species.id === urlSpeciesId))
   ) {
     return (
       <GeneDetails
-        details={
-          geneDetails.length === 1
-            ? geneDetails[0]
-            : geneDetails?.find((g) => g.species.id === urlSpeciesId)
-        }
+        details={geneDetails.length === 1 ? geneDetails[0] : geneDetails?.find(g => g.species.id === urlSpeciesId)}
       />
     );
   }

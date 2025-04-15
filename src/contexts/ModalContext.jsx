@@ -8,8 +8,7 @@ const ModalContext = React.createContext();
 const { Provider } = ModalContext;
 
 const Modal = () => {
-  const { modalContent, hideModal, modal, customOnClose } =
-    React.useContext(ModalContext);
+  const { modalContent, hideModal, modal, customOnClose } = React.useContext(ModalContext);
 
   if (modal)
     return ReactDOM.createPortal(
@@ -31,14 +30,7 @@ const Modal = () => {
   return null;
 };
 const ModalProvider = ({ children }) => {
-  const {
-    modal,
-    handleModal,
-    modalContent,
-    hideModal,
-    showModal,
-    customOnClose,
-  } = useModal();
+  const { modal, handleModal, modalContent, hideModal, showModal, customOnClose } = useModal();
   return (
     <Provider
       value={{

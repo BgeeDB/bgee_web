@@ -19,16 +19,14 @@ export const MEDIA_QUERIES_SIZE = {
 export const isHideMediaQuery = (windowWidth, mediaQuery) =>
   !!(
     mediaQuery &&
-    ((MEDIA_QUERIES_SIZE[mediaQuery] &&
-      windowWidth <= MEDIA_QUERIES_SIZE[mediaQuery]) ||
+    ((MEDIA_QUERIES_SIZE[mediaQuery] && windowWidth <= MEDIA_QUERIES_SIZE[mediaQuery]) ||
       (typeof mediaQuery === 'number' && windowWidth <= mediaQuery))
   );
 export const hasColumnsTableHidden = (windowWidth, columns) => {
   for (let i = 0; Array.isArray(columns) && i < columns.length; i += 1) {
     if (
       columns[i].hide &&
-      ((MEDIA_QUERIES_SIZE[columns[i].hide] &&
-        windowWidth <= MEDIA_QUERIES_SIZE[columns[i].hide]) ||
+      ((MEDIA_QUERIES_SIZE[columns[i].hide] && windowWidth <= MEDIA_QUERIES_SIZE[columns[i].hide]) ||
         (typeof columns[i].hide === 'number' && windowWidth <= columns[i].hide))
     )
       return true;

@@ -13,10 +13,7 @@ const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
 const PaginationWithoutRefresh = ({ current, total }) => {
   const { paginationParamPageKey, paginationResultCountKey }: any = useContext(TableContext);
-  const { generatePaginationLink } = usePaginationLink(
-    paginationParamPageKey,
-    paginationResultCountKey
-  );
+  const { generatePaginationLink } = usePaginationLink(paginationParamPageKey, paginationResultCountKey);
 
   const navigate = useNavigate();
   const loc = useLocation();
@@ -71,7 +68,7 @@ const PaginationWithoutRefresh = ({ current, total }) => {
         role="link"
         disabled={disabledPrevious}
         // style={disabledPrevious ? disabledStyle : {}}
-        onClick={(e) => !disabledPrevious && goToPage(e, current - 1)}
+        onClick={e => !disabledPrevious && goToPage(e, current - 1)}
       >
         Previous
       </a>
@@ -79,7 +76,7 @@ const PaginationWithoutRefresh = ({ current, total }) => {
         className="pagination-next"
         role="link"
         disabled={disabledNext}
-        onClick={(e) => !disabledNext && goToPage(e, current + 1)}
+        onClick={e => !disabledNext && goToPage(e, current + 1)}
       >
         Next
       </a>
@@ -88,7 +85,7 @@ const PaginationWithoutRefresh = ({ current, total }) => {
           <a
             className={`pagination-link  ${current === 1 ? 'is-current' : ''}`}
             aria-label="Goto page 1"
-            onClick={(e) => goToPage(e, 1)}
+            onClick={e => goToPage(e, 1)}
             href={generatePaginationLink(1)}
           >
             1
@@ -99,14 +96,12 @@ const PaginationWithoutRefresh = ({ current, total }) => {
             <span className="pagination-ellipsis">&hellip;</span>
           </li>
         )}
-        {center.map((page) => (
+        {center.map(page => (
           <li key={page}>
             <a
-              className={`pagination-link  ${
-                current === page ? 'is-current' : ''
-              }`}
+              className={`pagination-link  ${current === page ? 'is-current' : ''}`}
               aria-label={`Go to page ${page}`}
-              onClick={(e) => goToPage(e, page)}
+              onClick={e => goToPage(e, page)}
               href={generatePaginationLink(page)}
             >
               {page}
@@ -120,11 +115,9 @@ const PaginationWithoutRefresh = ({ current, total }) => {
         )}
         <li>
           <a
-            className={`pagination-link  ${
-              current === total ? 'is-current' : ''
-            }`}
+            className={`pagination-link  ${current === total ? 'is-current' : ''}`}
             aria-label={`Goto page ${total}`}
-            onClick={(e) => goToPage(e, total)}
+            onClick={e => goToPage(e, total)}
             href={generatePaginationLink(total)}
           >
             {total}

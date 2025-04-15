@@ -6,12 +6,13 @@ export function meta() {
   return getMetadata({
     title: 'Ontology resources',
     description: 'Access ontologies used or developed as part of the Bgee project.',
-    keywords: 'Developmental and life stage ontologies, Confidence Information Ontology, CIO ontology, Homology Ontology, HOM ontology, Uberon ontology, NCBITaxon ontology, NCBI taxonomy ontology',
+    keywords:
+      'Developmental and life stage ontologies, Confidence Information Ontology, CIO ontology, Homology Ontology, HOM ontology, Uberon ontology, NCBITaxon ontology, NCBI taxonomy ontology',
   });
 }
 
 export default function Page() {
-  return staticBuilder(ontologies)
+  return staticBuilder(ontologies);
 }
 
 const ontologies = [
@@ -73,8 +74,7 @@ const ontologies = [
           {
             type: 'text',
             classNames: 'has-text-centered',
-            content:
-              'Ontology providing confidence information about annotation assertions in a systematic manner.',
+            content: 'Ontology providing confidence information about annotation assertions in a systematic manner.',
           },
         ],
       },
@@ -118,8 +118,7 @@ const ontologies = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Bgee uses the cross-species ontology Uberon covering anatomical structures in animals. A ',
+                content: 'Bgee uses the cross-species ontology Uberon covering anatomical structures in animals. A ',
               },
               {
                 type: 'link_external',
@@ -138,8 +137,7 @@ const ontologies = [
               },
               {
                 type: 'text',
-                content:
-                  '. We also manually modified mapping to terms from external ontologies.',
+                content: '. We also manually modified mapping to terms from external ontologies.',
               },
             ],
           },

@@ -24,12 +24,7 @@ const MarkdownReader = ({ location: { pathname } }) => {
         </div>
       ),
       h2: ({ children, id }) => (
-        <Bulma.Title
-          id={id}
-          renderAs="h2"
-          size={5}
-          className="gradient-underline"
-        >
+        <Bulma.Title id={id} renderAs="h2" size={5} className="gradient-underline">
           {children}
         </Bulma.Title>
       ),
@@ -47,13 +42,7 @@ const MarkdownReader = ({ location: { pathname } }) => {
         components={components}
         children={ROUTES[pathname].source}
         remarkPlugins={[remarkGfm, remarkToc]}
-        rehypePlugins={[
-          rehypeHighlight,
-          rehypeSanitize,
-          rehypeRaw,
-          rehypeSlug,
-          rehypeLink(navigate),
-        ]}
+        rehypePlugins={[rehypeHighlight, rehypeSanitize, rehypeRaw, rehypeSlug, rehypeLink(navigate)]}
       />
     </>
   );

@@ -61,18 +61,16 @@ const DataSource = () => {
       .dataSources()
       .then(({ data }) => {
         const categories = new Set();
-        data.sources.forEach((s) => {
+        data.sources.forEach(s => {
           categories.add(s.category);
         });
         const categorizedSources = {};
-        categories.forEach((category) => {
-          categorizedSources[category] = data.sources.filter(
-            (s) => s.category === category
-          );
+        categories.forEach(category => {
+          categorizedSources[category] = data.sources.filter(s => s.category === category);
         });
         setSources(categorizedSources);
       })
-      .catch((err) => console.error(err))
+      .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -81,26 +79,16 @@ const DataSource = () => {
       <div className="content has-text-centered">
         <Bulma.Title className="title is-3">Data sources</Bulma.Title>
       </div>
-      <p className="">
-        This page provides information about the data sources used in Bgee{' '}
-        {config.version}.
-      </p>
+      <p className="">This page provides information about the data sources used in Bgee {config.version}.</p>
       {loading && (
-        <progress
-          className="progress is-small"
-          max="100"
-          style={{ animationDuration: '3s', marginBottom: 12 }}
-        >
+        <progress className="progress is-small" max="100" style={{ animationDuration: '3s', marginBottom: 12 }}>
           80%
         </progress>
       )}
-      {CATEGORIES.map((c) =>
+      {CATEGORIES.map(c =>
         sources[c.key] ? (
           <React.Fragment key={c.key}>
-            <Bulma.Title
-              className="gradient-underline title is-size-4 has-text-primary"
-              renderAs="h2"
-            >
+            <Bulma.Title className="gradient-underline title is-size-4 has-text-primary" renderAs="h2">
               {c.title}
             </Bulma.Title>
             {sources[c.key].map((s, key) => (
@@ -108,12 +96,7 @@ const DataSource = () => {
                 <div className="columns mt-2">
                   <div className="column is-2">
                     <p className="">
-                      <a
-                        href={s.baseUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="external-link"
-                      >
+                      <a href={s.baseUrl} target="_blank" rel="noopener noreferrer" className="external-link">
                         {s.name}
                       </a>
                     </p>
@@ -134,16 +117,13 @@ const DataSource = () => {
                       <div className="column is-10">
                         <p className="">
                           {s.releaseDate}
-                          {s.releaseVersion !== '' &&
-                            ` (release ${s.releaseVersion})`}
+                          {s.releaseVersion !== '' && ` (release ${s.releaseVersion})`}
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
-                {key + 1 < sources[c.key].length && (
-                  <div className="separator" />
-                )}
+                {key + 1 < sources[c.key].length && <div className="separator" />}
               </React.Fragment>
             ))}
           </React.Fragment>

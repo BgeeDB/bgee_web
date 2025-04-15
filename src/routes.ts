@@ -1,10 +1,10 @@
-import { type RouteConfig, index, route } from "@react-router/dev/routes";
-import { flatRoutes } from "@react-router/fs-routes";
+import { type RouteConfig, index, route } from '@react-router/dev/routes';
+import { flatRoutes } from '@react-router/fs-routes';
 import PATHS from './paths/paths';
 
 // https://reactrouter.com/start/framework/routing
 export default [
-  index("./pages/Home.jsx"),
+  index('./pages/Home.jsx'),
 
   // Analysis routes
   route(PATHS.ANALYSIS.TOP_ANAT + '/:id?/:jobId?', './pages/analysis/TopAnat.jsx'),

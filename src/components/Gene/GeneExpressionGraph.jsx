@@ -33,7 +33,7 @@ const DATA_TYPES = [
     text: 'scRNA-Seq',
   },
 ];
-export const ALL_DATA_TYPES = DATA_TYPES.map((data) => data.key);
+export const ALL_DATA_TYPES = DATA_TYPES.map(data => data.key);
 export const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
 export const BASE_LIMIT = '10000';
 export const EXPR_CALLS = 'expr_calls';
@@ -63,13 +63,9 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
 
   // In order to disable the search button if the search has already been made
   const formSearchButtonIsDisabled = useMemo(() => {
-    const oldDataType = (
-      dataTypeExpr?.split(',') || DATA_TYPES.map((d) => d.key)
-    ).sort();
+    const oldDataType = (dataTypeExpr?.split(',') || DATA_TYPES.map(d => d.key)).sort();
 
-    return (
-      JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType)
-    );
+    return JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
   }, [dataType, dataTypeExpr]);
 
   const getSearchParams = () => {
@@ -97,25 +93,27 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   };
 
   // prepare term hierarchy from gene expression call data
-  const prepTermHierarchy = (expressionCalls) => {
-    const termProps = { 'UBERON:0001062-GO:0005575': {
-      label: 'anatomical entity',
-      anatEntityId: 'UBERON:0001062',
-      anatEntityLabel: 'anatomical entity',
-      cellTypeId: 'GO:0005575',
-      cellTypeLabel: 'cellular component',
-      isTopLevelTerm: true,
-      isExpanded: true,
-      isPopulated: false,
-      hasBeenQueried: true,
-      isSingleCell: false,
-    }};
+  const prepTermHierarchy = expressionCalls => {
+    const termProps = {
+      'UBERON:0001062-GO:0005575': {
+        label: 'anatomical entity',
+        anatEntityId: 'UBERON:0001062',
+        anatEntityLabel: 'anatomical entity',
+        cellTypeId: 'GO:0005575',
+        cellTypeLabel: 'cellular component',
+        isTopLevelTerm: true,
+        isExpanded: true,
+        isPopulated: false,
+        hasBeenQueried: true,
+        isSingleCell: false,
+      },
+    };
     const parents = { [ROOT_TERM_ANAT_ENTITY]: [] };
     const children = { [ROOT_TERM_ANAT_ENTITY]: [] };
-    expressionCalls.forEach((exprCall) => {
+    expressionCalls.forEach(exprCall => {
       const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
-      const termIsSingleCell = (cellTypeId !== 'GO:0005575');
+      const termIsSingleCell = cellTypeId !== 'GO:0005575';
       const termId = `${anatEntityId}-${cellTypeId}`;
       const termLabel = termIsSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
       if (!(termId in termProps)) {
@@ -130,7 +128,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
           isPopulated: false,
           hasBeenQueried: true,
           isSingleCell: termIsSingleCell,
-        }
+        };
 
         if (termId !== ROOT_TERM_ANAT_ENTITY) {
           parents[termId] = [ROOT_TERM_ANAT_ENTITY];
@@ -163,12 +161,12 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
         isPopulated: true,
         hasBeenQueried: depth === 0,
         isSingleCell: term.isSingleCell,
-        children: []
+        children: [],
       };
 
       // If the term has children, recursively create their nested structure
       if (children[termId]) {
-        nestedTerm.children = children[termId].map(childId => createNestedStructure(childId, depth+1));
+        nestedTerm.children = children[termId].map(childId => createNestedStructure(childId, depth + 1));
       }
 
       return nestedTerm;
@@ -189,7 +187,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
     const newTerms = {};
 
     // Helper function to recursively find the term by id and add children
-    const addChildren = (term) => {
+    const addChildren = term => {
       // Check if the current term's id matches the parentId
       if (term.id === parentId) {
         // Loop through each expressionCall and add children to the term
@@ -207,13 +205,14 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
               cellTypeLabel: cellType.name,
               depth: term.depth + 1,
               isTopLevelTerm: false,
-              children: []
+              children: [],
             };
             term.children.push(newChild);
             // Add the new term to termProps
             newTerms[termId] = {
               label: termLabel,
-              isTopLevel: false };
+              isTopLevel: false,
+            };
           }
         });
       } else {
@@ -240,9 +239,9 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
 
     try {
       // console.log(`[GeneExpressionGraph.triggerInitialSearch] submitting API requests...`);
-      const [ result1, result2 ] = await Promise.all([
+      const [result1, result2] = await Promise.all([
         api.search.geneExpressionMatrix.initialSearch(params),
-        api.search.geneExpressionMatrix.initialSearchComplementary(params)
+        api.search.geneExpressionMatrix.initialSearchComplementary(params),
       ]);
 
       const { resp: resp1 } = result1;
@@ -252,7 +251,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
         // console.log(JSON.stringify(resp1));
         // console.log(JSON.stringify(resp2));
 
-        const{ anatTerms, termProps } = prepTermHierarchy(resp1.data.expressionData.expressionCalls);
+        const { anatTerms, termProps } = prepTermHierarchy(resp1.data.expressionData.expressionCalls);
         // console.log(`[GeneExpressionGraph.triggerInitialSearch] anatTerms:\n${JSON.stringify(anatTerms)}`);
         setAnatomicalTerms(anatTerms);
         // console.log(`[GeneExpressionGraph.triggerInitialSearch] termProps:\n${JSON.stringify(termProps)}`);
@@ -290,9 +289,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   }, [dataType]);
 
   // Perform API data request for subordinate terms
-  const triggerSearchChildren = async (
-    parentId, selectedTissueId
-  ) => {
+  const triggerSearchChildren = async (parentId, selectedTissueId) => {
     // DEBUG: remove console log in prod
     console.log(`[GeneExpressionGraph] triggerSearchChildren:\n"${parentId}"`);
 
@@ -317,154 +314,156 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
     // console.log(`[GeneExpressionGraph] triggerSearchChildren - triggered!`);
     // console.log(`[GeneExpressionGraph] triggerSearchChildren - params:\n${JSON.stringify(params)}`);
     return api.search.geneExpressionMatrix
-    .search(params, false)
-    .then(({ resp, paramsURLCalled }) => {
-      // DEBUG: remove in prod
-      // console.log(`[GeneExpressionGraph] triggerSearchChildren - response:\n${JSON.stringify(resp)}`);
-      if (resp.code === 200) {
-        // DEBUG: remove console log in prod
-        // console.log(`[GeneExpressionGraph] triggerSearchChildren - resp.data:\n${JSON.stringify(resp.data)}`);
-        // console.log(`[GeneExpressionGraph] triggerSearchChildren - params:\n${JSON.stringify(params)}`)
+      .search(params, false)
+      .then(({ resp, paramsURLCalled }) => {
+        // DEBUG: remove in prod
+        // console.log(`[GeneExpressionGraph] triggerSearchChildren - response:\n${JSON.stringify(resp)}`);
+        if (resp.code === 200) {
+          // DEBUG: remove console log in prod
+          // console.log(`[GeneExpressionGraph] triggerSearchChildren - resp.data:\n${JSON.stringify(resp.data)}`);
+          // console.log(`[GeneExpressionGraph] triggerSearchChildren - params:\n${JSON.stringify(params)}`)
 
-        // TODO: make sure, URL reflects current query state
-        // "Mirroring" management in URL's parameter (with & without hash)
-        const searchParams = new URLSearchParams(paramsURLCalled);
-        // If there is a hash we put it in the URL
-        // And as all next data are "coded" in the Hash...
-        // We can clear the URL from those (aka storableParams)
-        const newHash = resp?.requestParameters?.data;
-        if (newHash) {
-          // We delete the potential old hash
-          searchParams.delete('data');
+          // TODO: make sure, URL reflects current query state
+          // "Mirroring" management in URL's parameter (with & without hash)
+          const searchParams = new URLSearchParams(paramsURLCalled);
+          // If there is a hash we put it in the URL
+          // And as all next data are "coded" in the Hash...
+          // We can clear the URL from those (aka storableParams)
+          const newHash = resp?.requestParameters?.data;
+          if (newHash) {
+            // We delete the potential old hash
+            searchParams.delete('data');
 
-          resp?.requestParameters?.storableParameters?.forEach((key) => {
-            if (key !== 'data_type') {
-              searchParams.delete(key);
-            }
-          });
+            resp?.requestParameters?.storableParameters?.forEach(key => {
+              if (key !== 'data_type') {
+                searchParams.delete(key);
+              }
+            });
 
-          // Adding Hash (in "data" key)
-          searchParams.append('data', newHash);
+            // Adding Hash (in "data" key)
+            searchParams.append('data', newHash);
+          }
         }
-      }
 
-      // update anatomical terms
-      const newChildTerms = new Set();
-      resp?.data.expressionData.expressionCalls.forEach((exprCall) => {
-        const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
-        const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
-        const isSingleCell = (cellTypeId !== 'GO:0005575');
-        // if (!(anatEntityId === selectedTissueId && cellTypeId === 'GO:0005575')) {
-        if (!(anatEntityId === selectedTissueId) || isSingleCell) {
-          newChildTerms.add(JSON.stringify({
-              id: `${anatEntityId}-${cellTypeId}`,
-              // label: cellTypeId !== '' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
-              label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
-              anatEntityId,
-              anatEntityLabel: anatEntityName,
-              cellTypeId,
-              cellTypeLabel: cellTypeName,
-              isTopLevelTerm: false,
-              isExpanded: false,
-              isPopulated: false,
-              hasBeenQueried: false,
-              isSingleCell,
-          }));
-        }
-      });
-
-      function addChildren(hierarchy, termId, children) {
-        // Helper function to recursively traverse the array
-        function traverse(node) {
-          if (!node || !Array.isArray(node)) return []; // break condition
-
-          // Add property to each element in the current level
-          return node.map(item => {
-            const newItem = { ...item };
-            if (item.id === termId) {
-              // add children
-              // console.log(`[Heatmap GeneExpressionGraph] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
-              children.forEach((childStr) => {
-                const child = JSON.parse(childStr);
-                if (child.id !== newItem.id)
-                  newItem.children.push({
-                    id: child.id,
-                    label: child.label,
-                    anatEntityId: child.anatEntityId,
-                    anatEntityLabel: child.anatEntityLabel,
-                    cellTypeId: child.cellTypeId,
-                    cellTypeLabel: child.cellTypeLabel,
-                    depth: newItem.depth+1,
-                    isTopLevelTerm: false,
-                    isExpanded: false,
-                    isPopulated: false,
-                    hasBeenQueried: false,
-                    isSingleCell: child.isSingleCell,
-                    children: [],
-                  });
-                });
-              newItem.isExpanded = true;
-              newItem.hasBeenQueried = true;
-            }
-            newItem.children = traverse(newItem.children); // Recursively traverse children
-            return newItem;
-          });
-        }
-        // Start traversal from the root
-        return traverse(hierarchy);
-      }
-
-      // console.log(`[GeneExpressionGraph] triggerSearchChildren newChildTerms:\n${JSON.stringify([...newChildTerms], null, 2)}`);
-      if (newChildTerms.size > 0) {
-        const newAnatTerms = addChildren(anatomicalTerms, parentId, [...newChildTerms]);
-        // DEBUG: remove console log in prod
-        // console.log(`[GeneExpressionGraph] triggerSearchChildren anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
-        // console.log(`[GeneExpressionGraph] triggerSearchChildren newAnatTerms:\n${JSON.stringify(newAnatTerms)}`);
-        // console.log(`[GeneExpressionGraph] CALL setAnatomicalTerms`);
-        setAnatomicalTerms(newAnatTerms);
-        // add term props for new terms
-        const newAnatTermsProps = {...anatomicalTermsProps};
-        newChildTerms.forEach((childStr) => {
-          const child = JSON.parse(childStr);  // Parse the stringified child object
-          if (!(child.id in newAnatTermsProps)) {
-            newAnatTermsProps[child.id] = {
-              label: child.label,
-              anatEntityId: child.anatEntityId,
-              anatEntityLabel: child.anatEntityLabel,
-              cellTypeId: child.cellTypeId,
-              cellTypeLabel: child.cellTypeLabel,
-              isTopLevelTerm: child.isTopLevelTerm,
-              isExpanded: child.isExpanded,
-              isPopulated: child.isPopulated,
-              hasBeenQueried: child.hasBeenQueried,
-              isSingleCell: child.isSingleCell,
-            };
+        // update anatomical terms
+        const newChildTerms = new Set();
+        resp?.data.expressionData.expressionCalls.forEach(exprCall => {
+          const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
+          const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
+          const isSingleCell = cellTypeId !== 'GO:0005575';
+          // if (!(anatEntityId === selectedTissueId && cellTypeId === 'GO:0005575')) {
+          if (!(anatEntityId === selectedTissueId) || isSingleCell) {
+            newChildTerms.add(
+              JSON.stringify({
+                id: `${anatEntityId}-${cellTypeId}`,
+                // label: cellTypeId !== '' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
+                label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
+                anatEntityId,
+                anatEntityLabel: anatEntityName,
+                cellTypeId,
+                cellTypeLabel: cellTypeName,
+                isTopLevelTerm: false,
+                isExpanded: false,
+                isPopulated: false,
+                hasBeenQueried: false,
+                isSingleCell,
+              })
+            );
           }
         });
-        // console.log(`[GeneExpressionGraph] triggerSearchChildren newAnatTermsProps:\n${JSON.stringify(newAnatTermsProps)}`);
-        setAnatomicalTermsProps(newAnatTermsProps);
-      }
 
-      // add additional data to previous ones
-      const exprData = searchResult;
-      exprData.expressionData.expressionCalls.push(...resp?.data.expressionData.expressionCalls);
-      setSearchResult(exprData);
+        function addChildren(hierarchy, termId, children) {
+          // Helper function to recursively traverse the array
+          function traverse(node) {
+            if (!node || !Array.isArray(node)) return []; // break condition
 
-      // Finally, we set the values we are interested in
-      setIsLoading(false);
-    })
-    .catch((error) => {
-      console.log(`[GeneExpressionGraph] triggerSearchChildren - ERROR:\n${JSON.stringify(error)}`);
-      setIsLoading(false);
-    });
+            // Add property to each element in the current level
+            return node.map(item => {
+              const newItem = { ...item };
+              if (item.id === termId) {
+                // add children
+                // console.log(`[Heatmap GeneExpressionGraph] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
+                children.forEach(childStr => {
+                  const child = JSON.parse(childStr);
+                  if (child.id !== newItem.id)
+                    newItem.children.push({
+                      id: child.id,
+                      label: child.label,
+                      anatEntityId: child.anatEntityId,
+                      anatEntityLabel: child.anatEntityLabel,
+                      cellTypeId: child.cellTypeId,
+                      cellTypeLabel: child.cellTypeLabel,
+                      depth: newItem.depth + 1,
+                      isTopLevelTerm: false,
+                      isExpanded: false,
+                      isPopulated: false,
+                      hasBeenQueried: false,
+                      isSingleCell: child.isSingleCell,
+                      children: [],
+                    });
+                });
+                newItem.isExpanded = true;
+                newItem.hasBeenQueried = true;
+              }
+              newItem.children = traverse(newItem.children); // Recursively traverse children
+              return newItem;
+            });
+          }
+          // Start traversal from the root
+          return traverse(hierarchy);
+        }
+
+        // console.log(`[GeneExpressionGraph] triggerSearchChildren newChildTerms:\n${JSON.stringify([...newChildTerms], null, 2)}`);
+        if (newChildTerms.size > 0) {
+          const newAnatTerms = addChildren(anatomicalTerms, parentId, [...newChildTerms]);
+          // DEBUG: remove console log in prod
+          // console.log(`[GeneExpressionGraph] triggerSearchChildren anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
+          // console.log(`[GeneExpressionGraph] triggerSearchChildren newAnatTerms:\n${JSON.stringify(newAnatTerms)}`);
+          // console.log(`[GeneExpressionGraph] CALL setAnatomicalTerms`);
+          setAnatomicalTerms(newAnatTerms);
+          // add term props for new terms
+          const newAnatTermsProps = { ...anatomicalTermsProps };
+          newChildTerms.forEach(childStr => {
+            const child = JSON.parse(childStr); // Parse the stringified child object
+            if (!(child.id in newAnatTermsProps)) {
+              newAnatTermsProps[child.id] = {
+                label: child.label,
+                anatEntityId: child.anatEntityId,
+                anatEntityLabel: child.anatEntityLabel,
+                cellTypeId: child.cellTypeId,
+                cellTypeLabel: child.cellTypeLabel,
+                isTopLevelTerm: child.isTopLevelTerm,
+                isExpanded: child.isExpanded,
+                isPopulated: child.isPopulated,
+                hasBeenQueried: child.hasBeenQueried,
+                isSingleCell: child.isSingleCell,
+              };
+            }
+          });
+          // console.log(`[GeneExpressionGraph] triggerSearchChildren newAnatTermsProps:\n${JSON.stringify(newAnatTermsProps)}`);
+          setAnatomicalTermsProps(newAnatTermsProps);
+        }
+
+        // add additional data to previous ones
+        const exprData = searchResult;
+        exprData.expressionData.expressionCalls.push(...resp?.data.expressionData.expressionCalls);
+        setSearchResult(exprData);
+
+        // Finally, we set the values we are interested in
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.log(`[GeneExpressionGraph] triggerSearchChildren - ERROR:\n${JSON.stringify(error)}`);
+        setIsLoading(false);
+      });
   };
 
   // updates component state!
-  const onToggleExpandCollapse = (term) => {
+  const onToggleExpandCollapse = term => {
     // console.log(`[GeneExpressionGraph] onToggleExpandCollapse:\n${JSON.stringify(term)}`);
 
     function updateExpandedStateHierarchically(terms) {
-      const newTermProps = {...anatomicalTermsProps};
+      const newTermProps = { ...anatomicalTermsProps };
       // Helper function to recursively traverse the array
       function traverse(node) {
         if (!node || !Array.isArray(node)) return []; // break condition
@@ -497,10 +496,10 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
 
       // Start traversal from the root
       const newDrilldown = traverse(terms);
-      return {newDrilldown, newTermProps};
+      return { newDrilldown, newTermProps };
     }
 
-    const {newDrilldown, newTermProps} = updateExpandedStateHierarchically(anatomicalTerms);
+    const { newDrilldown, newTermProps } = updateExpandedStateHierarchically(anatomicalTerms);
     // console.log(`[GeneExpressionGraph] CALL setAnatomicalTermsProps...`);
     setAnatomicalTermsProps(newTermProps);
     // console.log(`[GeneExpressionGraph] CALL setAnatomicalTerms...`);
@@ -508,76 +507,65 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
     // console.log(`[GeneExpressionGraph] DONE onToggleExpandCollapse.`);
   };
 
-  const heatmapData = searchResult?.expressionData?.expressionCalls?.map((result) => {
-    const { geneId: gId, name: gName } = result.gene;
-    const specId = result.gene.species.id;
-    const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;
-    const { id: cellTypeId, name: cellTypeName } = result.condition.cellType;
-    const termId = `${anatEntityId}-${cellTypeId}`;
-    const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
-    const expScore = result.expressionScore.expressionScore;
-    const isExpressed = result.expressionState === 'expressed';
+  const heatmapData =
+    searchResult?.expressionData?.expressionCalls?.map(result => {
+      const { geneId: gId, name: gName } = result.gene;
+      const specId = result.gene.species.id;
+      const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;
+      const { id: cellTypeId, name: cellTypeName } = result.condition.cellType;
+      const termId = `${anatEntityId}-${cellTypeId}`;
+      const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
+      const expScore = result.expressionScore.expressionScore;
+      const isExpressed = result.expressionState === 'expressed';
 
-    return {
-      x: gName,
-      y: termId,
-      termId,
-      termName,
-      geneId: gId,
-      geneName: gName,
-      speciesId: specId,
-      anatEntityId,
-      anatEntityName,
-      cellTypeId,
-      cellTypeName,
-      value: expScore,
-      isExpressed,
-      hasDataAffy: result.dataTypesWithData.AFFYMETRIX,
-      hasDataEst: result.dataTypesWithData.EST,
-      hasDataInSitu: result.dataTypesWithData.IN_SITU,
-      hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
-      hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
-      ylvl: 0
-    };
-  }) || [];
+      return {
+        x: gName,
+        y: termId,
+        termId,
+        termName,
+        geneId: gId,
+        geneName: gName,
+        speciesId: specId,
+        anatEntityId,
+        anatEntityName,
+        cellTypeId,
+        cellTypeName,
+        value: expScore,
+        isExpressed,
+        hasDataAffy: result.dataTypesWithData.AFFYMETRIX,
+        hasDataEst: result.dataTypesWithData.EST,
+        hasDataInSitu: result.dataTypesWithData.IN_SITU,
+        hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
+        hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
+        ylvl: 0,
+      };
+    }) || [];
 
   return (
     <>
-      <Bulma.Title
-        size={4}
-        className="gradient-underline"
-        id={GENE_DETAILS_HTML_IDS.EXPRESSION_GRAPH}
-        renderAs="h2"
-      >
+      <Bulma.Title size={4} className="gradient-underline" id={GENE_DETAILS_HTML_IDS.EXPRESSION_GRAPH} renderAs="h2">
         Expression graph
       </Bulma.Title>
       <div>
         {isLoading && (
-          <progress
-            className="progress is-small"
-            max="100"
-            style={{ animationDuration: '4s' }}
-          >
+          <progress className="progress is-small" max="100" style={{ animationDuration: '4s' }}>
             80%
           </progress>
         )}
 
         <div className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper mt-2">
-          {DATA_TYPES.map((c) => (
-            <label
-              className="checkbox ml-2 is-size-7 is-flex is-align-items-center"
-              key={c.key}
-            >
+          {DATA_TYPES.map(c => (
+            <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.key}>
               <input
                 type="checkbox"
-                checked={dataType.find((d) => d === c.key) || false}
-                onChange={(e) => {
-                  setDataTypes((prev) => {
+                checked={dataType.find(d => d === c.key) || false}
+                onChange={e => {
+                  setDataTypes(prev => {
                     const curr = [...prev];
                     if (e.target.checked) {
                       curr.push(c.key);
                     } else {
-                      const pos = curr.findIndex((d) => d === c.key);
+                      const pos = curr.findIndex(d => d === c.key);
                       if (pos >= 0) curr.splice(pos, 1);
                     }
                     return curr;
@@ -589,19 +577,12 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
           ))}
           <Bulma.Button
             className="search-form"
-            disabled={
-              JSON.stringify(dataType.sort()) ===
-              JSON.stringify(DATA_TYPES.map((d) => d.key).sort())
-            }
-            onClick={() => setDataTypes(DATA_TYPES.map((d) => d.key))}
+            disabled={JSON.stringify(dataType.sort()) === JSON.stringify(DATA_TYPES.map(d => d.key).sort())}
+            onClick={() => setDataTypes(DATA_TYPES.map(d => d.key))}
           >
             Select All
           </Bulma.Button>
-          <Bulma.Button
-            className="search-form"
-            disabled={dataType.length === 0}
-            onClick={() => setDataTypes([])}
-          >
+          <Bulma.Button className="search-form" disabled={dataType.length === 0} onClick={() => setDataTypes([])}>
             Unselect All
           </Bulma.Button>
         </div>
@@ -612,14 +593,13 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
             onClick={() => {
               const queryParams = new URLSearchParams(window.location.search);
               if (
-                JSON.stringify(dataType.sort()) !==
-                  JSON.stringify(DATA_TYPES.map((d) => d.key).sort()) &&
+                JSON.stringify(dataType.sort()) !== JSON.stringify(DATA_TYPES.map(d => d.key).sort()) &&
                 dataType.length > 0
               )
                 queryParams.set(dataTypeKey, dataType.join(','));
               else queryParams.delete(dataTypeKey);
 
-              navigate(`${URL_ROOT}${loc.pathname}?${queryParams.toString()}`, {replace: true});
+              navigate(`${URL_ROOT}${loc.pathname}?${queryParams.toString()}`, { replace: true });
             }}
           >
             Update
@@ -635,7 +615,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
             onToggleExpandCollapse={onToggleExpandCollapse}
             width={800}
             height={800}
-            backgroundColor='white'
+            backgroundColor="white"
           />
         )}
         {!isLoading && searchResult && heatmapData.length === 0 && (

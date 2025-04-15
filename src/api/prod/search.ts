@@ -39,16 +39,12 @@ const DEFAULT_PARAMETERS = (page, action) => {
 };
 
 const search = {
-  anatomicalHomology: (
-    { type, query }: any,
-    species = undefined,
-    aeList = undefined
-  ) =>
+  anatomicalHomology: ({ type, query }: any, species = undefined, aeList = undefined) =>
     new Promise((resolve, reject) => {
       let params = DEFAULT_PARAMETERS('anat_similarities');
       if (type === 'form') {
         if (aeList) params.append('ae_list', aeList);
-        species.forEach((s) => params.append('species_list', s));
+        species.forEach(s => params.append('species_list', s));
       } else if (type === 'query') {
         params = new URLSearchParams(query);
 
@@ -63,57 +59,44 @@ const search = {
         .get(`/?${params.toString()}`)
         .then(({ data }) => {
           const formatted = JSON.parse(JSON.stringify(data));
-          formatted.data.anatEntitySimilarities =
-            formatted.data.anatEntitySimilarities.map(
-              ({
-                anatEntities,
-                ancestralTaxon,
-                speciesWithAnatEntityPresence,
-              }) => ({
-                anatEntities: anatEntities.map((a) => ({
-                  name: `${a.name} (${a.id})`,
-                  link: obolibraryLinkFromID(a.id),
-                  id: a.id,
-                })),
-                ancestralTaxon: `${ancestralTaxon.scientificName} (${ancestralTaxon.id})`,
-                speciesWithAnatEntityPresence:
-                  speciesWithAnatEntityPresence.map((s) => ({
-                    id: s.id,
-                    name: `${s.genus} ${s.speciesName}`,
-                    link: PATHS.SEARCH.SPECIES_ITEM.replace(':id', s.id),
-                  })),
-                aeSorter: anatEntities
-                  .map((a) => `${a.name} (${a.id})`)
-                  .join(', '),
-                atSorter: `${ancestralTaxon.scientificName} (${ancestralTaxon.id})`,
-                ssSorter: speciesWithAnatEntityPresence
-                  .map((s) => `${s.genus} ${s.speciesName}`)
-                  .join(', '),
-              })
-            );
+          formatted.data.anatEntitySimilarities = formatted.data.anatEntitySimilarities.map(
+            ({ anatEntities, ancestralTaxon, speciesWithAnatEntityPresence }) => ({
+              anatEntities: anatEntities.map(a => ({
+                name: `${a.name} (${a.id})`,
+                link: obolibraryLinkFromID(a.id),
+                id: a.id,
+              })),
+              ancestralTaxon: `${ancestralTaxon.scientificName} (${ancestralTaxon.id})`,
+              speciesWithAnatEntityPresence: speciesWithAnatEntityPresence.map(s => ({
+                id: s.id,
+                name: `${s.genus} ${s.speciesName}`,
+                link: PATHS.SEARCH.SPECIES_ITEM.replace(':id', s.id),
+              })),
+              aeSorter: anatEntities.map(a => `${a.name} (${a.id})`).join(', '),
+              atSorter: `${ancestralTaxon.scientificName} (${ancestralTaxon.id})`,
+              ssSorter: speciesWithAnatEntityPresence.map(s => `${s.genus} ${s.speciesName}`).join(', '),
+            })
+          );
           resolve(formatted);
         })
-        .catch((error) => {
+        .catch(error => {
           errorHandler(error);
           reject(error?.response);
         });
     }),
   genes: {
-    autoComplete: (val) =>
+    autoComplete: val =>
       new Promise((resolve, reject) => {
-        const params = DEFAULT_PARAMETERS(
-          'search',
-          'auto_complete_gene_search'
-        );
+        const params = DEFAULT_PARAMETERS('search', 'auto_complete_gene_search');
         params.append('query', `${val}`);
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               SEARCH_CANCEL_API.genes.autoComplete = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -144,7 +127,7 @@ const search = {
         }
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               SEARCH_CANCEL_API.genes.AutoCompleteByType = c;
             }),
           })
@@ -152,23 +135,23 @@ const search = {
             SEARCH_CANCEL_API.genes.AutoCompleteByType = null;
             return resolve(data);
           })
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
       }),
-    geneSearchResult: (val) =>
+    geneSearchResult: val =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('gene');
         params.append('query', `${val}`);
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               SEARCH_CANCEL_API.genes.geneSearchResult = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -180,13 +163,13 @@ const search = {
         params.append('gene_id', geneId);
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               // An executor function receives a cancel function as a parameter
               SEARCH_CANCEL_API.genes.getGeneralInformation = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -205,16 +188,16 @@ const search = {
         if (fields.strain) params.append('cond_param', 'strain');
         if (fields.devStage) params.append('cond_param', 'dev_stage');
         if (fields.sex) params.append('cond_param', 'sex');
-        dataType.forEach((d) => params.append('data_type', d));
+        dataType.forEach(d => params.append('data_type', d));
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               // An executor function receives a cancel function as a parameter
               SEARCH_CANCEL_API.genes.expression = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -226,13 +209,13 @@ const search = {
         params.append('species_id', speciesId);
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               // An executor function receives a cancel function as a parameter
               SEARCH_CANCEL_API.genes.homologs = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -244,13 +227,13 @@ const search = {
         params.append('species_id', speciesId);
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               // An executor function receives a cancel function as a parameter
               SEARCH_CANCEL_API.genes.xrefs = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -262,13 +245,13 @@ const search = {
         const params = DEFAULT_PARAMETERS('download', 'expr_calls');
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               // An executor function receives a cancel function as a parameter
               SEARCH_CANCEL_API.species.exprCalls = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -278,13 +261,13 @@ const search = {
         const params = DEFAULT_PARAMETERS('download', 'proc_values');
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               // An executor function receives a cancel function as a parameter
               SEARCH_CANCEL_API.species.processedValues = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -295,13 +278,13 @@ const search = {
         params.append('species_id', speciesId);
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               // An executor function receives a cancel function as a parameter
               SEARCH_CANCEL_API.species.exprCalls = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
@@ -311,65 +294,65 @@ const search = {
         const params = DEFAULT_PARAMETERS('species');
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               // An executor function receives a cancel function as a parameter
               SEARCH_CANCEL_API.species.exprCalls = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
       }),
-    speciesDevelopmentSexe: (speciesId) =>
+    speciesDevelopmentSexe: speciesId =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('data');
         params.append('detailed_rp', '1');
         params.append('species_id', speciesId);
         axiosInstance
           .get(`/?${params.toString()}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               SEARCH_CANCEL_API.species.speciesDevelopmentSexe = c;
             }),
           })
           .then(({ data }) => resolve(data))
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response);
           });
       }),
-      name: (speciesId): any =>
-          new Promise((resolve, reject) => {
-              const params = DEFAULT_PARAMETERS('species', 'name');
-              params.append('species_id', speciesId);
-              axiosInstance
-                  .get(`/?${params.toString()}`, {
-                      cancelToken: new axios.CancelToken((c) => {
-                          SEARCH_CANCEL_API.species.name = c;
-                      }),
-                  })
-                  .then(({ data }) => resolve(data))
-                  .catch((error) => {
-                      errorHandler(error);
-                      reject(error?.response);
-                  });
-          }),
-      geneList: (speciesId): any =>
-          new Promise((resolve, reject) => {
-              const params = DEFAULT_PARAMETERS('gene', 'species_list');
-              params.append('species_id', speciesId);
-              axiosInstance
-                  .get(`/?${params.toString()}`, {
-                      cancelToken: new axios.CancelToken((c) => {
-                          SEARCH_CANCEL_API.species.geneList = c;
-                      }),
-                  })
-                  .then(({ data }) => resolve(data))
-                  .catch((error) => {
-                      reject(error?.response);
-                  });
-          }),
+    name: (speciesId): any =>
+      new Promise((resolve, reject) => {
+        const params = DEFAULT_PARAMETERS('species', 'name');
+        params.append('species_id', speciesId);
+        axiosInstance
+          .get(`/?${params.toString()}`, {
+            cancelToken: new axios.CancelToken(c => {
+              SEARCH_CANCEL_API.species.name = c;
+            }),
+          })
+          .then(({ data }) => resolve(data))
+          .catch(error => {
+            errorHandler(error);
+            reject(error?.response);
+          });
+      }),
+    geneList: (speciesId): any =>
+      new Promise((resolve, reject) => {
+        const params = DEFAULT_PARAMETERS('gene', 'species_list');
+        params.append('species_id', speciesId);
+        axiosInstance
+          .get(`/?${params.toString()}`, {
+            cancelToken: new axios.CancelToken(c => {
+              SEARCH_CANCEL_API.species.geneList = c;
+            }),
+          })
+          .then(({ data }) => resolve(data))
+          .catch(error => {
+            reject(error?.response);
+          });
+      }),
   },
   rawData: {
     search: (form, isOnlyCounts, bypassInitSearchParam = false) =>
@@ -387,7 +370,7 @@ const search = {
           params.append('data_type', 'all');
           params.append('get_filters', '1');
         } else {
-          form.dataType.forEach((type) => params.append('data_type', type));
+          form.dataType.forEach(type => params.append('data_type', type));
 
           params.append('get_results', '1');
           params.append('get_filters', '1');
@@ -430,19 +413,13 @@ const search = {
           if (form.selectedSpecies) {
             params.append('species_id', form.selectedSpecies);
           }
-          form.selectedCellTypes.forEach((ct) =>
-            params.append('cell_type_id', ct)
-          );
-          form.selectedGene.forEach((g) => params.append('gene_id', g));
-          form.selectedStrain.forEach((s) => params.append('strain', s));
-          form.selectedDevStages.forEach((ds) => params.append('stage_id', ds));
-          form.selectedTissue.forEach((t) =>
-            params.append('anat_entity_id', t)
-          );
-          form.selectedExpOrAssay.forEach((exp) =>
-            params.append('exp_assay_id', exp)
-          );
-          form.selectedSexes.forEach((s) => params.append('sex', s));
+          form.selectedCellTypes.forEach(ct => params.append('cell_type_id', ct));
+          form.selectedGene.forEach(g => params.append('gene_id', g));
+          form.selectedStrain.forEach(s => params.append('strain', s));
+          form.selectedDevStages.forEach(ds => params.append('stage_id', ds));
+          form.selectedTissue.forEach(t => params.append('anat_entity_id', t));
+          form.selectedExpOrAssay.forEach(exp => params.append('exp_assay_id', exp));
+          form.selectedSexes.forEach(s => params.append('sex', s));
 
           params.append('cell_type_descendant', form.hasCellTypeSubStructure);
           params.append('anat_entity_descendant', form.hasTissueSubStructure);
@@ -454,19 +431,17 @@ const search = {
             params.append('data_qual', form?.dataQuality);
           }
           if (form?.callTypes) {
-            form.callTypes.forEach((ct) => params.append('expr_type', ct));
+            form.callTypes.forEach(ct => params.append('expr_type', ct));
           }
           if (form?.conditionalParam2) {
-            form.conditionalParam2.forEach((cp) =>
-              params.append('cond_param2', cp)
-            );
+            form.conditionalParam2.forEach(cp => params.append('cond_param2', cp));
           }
 
           // We apply the filters
           // If filters_for_all we apply all filters EVEN IF there is OnlyCount
-          if ( (form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all')) ) {
+          if ((form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all'))) {
             for (const [key, values] of Object.entries(form.filters)) {
-              values.forEach((obj) => params.append(key, obj.value));
+              values.forEach(obj => params.append(key, obj.value));
             }
           }
         }
@@ -480,15 +455,13 @@ const search = {
           typeToken = 'search';
         }
         if (SEARCH_CANCEL_API?.rawData?.[typeToken] !== null) {
-          SEARCH_CANCEL_API?.rawData?.[typeToken]?.(
-            '-- Search was canceled because another search was triggered --'
-          );
+          SEARCH_CANCEL_API?.rawData?.[typeToken]?.('-- Search was canceled because another search was triggered --');
         }
 
         const paramsURLCalled = params.toString();
         axiosInstance
           .get(`/?${paramsURLCalled}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               SEARCH_CANCEL_API.rawData[typeToken] = c;
             }),
           })
@@ -496,7 +469,7 @@ const search = {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             return resolve({ resp: data, paramsURLCalled });
           })
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response || error?.message);
           });
@@ -509,8 +482,8 @@ const search = {
         params.append('exp_id', experimentId);
         axiosInstance
           .get(`/?${params.toString()}`)
-          .then((response) => resolve(response))
-          .catch((error) => {
+          .then(response => resolve(response))
+          .catch(error => {
             errorHandler(error);
             reject(error);
           });
@@ -519,7 +492,7 @@ const search = {
   geneExpressionMatrix: {
     // get request parameters from previous search
     getRequestParams: (form, detailedRP = false) =>
-      new Promise((resolve) => {
+      new Promise(resolve => {
         // populate request params
         const params = DEFAULT_PARAMETERS('data', 'expr_calls');
         params.append('get_results', '0');
@@ -528,15 +501,11 @@ const search = {
         params.append('detailed_rp', detailedRP ? '1' : '0');
 
         // are we using a dataHash?
-        if (form.initSearch) { // -> use initSearch params
+        if (form.initSearch) {
+          // -> use initSearch params
           // eslint-disable-next-line no-restricted-syntax
           for (const [key, val] of form?.initSearch) {
-            if (
-              key !== 'data_type' &&
-              key !== 'offset' &&
-              key !== 'limit' &&
-              key !== 'pageType'
-            ) {
+            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               params.append(key, val);
             }
           }
@@ -547,23 +516,22 @@ const search = {
         const typeToken = 'search'; // alternatives: 'count'
         axiosInstance
           .get(`/?${paramsURLCalled}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               SEARCH_CANCEL_API.rawData[typeToken] = c;
             }),
           })
           .then(({ data }) => {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             return resolve({ resp: data, paramsURLCalled });
-          // })
-          // .catch((error) => {
-          //   errorHandler(error);
-          //   reject(error?.response || error?.message);
+            // })
+            // .catch((error) => {
+            //   errorHandler(error);
+            //   reject(error?.response || error?.message);
           });
-
       }),
 
     // Initial search, requesting the top-level terms
-    initialSearch: (form) =>
+    initialSearch: form =>
       new Promise((resolve, reject) => {
         // populate request params
         const params = DEFAULT_PARAMETERS('data', 'expr_calls');
@@ -573,15 +541,11 @@ const search = {
         params.append('limit', '10000');
 
         // are we using a dataHash?
-        if (form.initSearch && form.initSearch.length > 0) { // -> use initSearch params
+        if (form.initSearch && form.initSearch.length > 0) {
+          // -> use initSearch params
           // eslint-disable-next-line no-restricted-syntax
           for (const [key, val] of form?.initSearch) {
-            if (
-              key !== 'data_type' &&
-              key !== 'offset' &&
-              key !== 'limit' &&
-              key !== 'pageType'
-            ) {
+            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               params.append(key, val);
             }
           }
@@ -591,16 +555,14 @@ const search = {
           if (!form.initSearch.get('cell_type_id')) {
             params.append('cell_type_id', 'SUMMARY');
           }
-        }
-        else { // -> use form params
+        } else {
+          // -> use form params
           if (form.dataType?.length > 0) {
-            form.dataType.forEach((type) => params.append('data_type', type));
+            form.dataType.forEach(type => params.append('data_type', type));
           }
           if (form.selectedTissue?.length > 0) {
             // params.append('anat_entity_id', 'UBERON:0001062');
-            form.selectedTissue.forEach((t) =>
-              params.append('anat_entity_id', t)
-            );
+            form.selectedTissue.forEach(t => params.append('anat_entity_id', t));
           } else {
             params.append('anat_entity_id', 'SUMMARY');
           }
@@ -614,7 +576,7 @@ const search = {
           //     params.append('cell_type_id', ct)
           //   );
           // } else {
-            // params.append('cell_type_id', 'GO:0005575');
+          // params.append('cell_type_id', 'GO:0005575');
           params.append('cell_type_id', 'SUMMARY');
           // }
           params.append('cond_param2', 'anat_entity');
@@ -642,9 +604,7 @@ const search = {
           if (form.selectedSpecies) {
             params.append('species_id', form.selectedSpecies);
           }
-          form.selectedGene.forEach((g) =>
-            params.append('gene_id', g)
-          );
+          form.selectedGene.forEach(g => params.append('gene_id', g));
 
           if (form?.dataQuality) {
             params.append('data_qual', form?.dataQuality);
@@ -657,7 +617,7 @@ const search = {
         const typeToken = 'search'; // alternatives: 'count'
         axiosInstance
           .get(`/?${paramsURLCalled}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               SEARCH_CANCEL_API.rawData[typeToken] = c;
             }),
           })
@@ -665,82 +625,74 @@ const search = {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             return resolve({ resp: data, paramsURLCalled });
           })
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response || error?.message);
           });
-
       }),
 
-      initialSearchComplementary: (form) =>
-        new Promise((resolve, reject) => {
-          // populate request params
-          const params = DEFAULT_PARAMETERS('data', 'expr_calls');
-          params.append('get_results', '1');
-          params.append('offset', '0');
-          params.append('limit', '10000');
+    initialSearchComplementary: form =>
+      new Promise((resolve, reject) => {
+        // populate request params
+        const params = DEFAULT_PARAMETERS('data', 'expr_calls');
+        params.append('get_results', '1');
+        params.append('offset', '0');
+        params.append('limit', '10000');
 
-          // specific to this call
-          params.append('anat_entity_id', 'SUMMARY');
-          params.append('cell_type_id', 'SUMMARY');
-          params.append('cond_param2', 'anat_entity');
-          params.append('discard_anat_entity_and_children_id', 'SUMMARY');
-          params.append('observed_data', '1');
-          // NOTE: must be set for this call to work
-          params.append('anat_entity_descendant', '1');
-          params.append('exclude_non_informative', '1');
+        // specific to this call
+        params.append('anat_entity_id', 'SUMMARY');
+        params.append('cell_type_id', 'SUMMARY');
+        params.append('cond_param2', 'anat_entity');
+        params.append('discard_anat_entity_and_children_id', 'SUMMARY');
+        params.append('observed_data', '1');
+        // NOTE: must be set for this call to work
+        params.append('anat_entity_descendant', '1');
+        params.append('exclude_non_informative', '1');
 
-          // are we using a dataHash?
-          if (form.initSearch && form.initSearch.length > 0) { // -> use initSearch params
-            params.append('display_rp', '1');
+        // are we using a dataHash?
+        if (form.initSearch && form.initSearch.length > 0) {
+          // -> use initSearch params
+          params.append('display_rp', '1');
 
-            // eslint-disable-next-line no-restricted-syntax
-            for (const [key, val] of form?.initSearch) {
-              if (
-                key !== 'data_type' &&
-                key !== 'offset' &&
-                key !== 'limit' &&
-                key !== 'pageType'
-              ) {
-                params.append(key, val);
-              }
+          // eslint-disable-next-line no-restricted-syntax
+          for (const [key, val] of form?.initSearch) {
+            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
+              params.append(key, val);
             }
           }
-          else { // -> use form params
-            if (form.dataType?.length > 0) {
-              form.dataType.forEach((type) => params.append('data_type', type));
-            }
-            if (form.selectedSpecies) {
-              params.append('species_id', form.selectedSpecies);
-            }
-            form.selectedGene.forEach((g) =>
-              params.append('gene_id', g)
-            );
-            if (form?.dataQuality) {
-              params.append('data_qual', form?.dataQuality);
-            }
+        } else {
+          // -> use form params
+          if (form.dataType?.length > 0) {
+            form.dataType.forEach(type => params.append('data_type', type));
           }
+          if (form.selectedSpecies) {
+            params.append('species_id', form.selectedSpecies);
+          }
+          form.selectedGene.forEach(g => params.append('gene_id', g));
+          if (form?.dataQuality) {
+            params.append('data_qual', form?.dataQuality);
+          }
+        }
 
-          // [...]
-          const paramsURLCalled = params.toString();
+        // [...]
+        const paramsURLCalled = params.toString();
 
-          const typeToken = 'search'; // alternatives: 'count'
-          axiosInstance
-            .get(`/?${paramsURLCalled}`, {
-              cancelToken: new axios.CancelToken((c) => {
-                SEARCH_CANCEL_API.rawData[typeToken] = c;
-              }),
-            })
-            .then(({ data }) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = null;
-              return resolve({ resp: data, paramsURLCalled });
-            })
-            .catch((error) => {
-              errorHandler(error);
-              reject(error?.response || error?.message);
-            });
-
-        }),
+        const typeToken = 'search'; // alternatives: 'count'
+        axiosInstance
+          .get(`/?${paramsURLCalled}`, {
+            cancelToken: new axios.CancelToken(c => {
+              SEARCH_CANCEL_API.rawData[typeToken] = c;
+            }),
+          })
+          .then(({ data }) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            return resolve({ resp: data, paramsURLCalled });
+          })
+          .catch(error => {
+            errorHandler(error);
+            reject(error?.response || error?.message);
+          });
+      }),
 
     // TODO: remove "isOnlyCounts" param + related code
     search: (form, isOnlyCounts = false, bypassInitSearchParam = false) =>
@@ -760,7 +712,7 @@ const search = {
           params.append('data_type', 'all');
           params.append('get_filters', '1');
         } else {
-          form.dataType.forEach((type) => params.append('data_type', type));
+          form.dataType.forEach(type => params.append('data_type', type));
 
           params.append('get_results', '1');
         }
@@ -793,27 +745,13 @@ const search = {
           if (form.selectedSpecies) {
             params.append('species_id', form.selectedSpecies);
           }
-          form.selectedCellTypes.forEach((ct) =>
-            params.append('cell_type_id', ct)
-          );
-          form.selectedGene.forEach((g) =>
-            params.append('gene_id', g)
-          );
-          form.selectedStrain.forEach((s) =>
-            params.append('strain', s)
-          );
-          form.selectedDevStages.forEach((ds) =>
-            params.append('stage_id', ds)
-          );
-          form.selectedTissue.forEach((t) =>
-            params.append('anat_entity_id', t)
-          );
-          form.selectedExpOrAssay.forEach((exp) =>
-            params.append('exp_assay_id', exp)
-          );
-          form.selectedSexes.forEach((s) =>
-            params.append('sex', s)
-          );
+          form.selectedCellTypes.forEach(ct => params.append('cell_type_id', ct));
+          form.selectedGene.forEach(g => params.append('gene_id', g));
+          form.selectedStrain.forEach(s => params.append('strain', s));
+          form.selectedDevStages.forEach(ds => params.append('stage_id', ds));
+          form.selectedTissue.forEach(t => params.append('anat_entity_id', t));
+          form.selectedExpOrAssay.forEach(exp => params.append('exp_assay_id', exp));
+          form.selectedSexes.forEach(s => params.append('sex', s));
           if (form.hasTissueSubStructure) {
             params.append('anat_entity_descendant', '1');
           }
@@ -829,12 +767,10 @@ const search = {
             params.append('data_qual', form?.dataQuality);
           }
           if (form?.callTypes) {
-            form.callTypes.forEach((ct) => params.append('expr_type', ct));
+            form.callTypes.forEach(ct => params.append('expr_type', ct));
           }
           if (form?.conditionalParam2) {
-            form.conditionalParam2.forEach((cp) =>
-              params.append('cond_param2', cp)
-            );
+            form.conditionalParam2.forEach(cp => params.append('cond_param2', cp));
           }
           if (form?.condObserved !== undefined) {
             params.append('cond_observed', form?.condObserved);
@@ -842,10 +778,10 @@ const search = {
 
           // We apply the filters
           // If filters_for_all we apply all filters EVEN IF there is OnlyCount
-          if ( (form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all')) ) {
+          if ((form?.filters && !isOnlyCounts) || (isOnlyCounts && form?.initSearch.get('filters_for_all'))) {
             // eslint-disable-next-line no-restricted-syntax
             for (const [key, values] of Object.entries(form.filters)) {
-              values.forEach((obj) => params.append(key, obj.value));
+              values.forEach(obj => params.append(key, obj.value));
             }
           }
         }
@@ -859,15 +795,13 @@ const search = {
           typeToken = 'search';
         }
         if (SEARCH_CANCEL_API?.rawData?.[typeToken] !== null) {
-          SEARCH_CANCEL_API?.rawData?.[typeToken]?.(
-            '-- Search was canceled because another search was triggered --'
-          );
+          SEARCH_CANCEL_API?.rawData?.[typeToken]?.('-- Search was canceled because another search was triggered --');
         }
 
         const paramsURLCalled = params.toString();
         axiosInstance
           .get(`/?${paramsURLCalled}`, {
-            cancelToken: new axios.CancelToken((c) => {
+            cancelToken: new axios.CancelToken(c => {
               SEARCH_CANCEL_API.rawData[typeToken] = c;
             }),
           })
@@ -875,7 +809,7 @@ const search = {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             return resolve({ resp: data, paramsURLCalled });
           })
-          .catch((error) => {
+          .catch(error => {
             errorHandler(error);
             reject(error?.response || error?.message);
           });

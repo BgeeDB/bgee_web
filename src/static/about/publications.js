@@ -11,7 +11,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(publications)
+  return staticBuilder(publications);
 }
 
 const publications = [
@@ -55,8 +55,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content:
-                  ' Nucleic Acids Research, 2025, 53:D878-D885. ',
+                content: ' Nucleic Acids Research, 2025, 53:D878-D885. ',
               },
               {
                 type: 'link_external',
@@ -90,8 +89,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content:
-                  ' Nucleic Acids Research, 2021, 49:D831-D847. ',
+                content: ' Nucleic Acids Research, 2021, 49:D831-D847. ',
               },
               {
                 type: 'link_external',
@@ -128,8 +126,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content:
-                  'Niknejad A, Mungall CJ, Osumi-Sutherland D, Robinson-Rechavi M, Bastian F.',
+                content: 'Niknejad A, Mungall CJ, Osumi-Sutherland D, Robinson-Rechavi M, Bastian F.',
               },
               {
                 type: 'break_line',
@@ -164,8 +161,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content:
-                  'Komljenovic A, Roux J, Wollbrett J, Robinson-Rechavi M, Bastian F.',
+                content: 'Komljenovic A, Roux J, Wollbrett J, Robinson-Rechavi M, Bastian F.',
               },
               {
                 type: 'break_line',
@@ -250,8 +246,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Emonet V, Bolleman J, Duvaud D, Mendes de Farias T, Sima AC',
+                content: 'Emonet V, Bolleman J, Duvaud D, Mendes de Farias T, Sima AC',
               },
               {
                 type: 'break_line',
@@ -308,8 +303,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Rangel JC, Mendes de Farias T, Sima AC, Kobayashi N.',
+                content: 'Rangel JC, Mendes de Farias T, Sima AC, Kobayashi N.',
               },
               {
                 type: 'break_line',
@@ -366,8 +360,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Kushida T, Mendes de Farias T, Sima A-C, Dessimoz C, Chiba H, Bastian FB, Masuya H.',
+                content: 'Kushida T, Mendes de Farias T, Sima A-C, Dessimoz C, Chiba H, Bastian FB, Masuya H.',
               },
               {
                 type: 'break_line',
@@ -395,8 +388,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Sima A-C, Mendes de Farias T.',
+                content: 'Sima A-C, Mendes de Farias T.',
               },
               {
                 type: 'break_line',
@@ -415,7 +407,8 @@ const publications = [
               },
               {
                 type: 'text',
-                content: 'Proceedings of the 6th Workshop on Semantic Web Solutions for Large-Scale Biomedical Data Analytics, 2023, 3466:paper1.',
+                content:
+                  'Proceedings of the 6th Workshop on Semantic Web Solutions for Large-Scale Biomedical Data Analytics, 2023, 3466:paper1.',
               },
             ],
           },
@@ -424,8 +417,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Mendes de Farias T, Wollbrett J, Robinson-Rechavi M, Bastian F.',
+                content: 'Mendes de Farias T, Wollbrett J, Robinson-Rechavi M, Bastian F.',
               },
               {
                 type: 'break_line',
@@ -453,8 +445,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Mendes de Farias T, Kushida T, Sima A-C, Dessimoz C, Chiba H, Bastian F, Masuya H.',
+                content: 'Mendes de Farias T, Kushida T, Sima A-C, Dessimoz C, Chiba H, Bastian F, Masuya H.',
               },
               {
                 type: 'break_line',
@@ -540,8 +531,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Robinson-Rechavi M, Rech de Laval V, Bastian FB, Wollbrett J, Bgee Team.',
+                content: 'Robinson-Rechavi M, Rech de Laval V, Bastian FB, Wollbrett J, Bgee Team.',
               },
               {
                 type: 'break_line',
@@ -635,7 +625,7 @@ const publications = [
               },
               {
                 type: 'link_external',
-                text: 'The SIB Swiss Institute of Bioinformatics\' resources: focus on curated databases',
+                text: "The SIB Swiss Institute of Bioinformatics' resources: focus on curated databases",
                 path: 'https://doi.org/10.1093/nar/gkv1310',
               },
               {
@@ -647,8 +637,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content:
-                  'Nucleic Acids Research, 2016, 44:D27-D37.',
+                content: 'Nucleic Acids Research, 2016, 44:D27-D37.',
               },
             ],
           },
@@ -705,8 +694,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content:
-                  'Bioinformatics, 2014, 30:1392-1399.',
+                content: 'Bioinformatics, 2014, 30:1392-1399.',
               },
             ],
           },
@@ -715,8 +703,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Niknejad A, Comte A, Parmentier G, Roux J, Bastian FB, Robinson-Rechavi M.',
+                content: 'Niknejad A, Comte A, Parmentier G, Roux J, Bastian FB, Robinson-Rechavi M.',
               },
               {
                 type: 'break_line',
@@ -735,8 +722,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content:
-                  'Bioinformatics, 2012, 28:1017-1020.',
+                content: 'Bioinformatics, 2012, 28:1017-1020.',
               },
             ],
           },
@@ -801,8 +787,7 @@ const publications = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Bastian FB, Parmentier G, Roux J, Moretti S, Laudet V, Robinson-Rechavi M.',
+                content: 'Bastian FB, Parmentier G, Roux J, Moretti S, Laudet V, Robinson-Rechavi M.',
               },
               {
                 type: 'break_line',

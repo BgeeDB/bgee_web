@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 });
 
 let axiosAddNotif = null;
-export const setAxiosAddNotif = (fct) => {
+export const setAxiosAddNotif = fct => {
   axiosAddNotif = fct;
 };
 export const getAxiosAddNotif = () => axiosAddNotif || (() => () => {});
@@ -17,5 +17,4 @@ export const getAxiosAddNotif = () => axiosAddNotif || (() => () => {});
 export default axiosInstance;
 
 export const FULL_LENGTH_LABEL = config.dataTypeLabels.FULL_LENGTH;
-export const SOURCE_LETTER_FULL_LENGTH =
-  config.dataTypeSourceLetter.SL_FULL_LENGTH;
+export const SOURCE_LETTER_FULL_LENGTH = config.dataTypeSourceLetter.SL_FULL_LENGTH;

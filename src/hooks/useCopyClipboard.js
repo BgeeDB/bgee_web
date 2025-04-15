@@ -17,7 +17,7 @@ function useCopyClipboard(successDuration = 2000) {
 
   return [
     isCopied,
-    (text) => {
+    text => {
       const didCopy = copyToClipboard(text);
       setIsCopied(didCopy);
     },

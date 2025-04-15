@@ -1,12 +1,7 @@
 import React from 'react';
 import Bulma from '../Bulma';
 
-const Alert = ({
-  type = 'warning',
-  light = false,
-  children,
-  closable = false,
-}) => {
+const Alert = ({ type = 'warning', light = false, children, closable = false }) => {
   const [isClosed, setIsClosed] = React.useState(false);
 
   if (isClosed) return null;

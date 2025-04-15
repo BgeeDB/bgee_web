@@ -12,7 +12,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(team)
+  return staticBuilder(team);
 }
 
 const team = [
@@ -22,8 +22,7 @@ const team = [
   },
   {
     type: 'text',
-    content:
-      'This page provides information about the present and past Bgee team',
+    content: 'This page provides information about the present and past Bgee team',
   },
   {
     type: 'section',
@@ -109,8 +108,7 @@ const team = [
               },
               {
                 type: 'text',
-                content:
-                  ' (Lead biocurator: provide reference healthy wild-type expression data: the Bgee core) ',
+                content: ' (Lead biocurator: provide reference healthy wild-type expression data: the Bgee core) ',
               },
               {
                 type: 'link_external',
@@ -146,8 +144,7 @@ const team = [
               },
               {
                 type: 'text',
-                content:
-                  ' (Software Developer: pipeline and container developer, system administrator) ',
+                content: ' (Software Developer: pipeline and container developer, system administrator) ',
               },
               {
                 type: 'link_external',
@@ -201,8 +198,7 @@ const team = [
               },
               {
                 type: 'text',
-                content:
-                  ' (Associate Director: roadmap, idea agitator and provider, Bgee initiator) ',
+                content: ' (Associate Director: roadmap, idea agitator and provider, Bgee initiator) ',
               },
               {
                 type: 'link_external',

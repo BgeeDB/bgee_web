@@ -7,17 +7,16 @@ import LinkExternal from '~/components/LinkExternal';
 import readableFileSize from '~/helpers/readableFileSize';
 import { speciesToLdJSON } from '~/helpers/schemaDotOrg';
 import imagePath from '~/helpers/imagePath';
-import config from "~/config.json";
+import config from '~/config.json';
 import { getMetadata } from '~/helpers/metadata';
 
-const FULL_LENGTH_LABEL = "Full length RNA-Seq";
-const DROPLET_BASED_LABEL = "Droplet based RNA-Seq";
-
+const FULL_LENGTH_LABEL = 'Full length RNA-Seq';
+const DROPLET_BASED_LABEL = 'Droplet based RNA-Seq';
 
 export async function loader({ params }) {
   try {
-    const res = await api.search.species.species(params.id)
-    return res.data
+    const res = await api.search.species.species(params.id);
+    return res.data;
   } catch (error) {
     throw new Response(error.data.message || 'Failed to load species data', { status: 404 });
   }
@@ -30,23 +29,21 @@ export function meta({ data }) {
       in Bgee for species
       ${data.species.genus}  ${data.species.speciesName}
       ${data.species.name ? `( ${data.species.name} )` : ''}`;
-      const metaKeywords = `gene expression in
+  const metaKeywords = `gene expression in
       ${data.species.genus} ${data.species.speciesName},
       ${data.species.name ? `gene expression in ${data.species.name} , ` : ''}
       ${data.species.genus} ${data.species.speciesName},
       ${data.species.name ? `${data.species.name} , ` : ''}
       species, taxon`;
-  const metaLink = `${config.genericDomain}${PATHS.SEARCH.SPECIES_ITEM
-      .replace(':id', data.species.id)}`;
+  const metaLink = `${config.genericDomain}${PATHS.SEARCH.SPECIES_ITEM.replace(':id', data.species.id)}`;
   return getMetadata({
     title: metaTitle,
     description: metaDescription,
     keywords: metaKeywords,
     link: metaLink,
-    schemaorg: [speciesToLdJSON({...data, url: metaLink})],
+    schemaorg: [speciesToLdJSON({ ...data, url: metaLink })],
   });
 }
-
 
 const Species = () => {
   const data = useLoaderData();
@@ -58,79 +55,55 @@ const Species = () => {
       affymetrix: {},
       rnaSeq: {},
       fullLength: {},
-      dropletBased: {}
+      dropletBased: {},
     };
 
     if (data) {
       let search = data.downloadFilesGroups.downloadFiles.find(
-        (d) =>
-          d.category === 'expr_simple' && d.conditionParameters.length === 1
+        d => d.category === 'expr_simple' && d.conditionParameters.length === 1
       );
       if (search) src.anatOnlyXpr.simple = search;
       search = data.downloadFilesGroups.downloadFiles.find(
-        (d) =>
-          d.category === 'expr_advanced' && d.conditionParameters.length === 1
+        d => d.category === 'expr_advanced' && d.conditionParameters.length === 1
       );
       if (search) src.anatOnlyXpr.advanced = search;
 
       search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'expr_simple' && d.conditionParameters.length > 1
+        d => d.category === 'expr_simple' && d.conditionParameters.length > 1
       );
       if (search) src.fullXpr.simple = search;
 
       search = data.downloadFilesGroups.downloadFiles.find(
-        (d) =>
-          d.category === 'expr_advanced' && d.conditionParameters.length > 1
+        d => d.category === 'expr_advanced' && d.conditionParameters.length > 1
       );
       if (search) src.fullXpr.advanced = search;
 
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'affy_annot'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'affy_annot');
       if (search) src.affymetrix.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'affy_data'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'affy_data');
       if (search) src.affymetrix.data = search;
 
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'rnaseq_annot'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'rnaseq_annot');
       if (search) src.rnaSeq.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'rnaseq_data'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'rnaseq_data');
       if (search) src.rnaSeq.data = search;
 
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'full_length_annot'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'full_length_annot');
       if (search) src.fullLength.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'full_length_data'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'full_length_data');
       if (search) src.fullLength.data = search;
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'full_length_h5ad'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'full_length_h5ad');
       if (search) src.fullLength.h5ad = search;
 
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'droplet_based_annot'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'droplet_based_annot');
       if (search) src.dropletBased.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'droplet_based_data'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'droplet_based_data');
       if (search) src.dropletBased.data = search;
-      search = data.downloadFilesGroups.downloadFiles.find(
-        (d) => d.category === 'droplet_based_h5ad'
-      );
+      search = data.downloadFilesGroups.downloadFiles.find(d => d.category === 'droplet_based_h5ad');
       if (search) src.dropletBased.h5ad = search;
     }
     return src;
   }, [data]);
-
 
   return !data ? null : (
     <>
@@ -140,9 +113,7 @@ const Species = () => {
           src={imagePath(`/species/${data.species.id}_light.jpg`)}
           alt={`${data.species.genus} ${data.species.speciesName}`}
         />
-        <Bulma.Title size={3} className="m-0">{`Species: ${
-          data.species.genus
-        } ${data.species.speciesName}${
+        <Bulma.Title size={3} className="m-0">{`Species: ${data.species.genus} ${data.species.speciesName}${
           data.species.name ? ` (${data.species.name})` : ''
         }`}</Bulma.Title>
       </div>
@@ -178,9 +149,7 @@ const Species = () => {
               </p>
             </div>
             <div>
-              <LinkExternal
-                to={`https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?lvl=0&id=${data.species.id}`}
-              >
+              <LinkExternal to={`https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?lvl=0&id=${data.species.id}`}>
                 {data.species.id}
               </LinkExternal>
             </div>
@@ -192,9 +161,7 @@ const Species = () => {
               </p>
             </div>
             <div>
-              <LinkExternal to={data.species.genomeAssemblyXRef}>
-                {data.species.genomeSource.name}
-              </LinkExternal>
+              <LinkExternal to={data.species.genomeAssemblyXRef}>{data.species.genomeSource.name}</LinkExternal>
             </div>
           </div>
           <div className="is-flex">
@@ -217,12 +184,16 @@ const Species = () => {
             </div>
             <div>
               <p>
-                <Link className="internal-link"
-                      to={PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES
-                          .replace(':speciesId', data.species.id)
-                          .replace(':speciesName', data.species.speciesFullNameWithoutSpace?.replace("_", "-").toLowerCase())}
-                      title={`Gene list for ${data.species.genus} ${data.species.speciesName}`}>
-                  All genes for {data.species.genus} {data.species.speciesName} genome version &apos;{data.species.genomeVersion}&apos;
+                <Link
+                  className="internal-link"
+                  to={PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES.replace(':speciesId', data.species.id).replace(
+                    ':speciesName',
+                    data.species.speciesFullNameWithoutSpace?.replace('_', '-').toLowerCase()
+                  )}
+                  title={`Gene list for ${data.species.genus} ${data.species.speciesName}`}
+                >
+                  All genes for {data.species.genus} {data.species.speciesName} genome version &apos;
+                  {data.species.genomeVersion}&apos;
                 </Link>
               </p>
             </div>
@@ -235,9 +206,11 @@ const Species = () => {
             </div>
             <div>
               <p>
-                <Link className="internal-link"
-                      to={`${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?species_id=${data.species.id}`}
-                      title={`Experiment list for ${data.species.genus} ${data.species.speciesName}`}>
+                <Link
+                  className="internal-link"
+                  to={`${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?species_id=${data.species.id}`}
+                  title={`Experiment list for ${data.species.genus} ${data.species.speciesName}`}
+                >
                   All experiments for {data.species.genus} {data.species.speciesName}
                 </Link>
               </p>
@@ -246,40 +219,27 @@ const Species = () => {
         </div>
       </div>
       <div>
-        <Bulma.Title
-          size={4}
-          className="gradient-underline"
-          id="exp-calls"
-          renderAs="h2"
-        >
+        <Bulma.Title size={4} className="gradient-underline" id="exp-calls" renderAs="h2">
           Gene expression call files
         </Bulma.Title>
         <div className="">
           <p>
-            Bgee provides calls of presence/absence of expression. Each call
-            corresponds to a unique combination of a gene, an anatomical entity,
-            a life stage, a sex, and {`${data.species.id === 9606 ? 'an ethnicity' : 'a strain'}`}, with reported presence or absence
-            of expression. More information in our{' '}
-            <Link
-              to={PATHS.SUPPORT.TUTORIAL_GENE_EXPR}
-              className="internal-link"
-            >
+            Bgee provides calls of presence/absence of expression. Each call corresponds to a unique combination of a
+            gene, an anatomical entity, a life stage, a sex, and{' '}
+            {`${data.species.id === 9606 ? 'an ethnicity' : 'a strain'}`}, with reported presence or absence of
+            expression. More information in our{' '}
+            <Link to={PATHS.SUPPORT.TUTORIAL_GENE_EXPR} className="internal-link">
               documentation
             </Link>
             .
           </p>
           <div className="mt-2">
-            <p className="is-size-5 has-text-primary has-text-weight-semibold">
-              Anatomical entities only
-            </p>
+            <p className="is-size-5 has-text-primary has-text-weight-semibold">Anatomical entities only</p>
             <ul className="unordered">
               {files.anatOnlyXpr.simple && (
                 <li id="exp-calls-anat-simple">
                   File without advanced column:{' '}
-                  <a
-                    className="internal-link"
-                    href={files.anatOnlyXpr.simple.path}
-                  >
+                  <a className="internal-link" href={files.anatOnlyXpr.simple.path}>
                     <code>{files.anatOnlyXpr.simple.name}</code>
                   </a>
                   {` (${readableFileSize(files.anatOnlyXpr.simple.size)})`}
@@ -288,10 +248,7 @@ const Species = () => {
               {files.anatOnlyXpr.advanced && (
                 <li id="exp-calls-anat-advanced">
                   File with advanced column:{' '}
-                  <a
-                    className="internal-link"
-                    href={files.anatOnlyXpr.advanced.path}
-                  >
+                  <a className="internal-link" href={files.anatOnlyXpr.advanced.path}>
                     <code>{files.anatOnlyXpr.simple.name}</code>
                   </a>
                   {` (${readableFileSize(files.anatOnlyXpr.advanced.size)})`}
@@ -301,7 +258,8 @@ const Species = () => {
           </div>
           <div className="mt-2">
             <p className="is-size-5 has-text-primary has-text-weight-semibold">
-              Anatomical entities, developmental stages, sexes and {`${data.species.id === 9606 ? 'ethnicities' : 'strains'}`}
+              Anatomical entities, developmental stages, sexes and{' '}
+              {`${data.species.id === 9606 ? 'ethnicities' : 'strains'}`}
             </p>
             <ul className="unordered">
               {files.fullXpr.simple && (
@@ -316,10 +274,7 @@ const Species = () => {
               {files.fullXpr.advanced && (
                 <li id="exp-calls-cond-advanced">
                   File with advanced column:{' '}
-                  <a
-                    className="internal-link"
-                    href={files.fullXpr.advanced.path}
-                  >
+                  <a className="internal-link" href={files.fullXpr.advanced.path}>
                     <code>{files.fullXpr.advanced.name}</code>
                   </a>
                   {` (${readableFileSize(files.fullXpr.advanced.size)})`}
@@ -330,31 +285,20 @@ const Species = () => {
         </div>
       </div>
       <div>
-        <Bulma.Title
-          size={4}
-          className="gradient-underline"
-          id="proc-values"
-          renderAs="h2"
-        >
+        <Bulma.Title size={4} className="gradient-underline" id="proc-values" renderAs="h2">
           Processed expression value files
         </Bulma.Title>
         <div className="">
           <p>
-            Bgee provides annotations and experiment annotations, and processed
-            expression values. More information in our{' '}
-            <Link
-              to={PATHS.SUPPORT.TUTORIAL_EXPR_VAL}
-              className="internal-link"
-            >
+            Bgee provides annotations and experiment annotations, and processed expression values. More information in
+            our{' '}
+            <Link to={PATHS.SUPPORT.TUTORIAL_EXPR_VAL} className="internal-link">
               documentation
             </Link>
             .
           </p>
           <div className="mt-2">
-            <p
-              className="is-size-5 has-text-primary has-text-weight-semibold"
-              id="proc-values-affymetrix"
-            >
+            <p className="is-size-5 has-text-primary has-text-weight-semibold" id="proc-values-affymetrix">
               Affymetrix
             </p>
             {files.affymetrix.annot || files.affymetrix.data ? (
@@ -362,10 +306,7 @@ const Species = () => {
                 {files.affymetrix.annot && (
                   <li>
                     Experiments/chips annotations and meta data:{' '}
-                    <a
-                      className="internal-link"
-                      href={files.affymetrix.annot.path}
-                    >
+                    <a className="internal-link" href={files.affymetrix.annot.path}>
                       <code>{files.affymetrix.annot.name}</code>
                     </a>
                     {` (${readableFileSize(files.affymetrix.annot.size)})`}
@@ -374,10 +315,7 @@ const Species = () => {
                 {files.affymetrix.data && (
                   <li>
                     Data (signal intensities):{' '}
-                    <a
-                      className="internal-link"
-                      href={files.affymetrix.data.path}
-                    >
+                    <a className="internal-link" href={files.affymetrix.data.path}>
                       <code>{files.affymetrix.data.name}</code>
                     </a>
                     {` (${readableFileSize(files.affymetrix.data.size)})`}
@@ -389,10 +327,7 @@ const Species = () => {
             )}
           </div>
           <div className="mt-2">
-            <p
-              className="is-size-5 has-text-primary has-text-weight-semibold"
-              id="proc-values-rna-seq"
-            >
+            <p className="is-size-5 has-text-primary has-text-weight-semibold" id="proc-values-rna-seq">
               RNA-Seq
             </p>
             {files.rnaSeq.annot || files.rnaSeq.data ? (
@@ -421,22 +356,15 @@ const Species = () => {
             )}
           </div>
           <div className="mt-2">
-            <p
-              className="is-size-5 has-text-primary has-text-weight-semibold"
-              id="proc-values-fl-scrna-seq"
-            >
+            <p className="is-size-5 has-text-primary has-text-weight-semibold" id="proc-values-fl-scrna-seq">
               {FULL_LENGTH_LABEL}
             </p>
-            {files.fullLength.annot || files.fullLength.data ||
-              files.fullLength.h5ad ? (
+            {files.fullLength.annot || files.fullLength.data || files.fullLength.h5ad ? (
               <ul className="unordered">
                 {files.fullLength.annot && (
                   <li>
                     Experiments/libraries annotations and meta data:{' '}
-                    <a
-                      className="internal-link"
-                      href={files.fullLength.annot.path}
-                    >
+                    <a className="internal-link" href={files.fullLength.annot.path}>
                       <code>{files.fullLength.annot.name}</code>
                     </a>
                     {` (${readableFileSize(files.fullLength.annot.size)})`}
@@ -445,10 +373,7 @@ const Species = () => {
                 {files.fullLength.data && (
                   <li>
                     Processed expression values (read counts, TPMs){' '}
-                    <a
-                      className="internal-link"
-                      href={files.fullLength.data.path}
-                    >
+                    <a className="internal-link" href={files.fullLength.data.path}>
                       <code>{files.fullLength.data.name}</code>
                     </a>
                     {` (${readableFileSize(files.fullLength.data.size)})`}
@@ -457,10 +382,7 @@ const Species = () => {
                 {files.fullLength.h5ad && (
                   <li>
                     Processed H5AD data per cell (read counts){' '}
-                    <a
-                      className="internal-link"
-                      href={files.fullLength.h5ad.path}
-                    >
+                    <a className="internal-link" href={files.fullLength.h5ad.path}>
                       <code>{files.fullLength.h5ad.name}</code>
                     </a>
                     {` (${readableFileSize(files.fullLength.h5ad.size)})`}
@@ -472,22 +394,15 @@ const Species = () => {
             )}
           </div>
           <div className="mt-2">
-            <p
-              className="is-size-5 has-text-primary has-text-weight-semibold"
-              id="proc-values-db-scrna-seq"
-            >
+            <p className="is-size-5 has-text-primary has-text-weight-semibold" id="proc-values-db-scrna-seq">
               {DROPLET_BASED_LABEL}
             </p>
-            {files.dropletBased.annot || files.dropletBased.data ||
-              files.dropletBased.h5ad ? (
+            {files.dropletBased.annot || files.dropletBased.data || files.dropletBased.h5ad ? (
               <ul className="unordered">
                 {files.dropletBased.annot && (
                   <li>
                     Experiments/libraries annotations and meta data:{' '}
-                    <a
-                      className="internal-link"
-                      href={files.dropletBased.annot.path}
-                    >
+                    <a className="internal-link" href={files.dropletBased.annot.path}>
                       <code>{files.dropletBased.annot.name}</code>
                     </a>
                     {` (${readableFileSize(files.dropletBased.annot.size)})`}
@@ -496,10 +411,7 @@ const Species = () => {
                 {files.dropletBased.data && (
                   <li>
                     Processed expression values (UMI counts, CPMs){' '}
-                    <a
-                      className="internal-link"
-                      href={files.dropletBased.data.path}
-                    >
+                    <a className="internal-link" href={files.dropletBased.data.path}>
                       <code>{files.dropletBased.data.name}</code>
                     </a>
                     {` (${readableFileSize(files.dropletBased.data.size)})`}
@@ -508,10 +420,7 @@ const Species = () => {
                 {files.dropletBased.h5ad && (
                   <li>
                     Processed H5AD data per cell (UMI counts){' '}
-                    <a
-                      className="internal-link"
-                      href={files.dropletBased.h5ad.path}
-                    >
+                    <a className="internal-link" href={files.dropletBased.h5ad.path}>
                       <code>{files.dropletBased.h5ad.name}</code>
                     </a>
                     {` (${readableFileSize(files.dropletBased.h5ad.size)})`}

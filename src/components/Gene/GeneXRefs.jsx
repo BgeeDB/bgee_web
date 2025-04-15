@@ -10,15 +10,11 @@ const GeneXRefs = ({ isLoading, data }) => (
     </Bulma.Title>
     <div>
       {isLoading ? (
-        <progress
-          className="progress is-small"
-          max="100"
-          style={{ animationDuration: '4s' }}
-        >
+        <progress className="progress is-small" max="100" style={{ animationDuration: '4s' }}>
           80%
         </progress>
       ) : (
-        data?.gene?.xRefs.map((xref) => (
+        data?.gene?.xRefs.map(xref => (
           <Bulma.Columns key={xref.source.name} className="my-0">
             <Bulma.C size={3}>
               <p className="has-text-weight-semibold">{xref.source.name}</p>
@@ -28,13 +24,16 @@ const GeneXRefs = ({ isLoading, data }) => (
                 items={xref.xRefs}
                 renderElement={(ref, key, elements) => (
                   <span key={ref.xRefId}>
-                    <LinkExternal to={ref.xRefURL.replace('ensembl.org/Heterocephalus_glaber/', 'ensembl.org/Heterocephalus_glaber_female/')}>{ref.xRefId}</LinkExternal>
+                    <LinkExternal
+                      to={ref.xRefURL.replace(
+                        'ensembl.org/Heterocephalus_glaber/',
+                        'ensembl.org/Heterocephalus_glaber_female/'
+                      )}
+                    >
+                      {ref.xRefId}
+                    </LinkExternal>
                     {ref.xRefName && <>{` (${ref.xRefName})`}</>}
-                    {key !== elements.length - 1 ? (
-                      <span className="mr-1">,</span>
-                    ) : (
-                      ''
-                    )}
+                    {key !== elements.length - 1 ? <span className="mr-1">,</span> : ''}
                   </span>
                 )}
               />

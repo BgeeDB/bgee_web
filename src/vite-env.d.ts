@@ -2,7 +2,7 @@
  * TypeScript declarations for custom HTML elements used in the Bgee Web application
  */
 
-declare module "*.md";
+declare module '*.md';
 
 /**
  * Define types for Ionic Icons to properly work with TypeScript JSX

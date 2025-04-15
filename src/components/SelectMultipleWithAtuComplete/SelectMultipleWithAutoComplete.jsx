@@ -10,7 +10,7 @@ import classnames from '../../helpers/classnames';
 
 const MAX_OPTIONS_LENGTH = 200;
 
-const escapeRegexp = (str) => str.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+const escapeRegexp = str => str.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
 
 const SelectMultipleWithAutoComplete = ({
   getOptionsFunction,
@@ -33,7 +33,7 @@ const SelectMultipleWithAutoComplete = ({
   const inputRef = useRef();
 
   const searchHandler = useCallback(
-    (val) => {
+    val => {
       if ((val || !minCharToSearch) && getOptionsFunction) {
         setIsLoading(true);
 
@@ -50,14 +50,11 @@ const SelectMultipleWithAutoComplete = ({
           typeof valueOrPromise.then === 'function' &&
           valueOrPromise[Symbol.toStringTag] === 'Promise'
         ) {
-          valueOrPromise.then((options) => {
+          valueOrPromise.then(options => {
             setIsLoading(false);
             let list = [...options];
             if (list.length > MAX_OPTIONS_LENGTH) {
-              console.warn(
-                'WARNING Options list length > ',
-                MAX_OPTIONS_LENGTH
-              );
+              console.warn('WARNING Options list length > ', MAX_OPTIONS_LENGTH);
               list = list.slice(0, MAX_OPTIONS_LENGTH);
             }
             setAutocompleteList(list);
@@ -106,21 +103,14 @@ const SelectMultipleWithAutoComplete = ({
     // Splitting the string on a Case Insensitive, global mode, Regex
     // The returned array is the SAME string split on all matching points
     // We can color all odd indexes
-    const splitted = search
-      ? optionLabel.split(new RegExp(`(${escapeRegexp(search)})`, 'ig'))
-      : [optionLabel];
+    const splitted = search ? optionLabel.split(new RegExp(`(${escapeRegexp(search)})`, 'ig')) : [optionLabel];
 
     // For the "rare" case where synonyms are returned by the research
     let matchFrom = '';
-    if (
-      data?.result &&
-      data?.result?.matchSource !== 'name' &&
-      data?.result?.matchSource !== 'id'
-    ) {
+    if (data?.result && data?.result?.matchSource !== 'name' && data?.result?.matchSource !== 'id') {
       matchFrom += ' - match from ';
       matchFrom += data?.result?.matchSource;
-      matchFrom +=
-        data?.result?.match != null ? `: ${data?.result?.match}` : '';
+      matchFrom += data?.result?.match != null ? `: ${data?.result?.match}` : '';
     }
 
     const level = data.level || 0;
@@ -133,11 +123,7 @@ const SelectMultipleWithAutoComplete = ({
               const isEven = i % 2 === 0;
               return (
                 <React.Fragment key={i}>
-                  {isEven ? (
-                    txt
-                  ) : (
-                    <strong className="has-text-primary">{txt}</strong>
-                  )}
+                  {isEven ? txt : <strong className="has-text-primary">{txt}</strong>}
                   {matchFrom}
                 </React.Fragment>
               );
@@ -175,7 +161,7 @@ const SelectMultipleWithAutoComplete = ({
           isMulti
           placeholder={placeholder}
           ref={inputRef}
-          onChange={(allSelected) => {
+          onChange={allSelected => {
             setSelectedOptions(allSelected);
           }}
           value={selectedOptions}

@@ -10,15 +10,13 @@ import uuid from '../../helpers/uuid';
 
 const PlusModalCell = ({ row, defaultRender }) => {
   const { showModal, hideModal } = React.useContext(ModalContext);
-  const { columns, onRenderCell, showTableModalButton } =
-    useContext(TableContext);
+  const { columns, onRenderCell, showTableModalButton } = useContext(TableContext);
 
   const showModalDetails = React.useCallback(
-    (item) => () => {
+    item => () => {
       console.log(columns, item);
       let titleModal = 'Details';
-      if (item?.condition?.anatEntity)
-        titleModal += ` in ${item?.condition?.anatEntity.name}`;
+      if (item?.condition?.anatEntity) titleModal += ` in ${item?.condition?.anatEntity.name}`;
 
       showModal(() => (
         <Bulma.Modal.Card.Wrapper>
@@ -29,19 +27,15 @@ const PlusModalCell = ({ row, defaultRender }) => {
           </Bulma.Modal.Card.Header>
           <Bulma.Modal.Card.Body>
             <div className="gene-expression-modal-grid">
-              {columns.map((col) => (
+              {columns.map(col => (
                 <React.Fragment key={col.key}>
                   <div className="label">{col.text}</div>
                   <div>
                     {typeof onRenderCell === 'function'
-                      ? onRenderCell(
-                          { cell: item, key: col.key },
-                          defaultRender,
-                          {
-                            expandAction: () => {},
-                            isExpanded: true,
-                          }
-                        )
+                      ? onRenderCell({ cell: item, key: col.key }, defaultRender, {
+                          expandAction: () => {},
+                          isExpanded: true,
+                        })
                       : defaultRender(item, col.key)}
                   </div>
                 </React.Fragment>
@@ -76,9 +70,9 @@ const TableBody = () => {
   const defaultRender = React.useCallback(
     (cell, key) => {
       let style;
-      const col = columns.find((c) => c?.key === key);
+      const col = columns.find(c => c?.key === key);
       if (col && col.style) {
-        style = columns.find((c) => c?.key === key).style;
+        style = columns.find(c => c?.key === key).style;
       }
       if (typeof cell === 'string' || typeof cell === 'number')
         return (
@@ -98,12 +92,7 @@ const TableBody = () => {
 
   const dataToDisplay = React.useMemo(
     () =>
-      !isRequestPerPage
-        ? data?.slice(
-            (currentPage - 1) * pageSize,
-            (currentPage - 1) * pageSize + pageSize
-          )
-        : data,
+      !isRequestPerPage ? data?.slice((currentPage - 1) * pageSize, (currentPage - 1) * pageSize + pageSize) : data,
     [data, currentPage, pageSize, isRequestPerPage]
   );
 
@@ -114,9 +103,7 @@ const TableBody = () => {
           key={key}
           className={classnames(
             { 'is-expanded': isExpanded[key] },
-            onRenderRow
-              ? onRenderRow(row, key > 0 ? data[key - 1] : null, key)
-              : undefined
+            onRenderRow ? onRenderRow(row, key > 0 ? data[key - 1] : null, key) : undefined
           )}
         >
           <PlusModalCell row={row} defaultRender={defaultRender} />
@@ -124,32 +111,21 @@ const TableBody = () => {
             ? row.map((cell, cellKey) => (
                 <td key={`${key}-${cellKey}`} style={columns?.[cellKey]?.style}>
                   {onRenderCell
-                    ? onRenderCell(
-                        { cell, key: cellKey, keyRow: key },
-                        defaultRender,
-                        {
-                          expandAction: expandAction(key),
-                          isExpanded: isExpanded[key],
-                        }
-                      )
+                    ? onRenderCell({ cell, key: cellKey, keyRow: key }, defaultRender, {
+                        expandAction: expandAction(key),
+                        isExpanded: isExpanded[key],
+                      })
                     : defaultRender(cell, cellKey)}
                 </td>
               ))
             : columns.map((c, keyCol) =>
                 isHideMediaQuery(usedWidth, c.hide) ? null : (
-                  <td
-                    key={`${key}-col-${keyCol}`}
-                    style={columns?.[keyCol]?.style}
-                  >
+                  <td key={`${key}-col-${keyCol}`} style={columns?.[keyCol]?.style}>
                     {onRenderCell
-                      ? onRenderCell(
-                          { cell: row, key: c.key || keyCol, keyRow: key },
-                          defaultRender,
-                          {
-                            expandAction: expandAction(key),
-                            isExpanded: isExpanded[key],
-                          }
-                        )
+                      ? onRenderCell({ cell: row, key: c.key || keyCol, keyRow: key }, defaultRender, {
+                          expandAction: expandAction(key),
+                          isExpanded: isExpanded[key],
+                        })
                       : null}
                   </td>
                 )

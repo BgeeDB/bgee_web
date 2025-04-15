@@ -11,16 +11,15 @@ const CellTypes = ({
   setHasCellTypeSubStructure,
   addConditionalParam,
 }) => {
-  const getCellTypeOptions = AutoCompleteByType('cell_type', (result) => ({
+  const getCellTypeOptions = AutoCompleteByType('cell_type', result => ({
     label: getIdAndNameLabel(result?.object),
     value: result?.object?.id,
     result,
   }));
 
-  const onSelect = (nextValue) => {
+  const onSelect = nextValue => {
     setSelectedCellTypes(nextValue);
-    if(nextValue.length > 0)
-      addConditionalParam(COND_PARAM2_ANAT_KEY);
+    if (nextValue.length > 0) addConditionalParam(COND_PARAM2_ANAT_KEY);
   };
 
   return (
@@ -37,7 +36,7 @@ const CellTypes = ({
           id="hasCellTypeSubStructure"
           type="checkbox"
           checked={hasCellTypeSubStructure ? 'checked' : ''}
-          onChange={() => setHasCellTypeSubStructure((current) => !current)}
+          onChange={() => setHasCellTypeSubStructure(current => !current)}
         />
         <label htmlFor="hasCellTypeSubStructure">Including substructures</label>
         <HelpIcon
@@ -46,8 +45,8 @@ const CellTypes = ({
           }}
           content={
             <>
-              Retrieve data in the substructures of the selected terms, for
-              instance to retrieve data in all sub-cell-types of neuron cell.
+              Retrieve data in the substructures of the selected terms, for instance to retrieve data in all
+              sub-cell-types of neuron cell.
             </>
           }
         />

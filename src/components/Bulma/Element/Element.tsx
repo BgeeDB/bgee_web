@@ -6,11 +6,7 @@ const Element = ({ className, renderAs = 'div', domRef, children, ...allProps }:
   const [classNames, props]: any = useBulmaElementClassNames(allProps);
   // const safeProps = typeof props === 'object' && props !== null ? props : {};
   return (
-    <RenderAs
-      ref={domRef}
-      className={classnames(className, classNames) || undefined}
-      {...props}
-    >
+    <RenderAs ref={domRef} className={classnames(className, classNames) || undefined} {...props}>
       {children}
     </RenderAs>
   );

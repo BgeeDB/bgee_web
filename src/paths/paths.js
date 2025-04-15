@@ -25,7 +25,7 @@ const PATHS = {
     RAW_DATA_ANNOTATIONS: `${URL_ROOT}/search/raw-data`,
     EXPRESSION_CALLS: `${URL_ROOT}/search/expression-calls`,
     EXPRESSION_MATRIX: `${URL_ROOT}/search/expression-matrix`,
-    EXPERIMENT: `${URL_ROOT}/experiment/:id`
+    EXPERIMENT: `${URL_ROOT}/experiment/:id`,
   },
   DOWNLOAD: {
     GENE_EXPRESSION_CALLS: `${URL_ROOT}/download/gene-expression-calls`,

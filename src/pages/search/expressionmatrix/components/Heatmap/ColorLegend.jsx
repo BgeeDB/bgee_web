@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import * as d3 from "d3";
+import { useEffect, useRef } from 'react';
+import * as d3 from 'd3';
 // TypeSript specific
 // import { InteractionData } from "./Heatmap";
 
@@ -14,43 +14,25 @@ type ColorLegendProps = {
 
 const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
 
-export const ColorLegend = ({
-  height,
-  colorScale,
-  width,
-  interactionData,
-}) => {
-// }: ColorLegendProps) => { // TypeScript specific
+export const ColorLegend = ({ height, colorScale, width, interactionData }) => {
+  // }: ColorLegendProps) => { // TypeScript specific
   // const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = useRef(null);
 
-  const boundsWidth =
-    width - COLOR_LEGEND_MARGIN.right - COLOR_LEGEND_MARGIN.left;
-  const boundsHeight =
-    height - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
+  const boundsWidth = width - COLOR_LEGEND_MARGIN.right - COLOR_LEGEND_MARGIN.left;
+  const boundsHeight = height - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
 
   const domain = colorScale.domain();
   const max = domain[domain.length - 1];
   const xScale = d3.scaleLinear().range([0, boundsWidth]).domain([0, max]);
 
-  const allTicks = xScale.ticks(4).map((tick) => (
-      <>
-        <line
-          x1={xScale(tick)}
-          x2={xScale(tick)}
-          y1={0}
-          y2={boundsHeight + 10}
-          stroke="black"
-        />
-        <text
-          x={xScale(tick)}
-          y={boundsHeight + 20}
-          fontSize={9}
-          textAnchor="middle"
-        >
-          {tick}
-        </text>
-      </>
+  const allTicks = xScale.ticks(4).map(tick => (
+    <>
+      <line x1={xScale(tick)} x2={xScale(tick)} y1={0} y2={boundsHeight + 10} stroke="black" />
+      <text x={xScale(tick)} y={boundsHeight + 20} fontSize={9} textAnchor="middle">
+        {tick}
+      </text>
+    </>
   ));
 
   const hoveredValue = interactionData?.value;
@@ -59,9 +41,7 @@ export const ColorLegend = ({
   const triangleHeight = 6;
   const triangle = x ? (
     <polygon
-      points={`${x},0 ${x - triangleWidth / 2},${-triangleHeight} ${
-        x + triangleWidth / 2
-      },${-triangleHeight}`}
+      points={`${x},0 ${x - triangleWidth / 2},${-triangleHeight} ${x + triangleWidth / 2},${-triangleHeight}`}
       fill="grey"
     />
   ) : null;
@@ -73,13 +53,13 @@ export const ColorLegend = ({
       return;
     }
 
-    const context = canvas?.getContext("2d");
+    const context = canvas?.getContext('2d');
 
     if (!context) {
       return;
     }
 
-    for (let i = 0; i < boundsWidth; i+=1) {
+    for (let i = 0; i < boundsWidth; i += 1) {
       context.fillStyle = colorScale((max * i) / boundsWidth);
       context.fillRect(i, 0, 1, boundsHeight);
     }
@@ -89,20 +69,16 @@ export const ColorLegend = ({
     <div style={{ width, height }}>
       <div
         style={{
-          position: "relative",
+          position: 'relative',
           transform: `translate(${COLOR_LEGEND_MARGIN.left}px,
             ${COLOR_LEGEND_MARGIN.top}px`,
         }}
       >
-        <canvas 
-          ref={canvasRef} 
-          width={boundsWidth} 
-          height={boundsHeight}
-        />
+        <canvas ref={canvasRef} width={boundsWidth} height={boundsHeight} />
         <svg
           width={boundsWidth}
           height={boundsHeight}
-          style={{ position: "absolute", top: 0, left: 0, overflow: "visible" }}
+          style={{ position: 'absolute', top: 0, left: 0, overflow: 'visible' }}
         >
           {allTicks}
           {triangle}

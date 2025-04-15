@@ -11,7 +11,7 @@ const cssSortOption = (key, sortOpts) => {
   let type;
   if (sortOpts) {
     if (Array.isArray(sortOpts)) {
-      pos = sortOpts.findIndex((s) => s.key === key);
+      pos = sortOpts.findIndex(s => s.key === key);
       if (pos >= 0) {
         type = sortOpts[pos].sort;
         pos += 1;
@@ -41,14 +41,7 @@ const cssSortOption = (key, sortOpts) => {
   return null;
 };
 const TableHead = ({ minThWidth }) => {
-  const {
-    columns,
-    sortable,
-    sortOption,
-    defineSortOption,
-    showTableModalButton,
-    usedWidth,
-  } = useContext(TableContext);
+  const { columns, sortable, sortOption, defineSortOption, showTableModalButton, usedWidth } = useContext(TableContext);
   const minWidthStyle = minThWidth ? { minWidth: minThWidth } : {};
   return (
     <thead>
@@ -64,11 +57,7 @@ const TableHead = ({ minThWidth }) => {
               <th
                 className={classnames(!!item.infoBubble && 'hasInfoBubble')}
                 key={key}
-                onClick={
-                  sortable && !item.noSort
-                    ? defineSortOption(item.key)
-                    : undefined
-                }
+                onClick={sortable && !item.noSort ? defineSortOption(item.key) : undefined}
                 style={thStyle}
               >
                 <div style={{ display: 'flex' }}>

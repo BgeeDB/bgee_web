@@ -10,7 +10,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(bgeesab)
+  return staticBuilder(bgeesab);
 }
 
 const bgeesab = [
@@ -44,7 +44,8 @@ const bgeesab = [
               },
               {
                 type: 'text',
-                content: ', Group Leader at the Life Sciences Department of the Barcelona Supercomputing Center, Barcelona, Spain',
+                content:
+                  ', Group Leader at the Life Sciences Department of the Barcelona Supercomputing Center, Barcelona, Spain',
               },
             ],
           },

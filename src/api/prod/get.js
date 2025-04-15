@@ -16,8 +16,8 @@ const get = {
 
       axiosInstance
         .get(`/?${params.toString()}`)
-        .then((res) => resolve(res.data))
-        .catch((err) => reject(err.data));
+        .then(res => resolve(res.data))
+        .catch(err => reject(err.data));
     }),
 };
 

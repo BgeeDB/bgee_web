@@ -12,7 +12,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(tutorialValues)
+  return staticBuilder(tutorialValues);
 }
 
 const tutorialValues = [
@@ -42,8 +42,7 @@ const tutorialValues = [
             content: [
               {
                 type: 'text',
-                content:
-                  'How to search for a gene and the information you can get from the Bgee gene page.',
+                content: 'How to search for a gene and the information you can get from the Bgee gene page.',
               },
             ],
           },
@@ -94,8 +93,7 @@ const tutorialValues = [
             content: [
               {
                 type: 'text',
-                content:
-                  'How to search gene expression calls in the Bgee database.',
+                content: 'How to search gene expression calls in the Bgee database.',
               },
             ],
           },
@@ -146,8 +144,7 @@ const tutorialValues = [
             content: [
               {
                 type: 'text',
-                content:
-                  'How to query the Bgee Knowledge Graph with SPARQL.',
+                content: 'How to query the Bgee Knowledge Graph with SPARQL.',
               },
             ],
           },
@@ -172,8 +169,7 @@ const tutorialValues = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Compare gene expression across anatomical structures for a list of genes.',
+                content: 'Compare gene expression across anatomical structures for a list of genes.',
               },
             ],
           },
@@ -224,8 +220,7 @@ const tutorialValues = [
             content: [
               {
                 type: 'text',
-                content:
-                  'How to retrieve anatomical entities that are homologous among different species.',
+                content: 'How to retrieve anatomical entities that are homologous among different species.',
               },
             ],
           },

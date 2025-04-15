@@ -9,9 +9,7 @@ CardFooterItem.propTypes = {};
 
 CardFooterItem.defaultProps = {};
 
-const CardFooter = ({ className, ...props }) => (
-  <Element {...props} className={classnames('card-footer', className)} />
-);
+const CardFooter = ({ className, ...props }) => <Element {...props} className={classnames('card-footer', className)} />;
 
 CardFooter.Item = CardFooterItem;
 

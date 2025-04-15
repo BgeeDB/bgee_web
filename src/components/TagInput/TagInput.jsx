@@ -6,7 +6,7 @@ import './tagInput.scss';
 const TagInput = () => {
   const [tags, setTags] = useState([]);
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = e => {
     if (e.key !== 'Enter') return;
     // eslint-disable-next-line prefer-destructuring
     const value = e.target.value;
@@ -15,19 +15,14 @@ const TagInput = () => {
     e.target.value = '';
   };
 
-  const removeTag = (index) => {
+  const removeTag = index => {
     setTags(tags.filter((el, i) => i !== index));
   };
 
   return (
     <div className="div-container">
       <div>
-        <input
-          onKeyDown={handleKeyDown}
-          type="text"
-          className="input mb-2"
-          placeholder="Experiment or assay ID"
-        />
+        <input onKeyDown={handleKeyDown} type="text" className="input mb-2" placeholder="Experiment or assay ID" />
       </div>
       <div className="conteneur-result">
         {tags.map((tag, index) => (

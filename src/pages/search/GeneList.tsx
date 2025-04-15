@@ -13,7 +13,7 @@ import { getMetadata } from '~/helpers/metadata';
 
 export function loader({ request }) {
   const searchParams = new URL(request.url).searchParams;
-  return {search: searchParams.get("search")}
+  return { search: searchParams.get('search') };
 }
 
 export function meta({ data }) {
@@ -26,7 +26,7 @@ export function meta({ data }) {
 }
 
 const onRenderCell =
-  (search) =>
+  search =>
   ({ cell, key, keyRow }, defaultRender) => {
     switch (key) {
       case 'id':
@@ -35,11 +35,9 @@ const onRenderCell =
           <Link
             key={`${key}-${keyRow}`}
             className="internal-link"
-            to={PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(
-              ':geneId',
-              cell.id
-            ).replace(':speciesId', cell.onlySpecies ? '' : cell.speciesId)
-             .replace(/\/$/, '')}
+            to={PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', cell.id)
+              .replace(':speciesId', cell.onlySpecies ? '' : cell.speciesId)
+              .replace(/\/$/, '')}
           >
             {cell[key]}
           </Link>
@@ -60,14 +58,9 @@ const onRenderCell =
           <span key={`${key}-${keyRow}`}>
             {match.map((v, keyMatch) =>
               typeof v === 'string' ? (
-                <React.Fragment key={`${key}-${keyRow}-${keyMatch}`}>
-                  {v}
-                </React.Fragment>
+                <React.Fragment key={`${key}-${keyRow}-${keyMatch}`}>{v}</React.Fragment>
               ) : (
-                <strong
-                  key={`${key}-${keyRow}-${keyMatch}`}
-                  className="has-text-primary"
-                >
+                <strong key={`${key}-${keyRow}-${keyMatch}`} className="has-text-primary">
                   {v.text}
                 </strong>
               )
@@ -95,15 +88,10 @@ const customHeader = (searchElement, pageSizeElement) => (
 const GeneList = () => {
   const { search: queryParams } = useLocation();
   const [search, setSearch] = React.useState('');
-  const {
-    resResultListGenes: results,
-    searchResultHandler,
-    setResults,
-    isLoading,
-  } = useGeneSearch(search);
+  const { resResultListGenes: results, searchResultHandler, setResults, isLoading } = useGeneSearch(search);
 
   const objMapping = React.useCallback(
-    (element) => ({
+    element => ({
       id: element.gene.geneId,
       gene: element.gene,
       speciesId: element.gene.species.id,
@@ -118,8 +106,11 @@ const GeneList = () => {
   );
 
   const onFilter = React.useCallback(
-    (searchReg) => (element) => {
-      const regExp = new RegExp(searchReg, 'i'); /* Needs i = ignoreCase to be able to search with human for Human and human strings */
+    searchReg => element => {
+      const regExp = new RegExp(
+        searchReg,
+        'i'
+      ); /* Needs i = ignoreCase to be able to search with human for Human and human strings */
       return (
         Boolean(regExp.test(element.gene.geneId)) ||
         Boolean(
@@ -157,7 +148,6 @@ const GeneList = () => {
   //   [search, results]
   // );
 
-
   const count = results?.totalMatchCount;
 
   return (
@@ -166,8 +156,7 @@ const GeneList = () => {
         <Bulma.Title size={3}>Gene search</Bulma.Title>
       </div>
       <p className="is-size-5 has-text-centered">
-        Search for genes based on gene IDs, gene names, gene descriptions,
-        synonyms and cross-references.
+        Search for genes based on gene IDs, gene names, gene descriptions, synonyms and cross-references.
       </p>
       <p className="is-size-5 has-text-centered">
         <Link className="internal-link" to={`${PATHS.SUPPORT.TUTORIAL_GENE_PAGE}`}>
@@ -207,11 +196,7 @@ const GeneList = () => {
             </p>
           )}
           {isLoading ? (
-            <progress
-              className="progress is-small"
-              max="100"
-              style={{ animationDuration: '1.5s' }}
-            >
+            <progress className="progress is-small" max="100" style={{ animationDuration: '1.5s' }}>
               80%
             </progress>
           ) : (

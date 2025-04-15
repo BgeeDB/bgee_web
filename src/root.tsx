@@ -1,29 +1,19 @@
-import React from "react";
-import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  useLocation,
-} from "react-router";
+import React from 'react';
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router';
 
-
-import type { Route } from "./+types/root";
-import "./styles/global.scss";
+import type { Route } from './+types/root';
+import './styles/global.scss';
 
 import { ModalProvider } from './contexts/ModalContext';
-import { APP_VERSION } from "./helpers/constants";
+import { APP_VERSION } from './helpers/constants';
 import config from './config.json';
-import Bulma from "./components/Bulma";
-import Alert from "./components/Alert";
-import Header from "./components/Layout/Header/Header";
-import Footer from "./components/Layout/Footer/Footer";
-import CookieMessage from "./components/CookieMessage";
+import Bulma from './components/Bulma';
+import Alert from './components/Alert';
+import Header from './components/Layout/Header/Header';
+import Footer from './components/Layout/Footer/Footer';
+import CookieMessage from './components/CookieMessage';
 import { NotificationProvider, NotificationContext } from './contexts/NotificationsContext';
-import { setAxiosAddNotif } from "./api/prod/constant";
-
+import { setAxiosAddNotif } from './api/prod/constant';
 
 export const links: Route.LinksFunction = () => [
   // { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -45,14 +35,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
   const body = React.useMemo(
     () =>
-      loc.pathname === '/' || loc.pathname === `${URL_ROOT}/`  || loc.pathname === `${URL_ROOT}` ? (
+      loc.pathname === '/' || loc.pathname === `${URL_ROOT}/` || loc.pathname === `${URL_ROOT}` ? (
         <>{children}</>
       ) : (
         <Bulma.Section className="is-flex-grow-1">{children}</Bulma.Section>
       ),
     [loc]
   );
-
 
   React.useEffect(() => {
     if (loc.hash !== '') {
@@ -76,7 +65,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-      <ModalProvider>
+        <ModalProvider>
           <NotificationProvider>
             <div id="modal"></div>
             <div id="notifications"></div>
@@ -118,22 +107,22 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Error";
-  let details = "An unexpected error occurred.";
+  let message = 'Error';
+  let details = 'An unexpected error occurred.';
   let stack: string | undefined;
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : message;
-    details = error.data || details
-      // error.status === 404
-      //   ? "The requested page could not be found."
-      //   : error.statusText || details;
+    message = error.status === 404 ? '404' : message;
+    details = error.data || details;
+    // error.status === 404
+    //   ? "The requested page could not be found."
+    //   : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }
 
   return (
-    <main style={{ textAlign: "center" }}>
+    <main style={{ textAlign: 'center' }}>
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (

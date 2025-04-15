@@ -36,25 +36,25 @@ const topAnat = {
       params.append(isFg ? 'fg_list' : 'bg_list', genes);
       axiosInstance
         .post('/', params, {
-          cancelToken: new axios.CancelToken((c) => {
+          cancelToken: new axios.CancelToken(c => {
             // An executor function receives a cancel function as a parameter
             TOP_ANAT_CANCEL_API.autoCompleteGenes = c;
           }),
         })
         .then(({ data }) => resolve(data))
-        .catch((error) => {
+        .catch(error => {
           errorHandler(error);
           reject(error?.response);
         });
     }),
-  runJob: (form) =>
+  runJob: form =>
     new Promise((resolve, reject) => {
       if (TOP_ANAT_CANCEL_API.runJob) {
         TOP_ANAT_CANCEL_API.runJob();
         TOP_ANAT_CANCEL_API.runJob = null;
       }
       const t = new Date();
-      const paddedValue = (v) => String(v).padStart(2, '0');
+      const paddedValue = v => String(v).padStart(2, '0');
 
       const params = DEFAULT_PARAMETERS();
       params.append('action', 'submit_job');
@@ -69,7 +69,7 @@ const topAnat = {
       if (form.stages === 'all') {
         params.append('stage_id', '');
       } else {
-        form.stages.forEach((s) => params.append('stage_id', s));
+        form.stages.forEach(s => params.append('stage_id', s));
       }
       params.append('data_qual', form.dataQuality);
       params.append('decorr_type', form.decorrelationType);
@@ -91,7 +91,7 @@ const topAnat = {
       params.append('expr_type', 'EXPRESSED');
       axiosInstance
         .post(`/`, params, {
-          cancelToken: new axios.CancelToken((c) => {
+          cancelToken: new axios.CancelToken(c => {
             // An executor function receives a cancel function as a parameter
             TOP_ANAT_CANCEL_API.autoCompleteGenes = c;
           }),
@@ -99,7 +99,7 @@ const topAnat = {
         .then(({ data }) => {
           resolve(data);
         })
-        .catch((error) => {
+        .catch(error => {
           errorHandler(error);
           reject(error?.response);
         });
@@ -117,18 +117,18 @@ const topAnat = {
       params.append('data', searchId);
       axiosInstance
         .get(`/?${params.toString()}`, {
-          cancelToken: new axios.CancelToken((c) => {
+          cancelToken: new axios.CancelToken(c => {
             // An executor function receives a cancel function as a parameter
             TOP_ANAT_CANCEL_API.autoCompleteGenes = c;
           }),
         })
         .then(({ data }) => resolve(data))
-        .catch((error) => {
+        .catch(error => {
           errorHandler(error);
           reject(error);
         });
     }),
-  cancelJob: (jobId) =>
+  cancelJob: jobId =>
     new Promise((resolve, reject) => {
       if (TOP_ANAT_CANCEL_API.cancelJob) {
         TOP_ANAT_CANCEL_API.cancelJob();
@@ -139,7 +139,7 @@ const topAnat = {
       params.append('action', 'cancel');
       axiosInstance
         .post(`/`, params, {
-          cancelToken: new axios.CancelToken((c) => {
+          cancelToken: new axios.CancelToken(c => {
             // An executor function receives a cancel function as a parameter
             TOP_ANAT_CANCEL_API.cancelJob = c;
           }),
@@ -147,12 +147,12 @@ const topAnat = {
         .then(({ data }) => {
           resolve(data);
         })
-        .catch((error) => {
+        .catch(error => {
           errorHandler(error);
           reject(error?.response);
         });
     }),
-  getResults: (searchId) =>
+  getResults: searchId =>
     new Promise((resolve, reject) => {
       if (TOP_ANAT_CANCEL_API.getResults) {
         TOP_ANAT_CANCEL_API.getResults();
@@ -165,26 +165,20 @@ const topAnat = {
       params.append('data', searchId);
       axiosInstance
         .get(`/?${params.toString()}`, {
-          cancelToken: new axios.CancelToken((c) => {
+          cancelToken: new axios.CancelToken(c => {
             // An executor function receives a cancel function as a parameter
             TOP_ANAT_CANCEL_API.autoCompleteGenes = c;
           }),
         })
         .then(({ data }) => resolve(data))
-        .catch((error) => {
+        .catch(error => {
           if (
             error?.response?.data?.code === 400 &&
-            error?.response?.data?.data?.exceptionType ===
-              'JobResultNotFoundException'
+            error?.response?.data?.data?.exceptionType === 'JobResultNotFoundException'
           ) {
             getAxiosAddNotif()({
               id: random().toString(),
-              children: (
-                <p>
-                  Results were not present on our server, resubmitting the
-                  analysis
-                </p>
-              ),
+              children: <p>Results were not present on our server, resubmitting the analysis</p>,
               className: `is-warning`,
             });
           } else {

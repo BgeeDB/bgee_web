@@ -2,10 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
-import {
-  getIdAndNameLabel,
-  getOptionsForFilter,
-} from '../../../helpers/selects';
+import { getIdAndNameLabel, getOptionsForFilter } from '../../../helpers/selects';
 import { flattenDevStagesList } from './components/filters/DevelopmentalAndLifeStages/useLogic';
 import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
@@ -100,12 +97,12 @@ const dataTypeConf = [
   },
 ];
 const sortedDataTypes = dataTypeConf
-  .filter((t) => !!t.position)
+  .filter(t => !!t.position)
   .sort((a, b) => a.position - b.position)
-  .map((data) => data.type);
+  .map(data => data.type);
 export const DATA_TYPES = sortedDataTypes;
-export const ALL_DATA_TYPES = dataTypeConf.map((data) => data.type);
-export const ALL_DATA_TYPES_ID = ALL_DATA_TYPES.map((d) => d.id);
+export const ALL_DATA_TYPES = dataTypeConf.map(data => data.type);
+export const ALL_DATA_TYPES_ID = ALL_DATA_TYPES.map(d => d.id);
 const BRONZE = 'BRONZE';
 const SILVER = 'SILVER';
 const GOLD = 'GOLD';
@@ -147,7 +144,7 @@ export const ALL_CALL_TYPE = [
 const BASE_PAGE_NUMBER = '1';
 const BASE_LIMIT = '50';
 
-export const searchRawData = async (params) => {
+export const searchRawData = async params => {
   const { resp, paramsURLCalled } = await api.search.rawData.search(params, false);
   const searchParams = new URLSearchParams(paramsURLCalled);
   if (resp.code === 200) {
@@ -169,7 +166,7 @@ export const searchRawData = async (params) => {
       // We delete the potential old hash
       searchParams.delete('data');
 
-      resp?.requestParameters?.storableParameters?.forEach((key) => {
+      resp?.requestParameters?.storableParameters?.forEach(key => {
         if (key !== 'data_type') {
           searchParams.delete(key);
         }
@@ -219,7 +216,7 @@ export const searchRawData = async (params) => {
     }
   }
   return { resp, searchParams };
-}
+};
 
 const useLogic = (isExprCalls, initSearchResult = {}) => {
   const navigate = useNavigate();
@@ -240,9 +237,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
 
   // Page Type / Data Type
   // Page type = data in search params !
-  const [pageType, setPageType] = useState(
-    isExprCalls ? EXPR_CALLS : initPageType
-  );
+  const [pageType, setPageType] = useState(isExprCalls ? EXPR_CALLS : initPageType);
   const [dataType, setDataType] = useState(initDataType);
   const [dataTypesExpCalls, setDataTypesExpCalls] = useState(initDataTypeExpCalls);
 
@@ -291,7 +286,6 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
   // The page will reset to it default state
   const [needToResetThePage, setNeedToResetThePage] = useState(false);
 
-
   const [pageCanLoadFirstCount, setPageCanLoadFirstCount] = useState(false);
 
   useEffect(() => {
@@ -309,10 +303,9 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
 
     // If we are already on the Raw-Data page and we try to access it again in the Header all the search variables will be cleared.
     // If there is no search variable we set back the page to it default state.
-    if(!loc.search && !isFirstSearch && !isLoading){
+    if (!loc.search && !isFirstSearch && !isLoading) {
       resetForm(false, true);
     }
-
   }, [loc.search]);
 
   useEffect(() => {
@@ -336,9 +329,9 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     if (pageCanLoadFirstCount) {
       triggerCounts(false, true);
     }
-  }, [pageCanLoadFirstCount])
+  }, [pageCanLoadFirstCount]);
 
-  const onChangeSpecies = (newSpecies) => {
+  const onChangeSpecies = newSpecies => {
     setSelectedSpecies(newSpecies);
     setSelectedCellTypes([]);
     setSelectedGene([]);
@@ -360,9 +353,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       // });
       setSearchResult(initSearchResult);
       setLocalCount(
-        isExprCalls
-          ? { assayCount: initSearchResult.expressionCallCount }
-          : initSearchResult.resultCount?.[dataType]
+        isExprCalls ? { assayCount: initSearchResult.expressionCallCount } : initSearchResult.resultCount?.[dataType]
       );
       setIsLoading(false);
       setIsFirstSearch(false);
@@ -415,14 +406,14 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     triggerCounts();
   };
 
-  const addConditionalParam = (id) => {
+  const addConditionalParam = id => {
     const indexOfValue = conditionalParam2.indexOf(id);
     if (indexOfValue === -1) {
       setConditionalParam2([...conditionalParam2, id]);
     }
   };
 
-  const initFormFromDetailedRP = (resp) => {
+  const initFormFromDetailedRP = resp => {
     const { requestParameters, data } = resp;
     const { requestDetails } = data;
 
@@ -444,16 +435,13 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       setSpeciesSexes(requestDetails?.requestedSpeciesSexes);
     }
     // Selected sexes
-    if (
-      requestParameters?.sex?.length > 0 &&
-      requestParameters?.sex[0] !== 'all'
-    ) {
+    if (requestParameters?.sex?.length > 0 && requestParameters?.sex[0] !== 'all') {
       setSelectedSexes(requestParameters?.sex);
     }
 
     // Genes
     if (requestDetails?.requestedGenes?.length > 0) {
-      const initGenes = requestDetails?.requestedGenes.map((g) => ({
+      const initGenes = requestDetails?.requestedGenes.map(g => ({
         label: getGeneLabel(g),
         value: g.geneId,
       }));
@@ -461,12 +449,11 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     }
 
     // Tissues (anatEntities)
-    const cellTypesAndTissues =
-      requestDetails?.requestedAnatEntitesAndCellTypes || [];
+    const cellTypesAndTissues = requestDetails?.requestedAnatEntitesAndCellTypes || [];
     if (requestParameters?.anat_entity_id?.length > 0) {
       const initTissues = [];
-      requestParameters?.anat_entity_id.forEach((tissueId) => {
-        const foundTissue = cellTypesAndTissues.find((t) => t.id === tissueId);
+      requestParameters?.anat_entity_id.forEach(tissueId => {
+        const foundTissue = cellTypesAndTissues.find(t => t.id === tissueId);
         if (foundTissue) {
           initTissues.push({
             label: getIdAndNameLabel(foundTissue),
@@ -480,10 +467,8 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     // Cell types
     if (requestParameters?.cell_type_id?.length > 0) {
       const initCelleTypes = [];
-      requestParameters?.cell_type_id.forEach((cellTypeId) => {
-        const foundCellType = cellTypesAndTissues.find(
-          (t) => t.id === cellTypeId
-        );
+      requestParameters?.cell_type_id.forEach(cellTypeId => {
+        const foundCellType = cellTypesAndTissues.find(t => t.id === cellTypeId);
         if (foundCellType) {
           initCelleTypes.push({
             label: getIdAndNameLabel(foundCellType),
@@ -497,11 +482,9 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     // Dev Stage
     if (requestParameters?.stage_id?.length > 0) {
       const initDevStage = [];
-      const flattenedList = flattenDevStagesList(
-        requestDetails?.requestedSpeciesDevStageOntology
-      );
-      requestParameters?.stage_id.forEach((devStageId) => {
-        const foundDevStage = flattenedList.find((t) => t.id === devStageId);
+      const flattenedList = flattenDevStagesList(requestDetails?.requestedSpeciesDevStageOntology);
+      requestParameters?.stage_id.forEach(devStageId => {
+        const foundDevStage = flattenedList.find(t => t.id === devStageId);
         if (foundDevStage) {
           initDevStage.push({
             label: getIdAndNameLabel(foundDevStage),
@@ -519,19 +502,14 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
 
     // Strain
     if (requestParameters?.strain?.length > 0) {
-      setSelectedStrain(
-        requestParameters?.strain.map((s) => ({ value: s, label: s }))
-      );
+      setSelectedStrain(requestParameters?.strain.map(s => ({ value: s, label: s })));
     }
 
     // Exp or Assay ID
     if (requestParameters?.exp_assay_id?.length > 0) {
       const initExpOrAssay = [];
-      requestParameters?.exp_assay_id.forEach((expOrAssayId) => {
-        const foundExpOrAssay =
-          requestDetails?.requestedExperimentAndAssays?.find(
-            (t) => t.id === expOrAssayId
-          );
+      requestParameters?.exp_assay_id.forEach(expOrAssayId => {
+        const foundExpOrAssay = requestDetails?.requestedExperimentAndAssays?.find(t => t.id === expOrAssayId);
         if (foundExpOrAssay) {
           initExpOrAssay.push({
             label: getIdAndNameLabel(foundExpOrAssay),
@@ -547,30 +525,21 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     setHasCellTypeSubStructure(true);
     setDevStageSubStructure(true);
     setOnlyPropagated(isExprCalls);
-    if (requestParameters?.anat_entity_descendant === 'false')
-      setHasTissueSubStructure(false);
-    if (requestParameters?.cell_type_descendant === 'false')
-      setHasCellTypeSubStructure(false);
-    if (requestParameters?.stage_descendant === 'false')
-      setDevStageSubStructure(false);
-    if (requestParameters?.only_propagated === 'true')
-      setOnlyPropagated(true);
+    if (requestParameters?.anat_entity_descendant === 'false') setHasTissueSubStructure(false);
+    if (requestParameters?.cell_type_descendant === 'false') setHasCellTypeSubStructure(false);
+    if (requestParameters?.stage_descendant === 'false') setDevStageSubStructure(false);
+    if (requestParameters?.only_propagated === 'true') setOnlyPropagated(true);
 
     // Filters
-    const filtersToCheck =
-      (isExprCalls ? data?.filters : data?.filters?.[nextDataType]) || {};
+    const filtersToCheck = (isExprCalls ? data?.filters : data?.filters?.[nextDataType]) || {};
     const searchParams = new URLSearchParams(requestParameters);
     const initFilters = {};
     // eslint-disable-next-line no-unused-vars
     Object.entries(filtersToCheck).forEach(([_, f]) => {
       const ids = searchParams.getAll(f.urlParameterName);
-      const nextValues = f.values.filter((v) => ids.includes(v.id));
+      const nextValues = f.values.filter(v => ids.includes(v.id));
 
-      const nextValuesMapped = getOptionsForFilter(
-        nextValues,
-        f?.informativeId,
-        f?.informativeName
-      );
+      const nextValuesMapped = getOptionsForFilter(nextValues, f?.informativeId, f?.informativeName);
       initFilters[f.urlParameterName] = nextValuesMapped;
     });
 
@@ -621,13 +590,13 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       initSearch,
       pageType,
       dataType: [dataType],
-      selectedExpOrAssay: selectedExpOrAssay.map((exp) => exp.value),
+      selectedExpOrAssay: selectedExpOrAssay.map(exp => exp.value),
       selectedSpecies: selectedSpecies.value,
-      selectedCellTypes: selectedCellTypes.map((ct) => ct.value),
-      selectedGene: selectedGene.map((g) => g.value),
-      selectedStrain: selectedStrain.map((s) => s.value),
-      selectedTissue: selectedTissue.map((t) => t.value),
-      selectedDevStages: selectedDevStages.map((ds) => ds.value),
+      selectedCellTypes: selectedCellTypes.map(ct => ct.value),
+      selectedGene: selectedGene.map(g => g.value),
+      selectedStrain: selectedStrain.map(s => s.value),
+      selectedTissue: selectedTissue.map(t => t.value),
+      selectedDevStages: selectedDevStages.map(ds => ds.value),
       selectedSexes: selectedSexes.length > 0 ? selectedSexes : ['all'],
       hasCellTypeSubStructure,
       hasDevStageSubStructure,
@@ -649,8 +618,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       Object.entries(wantedFilters)
         .filter(([wantedFilterKey]) => {
           const filterExists = Object.entries(dataFilters).some(
-            ([, existingFilter]) =>
-              wantedFilterKey === existingFilter?.urlParameterName
+            ([, existingFilter]) => wantedFilterKey === existingFilter?.urlParameterName
           );
           return filterExists;
         })
@@ -676,10 +644,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     return params;
   };
 
-  const triggerSearch = async (
-    cleanFilters = false,
-    cleanPagination = false
-  ) => {
+  const triggerSearch = async (cleanFilters = false, cleanPagination = false) => {
     const params = getSearchParams();
     if (cleanPagination) {
       params.pageNumber = BASE_PAGE_NUMBER;
@@ -703,10 +668,13 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
         }
       }
       if (isFirstSearch) {
-        navigate({
-          search: searchParams.toString(),
-          pathname: `${URL_ROOT}${loc.pathname}`,
-        }, {replace: true});
+        navigate(
+          {
+            search: searchParams.toString(),
+            pathname: `${URL_ROOT}${loc.pathname}`,
+          },
+          { replace: true }
+        );
       } else {
         navigate({
           search: searchParams.toString(),
@@ -721,13 +689,11 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       setIsLoading(false);
       setSearchResult(resp?.data);
       setLocalCount(
-        isExprCalls
-          ? { assayCount: resp?.data?.expressionCallCount }
-          : resp?.data?.resultCount?.[dataType]
+        isExprCalls ? { assayCount: resp?.data?.expressionCallCount } : resp?.data?.resultCount?.[dataType]
       );
     } catch (error) {
       // We remove all the parameters that we may have sent
-      navigate(`${URL_ROOT}${loc.pathname}`, {replace: true});
+      navigate(`${URL_ROOT}${loc.pathname}`, { replace: true });
       setIsLoading(false);
     }
     setIsFirstSearch(false);
@@ -842,10 +808,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     //   });
   };
 
-  const triggerCounts = async (
-    cleanFilters = false,
-    bypassInitSearchParam = false
-  ) => {
+  const triggerCounts = async (cleanFilters = false, bypassInitSearchParam = false) => {
     const params = getSearchParams();
     if (cleanFilters) {
       params.filters = {};
@@ -871,37 +834,29 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
   };
 
   const getSexesAndDevStageForSpecies = () => {
-    api.search.species
-      .speciesDevelopmentSexe(selectedSpecies.value)
-      .then((resp) => {
-        if (resp.code === 200) {
-          setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
-          setDevStages(
-            resp.data?.requestDetails?.requestedSpeciesDevStageOntology
-          );
-        } else {
-          setSpeciesSexes([]);
-        }
-      });
+    api.search.species.speciesDevelopmentSexe(selectedSpecies.value).then(resp => {
+      if (resp.code === 200) {
+        setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
+        setDevStages(resp.data?.requestDetails?.requestedSpeciesDevStageOntology);
+      } else {
+        setSpeciesSexes([]);
+      }
+    });
   };
 
   const AutoCompleteByType = (type, mappingFn) =>
     useCallback(
-      async (query) => {
+      async query => {
         if (query) {
-          return api.search.genes
-            .AutoCompleteByType(type, query, selectedSpecies.value)
-            .then((resp) => {
-              if (resp.code === 200) {
-                const results =
-                  resp.data.result.searchMatches ||
-                  resp.data.result.geneMatches;
-                let list = [];
-                list = results.map(mappingFn);
-                return list;
-              }
-              return [];
-            });
+          return api.search.genes.AutoCompleteByType(type, query, selectedSpecies.value).then(resp => {
+            if (resp.code === 200) {
+              const results = resp.data.result.searchMatches || resp.data.result.geneMatches;
+              let list = [];
+              list = results.map(mappingFn);
+              return list;
+            }
+            return [];
+          });
         }
         console.warn('Empty species or query !');
         return [];
@@ -909,14 +864,14 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       [selectedSpecies.value]
     );
 
-  const getSpeciesLabel = (specie) => {
+  const getSpeciesLabel = specie => {
     if (specie.name !== '') {
       return `${specie.genus} ${specie.speciesName} - ${specie.name}`;
     }
     return `${specie.genus} ${specie.speciesName}`;
   };
 
-  const toggleSex = (sexName) => {
+  const toggleSex = sexName => {
     const i = selectedSexes.indexOf(sexName);
     // Edge case where "all" is set
     if (selectedSexes.length === 1 && selectedSexes[0] === 'all') {

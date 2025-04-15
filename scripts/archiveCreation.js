@@ -12,10 +12,7 @@ const main = async () => {
     const URL_VERSION = APP_VERSION.replaceAll('.', '-');
     const buildDirectory = `./archives/${APP_VERSION}-archived`;
     if (fsStd.existsSync(buildDirectory)) {
-      console.log(
-        '\x1b[31m%s\x1b[0m',
-        `[ABORT] An archive already exists for the version ${APP_VERSION}`
-      );
+      console.log('\x1b[31m%s\x1b[0m', `[ABORT] An archive already exists for the version ${APP_VERSION}`);
       return;
     }
     config.archive = true;
@@ -34,16 +31,17 @@ const main = async () => {
     console.log('Setting config as an archive');
 
     const scss = await fs.readFile('./src/styles/global.scss', 'utf8');
-    const tmpScss = scss.replace('$archive: false;', '$archive: true;').replace('/img/external-link', `/${URL_VERSION}/img/external-link`);
+    const tmpScss = scss
+      .replace('$archive: false;', '$archive: true;')
+      .replace('/img/external-link', `/${URL_VERSION}/img/external-link`);
     await fs.writeFile('./src/styles/global.scss', tmpScss);
     console.log('Setting scss as an archive');
 
     const html = await fs.readFile('./public/index.html', 'utf8');
-    const noIndexSource = await fs.readFile(
-      './archives/resources/htmlHead.txt',
-      'utf8'
-    );
-    const tmpHtml = html.replace('<head>', `<head>${noIndexSource}`).replace('/js/ionicons-5.5.4/ionicons.esm.js', `/${URL_VERSION}/js/ionicons-5.5.4/ionicons.esm.js`);
+    const noIndexSource = await fs.readFile('./archives/resources/htmlHead.txt', 'utf8');
+    const tmpHtml = html
+      .replace('<head>', `<head>${noIndexSource}`)
+      .replace('/js/ionicons-5.5.4/ionicons.esm.js', `/${URL_VERSION}/js/ionicons-5.5.4/ionicons.esm.js`);
     await fs.writeFile('./public/index.html', tmpHtml);
     console.log('Setting noindex in html');
 
@@ -84,11 +82,7 @@ const main = async () => {
     await fs.writeFile('./src/styles/global.scss', scss);
     await fs.writeFile('./public/index.html', html);
     await fs.writeFile('./public/robots.txt', robots);
-    console.log(
-      '\x1b[93m%s %s\x1b[0m\n',
-      'The website url setup for the archive is',
-      websiteUrl
-    );
+    console.log('\x1b[93m%s %s\x1b[0m\n', 'The website url setup for the archive is', websiteUrl);
   } catch (err) {
     console.log('\x1b[31m%s\x1b[0m', err);
   }

@@ -6,7 +6,7 @@ const useModal = () => {
   const [customOnClose, setCustomOnClose] = React.useState();
 
   const handleModal = React.useCallback((content = false) => {
-    setModal((m) => !m);
+    setModal(m => !m);
     if (content) {
       setModalContent(content);
     }

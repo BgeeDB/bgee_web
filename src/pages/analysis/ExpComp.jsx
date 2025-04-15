@@ -18,33 +18,25 @@ const DEFAULT_RESULTS = {
 export function meta() {
   return getMetadata({
     title: 'Expression comparison analysis',
-    description: 'Compare gene expression within species, or between species using homology relations between anatomical entities.',
+    description:
+      'Compare gene expression within species, or between species using homology relations between anatomical entities.',
     keywords: 'gene expression comparison, homology, gene expression patterns, expression call comparison',
   });
 }
 
-const AnatEntitiesCell = ({
-  multiSpeciesCondition = null,
-  condition = null,
-}) => {
+const AnatEntitiesCell = ({ multiSpeciesCondition = null, condition = null }) => {
   if (condition) {
     return (
       <>
         {condition.cellType && (
           <>
-            <LinkExternal
-              content={condition.cellType.id}
-              to={obolibraryLinkFromID(condition.cellType.id)}
-            >
+            <LinkExternal content={condition.cellType.id} to={obolibraryLinkFromID(condition.cellType.id)}>
               <span>{condition.cellType.name}</span>
             </LinkExternal>
             <i> in </i>
           </>
         )}
-        <LinkExternal
-          content={condition.anatEntity.id}
-          to={obolibraryLinkFromID(condition.anatEntity.id)}
-        >
+        <LinkExternal content={condition.anatEntity.id} to={obolibraryLinkFromID(condition.anatEntity.id)}>
           <span>{condition.anatEntity.name}</span>
         </LinkExternal>
       </>
@@ -53,16 +45,10 @@ const AnatEntitiesCell = ({
 
   if (multiSpeciesCondition) {
     const items = [];
-    if (
-      multiSpeciesCondition.cellTypes &&
-      multiSpeciesCondition.cellTypes.length > 0
-    ) {
+    if (multiSpeciesCondition.cellTypes && multiSpeciesCondition.cellTypes.length > 0) {
       multiSpeciesCondition.cellTypes.forEach((cellType, key) => {
         items.push(
-          <LinkExternal
-            key={cellType.id}
-            to={obolibraryLinkFromID(cellType.id)}
-          >
+          <LinkExternal key={cellType.id} to={obolibraryLinkFromID(cellType.id)}>
             <span>{cellType.name}</span>
           </LinkExternal>
         );
@@ -94,13 +80,7 @@ const GeneItemNb = ({ itemTab }) => {
 };
 
 const ExpandCell = ({ onClick }) => (
-  <a
-    className="expand-button"
-    onClick={onClick}
-    onKeyPress={onClick}
-    role="button"
-    tabIndex={0}
-  >
+  <a className="expand-button" onClick={onClick} onKeyPress={onClick} role="button" tabIndex={0}>
     <Bulma.IonIcon name="chevron-down-sharp" />
   </a>
 );
@@ -109,15 +89,15 @@ const GenesCell = ({ genes }) => (
   <div style={{}}>
     <GeneItemNb itemTab={genes} />
     <div className="expand-content">
-      {genes.map((item) => (
+      {genes.map(item => (
         <div key={item.geneId}>
           <Link
             className="internal-link"
             content={item.geneId}
-            to={PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(
-              ':geneId',
-              item.geneId
-            ).replace(':speciesId', item.species.id)}
+            to={PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', item.geneId).replace(
+              ':speciesId',
+              item.species.id
+            )}
           >
             <span style={{ fontSize: 12 }}>{item.geneId}</span>
           </Link>
@@ -130,13 +110,10 @@ const GenesCell = ({ genes }) => (
 
 const SpeciesCell = ({ genes }) => {
   const speciesList = [];
-  genes.forEach((item) => {
+  genes.forEach(item => {
     if (speciesList.length === 0) {
       speciesList.push(item.species);
-    } else if (
-      speciesList.find((element) => element.id === item.species.id) ===
-      undefined
-    ) {
+    } else if (speciesList.find(element => element.id === item.species.id) === undefined) {
       speciesList.push(item.species);
     }
   });
@@ -149,13 +126,9 @@ const SpeciesCell = ({ genes }) => {
     >
       <span>{speciesList.length} species</span>
       <div className="expand-content">
-        {speciesList.map((item) => (
+        {speciesList.map(item => (
           <div key={item.id}>
-            <Link
-              className="internal-link"
-              content={item.id}
-              to={PATHS.SEARCH.SPECIES_ITEM.replace(':id', item.id)}
-            >
+            <Link className="internal-link" content={item.id} to={PATHS.SEARCH.SPECIES_ITEM.replace(':id', item.id)}>
               <span style={{ fontSize: 12 }}>
                 {item.genus} {item.speciesName}
               </span>
@@ -191,18 +164,15 @@ const onRenderCell = ({ cell, key }, defaultRender, { expandAction }) => {
       return null;
   }
 };
-const dataToTsv = (data) => {
+const dataToTsv = data => {
   let tsv =
     'Anatomical entities%09Conservation score%09Max expression score%09Genes with presence of expression%09Genes with absence of expression%09Genes with no data%09Species with presence of expression%09Species with absence of expression%09Anatomical entity IDs%09Gene count with presence of expression%09Gene count with absence of expression%09Gene count with no data%09Species count with presence of expression%09Species count with absence of expression%0D%0A';
 
-  data.forEach((d) => {
+  data.forEach(d => {
     let ids = '';
     if (d.multiSpeciesCondition) {
-      if (d.multiSpeciesCondition.cellTypes)
-        ids = `${d.multiSpeciesCondition.cellTypes
-          .map((a) => a.id)
-          .join(', ')} in `;
-      ids += d.multiSpeciesCondition.anatEntities.map((a) => a.id).join(', ');
+      if (d.multiSpeciesCondition.cellTypes) ids = `${d.multiSpeciesCondition.cellTypes.map(a => a.id).join(', ')} in `;
+      ids += d.multiSpeciesCondition.anatEntities.map(a => a.id).join(', ');
     } else if (d.condition) {
       if (d.condition.cellType) ids = `${d.condition.cellType.id} in `;
       ids += d.condition.anatEntity.id;
@@ -211,15 +181,11 @@ const dataToTsv = (data) => {
       d.filterAnatEntities,
       d.conservationScore,
       d.maxExpressionScore,
-      d.genesExpressionPresent.map((g) => g.geneId).join(', '),
-      d.genesExpressionAbsent.map((g) => g.geneId).join(', '),
-      d.genesNoData.map((g) => g.geneId).join(', '),
-      d.genesExpressionPresent
-        .map((g) => `${g.species.genus} ${g.species.speciesName}`)
-        .join(', '),
-      d.genesExpressionAbsent
-        .map((g) => `${g.species.genus} ${g.species.speciesName}`)
-        .join(', '),
+      d.genesExpressionPresent.map(g => g.geneId).join(', '),
+      d.genesExpressionAbsent.map(g => g.geneId).join(', '),
+      d.genesNoData.map(g => g.geneId).join(', '),
+      d.genesExpressionPresent.map(g => `${g.species.genus} ${g.species.speciesName}`).join(', '),
+      d.genesExpressionAbsent.map(g => `${g.species.genus} ${g.species.speciesName}`).join(', '),
       ids,
       d.countGenesExprPresent,
       d.countGenesExprAbsent,
@@ -231,91 +197,62 @@ const dataToTsv = (data) => {
 
   return tsv;
 };
-const customHeader =
-  () => (searchElement, pageSizeElement, data) => {
-    const exportTSV = `data:text/tab-separated-values;charset=utf-8,${dataToTsv(
-      data
-    )}`;
-    return (
-      <Bulma.Columns vCentered>
-        <Bulma.C size={9}>
-          <div className="tablet-flex-direction-column is-flex is-flex-direction-row is-align-items-center">
-            <div>{searchElement}</div>
-            <Bulma.Button
-              className="ml-2 py-0"
-              href={exportTSV}
-              renderAs="a"
-              download="Bgee-expression-comparison.tsv"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              TSV
-              <span className="icon is-small ml-1">
-                <ion-icon name="download-outline" />
-              </span>
-            </Bulma.Button>
-          </div>
-        </Bulma.C>
-        <Bulma.C size={3}>
-          <div>{pageSizeElement}</div>
-        </Bulma.C>
-      </Bulma.Columns>
-    );
-  };
+const customHeader = () => (searchElement, pageSizeElement, data) => {
+  const exportTSV = `data:text/tab-separated-values;charset=utf-8,${dataToTsv(data)}`;
+  return (
+    <Bulma.Columns vCentered>
+      <Bulma.C size={9}>
+        <div className="tablet-flex-direction-column is-flex is-flex-direction-row is-align-items-center">
+          <div>{searchElement}</div>
+          <Bulma.Button
+            className="ml-2 py-0"
+            href={exportTSV}
+            renderAs="a"
+            download="Bgee-expression-comparison.tsv"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            TSV
+            <span className="icon is-small ml-1">
+              <ion-icon name="download-outline" />
+            </span>
+          </Bulma.Button>
+        </div>
+      </Bulma.C>
+      <Bulma.C size={3}>
+        <div>{pageSizeElement}</div>
+      </Bulma.C>
+    </Bulma.Columns>
+  );
+};
 
-const onFilter = (search) => (element) => {
+const onFilter = search => element => {
   const regExp = new RegExp(search, 'i');
-  let hasMatch =
-    regExp.test(element.conservationScore) ||
-    regExp.test(element.maxExpressionScore);
+  let hasMatch = regExp.test(element.conservationScore) || regExp.test(element.maxExpressionScore);
 
   if (element.multiSpeciesCondition) {
-    for (
-      let i = 0;
-      i < element.multiSpeciesCondition.anatEntities.length && !hasMatch;
-      i += 1
-    ) {
-      if (regExp.test(element.multiSpeciesCondition.anatEntities[i].name))
-        hasMatch = true;
+    for (let i = 0; i < element.multiSpeciesCondition.anatEntities.length && !hasMatch; i += 1) {
+      if (regExp.test(element.multiSpeciesCondition.anatEntities[i].name)) hasMatch = true;
     }
-    for (
-      let i = 0;
-      i < element.multiSpeciesCondition.cellTypes.length && !hasMatch;
-      i += 1
-    ) {
-      if (regExp.test(element.multiSpeciesCondition.cellTypes[i].name))
-        hasMatch = true;
+    for (let i = 0; i < element.multiSpeciesCondition.cellTypes.length && !hasMatch; i += 1) {
+      if (regExp.test(element.multiSpeciesCondition.cellTypes[i].name)) hasMatch = true;
     }
   } else if (element.condition) {
-    hasMatch =
-      regExp.test(element.condition.anaEntity.name) ||
-      regExp.test(element.condition.cellType.name);
+    hasMatch = regExp.test(element.condition.anaEntity.name) || regExp.test(element.condition.cellType.name);
   }
 
-  for (
-    let i = 0;
-    i < element.genesExpressionAbsent.length && !hasMatch;
-    i += 1
-  ) {
+  for (let i = 0; i < element.genesExpressionAbsent.length && !hasMatch; i += 1) {
     if (
-      regExp.test(
-        `${element.genesExpressionAbsent[i].geneId} ${element.genesExpressionAbsent[i].name}`
-      ) ||
+      regExp.test(`${element.genesExpressionAbsent[i].geneId} ${element.genesExpressionAbsent[i].name}`) ||
       regExp.test(
         `${element.genesExpressionAbsent[i].species.genus} ${element.genesExpressionAbsent[i].species.speciesName}`
       )
     )
       hasMatch = true;
   }
-  for (
-    let i = 0;
-    i < element.genesExpressionPresent.length && !hasMatch;
-    i += 1
-  ) {
+  for (let i = 0; i < element.genesExpressionPresent.length && !hasMatch; i += 1) {
     if (
-      regExp.test(
-        `${element.genesExpressionPresent[i].geneId} ${element.genesExpressionPresent[i].name}`
-      ) ||
+      regExp.test(`${element.genesExpressionPresent[i].geneId} ${element.genesExpressionPresent[i].name}`) ||
       regExp.test(
         `${element.genesExpressionPresent[i].species.genus} ${element.genesExpressionPresent[i].species.speciesName}`
       )
@@ -323,11 +260,7 @@ const onFilter = (search) => (element) => {
       hasMatch = true;
   }
   for (let i = 0; i < element.genesNoData.length && !hasMatch; i += 1) {
-    if (
-      regExp.test(
-        `${element.genesNoData[i].geneId} ${element.genesNoData[i].name}`
-      )
-    ) {
+    if (regExp.test(`${element.genesNoData[i].geneId} ${element.genesNoData[i].name}`)) {
       console.log(element.genesNoData[i]);
       hasMatch = true;
     }
@@ -363,7 +296,7 @@ const onSortField = ({ key, sort }, aEl, bEl) => {
   if (sort === 'descending') return a < b ? 1 : -1;
   return 0;
 };
-const onSort = (sortOpts) => (a, b) => {
+const onSort = sortOpts => (a, b) => {
   if (Array.isArray(sortOpts)) {
     for (let i = 0; i < sortOpts.length; i += 1) {
       const diff = onSortField(sortOpts[i], a, b);
@@ -384,7 +317,7 @@ const ExpComp = () => {
   const [results, set] = React.useState(DEFAULT_RESULTS);
   const { search: searchParams } = useLocation();
 
-  const setResults = React.useCallback((d) => {
+  const setResults = React.useCallback(d => {
     set(d || DEFAULT_RESULTS);
   }, []);
 
@@ -392,7 +325,7 @@ const ExpComp = () => {
 
   React.useEffect(() => {
     if (searchValue !== '') {
-      api.topAnat.autoCompleteGenes(searchValue).then((res) => {
+      api.topAnat.autoCompleteGenes(searchValue).then(res => {
         setGeneInfo({ ...res.data.fg_list, message: res.message });
       });
     } else setGeneInfo(undefined);
@@ -400,7 +333,7 @@ const ExpComp = () => {
 
   const handlerClickSearch = () => {
     if (searchValue && searchValue !== '') {
-      if (searchValue.split('\n').filter((a) => a !== '').length < 2) {
+      if (searchValue.split('\n').filter(a => a !== '').length < 2) {
         setError(true);
         return;
       }
@@ -414,10 +347,10 @@ const ExpComp = () => {
             data,
           });
           if (storableParams?.queryString) {
-            navigate(`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${storableParams?.queryString}`, {replace: true});
+            navigate(`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${storableParams?.queryString}`, { replace: true });
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
           setResults();
         })
@@ -432,23 +365,20 @@ const ExpComp = () => {
       setLoading(true);
       api.expressionComparison
         .getResults({ type: 'query', data: searchParams })
-        .then(
-          ({ data, storableParams: { queryString }, requestParameters }) => {
-            setResults({
-              signature: queryString,
-              data,
-            });
-            setSearchValue(requestParameters?.gene_list.join('\n'));
-          }
-        )
-        .catch((err) => {
+        .then(({ data, storableParams: { queryString }, requestParameters }) => {
+          setResults({
+            signature: queryString,
+            data,
+          });
+          setSearchValue(requestParameters?.gene_list.join('\n'));
+        })
+        .catch(err => {
           console.error(err);
           setResults({
             ...DEFAULT_RESULTS,
             signature: searchParams.replace('?', ''),
           });
-          if (err.data.requestParameters?.gene_list)
-            setSearchValue(err.data.requestParameters?.gene_list.join('\n'));
+          if (err.data.requestParameters?.gene_list) setSearchValue(err.data.requestParameters?.gene_list.join('\n'));
           else setSearchValue('');
         })
         .finally(() => {
@@ -471,15 +401,11 @@ const ExpComp = () => {
           </Bulma.Title>
         </div>
         <p className="is-size-5 has-text-centered">
-          Compare expression of several genes. If genes belong to several
-          species, comparisons will be performed in homologous organs. Please
-          enter one gene ID per line.
+          Compare expression of several genes. If genes belong to several species, comparisons will be performed in
+          homologous organs. Please enter one gene ID per line.
         </p>
         <p className="is-size-5 has-text-centered">
-          <Link
-            className="internal-link"
-            to={`${PATHS.SUPPORT.TUTORIAL_EXPRESSION_COMPARISON}`}
-          >
+          <Link className="internal-link" to={`${PATHS.SUPPORT.TUTORIAL_EXPRESSION_COMPARISON}`}>
             See documentation
           </Link>
         </p>
@@ -489,25 +415,19 @@ const ExpComp = () => {
               <Bulma.Card.Body>
                 <div className="content">
                   <div className="field">
-                    <label className="has-text-weight-semibold">
-                      Gene list
-                    </label>
+                    <label className="has-text-weight-semibold">Gene list</label>
                     <div className="control">
                       <textarea
                         className="textarea is-small"
                         placeholder="Enter a list of gene identifiers, one ID per line, no quotes, no comma"
                         rows={10}
                         value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}
+                        onChange={e => setSearchValue(e.target.value)}
                       />
                     </div>
                   </div>
                   <div className="field">
-                    {error && (
-                      <span className="has-text-danger">
-                        At least two IDs should be provided
-                      </span>
-                    )}
+                    {error && <span className="has-text-danger">At least two IDs should be provided</span>}
                     <div className="control">
                       <button
                         className="button search-form"
@@ -563,11 +483,7 @@ const ExpComp = () => {
       {loading && (
         <Bulma.Notification color="info" className="mt-5">
           <p className="has-text-centered">Loading</p>
-          <progress
-            className="progress is-small"
-            max="100"
-            style={{ animationDuration: '3s', marginBottom: 12 }}
-          >
+          <progress className="progress is-small" max="100" style={{ animationDuration: '3s', marginBottom: 12 }}>
             80%
           </progress>
         </Bulma.Notification>
@@ -575,16 +491,12 @@ const ExpComp = () => {
       {!loading && results.signature && results.data && (
         <div>
           <div className="mb-2">
-            <h1 className="gradient-underline title is-size-4 has-text-primary        ">
-              Results
-            </h1>
+            <h1 className="gradient-underline title is-size-4 has-text-primary        ">Results</h1>
             <div className="">
               <p className="">
-                Results are ordered by default by descendant &quot;Conservation
-                score&quot;, then ascendant &quot;Genes with absence of
-                expression&quot;, then descendant &quot;Max expression
-                score&quot;. The order could be changed by clicking on one
-                column, then press shift and click on another column.
+                Results are ordered by default by descendant &quot;Conservation score&quot;, then ascendant &quot;Genes
+                with absence of expression&quot;, then descendant &quot;Max expression score&quot;. The order could be
+                changed by clicking on one column, then press shift and click on another column.
               </p>
             </div>
           </div>

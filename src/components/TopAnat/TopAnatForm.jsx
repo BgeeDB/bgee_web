@@ -7,10 +7,7 @@ import HelpIcon from '../HelpIcon';
 import Toggle from '../Form/Toggle';
 import Input from '../Form/Input';
 import { TOP_ANAT_FLOW } from '../../hooks/useTopAnat';
-import {
-  topAnatAdvancedOptsNotDefault,
-  topAnatLabelClassNames,
-} from '../../helpers/constants/topAnat';
+import { topAnatAdvancedOptsNotDefault, topAnatLabelClassNames } from '../../helpers/constants/topAnat';
 import GenesDetailsModal from './GenesDetailsModal';
 import classnames from '../../helpers/classnames';
 import imagePath from '../../helpers/imagePath';
@@ -20,13 +17,7 @@ import { FULL_LENGTH_LABEL } from '../../api/prod/constant';
 const TopAnatForm = ({
   form: { handleChange, data: formData, errors },
   requestParameters: rp,
-  handlers: {
-    foregroundHandler,
-    backgroundHandler,
-    setRP,
-    onSelectCustomStage,
-    checkBoxHandler,
-  },
+  handlers: { foregroundHandler, backgroundHandler, setRP, onSelectCustomStage, checkBoxHandler },
   status,
 }) => {
   const prevStatus = usePrevious(status);
@@ -41,10 +32,7 @@ const TopAnatForm = ({
         return true;
     }
   }, [status, formData]);
-  const formDisabled = React.useMemo(
-    () => status !== TOP_ANAT_FLOW.NEW_JOB,
-    [status]
-  );
+  const formDisabled = React.useMemo(() => status !== TOP_ANAT_FLOW.NEW_JOB, [status]);
   const [expandOpts, setExpandOpts] = React.useState(false);
 
   useEffect(() => {
@@ -61,41 +49,31 @@ const TopAnatForm = ({
             <div className="message-header">
               <p className="is-size-6">Gene list</p>
             </div>
-            {rp.fg &&
-              rp?.fg?.list?.selectedSpecies &&
-              rp?.fg?.list?.detectedSpecies && (
-                <div
-                  className="message-body is-flex"
-                  style={{ position: 'relative', height: '100px' }}
-                >
-                  <div
-                    className="is-flex is-align-items-center"
-                    style={{ marginRight: 50 }}
-                  >
-                    <p className="mr-1">{rp.fg.message}</p>
-                    <InfoIcon
-                      title="Gene detection details"
-                      tooltip="See gene list details"
-                      content={<GenesDetailsModal data={rp.fg.list} />}
-                    />
-                  </div>
-                  <Bulma.Image
-                    className="no-responsive"
-                    style={{
-                      height: 60,
-                      width: 70,
-                      position: 'absolute',
-                      top: 20,
-                      right: 0,
-                    }}
-                    src={imagePath(
-                      `/species/${rp?.fg?.list?.selectedSpecies}_light.jpg`
-                    )}
-                    alt="species image"
-                    imgClassnames="top-anat-species"
+            {rp.fg && rp?.fg?.list?.selectedSpecies && rp?.fg?.list?.detectedSpecies && (
+              <div className="message-body is-flex" style={{ position: 'relative', height: '100px' }}>
+                <div className="is-flex is-align-items-center" style={{ marginRight: 50 }}>
+                  <p className="mr-1">{rp.fg.message}</p>
+                  <InfoIcon
+                    title="Gene detection details"
+                    tooltip="See gene list details"
+                    content={<GenesDetailsModal data={rp.fg.list} />}
                   />
                 </div>
-              )}
+                <Bulma.Image
+                  className="no-responsive"
+                  style={{
+                    height: 60,
+                    width: 70,
+                    position: 'absolute',
+                    top: 20,
+                    right: 0,
+                  }}
+                  src={imagePath(`/species/${rp?.fg?.list?.selectedSpecies}_light.jpg`)}
+                  alt="species image"
+                  imgClassnames="top-anat-species"
+                />
+              </div>
+            )}
           </article>
           <div className="field">
             <TextArea
@@ -123,12 +101,9 @@ const TopAnatForm = ({
                     }}
                     content={
                       <>
-                        By default, the gene universe considered for the
-                        enrichment analysis is all genes with data in Bgee for
-                        the selected species. It is possible to provide a custom
-                        gene universe, as a list of gene IDs. All gene IDs
-                        present in the foreground must be present in the
-                        background.
+                        By default, the gene universe considered for the enrichment analysis is all genes with data in
+                        Bgee for the selected species. It is possible to provide a custom gene universe, as a list of
+                        gene IDs. All gene IDs present in the foreground must be present in the background.
                       </>
                     }
                   />
@@ -150,16 +125,10 @@ const TopAnatForm = ({
                             size="small"
                             className="toggle-button"
                             color={!rp.customBg && 'danger'}
-                            onClick={() =>
-                              setRP((prev) => ({ ...prev, customBg: false }))
-                            }
-                            disabled={
-                              formDisabled || (!formDisabled && !rp.customBg)
-                            }
+                            onClick={() => setRP(prev => ({ ...prev, customBg: false }))}
+                            disabled={formDisabled || (!formDisabled && !rp.customBg)}
                           >{`Bgee data for ${
-                            rp.fg.list.detectedSpecies[
-                              rp.fg.list.selectedSpecies
-                            ].name
+                            rp.fg.list.detectedSpecies[rp.fg.list.selectedSpecies].name
                           }`}</Bulma.Button>
                         </div>
                         <div className="control">
@@ -167,12 +136,8 @@ const TopAnatForm = ({
                             size="small"
                             className="toggle-button"
                             color={rp.customBg && 'danger'}
-                            onClick={() =>
-                              setRP((prev) => ({ ...prev, customBg: true }))
-                            }
-                            disabled={
-                              formDisabled || (!formDisabled && rp.customBg)
-                            }
+                            onClick={() => setRP(prev => ({ ...prev, customBg: true }))}
+                            disabled={formDisabled || (!formDisabled && rp.customBg)}
                           >
                             Custom data
                           </Bulma.Button>
@@ -197,8 +162,7 @@ const TopAnatForm = ({
                   <TextArea
                     rows={10}
                     placeholder={`Gene identifiers from ${
-                      rp.fg.list.detectedSpecies[rp.fg.list.selectedSpecies]
-                        .name
+                      rp.fg.list.detectedSpecies[rp.fg.list.selectedSpecies].name
                     } genome, one ID per line (no quotes, no comma).`}
                     onChange={backgroundHandler}
                     error={errors.genes}
@@ -215,9 +179,7 @@ const TopAnatForm = ({
                 </div>
               </article>
               <div>
-                <p className="has-text-weight-semibold mb-2">
-                  Expression types
-                </p>
+                <p className="has-text-weight-semibold mb-2">Expression types</p>
                 <p>Present</p>
                 <p className="has-text-weight-semibold my-2">Data types</p>
                 <div className="control">
@@ -301,11 +263,7 @@ const TopAnatForm = ({
                       onChange={checkBoxHandler('est')}
                       checked={formData.est}
                     />
-                    <span
-                      className={classnames({ 'not-default': !formData.est })}
-                    >
-                      EST
-                    </span>
+                    <span className={classnames({ 'not-default': !formData.est })}>EST</span>
                   </label>
                 </div>
               </div>
@@ -325,20 +283,11 @@ const TopAnatForm = ({
               </div>
             </article>
           </a>
-          <div
-            className="mt-5"
-            style={{ display: expandOpts ? 'block' : 'none' }}
-          >
+          <div className="mt-5" style={{ display: expandOpts ? 'block' : 'none' }}>
             <Bulma.Columns>
               <Bulma.C size={6}>
                 <div className="field">
-                  <label
-                    className={topAnatLabelClassNames(
-                      'stages',
-                      formData.stages
-                    )}
-                    htmlFor="stages"
-                  >
+                  <label className={topAnatLabelClassNames('stages', formData.stages)} htmlFor="stages">
                     Development and life stages
                     <HelpIcon
                       title="Developmental and life stages"
@@ -347,11 +296,9 @@ const TopAnatForm = ({
                       }}
                       content={
                         <>
-                          By default, all developmental and life stages are
-                          considered for the enrichment analysis. It is possible
-                          to provide a custom selection of developmental and
-                          life stages, selecting one or several developmental
-                          and life stages.
+                          By default, all developmental and life stages are considered for the enrichment analysis. It
+                          is possible to provide a custom selection of developmental and life stages, selecting one or
+                          several developmental and life stages.
                         </>
                       }
                     />
@@ -376,7 +323,7 @@ const TopAnatForm = ({
                 {rp?.fg?.list?.stages && Array.isArray(formData.stages) && (
                   <div className="field">
                     <div className="control">
-                      {rp?.fg?.list?.stages.map((s) => (
+                      {rp?.fg?.list?.stages.map(s => (
                         <div className="control" key={s.id}>
                           <label className="checkbox">
                             <input
@@ -384,10 +331,7 @@ const TopAnatForm = ({
                               className="mr-2"
                               disabled={formDisabled}
                               onChange={onSelectCustomStage(s.id)}
-                              checked={
-                                formData.stages.findIndex((a) => a === s.id) >=
-                                0
-                              }
+                              checked={formData.stages.findIndex(a => a === s.id) >= 0}
                             />
                             {s.name}
                           </label>
@@ -399,13 +343,7 @@ const TopAnatForm = ({
               </Bulma.C>
               <Bulma.C size={6}>
                 <div className="field">
-                  <label
-                    className={topAnatLabelClassNames(
-                      'dataQuality',
-                      formData.dataQuality
-                    )}
-                    htmlFor="dataQuality"
-                  >
+                  <label className={topAnatLabelClassNames('dataQuality', formData.dataQuality)} htmlFor="dataQuality">
                     Data quality
                     <HelpIcon
                       title="Data quality"
@@ -414,13 +352,10 @@ const TopAnatForm = ({
                       }}
                       content={
                         <>
-                          For each data type, Bgee applies dedicated analysis to
-                          generate calls of baseline presence/absence of
-                          expression, and of over-/under-expression, and to
-                          assign a level of confidence to the data: silver or
-                          gold. This field allows to specify whether the
-                          analysis should be based on data of any quality level,
-                          or on data of high quality level only.
+                          For each data type, Bgee applies dedicated analysis to generate calls of baseline
+                          presence/absence of expression, and of over-/under-expression, and to assign a level of
+                          confidence to the data: silver or gold. This field allows to specify whether the analysis
+                          should be based on data of any quality level, or on data of high quality level only.
                         </>
                       }
                     />
@@ -434,7 +369,7 @@ const TopAnatForm = ({
                             { value: 'gold', text: 'Gold confidence' },
                           ]}
                           value={formData.dataQuality}
-                          onChange={handleChange('dataQuality', (v) => v)}
+                          onChange={handleChange('dataQuality', v => v)}
                           error={errors.dataQuality}
                           disabled={formDisabled}
                         />
@@ -448,10 +383,7 @@ const TopAnatForm = ({
               <Bulma.C size={12}>
                 <div className="field">
                   <label
-                    className={topAnatLabelClassNames(
-                      'decorrelationType',
-                      formData.decorrelationType
-                    )}
+                    className={topAnatLabelClassNames('decorrelationType', formData.decorrelationType)}
                     htmlFor="decorrelationType"
                   >
                     Decorrelation type (slower)
@@ -462,13 +394,10 @@ const TopAnatForm = ({
                       }}
                       content={
                         <>
-                          Algorithm used to take into account the topology of
-                          the anatomical ontology, to decrease the number of
-                          false positives and highly general terms in the
-                          results, owing to the inheritance problem. A precise
-                          description of these algorithms can be found in the
-                          topGO documentation. Please note that using these
-                          decorrelation methods slow the analyses a lot.
+                          Algorithm used to take into account the topology of the anatomical ontology, to decrease the
+                          number of false positives and highly general terms in the results, owing to the inheritance
+                          problem. A precise description of these algorithms can be found in the topGO documentation.
+                          Please note that using these decorrelation methods slow the analyses a lot.
                         </>
                       }
                     />
@@ -487,7 +416,7 @@ const TopAnatForm = ({
                           { value: 'parent-child', text: 'Parent-child' },
                         ]}
                         value={formData.decorrelationType}
-                        onChange={handleChange('decorrelationType', (v) => v)}
+                        onChange={handleChange('decorrelationType', v => v)}
                         error={errors.decorrelationType}
                       />
                     </div>
@@ -498,13 +427,7 @@ const TopAnatForm = ({
             <Bulma.Columns>
               <Bulma.C size={6}>
                 <div className="field">
-                  <label
-                    className={topAnatLabelClassNames(
-                      'nodeSize',
-                      formData.nodeSize
-                    )}
-                    htmlFor="nodeSize"
-                  >
+                  <label className={topAnatLabelClassNames('nodeSize', formData.nodeSize)} htmlFor="nodeSize">
                     Node size
                     <HelpIcon
                       title="Node size"
@@ -513,9 +436,8 @@ const TopAnatForm = ({
                       }}
                       content={
                         <>
-                          Parameter allowing to prune the anatomical ontology
-                          from the terms which have a number of genes with data
-                          lower than this cutoff.
+                          Parameter allowing to prune the anatomical ontology from the terms which have a number of
+                          genes with data lower than this cutoff.
                         </>
                       }
                     />
@@ -537,13 +459,7 @@ const TopAnatForm = ({
               </Bulma.C>
               <Bulma.C size={6}>
                 <div className="field">
-                  <label
-                    className={topAnatLabelClassNames(
-                      'nbNode',
-                      formData.nbNode
-                    )}
-                    htmlFor="nbNode"
-                  >
+                  <label className={topAnatLabelClassNames('nbNode', formData.nbNode)} htmlFor="nbNode">
                     Nb of nodes
                     <HelpIcon
                       title="Number of nodes"
@@ -552,9 +468,8 @@ const TopAnatForm = ({
                       }}
                       content={
                         <>
-                          Number of significant nodes to be displayed in the
-                          generated graph of results (visualization purpose
-                          only, no impact on the results of the analysis).
+                          Number of significant nodes to be displayed in the generated graph of results (visualization
+                          purpose only, no impact on the results of the analysis).
                         </>
                       }
                     />
@@ -577,10 +492,7 @@ const TopAnatForm = ({
               <Bulma.C size={6}>
                 <div className="field">
                   <label
-                    className={topAnatLabelClassNames(
-                      'fdrThreshold',
-                      formData.fdrThreshold
-                    )}
+                    className={topAnatLabelClassNames('fdrThreshold', formData.fdrThreshold)}
                     htmlFor="fdrThreshold"
                   >
                     FDR threshold
@@ -591,8 +503,7 @@ const TopAnatForm = ({
                       }}
                       content={
                         <>
-                          Anatomical terms with a FDR higher than this threshold
-                          will not be considered as significant.
+                          Anatomical terms with a FDR higher than this threshold will not be considered as significant.
                         </>
                       }
                     />
@@ -612,10 +523,7 @@ const TopAnatForm = ({
               <Bulma.C size={6}>
                 <div className="field">
                   <label
-                    className={topAnatLabelClassNames(
-                      'pValueThreshold',
-                      formData.pValueThreshold
-                    )}
+                    className={topAnatLabelClassNames('pValueThreshold', formData.pValueThreshold)}
                     htmlFor="pValueThreshold"
                   >
                     p-value threshold
@@ -626,8 +534,8 @@ const TopAnatForm = ({
                       }}
                       content={
                         <>
-                          Anatomical terms with a p-value higher than this
-                          threshold will not be considered as significant.
+                          Anatomical terms with a p-value higher than this threshold will not be considered as
+                          significant.
                         </>
                       }
                     />

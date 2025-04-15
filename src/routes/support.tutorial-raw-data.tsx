@@ -1,5 +1,5 @@
 import { getMetadata } from '~/helpers/metadata';
-import Markdown from '~/markdown/support/Raw-data-interface/Raw-data-interface.md'
+import Markdown from '~/markdown/support/Raw-data-interface/Raw-data-interface.md';
 
 export function meta() {
   return getMetadata({

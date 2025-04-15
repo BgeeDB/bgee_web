@@ -11,7 +11,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(privacyPolicy)
+  return staticBuilder(privacyPolicy);
 }
 
 const privacyPolicy = [
@@ -43,8 +43,7 @@ const privacyPolicy = [
             content: [
               {
                 type: 'text',
-                content:
-                  'Marc Robinson-Rechavi, Bgee Principal Investigator and Professor at University of Lausanne (',
+                content: 'Marc Robinson-Rechavi, Bgee Principal Investigator and Professor at University of Lausanne (',
               },
               {
                 type: 'link_mail',
@@ -62,8 +61,7 @@ const privacyPolicy = [
           },
           {
             type: 'text',
-            content:
-              'Department of Ecology and Evolution, University of Lausanne, 1015 Lausanne, Switzerland',
+            content: 'Department of Ecology and Evolution, University of Lausanne, 1015 Lausanne, Switzerland',
           },
         ],
       },
@@ -72,8 +70,7 @@ const privacyPolicy = [
         content: [
           {
             type: 'bold',
-            content:
-              "The University of Lausanne Data Protection Officer's contact",
+            content: "The University of Lausanne Data Protection Officer's contact",
           },
           {
             type: 'break_line',
@@ -101,8 +98,7 @@ const privacyPolicy = [
           },
           {
             type: 'text',
-            content:
-              'Affaires générales, University of Lausanne, 1015 Lausanne, Switzerland',
+            content: 'Affaires générales, University of Lausanne, 1015 Lausanne, Switzerland',
           },
         ],
       },
@@ -121,13 +117,11 @@ const privacyPolicy = [
   },
   {
     type: 'section',
-    title:
-      'What personal data are collected from users of the service? How do we use these personal data?',
+    title: 'What personal data are collected from users of the service? How do we use these personal data?',
     children: [
       {
         type: 'text',
-        content:
-          'The personal data collected from the services listed below is as follows:',
+        content: 'The personal data collected from the services listed below is as follows:',
       },
       {
         type: 'break_line',
@@ -222,8 +216,7 @@ const privacyPolicy = [
       },
       {
         type: 'text',
-        content:
-          'The data controller will use your personal data for the following purposes:',
+        content: 'The data controller will use your personal data for the following purposes:',
       },
       {
         type: 'unordered_list',
@@ -238,8 +231,7 @@ const privacyPolicy = [
           },
           {
             type: 'text',
-            content:
-              'To better understand the needs of the users and guide future improvements of the service',
+            content: 'To better understand the needs of the users and guide future improvements of the service',
           },
           {
             type: 'text',
@@ -275,8 +267,7 @@ const privacyPolicy = [
     children: [
       {
         type: 'text',
-        content:
-          'There are no personal data transfers to international organisations outside Bgee.',
+        content: 'There are no personal data transfers to international organisations outside Bgee.',
       },
       {
         type: 'rich_text',
@@ -333,8 +324,7 @@ const privacyPolicy = [
   },
   {
     type: 'section',
-    title:
-      'The Data Controller provides these rights regarding your personal data',
+    title: 'The Data Controller provides these rights regarding your personal data',
     children: [
       {
         type: 'text',

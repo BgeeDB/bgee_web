@@ -12,7 +12,7 @@ export function meta() {
 }
 
 export default function Page() {
-  return staticBuilder(collaborations)
+  return staticBuilder(collaborations);
 }
 
 // TODO how to link David Osumi-Sutherland? Which affiliation?
@@ -23,8 +23,7 @@ const collaborations = [
   },
   {
     type: 'text',
-    content:
-      'This page provides current and past collaborations of the Bgee project (in alphabetical order).',
+    content: 'This page provides current and past collaborations of the Bgee project (in alphabetical order).',
   },
   {
     type: 'subsection',
@@ -65,8 +64,7 @@ const collaborations = [
           },
           {
             type: 'text',
-            content:
-              ' fetches orthology and gene expression data from Bgee using Ensembl IDs.',
+            content: ' fetches orthology and gene expression data from Bgee using Ensembl IDs.',
           },
         ],
       },
@@ -96,8 +94,7 @@ const collaborations = [
           },
           {
             type: 'text',
-            content:
-              ' is a method and database for the inference of orthologs among complete genomes.',
+            content: ' is a method and database for the inference of orthologs among complete genomes.',
           },
         ],
       },
@@ -157,8 +154,7 @@ const collaborations = [
         content: [
           {
             type: 'text',
-            content:
-              'In coordination with Salmobase, Bgee developed an ',
+            content: 'In coordination with Salmobase, Bgee developed an ',
           },
           {
             type: 'link_external',
@@ -167,8 +163,7 @@ const collaborations = [
           },
           {
             type: 'text',
-            content:
-              '.',
+            content: '.',
           },
         ],
       },
@@ -194,8 +189,7 @@ const collaborations = [
           },
           {
             type: 'text',
-            content:
-              ' is an ',
+            content: ' is an ',
           },
           {
             type: 'link_external',
@@ -214,8 +208,7 @@ const collaborations = [
         content: [
           {
             type: 'text',
-            content:
-              'The Bgee group is involved with the ',
+            content: 'The Bgee group is involved with the ',
           },
           {
             type: 'link_external',
@@ -224,8 +217,7 @@ const collaborations = [
           },
           {
             type: 'text',
-            content:
-              ' (SIB/EPFL) group in Switzerland, but the project is broader and involves also ',
+            content: ' (SIB/EPFL) group in Switzerland, but the project is broader and involves also ',
           },
           {
             type: 'link_external',
@@ -234,8 +226,7 @@ const collaborations = [
           },
           {
             type: 'text',
-            content:
-              ' and everyone interested in the standardization of single-cell metadata.',
+            content: ' and everyone interested in the standardization of single-cell metadata.',
           },
         ],
       },
@@ -271,8 +262,7 @@ const collaborations = [
         content: [
           {
             type: 'text',
-            content:
-              'The Bgee group is involved with the ',
+            content: 'The Bgee group is involved with the ',
           },
           {
             type: 'link_external',
@@ -281,8 +271,7 @@ const collaborations = [
           },
           {
             type: 'text',
-            content:
-              ' (SIB/EPFL) group, and the ',
+            content: ' (SIB/EPFL) group, and the ',
           },
           {
             type: 'link_external',
@@ -400,8 +389,7 @@ const collaborations = [
       },
       {
         type: 'text',
-        content:
-          "The SPARQL endpoint and 'EasyBgee' are available and free to use for other projects or applications.",
+        content: "The SPARQL endpoint and 'EasyBgee' are available and free to use for other projects or applications.",
       },
     ],
   },

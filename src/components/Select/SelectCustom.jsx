@@ -11,14 +11,14 @@ const SelectCustom = ({ onChange, multiple = false, value, elements = [] }) => {
   const ref = useDetectClickOutside(() => setActive(false));
 
   const toggle = React.useCallback(
-    (e) => {
+    e => {
       e.stopPropagation();
       setActive(!active);
     },
     [active]
   );
   const onClickItem = React.useCallback(
-    (val) => (e) => {
+    val => e => {
       e.stopPropagation();
       const tmp = multiple ? [...value, val] : val;
       if (onChange) onChange(tmp);
@@ -26,33 +26,25 @@ const SelectCustom = ({ onChange, multiple = false, value, elements = [] }) => {
     },
     [multiple, onChange, value]
   );
-  const isSelected = (key) => {
+  const isSelected = key => {
     if (!multiple) return value === key;
-    return value.findIndex((v) => v === key) !== -1;
+    return value.findIndex(v => v === key) !== -1;
   };
 
   return (
     <div ref={ref} className={`select-wrapper ${active ? 'active' : ''}`}>
       {/* <div className="select-background" /> */}
-      <div
-        onClick={toggle}
-        className="select select-input is-flex is-align-items-center"
-      >
+      <div onClick={toggle} className="select select-input is-flex is-align-items-center">
         <p>{Array.isArray(value) ? value.join(', ') : value}</p>
       </div>
       <div className="select-body">
-        {elements.map((e) => (
+        {elements.map(e => (
           <div
             key={e.key}
             className={`select-item ${isSelected(e.key) ? 'selected' : ''}`}
             onClick={onClickItem(e.key)}
           >
-            <input
-              type="checkbox"
-              className="mr-2"
-              checked={isSelected(e.key)}
-              readOnly
-            />
+            <input type="checkbox" className="mr-2" checked={isSelected(e.key)} readOnly />
             <p className="checkbox">{e.text}</p>
           </div>
         ))}

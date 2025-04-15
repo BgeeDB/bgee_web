@@ -17,7 +17,7 @@ const Layout = ({ children }) => {
   const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
   const body = React.useMemo(
     () =>
-      loc.pathname === '/' || loc.pathname === `${URL_ROOT}/`  || loc.pathname === `${URL_ROOT}` ? (
+      loc.pathname === '/' || loc.pathname === `${URL_ROOT}/` || loc.pathname === `${URL_ROOT}` ? (
         <>{children}</>
       ) : (
         <Bulma.Section className="is-flex-grow-1">{children}</Bulma.Section>

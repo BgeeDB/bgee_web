@@ -9,10 +9,7 @@ const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 export const PARAM_PAGE_KEY = 'pageNumber';
 export const RESULTS_COUNT_KEY = 'results';
 
-export const usePaginationLink = (
-  paginationParamPageKey,
-  paginationResultCountKey
-) => {
+export const usePaginationLink = (paginationParamPageKey, paginationResultCountKey) => {
   const { pathname, search } = useLocation();
   const keyForPage = paginationParamPageKey || PARAM_PAGE_KEY;
   const keyForPageSize = paginationResultCountKey || RESULTS_COUNT_KEY;
@@ -63,7 +60,7 @@ const usePagination = (
   const pageSize = +(searchParams.get(keyForPageSize) || perPage);
 
   const onPageChange = useCallback(
-    (newPage) => {
+    newPage => {
       const sp = Object.fromEntries(searchParams.entries());
       const newParams = {
         ...sp,
@@ -78,7 +75,7 @@ const usePagination = (
   );
 
   const onPageSizeChange = useCallback(
-    (newPageSize) => {
+    newPageSize => {
       const sp = Object.fromEntries(searchParams.entries());
       const params = {
         ...sp,

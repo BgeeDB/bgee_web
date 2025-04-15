@@ -14,7 +14,7 @@ export function meta() {
 const markdownFiles = import.meta.glob('../../markdown/news/*.md', { eager: true });
 const news = Object.entries(markdownFiles).map(([path, module]: any) => {
   const filename = path.replace(/^.*[/\\]/, '');
-  const date = filename.replace(/^News-(.*)\.md$/, "$1");
+  const date = filename.replace(/^News-(.*)\.md$/, '$1');
   return { date, markdown: module.default };
 });
 
@@ -28,7 +28,7 @@ const NewsPage = () => (
       <Bulma.Title className="title is-3">News</Bulma.Title>
     </div>
     <div className="content">
-      {news.map((item) => (
+      {news.map(item => (
         <div key={item.date}>
           <NewsItem date={item.date} News={item.markdown} />
           <div className="separator" />

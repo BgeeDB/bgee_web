@@ -18,23 +18,26 @@ How can I change the config to not have these messages (I dont want to have to f
 
 1. Have the tools asked in the requirements
 2. At the root of the project, run the command:
-````shell
+
+```shell
 yarn install
-````
+```
+
 3. Run the project in dev with the following command:
-````shell
+
+```shell
 yarn start
-````
+```
 
 # Build
 
 There are 2 commands to build the application.
 
-````shell
+```shell
 yarn build
 #or
 yarn archive
-````
+```
 
 The first command will build the app to be ready for production.
 The second one will prepare the application to be deployed as an archive.
@@ -55,17 +58,17 @@ It's recommended to use NodeJS 16.x.x or fewer.
 
 ### Font size matrix
 
-````
+```
 $size-7: 12px;
 $size-6: 1rem (= 14px)
 $size-5: 1.1rem (= 15.4px)
 $size-4: 1.2rem (= 16.8px)
 $size-3: 1.5rem (= 21px)
-````
+```
 
 ---
 
-# 🐝 Bgee website 
+# 🐝 Bgee website
 
 Code for the Bgee website available at [https://www.bgee.org](https://www.bgee.org).
 
@@ -75,13 +78,13 @@ It uses [React Router 7](https://reactrouter.com/home) to serve the pages with s
 
 ### 📐 Font size matrix
 
-````
+```
 $size-7: 12px;
 $size-6: 1rem (= 14px)
 $size-5: 1.1rem (= 15.4px)
 $size-4: 1.2rem (= 16.8px)
 $size-3: 1.5rem (= 21px)
-````
+```
 
 ### 🖼️ Where are the images?
 
@@ -97,7 +100,7 @@ The images are stored externally of the project. You will find the path of the i
 - [File-based routes](https://reactrouter.com/how-to/file-route-conventions) in `src/routes/`
   - Used for routes to markdown files
   - We recommend to use this approach for new pages
-  - To add a route to `/gene/XYZ`: 
+  - To add a route to `/gene/XYZ`:
     - Create a file named `gene.$geneId.tsx`
     - Create a folder named `gene.$geneId` with a `route.tsx` file in it
 
@@ -114,15 +117,15 @@ import { getMetadata } from '~/helpers/metadata';
 
 export async function loader({ params, request }) {
   try {
-     const [genesResp, speciesResp] = await Promise.all([
+    const [genesResp, speciesResp] = await Promise.all([
       api.search.genes.getGeneralInformation(params.geneId),
-      api.search.species.name(params.speciesId)
+      api.search.species.name(params.speciesId),
     ]);
     return {
       genes: genesResp.data.genes,
       species: speciesResp.data.species,
-			pathname: new URL(request.url).pathname,
-    }
+      pathname: new URL(request.url).pathname,
+    };
   } catch (error: any) {
     throw new Response(error.data?.message || error.message || 'Page not found', { status: 404 });
   }
@@ -134,14 +137,14 @@ export function meta({ data }) {
     description: `Gene expression data for ${data.genes.name} in ${data.species.name}`,
     keywords: `gene expression, ${data.genes.name}, ${data.species.name}`,
     link: `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', data.genes.id).replace(':speciesId', data.species.id)}`,
-    schemaorg: [geneToLdJSON(data.genes)]
+    schemaorg: [geneToLdJSON(data.genes)],
   });
 }
 
 export default function Page({ loaderData }) {
-  const {genes, species} = loaderData;
-  
-  return <GeneDisplay genes={genes} species={species} />
+  const { genes, species } = loaderData;
+
+  return <GeneDisplay genes={genes} species={species} />;
 }
 ```
 
@@ -151,15 +154,15 @@ To add a markdown page you will need to create a new route with a `.tsx`/`.jsx` 
 
 ```tsx
 import { getMetadata } from '~/helpers/metadata';
-import Markdown from '~/markdown/support/data-curation/data-curation.md'
+import Markdown from '~/markdown/support/data-curation/data-curation.md';
 
-export function meta()  {
+export function meta() {
   return getMetadata({
     title: 'Bgee data curation tutorial',
     description: 'Bgee Tutorial about data curation and annotation',
     keywords: 'Tutorial, data curation, annotation',
-  })
-};
+  });
+}
 
 export default function Page() {
   return <Markdown />;
@@ -223,9 +226,9 @@ Make sure to deploy the output of `npm run build`
 
 Prepare the application to be deployed as an archive:
 
-````shell
+```shell
 npm run archive
-````
+```
 
 > [!IMPORTANT]
 >
@@ -256,7 +259,7 @@ docker run -p 3000:3000 bgee-web
   <script nomodule src="/js/ionicons-5.5.4/ionicons.js"></script>
   ```
 
-  A solution could be to migrate to their "react" approach: https://ionicframework.com/docs/api/icon 
+  A solution could be to migrate to their "react" approach: https://ionicframework.com/docs/api/icon
 
 - [ ] Issues with hydration in `raw-data` sometimes, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR.
 

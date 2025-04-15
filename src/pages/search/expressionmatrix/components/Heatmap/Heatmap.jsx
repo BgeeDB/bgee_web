@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect, useMemo } from "react";
-import * as d3 from "d3";
+import { useState, useRef, useEffect, useMemo } from 'react';
+import * as d3 from 'd3';
 import Bulma from '../../../../../components/Bulma';
-import { Renderer } from "./Renderer";
-import { Tooltip } from "./Tooltip";
-import { DetailView } from "./DetailView";
-import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from "./constants";
+import { Renderer } from './Renderer';
+import { Tooltip } from './Tooltip';
+import { DetailView } from './DetailView';
+import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
 
 const SHOW_DEBUG_OPTIONS = false;
 
@@ -20,7 +20,7 @@ const STORAGE_KEYS = {
   BG_COLOR: 'bgee-heatmap-bg-color',
   SHOW_DESC_MAX: 'bgee-heatmap-show-desc-max',
   SHOW_MISSING_DATA: 'bgee-heatmap-show-missing',
-  USE_ADAPTIVE_SCALE: 'bgee-heatmap-adaptive-scale'
+  USE_ADAPTIVE_SCALE: 'bgee-heatmap-adaptive-scale',
 };
 
 // Helper function to get stored value with default
@@ -34,8 +34,8 @@ const getStoredValue = (key, defaultValue) => {
   }
 };
 
-export const Heatmap = ({ 
-  width, 
+export const Heatmap = ({
+  width,
   height = 800,
   backgroundColor,
   data,
@@ -49,78 +49,69 @@ export const Heatmap = ({
   // COMPONENT STATE
   const [hoveredCell, setHoveredCell] = useState(null);
   const [clickedCell, setClickedCell] = useState(null);
-  const [showLegend, setShowLegend] = useState(() => 
-    getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
-  const [xLabelRotation, setXLabelRotation] = useState(() => 
-    getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 325));
-  const [yLabelAlign, setYLabelAlign] = useState(() => 
-    getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
-  const [graphWidth, setGraphWidth] = useState(() => 
-    getStoredValue(STORAGE_KEYS.GRAPH_WIDTH, width));
-  const [graphHeight, setGraphHeight] = useState(() => 
-    getStoredValue(STORAGE_KEYS.GRAPH_HEIGHT, height));
-  const [colorPalette, setColorPalette] = useState(() => 
-    getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
-  const [bgColor, setBgColor] = useState(() => 
-    getStoredValue(STORAGE_KEYS.BG_COLOR, backgroundColor));
-  const [marginLeft, setMarginLeft] = useState(() => 
-    getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
-  const [showDescMax, setShowDescMax] = useState(() => 
-    getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
-  const [showMissingData, setShowMissingData] = useState(() => 
-    getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
+  const [showLegend, setShowLegend] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
+  const [xLabelRotation, setXLabelRotation] = useState(() => getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 325));
+  const [yLabelAlign, setYLabelAlign] = useState(() => getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
+  const [graphWidth, setGraphWidth] = useState(() => getStoredValue(STORAGE_KEYS.GRAPH_WIDTH, width));
+  const [graphHeight, setGraphHeight] = useState(() => getStoredValue(STORAGE_KEYS.GRAPH_HEIGHT, height));
+  const [colorPalette, setColorPalette] = useState(() => getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
+  const [bgColor, setBgColor] = useState(() => getStoredValue(STORAGE_KEYS.BG_COLOR, backgroundColor));
+  const [marginLeft, setMarginLeft] = useState(() => getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
+  const [showDescMax, setShowDescMax] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
+  const [showMissingData, setShowMissingData] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
   const [showHomologs, setShowHomologs] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [useAdaptiveScale, setUseAdaptiveScale] = useState(() => 
-    getStoredValue(STORAGE_KEYS.USE_ADAPTIVE_SCALE, false));
+  const [useAdaptiveScale, setUseAdaptiveScale] = useState(() =>
+    getStoredValue(STORAGE_KEYS.USE_ADAPTIVE_SCALE, false)
+  );
 
   // handle display property changes
-  const updateGraphWidth = (event) => {
+  const updateGraphWidth = event => {
     const { value } = event.target;
     setGraphWidth(value);
     localStorage.setItem(STORAGE_KEYS.GRAPH_WIDTH, value);
-  }
-  const updateGraphHeight = (event) => {
+  };
+  const updateGraphHeight = event => {
     const { value } = event.target;
     setGraphHeight(value);
     localStorage.setItem(STORAGE_KEYS.GRAPH_HEIGHT, value);
-  }
+  };
   const updateShowLegend = () => {
     const value = !showLegend;
     setShowLegend(value);
     localStorage.setItem(STORAGE_KEYS.SHOW_LEGEND, JSON.stringify(value));
-  }
-  const updateYLabelWidth = (event) => {
+  };
+  const updateYLabelWidth = event => {
     setMarginLeft(event.target.value);
-  }
-  const updateXLabelRotation = (event) => {
+  };
+  const updateXLabelRotation = event => {
     try {
       setXLabelRotation(parseInt(event.target.value, 10));
     } catch (error) {
       console.error(`[Heatmap] updateXLabelRotation: ${error}`);
     }
-  }
-  const updateYLabelAlign = (event) => {
+  };
+  const updateYLabelAlign = event => {
     setYLabelAlign(event.target.value);
-  }
-  const updateColorPalette = (event) => {
+  };
+  const updateColorPalette = event => {
     const { value } = event.target;
     setColorPalette(value);
     localStorage.setItem(STORAGE_KEYS.COLOR_PALETTE, value);
-  }
-  const updateBgColor = (event) => {
+  };
+  const updateBgColor = event => {
     setBgColor(event.target.value);
-  }
-  const updateShowDescMax = (event) => {
+  };
+  const updateShowDescMax = event => {
     setShowDescMax(event.target.value);
-  }
+  };
   const updateShowMissingData = () => {
     setShowMissingData(!showMissingData);
-  }
+  };
   const updateShowHomologs = () => {
     setShowHomologs(!showHomologs);
     getHomologsData();
-  }
+  };
   const updateShowSettings = () => {
     setShowSettings(!showSettings);
   };
@@ -139,7 +130,7 @@ export const Heatmap = ({
     function countVisibleTerms(items) {
       let count = 0;
       let maxLabelLength = 0;
-    
+
       function traverse(item) {
         count += 1;
         maxLabelLength = Math.max(maxLabelLength, item.label.length);
@@ -149,7 +140,7 @@ export const Heatmap = ({
           }
         }
       }
-    
+
       items.forEach(traverse);
       return { count, maxLabelLength };
     }
@@ -173,14 +164,14 @@ export const Heatmap = ({
   // Memoize the visible term IDs calculation
   const visibleTermIds = useMemo(() => {
     const ids = new Set();
-    
-    const traverse = (term) => {
+
+    const traverse = term => {
       ids.add(term.id);
       if (term.isExpanded && term.children) {
         term.children.forEach(traverse);
       }
     };
-    
+
     yTerms.forEach(traverse);
     return ids;
   }, [yTerms]);
@@ -191,11 +182,9 @@ export const Heatmap = ({
       .filter(d => visibleTermIds.has(d.y))
       .map(d => d.value)
       .filter(d => d !== null);
-      
-    const maxValue = useAdaptiveScale ? 
-      (Math.max(...visibleValues, 0)) : 
-      100;
-    
+
+    const maxValue = useAdaptiveScale ? Math.max(...visibleValues, 0) : 100;
+
     return d3
       .scaleLinear()
       .domain(THRESHOLDS.map(t => t * maxValue))
@@ -212,18 +201,14 @@ export const Heatmap = ({
     const headers = Object.keys(data[0]);
 
     // Convert headers to a tab-separated string
-    const headerString = headers.join("\t");
+    const headerString = headers.join('\t');
 
     // Convert each JSON object to a tab-separated string
-    const dataStrings = data.map(obj => (
-      headers.map(header => obj[header]).join("\t")
-    ));
-
+    const dataStrings = data.map(obj => headers.map(header => obj[header]).join('\t'));
 
     // Combine headers and data strings into a single string
-    const tsvString = [headerString, ...dataStrings].join("\n");
+    const tsvString = [headerString, ...dataStrings].join('\n');
 
-    
     const tsvBlob = new Blob([tsvString], { type: 'text/tab-separated-values;charset=utf-8' });
     const tsvUrl = URL.createObjectURL(tsvBlob);
 
@@ -242,7 +227,7 @@ export const Heatmap = ({
 
     const serializer = new XMLSerializer();
     const svgString = serializer.serializeToString(svgElement);
-    
+
     const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
     const svgUrl = URL.createObjectURL(svgBlob);
 
@@ -279,7 +264,7 @@ export const Heatmap = ({
       ctx.drawImage(img, 0, 0);
 
       // Convert canvas to PNG and trigger download
-      canvas.toBlob((blob) => {
+      canvas.toBlob(blob => {
         const pngUrl = URL.createObjectURL(blob);
         const downloadLink = document.createElement('a');
         downloadLink.href = pngUrl;
@@ -351,11 +336,7 @@ export const Heatmap = ({
             setGraphWidth={setGraphWidth}
           />
 
-          <Tooltip
-            interactionData={hoveredCell}
-            width={graphWidth}
-            height={graphHeight - COLOR_LEGEND_HEIGHT}
-          />
+          <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />
         </div>
 
         {clickedCell && (
@@ -382,7 +363,7 @@ export const Heatmap = ({
           <header className="card-header">
             <div className="card-header-title is-flex is-align-items-center">
               <span>Download</span>
-              <span style={{ marginLeft: "10px" }} />
+              <span style={{ marginLeft: '10px' }} />
               <div className="is-flex is-justify-content-flex-end">
                 <Bulma.Button
                   className="download-btn is-small mr-2"
@@ -432,102 +413,75 @@ export const Heatmap = ({
           <header className="card-header">
             <p className="card-header-title">
               Settings
-              <span style={{ marginLeft: "10px" }} />
+              <span style={{ marginLeft: '10px' }} />
               <a href="#collapsible-settings" data-action="collapse" onClick={updateShowSettings}>
-                {showSettings ? "Collapse" : "Expand"}
+                {showSettings ? 'Collapse' : 'Expand'}
               </a>
             </p>
           </header>
 
-          <div 
-            id="collapsible-settings" 
-            className={`is-collapsible ${showSettings ? "is-active" : ""}`}
-          >
-          {showSettings ? 
-            <div className="card-content">
-              <div className="columns">
-                <div className="column">
-                  <h1>DISPLAY</h1>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>Graph width:</td>
-                        <td>
-                          <input 
-                            type="text"
-                            size="10"
-                            value={graphWidth}
-                            onChange={updateGraphWidth}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Graph height:</td>
-                        <td>
-                          <input 
-                            type="text"
-                            size="10"
-                            value={graphHeight}
-                            onChange={updateGraphHeight}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Show Legend:</td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={showLegend}
-                            onChange={updateShowLegend}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Y label width:</td>
-                        <td>
-                          <input 
-                            type="text"
-                            size="10"
-                            value={marginLeft}
-                            onChange={updateYLabelWidth}
-                          />
-                        </td>
-                      </tr>
-                      { SHOW_DEBUG_OPTIONS ? (
-                      <tr>
-                        <td>X label rotation:</td>
-                        <td>
-                          <input 
-                            type="text"
-                            size="10"
-                            value={xLabelRotation}
-                            onChange={updateXLabelRotation}
-                          />
-                        </td>
-                      </tr>
-                      ) : null}
-                      { SHOW_DEBUG_OPTIONS ? (
-                      <tr>
-                        <td>Y label justify:</td>
-                        <td>
-                          <select value={yLabelAlign} onChange={updateYLabelAlign}>
-                            <option value="left">left</option>
-                            <option value="right">right</option>
-                          </select>
-                        </td>
-                      </tr>
-                      ) : null}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="column">
-                  <h1>STYLE</h1>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>color palette:</td>
-                        <td>
-                          <select value={colorPalette} onChange={updateColorPalette}>
+          <div id="collapsible-settings" className={`is-collapsible ${showSettings ? 'is-active' : ''}`}>
+            {showSettings ? (
+              <div className="card-content">
+                <div className="columns">
+                  <div className="column">
+                    <h1>DISPLAY</h1>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>Graph width:</td>
+                          <td>
+                            <input type="text" size="10" value={graphWidth} onChange={updateGraphWidth} />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Graph height:</td>
+                          <td>
+                            <input type="text" size="10" value={graphHeight} onChange={updateGraphHeight} />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Show Legend:</td>
+                          <td>
+                            <input type="checkbox" checked={showLegend} onChange={updateShowLegend} />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Y label width:</td>
+                          <td>
+                            <input type="text" size="10" value={marginLeft} onChange={updateYLabelWidth} />
+                          </td>
+                        </tr>
+                        {SHOW_DEBUG_OPTIONS ? (
+                          <tr>
+                            <td>X label rotation:</td>
+                            <td>
+                              <input type="text" size="10" value={xLabelRotation} onChange={updateXLabelRotation} />
+                            </td>
+                          </tr>
+                        ) : null}
+                        {SHOW_DEBUG_OPTIONS ? (
+                          <tr>
+                            <td>Y label justify:</td>
+                            <td>
+                              <select value={yLabelAlign} onChange={updateYLabelAlign}>
+                                <option value="left">left</option>
+                                <option value="right">right</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ) : null}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="column">
+                    <h1>STYLE</h1>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>color palette:</td>
+                          <td>
+                            <select value={colorPalette} onChange={updateColorPalette}>
                               <option value="magma">magma</option>
                               <option value="inferno">inferno</option>
                               <option value="plasma">plasma</option>
@@ -537,90 +491,68 @@ export const Heatmap = ({
                               <option value="mako">mako</option>
                               <option value="turbo">turbo</option>
                             </select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>adaptive color scale:</td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={useAdaptiveScale}
-                            onChange={updateUseAdaptiveScale}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>background color:</td>
-                        <td>
-                        <input 
-                            type="text"
-                            size="10"
-                            value={bgColor}
-                            onChange={updateBgColor}
-                          />
-                        </td>
-                      </tr>
-                    </tbody>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>adaptive color scale:</td>
+                          <td>
+                            <input type="checkbox" checked={useAdaptiveScale} onChange={updateUseAdaptiveScale} />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>background color:</td>
+                          <td>
+                            <input type="text" size="10" value={bgColor} onChange={updateBgColor} />
+                          </td>
+                        </tr>
+                      </tbody>
                     </table>
-                </div>
-                <div className="column">
-                  { SHOW_DEBUG_OPTIONS ? (
-                    <div>
-                      <h1>DATA</h1>
-                      <table>
-                        <tbody>
-                          <tr>
-                            <td>Show missing data:</td>
-                            <td>
-                              <input
-                                type="checkbox"
-                                checked={showMissingData}
-                                onChange={updateShowMissingData}
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Show homologs:</td>
-                            <td>
-                              <input
-                                type="checkbox"
-                                checked={showHomologs}
-                                onChange={updateShowHomologs}
-                              />
-                            </td>
-                          </tr>
-                          
-                          <tr>
-                            <td>Show max. descendant score as:</td>
-                            <td>
-                              <select value={showDescMax} onChange={updateShowDescMax}>
+                  </div>
+                  <div className="column">
+                    {SHOW_DEBUG_OPTIONS ? (
+                      <div>
+                        <h1>DATA</h1>
+                        <table>
+                          <tbody>
+                            <tr>
+                              <td>Show missing data:</td>
+                              <td>
+                                <input type="checkbox" checked={showMissingData} onChange={updateShowMissingData} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Show homologs:</td>
+                              <td>
+                                <input type="checkbox" checked={showHomologs} onChange={updateShowHomologs} />
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td>Show max. descendant score as:</td>
+                              <td>
+                                <select value={showDescMax} onChange={updateShowDescMax}>
                                   <option value="border">border</option>
                                   <option value="center">center</option>
                                   <option value="split">split cell</option>
                                   <option value="none">none</option>
                                 </select>
-                            </td>
-                          </tr>
-                          
-                        </tbody>
-                      </table>
-                    </div>
-                  ): null
-                  }
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                <div className="columns">
+                  <div className="column">
+                    <Bulma.Button className="is-warning is-light is-outlined" onClick={resetToDefaults}>
+                      Reset to defaults
+                    </Bulma.Button>
+                  </div>
                 </div>
               </div>
-              <div className="columns">
-                <div className="column">
-                  <Bulma.Button
-                    className="is-warning is-light is-outlined"
-                    onClick={resetToDefaults}
-                  >
-                    Reset to defaults
-                  </Bulma.Button>
-                </div>
-              </div>
-            </div>
-          : null}
+            ) : null}
           </div>
         </div>
       </div>

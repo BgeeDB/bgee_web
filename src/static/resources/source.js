@@ -6,12 +6,13 @@ export function meta() {
   return getMetadata({
     title: 'Source code information',
     description: 'Access the source code of the resources developed by Bgee.',
-    keywords: 'Source code, Bgee pipeline, bgee_pipeline, bgee_apps, BgeeDB, BgeeDB R package, BgeeCall, BgeeCall R package, IQRray',
+    keywords:
+      'Source code, Bgee pipeline, bgee_pipeline, bgee_apps, BgeeDB, BgeeDB R package, BgeeCall, BgeeCall R package, IQRray',
   });
 }
 
 export default function Page() {
-  return staticBuilder(source)
+  return staticBuilder(source);
 }
 
 const source = [
@@ -38,8 +39,7 @@ const source = [
           {
             type: 'text',
             classNames: 'has-text-centered',
-            content:
-              'Well documented source code of the Bgee pipeline used to generate databases and download files.',
+            content: 'Well documented source code of the Bgee pipeline used to generate databases and download files.',
           },
         ],
       },

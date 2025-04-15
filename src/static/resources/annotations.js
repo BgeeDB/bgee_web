@@ -7,12 +7,13 @@ export function meta() {
   return getMetadata({
     title: 'Annotation resources',
     description: 'Access annotations of expression data and of anatomical similarities produced by Bgee.',
-    keywords: 'Anatomical similarity annotations, RNA-Seq annotations, Affymetrix annotations, EST annotations, GTEx annotations, scRNA-Seq annotations',
+    keywords:
+      'Anatomical similarity annotations, RNA-Seq annotations, Affymetrix annotations, EST annotations, GTEx annotations, scRNA-Seq annotations',
   });
 }
 
 export default function Page() {
-  return staticBuilder(annotations)
+  return staticBuilder(annotations);
 }
 
 const annotations = [
@@ -122,8 +123,7 @@ const annotations = [
           {
             type: 'text',
             classNames: 'has-text-centered',
-            content:
-              'ESTs annotations used to generate the last version of Bgee.',
+            content: 'ESTs annotations used to generate the last version of Bgee.',
           },
         ],
       },
@@ -143,8 +143,7 @@ const annotations = [
           {
             type: 'text',
             classNames: 'has-text-centered',
-            content:
-              'Information on how the GTEx dataset was cleaned for Bgee.',
+            content: 'Information on how the GTEx dataset was cleaned for Bgee.',
           },
         ],
       },

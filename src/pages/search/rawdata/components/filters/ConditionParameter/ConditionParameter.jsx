@@ -2,7 +2,7 @@ import HelpIcon from '../../../../../../components/HelpIcon';
 import { COND_PARAM2 } from '../../../useLogic';
 
 const ConditionParameter = ({ conditionalParam2, setConditionalParam2, selectedSpecies }) => {
-  const toggle = (id) => {
+  const toggle = id => {
     const indexOfValue = conditionalParam2.indexOf(id);
     if (indexOfValue === -1) {
       setConditionalParam2([...conditionalParam2, id]);
@@ -40,19 +40,12 @@ const ConditionParameter = ({ conditionalParam2, setConditionalParam2, selectedS
         />
       </label>
       <div className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper mt-2">
-        {COND_PARAM2.map((c) => {
+        {COND_PARAM2.map(c => {
           const isSelected = conditionalParam2.includes(c.id);
           const ethnLabel = selectedSpecies === 9606 && c.label === 'Strain' ? 'Ethnicity' : c.label;
           return (
-            <label
-              className="checkbox ml-2 is-size-7 is-flex is-align-items-center"
-              key={c.id}
-            >
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => toggle(c.id)}
-              />
+            <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.id}>
+              <input type="checkbox" checked={isSelected} onChange={() => toggle(c.id)} />
               <b className="mx-1">{ethnLabel}</b>
             </label>
           );

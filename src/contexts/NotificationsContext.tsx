@@ -27,11 +27,7 @@ const Notifications = () => {
       <>
         {notifications.map((c: any) => (
           <div key={c.id} className={classnames('notification', c.className)}>
-            <button
-              className="delete"
-              type="button"
-              onClick={() => closeNotif(c.id)}
-            />
+            <button className="delete" type="button" onClick={() => closeNotif(c.id)} />
             {c.children}
           </div>
         ))}
@@ -43,13 +39,7 @@ const Notifications = () => {
 };
 
 const NotificationProvider = ({ children }) => {
-  const {
-    notifications,
-    addNotification,
-    addNotifications,
-    cleanNotifications,
-    closeNotif,
-  } = useNotification();
+  const { notifications, addNotification, addNotifications, cleanNotifications, closeNotif } = useNotification();
   return (
     <Provider
       value={{

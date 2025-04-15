@@ -1,7 +1,7 @@
 /* TypeScript specific
 import { InteractionData } from "./Heatmap";
 */
-import styles from "./tooltip.module.css";
+import styles from './tooltip.module.css';
 
 /* TypeScript specific
 type TooltipProps = {
@@ -11,12 +11,8 @@ type TooltipProps = {
 };
 */
 
-export const Tooltip = ({ 
-  interactionData, 
-  width, 
-  height 
-}) => {
-// }: TooltipProps) => { // TypeScript specific
+export const Tooltip = ({ interactionData, width, height }) => {
+  // }: TooltipProps) => { // TypeScript specific
   if (!interactionData) {
     return null;
   }
@@ -31,10 +27,10 @@ export const Tooltip = ({
       style={{
         width,
         height,
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         left: 0,
-        pointerEvents: "none",
+        pointerEvents: 'none',
       }}
       // transform={`translate(${interactionData.xPos}, ${interactionData.xPos})`}
     >
@@ -42,11 +38,10 @@ export const Tooltip = ({
       <div
         className={styles.tooltip}
         style={{
-          position: "fixed",
+          position: 'fixed',
           left: tooltipX,
           top: tooltipY,
         }}
-        
       >
         <TooltipRow label="gene" value={interactionData.xLabel} />
         <TooltipRow label="anatomy" value={interactionData.yLabel} />
@@ -64,11 +59,8 @@ type TooltipRowProps = {
 };
 */
 
-const TooltipRow = ({ 
-  label, 
-  value 
-}) => (
-// }: TooltipRowProps) => ( // TypeScript specific
+const TooltipRow = ({ label, value }) => (
+  // }: TooltipRowProps) => ( // TypeScript specific
   <div>
     <b>{label}</b>
     <span>: </span>

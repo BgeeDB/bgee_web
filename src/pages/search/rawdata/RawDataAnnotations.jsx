@@ -39,11 +39,12 @@ import config from '~/config.json';
 import { getMetadata } from '~/helpers/metadata';
 
 export function meta() {
-    return getMetadata({
-      title: 'Raw data annotated and processed',
-      description: 'Search for Experiments, Raw data annotations and Processed expression values',
-      keywords: 'Raw data, annotations, annotated, processed, experiments, raw data annotations, processed expression values',
-    });
+  return getMetadata({
+    title: 'Raw data annotated and processed',
+    description: 'Search for Experiments, Raw data annotations and Processed expression values',
+    keywords:
+      'Raw data, annotations, annotated, processed, experiments, raw data annotations, processed expression values',
+  });
 }
 
 // Enabled basic SSR for when a species_id is provided in the URL, to help SEO to find experiments links
@@ -54,7 +55,7 @@ export async function loader({ request }) {
   // const isExprCalls = url.searchParams.get('pageType') === TAB_PAGE_EXPR_CALL.id || url.pathname.includes('/expression-calls');
   if (speciesId && url.searchParams.size === 1) {
     // Preload when species ID provided for SEO
-    const {resp, searchParams} = await searchRawData({
+    const { resp, searchParams } = await searchRawData({
       hash: '',
       isFirstSearch: true,
       initSearch: url.searchParams,
@@ -76,7 +77,7 @@ export async function loader({ request }) {
       pageNumber: '1',
       limit: url.searchParams.get('limit') || '50',
     });
-    return { initSearchResult: {...resp.data, searchParams, initSpecies: speciesId} };
+    return { initSearchResult: { ...resp.data, searchParams, initSpecies: speciesId } };
   }
   return { initSearchResult: {} };
 }
@@ -85,8 +86,8 @@ const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
-const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
-  const initSearchResult = (loaderData) ? loaderData.initSearchResult : {};
+const RawDataAnnotations = ({ isExprCalls = false, loaderData }) => {
+  const initSearchResult = loaderData ? loaderData.initSearchResult : {};
   const {
     searchResult,
     allCounts,
@@ -161,26 +162,22 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
   const dataFilters = isExprCalls ? dataFiltersExprCall : defaultdataFilters;
 
   const countResultKey = () => {
-    if (pageType === EXPERIMENTS)
-      return 'experimentCount';
-    if (pageType === PROC_EXPR_VALUES)
-      return 'callCount';
+    if (pageType === EXPERIMENTS) return 'experimentCount';
+    if (pageType === PROC_EXPR_VALUES) return 'callCount';
     // Return AssayCount if pageType==RAW_DATA_ANNOTS or pageType==EXPR_CALLS
     return 'assayCount';
-  }
+  };
 
   const maxPage = Math.ceil((localCount?.[countResultKey()] || 0) / limit);
 
-  const detailedData = isExprCalls
-    ? TAB_PAGE_EXPR_CALL
-    : TAB_PAGE.find((d) => d.id === pageType);
+  const detailedData = isExprCalls ? TAB_PAGE_EXPR_CALL : TAB_PAGE.find(d => d.id === pageType);
 
   useEffect(() => {
     const params = getSearchParams();
     if (params?.initSearch?.get('filters_for_all') === '1') {
       setPageIsBrowseResult(true);
     }
-  }, [])
+  }, []);
 
   const changePageType = (e, newPageType) => {
     e.preventDefault();
@@ -189,7 +186,7 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
     setPageType(newPageType);
   };
 
-  const formatLargeNumber = (largeNumber) => {
+  const formatLargeNumber = largeNumber => {
     const numberToDisplay = new Intl.NumberFormat('en').format(largeNumber || 0);
     return numberToDisplay;
   };
@@ -197,35 +194,33 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
   const resultCountLabel = useMemo(() => {
     switch (pageType) {
       case EXPERIMENTS:
-        return `${formatLargeNumber(localCount.experimentCount)} ${
-          dataType === EST ? 'libraries' : 'experiments'
-        }`;
+        return `${formatLargeNumber(localCount.experimentCount)} ${dataType === EST ? 'libraries' : 'experiments'}`;
       case RAW_DATA_ANNOTS: {
         if (dataType === EST) {
           return `${formatLargeNumber(localCount.assayCount)} libraries`;
         }
-        return `${formatLargeNumber(localCount.experimentCount)} experiments / ${
-          formatLargeNumber(localCount.assayCount)
-        } ${dataType === AFFYMETRIX ? 'chips' : 'assays'}`;
+        return `${formatLargeNumber(localCount.experimentCount)} experiments / ${formatLargeNumber(
+          localCount.assayCount
+        )} ${dataType === AFFYMETRIX ? 'chips' : 'assays'}`;
       }
       case PROC_EXPR_VALUES: {
         if (dataType === EST) {
-          return `${formatLargeNumber(localCount.assayCount)} libraries / ${
-            formatLargeNumber(localCount.callCount)
-          } gene expression values`;
+          return `${formatLargeNumber(localCount.assayCount)} libraries / ${formatLargeNumber(
+            localCount.callCount
+          )} gene expression values`;
         }
-        return `${formatLargeNumber(localCount.experimentCount)} experiments / ${
-          formatLargeNumber(localCount.assayCount)
-        } ${dataType === AFFYMETRIX ? 'chips' : 'assays'} / ${
-          formatLargeNumber(localCount.callCount)
-        } gene expression values`;
+        return `${formatLargeNumber(localCount.experimentCount)} experiments / ${formatLargeNumber(
+          localCount.assayCount
+        )} ${dataType === AFFYMETRIX ? 'chips' : 'assays'} / ${formatLargeNumber(
+          localCount.callCount
+        )} gene expression values`;
       }
       default:
         return '';
     }
   }, [pageType, localCount, dataType]);
 
-  const parameterFromForm = (() => {
+  const parameterFromForm = () => {
     // When the user right-click and 'open new' we need to pass only the parameter from the form, not those from the filters
     const params = getSearchParams();
     let urlParamsWithoutPageType = '';
@@ -262,57 +257,50 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
     urlParamsWithoutPageType += `&only_propagated=${params.onlyPropagated}`;
 
     return urlParamsWithoutPageType;
-  });
+  };
 
-  const parameterInCurrentUrlWithoutPageType = (() => {
-    const params = new URLSearchParams( loc.search );
+  const parameterInCurrentUrlWithoutPageType = () => {
+    const params = new URLSearchParams(loc.search);
     params.delete('pageType');
     if (params) {
       return `&${params.toString()}`;
     }
     return '';
-  });
+  };
 
-  const filterForAllParameter = (() => {
+  const filterForAllParameter = () => {
     if (pageIsBrowseResult) {
-      return "&filters_for_all=1";
+      return '&filters_for_all=1';
     }
     return '';
-  });
+  };
 
   return (
     <>
       <div className="rawDataAnnotation">
         <div className="columns is-8 ongletPageWrapper">
           {isExprCalls ? (
-            <h1 className="ongletPages pageActive">
-              {TAB_PAGE_EXPR_CALL.label}
-            </h1>
+            <h1 className="ongletPages pageActive">{TAB_PAGE_EXPR_CALL.label}</h1>
           ) : (
-            TAB_PAGE.map((type) => {
+            TAB_PAGE.map(type => {
               const isActive = type.id === pageType;
               return (
                 <h1 key={type.id}>
                   <a
-                    onClick={(e) => changePageType(e, type.id)}
+                    onClick={e => changePageType(e, type.id)}
                     href={`${URL_ROOT}/search/raw-data?pageType=${type.id}${isActive ? filterForAllParameter() : ''}${isActive ? parameterInCurrentUrlWithoutPageType() : parameterFromForm()}`}
-                    className={`ongletPages is-centered py-2 px-5 ${
-                      isActive ? 'pageActive' : ''
-                    }`}
+                    className={`ongletPages is-centered py-2 px-5 ${isActive ? 'pageActive' : ''}`}
                   >
                     {type.label}
                   </a>
                 </h1>
-
               );
             })
           )}
         </div>
         {pageType && (
           <div>
-            <h2 className="gradient-underline title is-size-5 has-text-primary">
-              {detailedData?.searchLabel}
-            </h2>
+            <h2 className="gradient-underline title is-size-5 has-text-primary">{detailedData?.searchLabel}</h2>
             {show && (
               <>
                 <div className="columns is-8">
@@ -333,8 +321,7 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
                             AutoCompleteByType={AutoCompleteByType}
                           />
                         </div>
-                        {((isExprCalls && selectedGene.length > 0) ||
-                          !isExprCalls) && (
+                        {((isExprCalls && selectedGene.length > 0) || !isExprCalls) && (
                           <>
                             <div className="my-2 maxWidth50">
                               <Tissues
@@ -342,9 +329,7 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
                                 setSelectedTissue={setSelectedTissue}
                                 AutoCompleteByType={AutoCompleteByType}
                                 hasTissueSubStructure={hasTissueSubStructure}
-                                setHasTissueSubStructure={
-                                  setHasTissueSubStructure
-                                }
+                                setHasTissueSubStructure={setHasTissueSubStructure}
                                 addConditionalParam={addConditionalParam}
                               />
                             </div>
@@ -353,24 +338,16 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
                                 selectedCellTypes={selectedCellTypes}
                                 setSelectedCellTypes={setSelectedCellTypes}
                                 AutoCompleteByType={AutoCompleteByType}
-                                hasCellTypeSubStructure={
-                                  hasCellTypeSubStructure
-                                }
-                                setHasCellTypeSubStructure={
-                                  setHasCellTypeSubStructure
-                                }
+                                hasCellTypeSubStructure={hasCellTypeSubStructure}
+                                setHasCellTypeSubStructure={setHasCellTypeSubStructure}
                                 addConditionalParam={addConditionalParam}
                               />
                             </div>
                             <div className="my-2 maxWidth50">
                               <DevelopmentalAndLifeStages
                                 devStages={devStages}
-                                hasDevStageSubStructure={
-                                  hasDevStageSubStructure
-                                }
-                                setDevStageSubStructure={
-                                  setDevStageSubStructure
-                                }
+                                hasDevStageSubStructure={hasDevStageSubStructure}
+                                setDevStageSubStructure={setDevStageSubStructure}
                                 selectedOptions={selectedDevStages}
                                 setSelectedOptions={setSelectedDevStages}
                                 addConditionalParam={addConditionalParam}
@@ -393,7 +370,7 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
                                 addConditionalParam={addConditionalParam}
                               />
                             </div>
-                            {(!isExprCalls) && (
+                            {!isExprCalls && (
                               <>
                                 <div className="my-2">
                                   <OnlyPropagated
@@ -412,13 +389,9 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
                     <div>
                       {isExprCalls ? (
                         <>
-                          {((isExprCalls && selectedGene.length > 0) ||
-                            !isExprCalls) && (
+                          {((isExprCalls && selectedGene.length > 0) || !isExprCalls) && (
                             <>
-                              <DataType
-                                dataTypes={dataTypesExpCalls}
-                                setDataTypes={setDataTypesExpCalls}
-                              />
+                              <DataType dataTypes={dataTypesExpCalls} setDataTypes={setDataTypesExpCalls} />
                               <hr />
                               <ConditionParameter
                                 conditionalParam2={conditionalParam2}
@@ -426,15 +399,9 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
                                 selectedSpecies={selectedSpecies.value}
                               />
                               <hr />
-                              <CallType
-                                callTypes={callTypes}
-                                setCallTypes={setCallTypes}
-                              />
+                              <CallType callTypes={callTypes} setCallTypes={setCallTypes} />
                               <hr />
-                              <DataQualityParameter
-                                dataQuality={dataQuality}
-                                setDataQuality={setDataQuality}
-                              />
+                              <DataQualityParameter dataQuality={dataQuality} setDataQuality={setDataQuality} />
                             </>
                           )}
                         </>
@@ -463,8 +430,13 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
                         >
                           Reinitialize
                         </Button>
-                        <a className="reinit button is-bgee-link is-outlined mr-2"
-                          href={isExprCalls ? `${PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS}` : `${PATHS.SUPPORT.TUTORIAL_RAW_DATA}`}
+                        <a
+                          className="reinit button is-bgee-link is-outlined mr-2"
+                          href={
+                            isExprCalls
+                              ? `${PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS}`
+                              : `${PATHS.SUPPORT.TUTORIAL_RAW_DATA}`
+                          }
                         >
                           Documentation
                         </a>
@@ -475,17 +447,11 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData}) => {
               </>
             )}
             <div className="control is-flex is-align-items-center">
-              <button
-                className="button mr-2 mb-5"
-                type="button"
-                onClick={() => setShow(!show)}
-              >
+              <button className="button mr-2 mb-5" type="button" onClick={() => setShow(!show)}>
                 {show ? 'Hide Form' : 'Show Form'}
               </button>
             </div>
-            <h2 className="gradient-underline title is-size-5 has-text-primary">
-              {detailedData?.resultLabel}
-            </h2>
+            <h2 className="gradient-underline title is-size-5 has-text-primary">{detailedData?.resultLabel}</h2>
             {!isExprCalls && (
               <ResultTabs
                 dataTypes={DATA_TYPES}

@@ -18,7 +18,7 @@ validations {Object}
         message: string,
       },
  */
-const useForm = (opts) => {
+const useForm = opts => {
   const [data, setData] = React.useState(opts?.initialValue || {});
   const [errors, setErrors] = React.useState({});
   const [isEditable, setIsEditable] = React.useState(true);
@@ -26,13 +26,13 @@ const useForm = (opts) => {
   const reset = React.useCallback(() => setData(opts?.initialValue || {}), []);
   const resetError = React.useCallback(() => setErrors({}), []);
   const handleChange = React.useCallback(
-    (key, sanitizeFn) => (e) => {
+    (key, sanitizeFn) => e => {
       const value = sanitizeFn ? sanitizeFn(e) : e.target.value;
-      setData((d) => ({ ...d, [key]: value }));
+      setData(d => ({ ...d, [key]: value }));
     },
     []
   );
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const validations = opts?.validations;
     if (validations) {
@@ -46,10 +46,7 @@ const useForm = (opts) => {
         const validation = valArray[idx][1];
         const value = data[key];
 
-        if (
-          validation?.required?.value &&
-          (value === null || value === undefined || value === '')
-        ) {
+        if (validation?.required?.value && (value === null || value === undefined || value === '')) {
           valid = false;
           newErrors[key] = validation?.required?.message;
         }

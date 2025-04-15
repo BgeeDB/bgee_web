@@ -12,27 +12,26 @@ const expressionPageHelper = {
     kwList &&
     list?.map &&
     list
-      .map((s) => ({
+      .map(s => ({
         info: s,
-        word: kwList?.[s.id]?.find((kw) => new RegExp(search, 'gi').test(kw)),
+        word: kwList?.[s.id]?.find(kw => new RegExp(search, 'gi').test(kw)),
       }))
       ?.sort((a, b) => a?.word?.localeCompare(b.word)),
-  autocompleteSpeciesRender: (setSearch, navigate) => (s, closeAutoComplete) =>
-    (
-      <div
-        key={s.info.id}
-        role="button"
-        onClick={() => {
-          setSearch(s.word);
-          navigate(`${URL_ROOT}${history.location.pathname}?id=${s.info.id}`, {replace: true});
-          setTimeout(() => {
-            closeAutoComplete();
-          }, 100);
-        }}
-      >
-        {s.word}
-      </div>
-    ),
+  autocompleteSpeciesRender: (setSearch, navigate) => (s, closeAutoComplete) => (
+    <div
+      key={s.info.id}
+      role="button"
+      onClick={() => {
+        setSearch(s.word);
+        navigate(`${URL_ROOT}${history.location.pathname}?id=${s.info.id}`, { replace: true });
+        setTimeout(() => {
+          closeAutoComplete();
+        }, 100);
+      }}
+    >
+      {s.word}
+    </div>
+  ),
 };
 
 export default expressionPageHelper;

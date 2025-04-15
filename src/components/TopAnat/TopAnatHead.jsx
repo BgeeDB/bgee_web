@@ -1,4 +1,4 @@
-import {Link} from "react-router";
+import { Link } from 'react-router';
 import TopAnatHistoryModal from './TopAnatHistoryModal';
 import PATHS from '../../paths/paths';
 import Bulma from '../Bulma';
@@ -35,8 +35,8 @@ const TopAnatHead = () => (
       <h1 className="title is-3">TopAnat - Gene Expression Enrichment</h1>
     </div>
     <p className="is-size-5">
-      GO-like enrichment of anatomical terms, mapped to genes by expression
-      patterns. It is possible to run TopAnat using our{' '}
+      GO-like enrichment of anatomical terms, mapped to genes by expression patterns. It is possible to run TopAnat
+      using our{' '}
       <a
         href="https://bioconductor.org/packages/BgeeDB/"
         target="_blank"
@@ -45,8 +45,8 @@ const TopAnatHead = () => (
       >
         BgeeDB R package
       </a>
-      . This is the same as this web-service, but with more flexibility in the
-      choice of parameters and developmental stages, and is based on the{' '}
+      . This is the same as this web-service, but with more flexibility in the choice of parameters and developmental
+      stages, and is based on the{' '}
       <a
         href="https://bioconductor.org/packages/topGO/"
         target="_blank"
@@ -59,10 +59,7 @@ const TopAnatHead = () => (
     </p>
     <div id="helpers-top-anat" className="my-4 is-flex">
       <TopAnatHistoryModal />
-      <Link
-        to={PATHS.SUPPORT.TUTORIAL_TOPANAT}
-        className="button is-bgee-link is-outlined mr-2"
-      >
+      <Link to={PATHS.SUPPORT.TUTORIAL_TOPANAT} className="button is-bgee-link is-outlined mr-2">
         <Bulma.IonIcon name="newspaper-outline" />
         <span>Documentation</span>
       </Link>
@@ -73,11 +70,7 @@ const TopAnatHead = () => (
         </span>
         <div className="ml-1 buttons">
           {EXAMPLES.map((ex, key) => (
-            <Tooltip
-              key={ex.id}
-              title={`Example ${key + 1}`}
-              content={ex.description}
-            >
+            <Tooltip key={ex.id} title={`Example ${key + 1}`} content={ex.description}>
               <Link
                 to={PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(':id', ex.id)}
                 className="button is-bgee-link is-outlined m-0"

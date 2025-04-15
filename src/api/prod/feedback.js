@@ -9,17 +9,17 @@ const feedback = {
         rating,
         comment,
       };
-      
+
       if (email) data.email = email;
 
       axiosInstance
         .post('/?page=feedback', data)
         .then(({ data: responseData }) => resolve(responseData))
-        .catch((error) => {
+        .catch(error => {
           errorHandler(error);
           reject(error?.response);
         });
     }),
 };
 
-export default feedback; 
+export default feedback;

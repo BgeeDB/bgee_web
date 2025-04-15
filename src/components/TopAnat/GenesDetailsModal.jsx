@@ -9,9 +9,7 @@ const GenesDetailsModal = ({ data }) => {
         <i>{`${data.detectedSpecies[data.selectedSpecies].genus} ${
           data.detectedSpecies[data.selectedSpecies].speciesName
         }`}</i>
-        {`, ${
-          data.geneCount[data.selectedSpecies]
-        } unique genes identified in Bgee`}
+        {`, ${data.geneCount[data.selectedSpecies]} unique genes identified in Bgee`}
       </p>
       {Object.keys(data.detectedSpecies).length > 1 && (
         <>
@@ -22,10 +20,7 @@ const GenesDetailsModal = ({ data }) => {
                 <li key={key}>
                   <p>
                     <i>{`${value.genus} ${value.speciesName}`}</i>
-                    {`: ${data.geneCount[key]} ${isPlural(
-                      'gene',
-                      data.geneCount[key]
-                    )} identified`}
+                    {`: ${data.geneCount[key]} ${isPlural('gene', data.geneCount[key])} identified`}
                   </p>
                 </li>
               )
@@ -33,15 +28,13 @@ const GenesDetailsModal = ({ data }) => {
           </ul>
         </>
       )}
-      {data.undeterminedGeneIds.length > 0 && (
-        <p>IDs not identified: {data.undeterminedGeneIds.length}</p>
-      )}
+      {data.undeterminedGeneIds.length > 0 && <p>IDs not identified: {data.undeterminedGeneIds.length}</p>}
       {data.notInSelectedSpeciesGeneIds.length > 0 && (
         <>
           <p>ID in other species: </p>
 
           <ul className="unordered">
-            {data.notInSelectedSpeciesGeneIds.slice(0, 10).map((v) => (
+            {data.notInSelectedSpeciesGeneIds.slice(0, 10).map(v => (
               <TextGene key={v} gene={v} />
             ))}
             {data.notInSelectedSpeciesGeneIds.length > 10 && (
@@ -57,7 +50,7 @@ const GenesDetailsModal = ({ data }) => {
         <>
           <p>IDs not identified:</p>
           <ul className="unordered">
-            {data.undeterminedGeneIds.slice(0, 10).map((v) => (
+            {data.undeterminedGeneIds.slice(0, 10).map(v => (
               <TextGene key={v} gene={v} />
             ))}
             {data.undeterminedGeneIds.length > 10 && (

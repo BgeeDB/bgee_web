@@ -25,7 +25,6 @@ const random = () => {
 
 export default random;
 
-
 // const random = () => {
 //   const crypto = window.crypto || window.msCrypto;
 //   const array = new Uint32Array(1);

@@ -1,12 +1,12 @@
 import React from 'react';
 import api from '../api';
 
-const useGeneSearch = (searchText) => {
+const useGeneSearch = searchText => {
   const [resResultListGenes, setResResultListGenes]: any = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
 
   const searchResultHandler = React.useCallback(
-    (val) => {
+    val => {
       if (val !== '') {
         setIsLoading(true);
         api.search.genes

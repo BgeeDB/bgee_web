@@ -28,10 +28,7 @@ const Columns = ({
       'is-centered': centered,
       'is-vcentered': vCentered,
       'is-variable':
-        gap !== undefined ||
-        [touch, mobile, tablet, desktop, widescreen, fullhd].find(
-          (b) => b.gap !== undefined
-        ),
+        gap !== undefined || [touch, mobile, tablet, desktop, widescreen, fullhd].find(b => b.gap !== undefined),
       [`is-${touch.gap}-touch`]: touch.gap !== undefined,
       [`is-${mobile.gap}-mobile`]: mobile.gap !== undefined,
       [`is-${tablet.gap}-tablet`]: tablet.gap !== undefined,

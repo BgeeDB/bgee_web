@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from "react-router";
+import { Link } from 'react-router';
 import PATHS from '../../paths/paths';
 import Bulma from '../Bulma';
 import { ModalContext } from '../../contexts/ModalContext';
@@ -12,9 +12,7 @@ const HomeSpeciesModal = ({ species, hide }) => {
       <Bulma.Media>
         <Bulma.Media.Item className="my-auto">
           <Bulma.Title className="is-size-4">
-            {species
-              ? `${species.genus} ${species.speciesName} (${species.name})`
-              : null}
+            {species ? `${species.genus} ${species.speciesName} (${species.name})` : null}
           </Bulma.Title>
         </Bulma.Media.Item>
         <Bulma.Media.Item align="right">
@@ -41,10 +39,7 @@ const HomeSpeciesModal = ({ species, hide }) => {
         >
           RNA-Seq and Affymetrix data
         </Link>
-        <Link
-          to={`${PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}?id=${species.id}`}
-          className="button-species"
-        >
+        <Link to={`${PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}?id=${species.id}`} className="button-species">
           Gene expression calls
         </Link>
         <Link

@@ -15,13 +15,11 @@ const ExpressionSearch = ({ search, setSearch, elements, onRender }) => {
       setShowAuto(false);
     };
     if (typeof document === 'undefined' || !document.getElementById('root')) {
-      return () => {}
+      return () => {};
     }
     document.getElementById('root')?.addEventListener('click', clickOutside);
     return () => {
-      document
-        .getElementById('root')
-        .removeEventListener('click', clickOutside);
+      document.getElementById('root').removeEventListener('click', clickOutside);
     };
   }, []);
 
@@ -33,14 +31,14 @@ const ExpressionSearch = ({ search, setSearch, elements, onRender }) => {
         name="search-species"
         placeholder="Scientific name, common name, ..."
         value={search}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           if (e.key === 'Enter') setShowAuto(false);
         }}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={e => setSearch(e.target.value)}
       />
       {showAuto && (
         <div className="autocomplete-wrapper">
-          {elements.map((s) =>
+          {elements.map(s =>
             typeof onRender === 'function'
               ? onRender(s, () => {
                   setShowAuto(false);

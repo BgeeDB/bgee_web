@@ -38,10 +38,10 @@ const GeneDetails = ({
           orthologs: 0,
           paralogs: 0,
         };
-        homologsPromise.value.data.orthologsByTaxon.forEach((o) => {
+        homologsPromise.value.data.orthologsByTaxon.forEach(o => {
           if (o.genes.length > homo.orthologs) homo.orthologs = o.genes.length;
         });
-        homologsPromise.value.data.paralogsByTaxon.forEach((o) => {
+        homologsPromise.value.data.paralogsByTaxon.forEach(o => {
           if (o.genes.length > homo.paralogs) homo.paralogs = o.genes.length;
         });
         setHomologs(homo);
@@ -77,10 +77,9 @@ const GeneDetails = ({
     const nameExpr = name ? `${name}, ${name} expression, ` : '';
     const nameExists = name ? `${name} ` : '';
     const synonymsExpr = synonyms ? `, ${synonyms.join(', ')}` : '';
-    const canonicalLink = `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES
-        .replace(':geneId', geneId)
-        .replace(':speciesId', geneMappedToSameGeneIdCount === 1 ? '' : species.id)
-        .replace(/\/$/, '')}`;
+    const canonicalLink = `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', geneId)
+      .replace(':speciesId', geneMappedToSameGeneIdCount === 1 ? '' : species.id)
+      .replace(/\/$/, '')}`;
     return {
       title: `${nameExists}${geneId} expression in ${latinName}${speciesNameBrackets}`,
       description: `Bgee gene expression data for ${hasNameOpener}${geneId}${hasNameCloser} in ${latinName}${speciesNameBrackets}`,
@@ -109,8 +108,8 @@ const GeneDetails = ({
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
         <meta name="keywords" content={meta.keywords} />
-        <meta property='og:title' content={meta.title} />
-        <meta property='og:description' content={meta.description} />
+        <meta property="og:title" content={meta.title} />
+        <meta property="og:description" content={meta.description} />
         <meta property="og:url" content={meta.link} />
         <link rel="canonical" href={meta.link} />
       </Helmet>
@@ -170,10 +169,7 @@ const GeneDetails = ({
                 </Bulma.C>
                 <Bulma.C size={9}>
                   <p>
-                    <Link
-                      to={PATHS.SEARCH.SPECIES_ITEM.replace(':id', species.id)}
-                      className="internal-link"
-                    >
+                    <Link to={PATHS.SEARCH.SPECIES_ITEM.replace(':id', species.id)} className="internal-link">
                       <i>{`${species.genus} ${species.speciesName}`}</i>
                       {species.name ? ` (${species.name})` : ''}
                     </Link>
@@ -190,11 +186,7 @@ const GeneDetails = ({
                     renderElement={(ref, key, elements) => (
                       <span key={ref}>
                         {ref}
-                        {key !== elements.length - 1 ? (
-                          <span className="mr-1">,</span>
-                        ) : (
-                          ''
-                        )}
+                        {key !== elements.length - 1 ? <span className="mr-1">,</span> : ''}
                       </span>
                     )}
                   />
@@ -247,11 +239,7 @@ const GeneDetails = ({
           <GeneExpressionGraph geneId={geneId} speciesId={species.id} />
           <GeneExpressionTable geneId={geneId} speciesId={species.id} />
           <GeneExpressionTable geneId={geneId} speciesId={species.id} notExpressed />
-          <GeneHomologs
-            homologs={homologs}
-            geneId={geneId}
-            isLoading={isLoading}
-          />
+          <GeneHomologs homologs={homologs} geneId={geneId} isLoading={isLoading} />
           {xRefs && <GeneXRefs data={xRefs} isLoading={isLoading} />}
         </div>
       </div>

@@ -10,7 +10,7 @@ export function meta() {
   return getMetadata({
     title: 'Bgee Data dumps download page',
     description: 'Download a simplified view of the Bgee database in various formats.',
-    keywords: "dataset, data download, MySQL, RDF, EasyBgee, gene expression data",
+    keywords: 'dataset, data download, MySQL, RDF, EasyBgee, gene expression data',
   });
 }
 
@@ -54,8 +54,8 @@ const DataDumps = () => (
             </a>
           </GaEvent>
           <p className="has-text-centered">
-            Download the dump of the MySQL EasyBgee database, that contains most
-            useful, and explicit information. Does not contain raw data.
+            Download the dump of the MySQL EasyBgee database, that contains most useful, and explicit information. Does
+            not contain raw data.
           </p>
         </Bulma.Tile>
       </Bulma.Tile>
@@ -81,8 +81,7 @@ const DataDumps = () => (
             </a>
           </GaEvent>
           <p className="has-text-centered">
-            Download the Bgee RDF data dump that contains all data present in
-            the EasyBgee database.
+            Download the Bgee RDF data dump that contains all data present in the EasyBgee database.
           </p>
         </Bulma.Tile>
       </Bulma.Tile>

@@ -14,9 +14,7 @@ const CardSpecies = ({ genus, speciesName, name, id }) => (
     <Bulma.Card.Body className="py-2 px-1">
       <Bulma.Media>
         <Bulma.Media.Item>
-          <p className="subtitle is-7 has-text-centered mb-1 is-italic">
-            {`${genus[0]}. ${speciesName}`}
-          </p>
+          <p className="subtitle is-7 has-text-centered mb-1 is-italic">{`${genus[0]}. ${speciesName}`}</p>
           <p className="subtitle is-7 has-text-centered">{name}</p>
         </Bulma.Media.Item>
       </Bulma.Media>

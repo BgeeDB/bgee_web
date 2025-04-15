@@ -1,19 +1,12 @@
 import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
 import { getIdAndNameLabel } from '../../../../../../helpers/selects';
 
-const ExperimentOrAssay = ({
-  selectedExpOrAssay,
-  setSelectedExpOrAssay,
-  AutoCompleteByType,
-}) => {
-  const getExpOrAssayOptions = AutoCompleteByType(
-    'experiment_assay',
-    (result) => ({
-      label: getIdAndNameLabel(result?.object),
-      value: result?.object?.id,
-      result,
-    })
-  );
+const ExperimentOrAssay = ({ selectedExpOrAssay, setSelectedExpOrAssay, AutoCompleteByType }) => {
+  const getExpOrAssayOptions = AutoCompleteByType('experiment_assay', result => ({
+    label: getIdAndNameLabel(result?.object),
+    value: result?.object?.id,
+    result,
+  }));
 
   return (
     <>

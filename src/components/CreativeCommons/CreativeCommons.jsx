@@ -8,14 +8,11 @@ const CreativeCommons = () => {
       <p className="is-size-7">
         {`Images from Wikimedia Commons. In most cases, pictures corresponds to the sequenced strains.  `}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-        <a onClick={() => setIsOpen(!isOpen)}>
-          Show information about original images.
-        </a>
+        <a onClick={() => setIsOpen(!isOpen)}>Show information about original images.</a>
       </p>
       <div id="creativecommons" className={isOpen ? 'is-open' : ''}>
         <p>
-          <i>Homo sapiens</i> picture by Leonardo da Vinci (Life time: 1519)
-          [Public domain].{' '}
+          <i>Homo sapiens</i> picture by Leonardo da Vinci (Life time: 1519) [Public domain].{' '}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -66,8 +63,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Drosophila melanogaster</i> picture by Andr&eacute; Karwath aka Aka (Own
-          work) [
+          <i>Drosophila melanogaster</i> picture by Andr&eacute; Karwath aka Aka (Own work) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -87,8 +83,8 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Caenorhabditis elegans</i> picture by Bob Goldstein, UNC Chapel
-          Hill http://bio.unc.edu/people/faculty/goldstein/ (Own work) [
+          <i>Caenorhabditis elegans</i> picture by Bob Goldstein, UNC Chapel Hill
+          http://bio.unc.edu/people/faculty/goldstein/ (Own work) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -233,8 +229,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Rattus norvegicus</i> picture by Reg Mckenna (originally posted to
-          Flickr as Wild Rat) [
+          <i>Rattus norvegicus</i> picture by Reg Mckenna (originally posted to Flickr as Wild Rat) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -254,8 +249,8 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Bos taurus</i> picture by User Robert Merkel on en.wikipedia (US
-          Department of Agriculture) [Public domain],{' '}
+          <i>Bos taurus</i> picture by User Robert Merkel on en.wikipedia (US Department of Agriculture) [Public
+          domain],{' '}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -277,9 +272,8 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Equus caballus</i> picture by Doug Antczak Baker Institute for
-          Animal Health College of Veterinary Medicine Cornell University
-          [Public Domain],{' '}
+          <i>Equus caballus</i> picture by Doug Antczak Baker Institute for Animal Health College of Veterinary Medicine
+          Cornell University [Public Domain],{' '}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -370,13 +364,9 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Monodelphis domestica</i> picture by{' '}
-          <i>Marsupial Genome Sheds Light on the Evolution of Immunity.</i> Hill
+          <i>Monodelphis domestica</i> picture by <i>Marsupial Genome Sheds Light on the Evolution of Immunity.</i> Hill
           E, PLoS Biology Vol. 4/3/2006, e75{' '}
-          <a
-            rel="nofollow"
-            href="http://dx.doi.org/10.1371/journal.pbio.0040075"
-          >
+          <a rel="nofollow" href="http://dx.doi.org/10.1371/journal.pbio.0040075">
             http://dx.doi.org/10.1371/journal.pbio.0040075
           </a>{' '}
           [
@@ -399,8 +389,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Ornithorhynchus anatinus</i> picture by Dr. Philip Bethge (private)
-          [
+          <i>Ornithorhynchus anatinus</i> picture by Dr. Philip Bethge (private) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -449,8 +438,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Anolis carolinensis</i> picture by PiccoloNamek (Moved from
-          Image:P1010027.jpg) [
+          <i>Anolis carolinensis</i> picture by PiccoloNamek (Moved from Image:P1010027.jpg) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -479,8 +467,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Xenopus tropicalis</i> picture by V&aacute;clav Gvo&#382;d&iacute;k
-          (http://calphotos.berkeley.edu) [
+          <i>Xenopus tropicalis</i> picture by V&aacute;clav Gvo&#382;d&iacute;k (http://calphotos.berkeley.edu) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -509,8 +496,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Xenopus laevis</i> picture by Brian Gratwicke
-          (https://www.flickr.com/photos/19731486@N07/8325732255) [
+          <i>Xenopus laevis</i> picture by Brian Gratwicke (https://www.flickr.com/photos/19731486@N07/8325732255) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -530,8 +516,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Branchiostoma lanceolatum</i> picture by Hans Hillewaert (Own work)
-          [
+          <i>Branchiostoma lanceolatum</i> picture by Hans Hillewaert (Own work) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -551,8 +536,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Latimeria chalumnae</i> picture by Alberto Fernandez Fernandez (Own
-          work) [
+          <i>Latimeria chalumnae</i> picture by Alberto Fernandez Fernandez (Own work) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -610,8 +594,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Anguilla anguilla</i> picture by GerardM
-          (http://www.digischool.nl/bi/onderwaterbiologie/) [
+          <i>Anguilla anguilla</i> picture by GerardM (http://www.digischool.nl/bi/onderwaterbiologie/) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -817,8 +800,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Meleagris gallopavo</i> picture by Riki7 (Own work) [Public
-          domain],{' '}
+          <i>Meleagris gallopavo</i> picture by Riki7 (Own work) [Public domain],{' '}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -850,8 +832,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Cercocebus atys</i> picture by Giulio Russo Photography (Own work)
-          [
+          <i>Cercocebus atys</i> picture by Giulio Russo Photography (Own work) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -871,8 +852,8 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Macaca fascicularis</i> picture by Andr&eacute; Ueberbach (Eigene Aufnahme
-          von Andr&eacute; Ueberbach/Own production) [
+          <i>Macaca fascicularis</i> picture by Andr&eacute; Ueberbach (Eigene Aufnahme von Andr&eacute; Ueberbach/Own
+          production) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -921,8 +902,8 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Papio anubis</i> picture by Charles J. Sharp (Own work, from Sharp
-          Photography, http://www.sharpphotography.co.uk/) [
+          <i>Papio anubis</i> picture by Charles J. Sharp (Own work, from Sharp Photography,
+          http://www.sharpphotography.co.uk/) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -942,8 +923,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Capra hircus</i> picture by flagstaffotos [at] gmail.com (Own work)
-          [
+          <i>Capra hircus</i> picture by flagstaffotos [at] gmail.com (Own work) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -1004,8 +984,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Heterocephalus glaber</i> picture by Roman Klementschitz, Wien (Own
-          work) [
+          <i>Heterocephalus glaber</i> picture by Roman Klementschitz, Wien (Own work) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -1034,8 +1013,8 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Microcebus murinus</i> picture by Charles J. Sharp (Own work, from
-          Sharp Photography, http://www.sharpphotography.co.uk/) [
+          <i>Microcebus murinus</i> picture by Charles J. Sharp (Own work, from Sharp Photography,
+          http://www.sharpphotography.co.uk/) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -1055,8 +1034,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Neolamprologus brichardi</i> picture by David Midgley
-          (www.sydneycichlid.com) (Own work) [
+          <i>Neolamprologus brichardi</i> picture by David Midgley (www.sydneycichlid.com) (Own work) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -1076,8 +1054,7 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Scophthalmus maximus</i> picture by Luc Viatour (Own work
-          http://www.lucnix.be/) [
+          <i>Scophthalmus maximus</i> picture by Luc Viatour (Own work http://www.lucnix.be/) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -1106,8 +1083,8 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Chlorocebus sabaeus</i> picture by Charles J. Sharp (Own work, from
-          Sharp Photography, http://www.sharpphotography.co.uk/) [
+          <i>Chlorocebus sabaeus</i> picture by Charles J. Sharp (Own work, from Sharp Photography,
+          http://www.sharpphotography.co.uk/) [
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -1156,9 +1133,8 @@ const CreativeCommons = () => {
           </a>
         </p>
         <p>
-          <i>Nothobranchius furzeri</i> picture by Ugau (Own work, Leibniz
-          Institute for Age Research - Fritz Lipmann Institute (FLI), Jena,
-          Germany) [
+          <i>Nothobranchius furzeri</i> picture by Ugau (Own work, Leibniz Institute for Age Research - Fritz Lipmann
+          Institute (FLI), Jena, Germany) [
           <a
             target="_blank"
             rel="noopener noreferrer"

@@ -4,10 +4,7 @@ import api from '../api';
 import useForm from './useForm';
 import PATHS from '../paths/paths';
 import { NotificationContext } from '../contexts/NotificationsContext';
-import {
-  TOP_ANAT_DEFAULT_RP,
-  TOP_ANAT_FORM_CONFIG,
-} from '../helpers/constants/topAnat';
+import { TOP_ANAT_DEFAULT_RP, TOP_ANAT_FORM_CONFIG } from '../helpers/constants/topAnat';
 import random from '../helpers/random';
 
 let timeoutFg;
@@ -32,22 +29,18 @@ const useTopAnat = (flowState, setFlowState) => {
   const [results, setResults] = React.useState();
 
   const navigate = useNavigate();
-  const onSubmit = React.useCallback((data) => {
+  const onSubmit = React.useCallback(data => {
     setFlowState(TOP_ANAT_FLOW.LAUNCHING_JOB);
     api.topAnat
       .runJob(data)
-      .then((res) => {
+      .then(res => {
         navigate(
-          PATHS.ANALYSIS[
-            res.data.jobResponse.jobStatus === 'RUNNING'
-              ? 'TOP_ANAT_RESULT_JOB_ID'
-              : 'TOP_ANAT_RESULT'
-          ]
+          PATHS.ANALYSIS[res.data.jobResponse.jobStatus === 'RUNNING' ? 'TOP_ANAT_RESULT_JOB_ID' : 'TOP_ANAT_RESULT']
             .replace(':id', res.data.jobResponse.data)
             .replace(':jobId', res.data.jobResponse.jobId)
         );
       })
-      .catch((err) => {
+      .catch(err => {
         console.debug('[ERROR] api.topAnat.runJob', data, err);
         setFlowState(TOP_ANAT_FLOW.ERROR_LAUNCH_JOB);
       });
@@ -64,7 +57,7 @@ const useTopAnat = (flowState, setFlowState) => {
   });
 
   const foregroundHandler = React.useCallback(
-    (e) => {
+    e => {
       propsForm.handleChange('genes')(e);
       if (flowState !== TOP_ANAT_FLOW.NEW_JOB) return;
       if (timeoutFg) clearTimeout(timeoutFg);
@@ -72,13 +65,13 @@ const useTopAnat = (flowState, setFlowState) => {
         timeoutFg = setTimeout(() => {
           api.topAnat
             .autoCompleteGenes(e.target.value)
-            .then((r) => {
+            .then(r => {
               propsForm.handleChange('genesBg', () => '')();
               propsForm.handleChange('rnaSeq', () => true)();
               propsForm.handleChange('affymetrix', () => true)();
               propsForm.handleChange('inSitu', () => true)();
               propsForm.handleChange('est', () => true)();
-              setRP((prev) => ({
+              setRP(prev => ({
                 ...(prev || {}),
                 fg: {
                   list: r.data.fg_list,
@@ -88,65 +81,59 @@ const useTopAnat = (flowState, setFlowState) => {
                 customBg: false,
               }));
             })
-            .catch((err) => {
+            .catch(err => {
               console.debug('[ERROR] api.topAnat.autoComplete', err);
             });
         }, 1000);
-      } else
-        setRP((prev) => ({ ...prev, fg: null, bg: null, customBg: false }));
+      } else setRP(prev => ({ ...prev, fg: null, bg: null, customBg: false }));
     },
     [dataForm, propsForm, flowState]
   );
   const backgroundHandler = React.useCallback(
-    (e) => {
+    e => {
       propsForm.handleChange('genesBg')(e);
       if (flowState !== TOP_ANAT_FLOW.NEW_JOB) return;
       const bg = e.target.value.split('\n');
       const fg = dataForm.genes.split('\n');
 
       if (timeoutBg) clearTimeout(timeoutBg);
-      if (!fg.every((g) => bg.includes(g))) {
+      if (!fg.every(g => bg.includes(g))) {
         timeoutBg = setTimeout(
           () =>
             addNotification({
               id: random().toString(),
-              children: (
-                <p>Gene list contains genes not found in background genes.</p>
-              ),
+              children: <p>Gene list contains genes not found in background genes.</p>,
               className: `is-danger`,
             }),
           2000
         );
       }
-      if (e.target.value !== '' && fg.every((g) => bg.includes(g))) {
+      if (e.target.value !== '' && fg.every(g => bg.includes(g))) {
         timeoutBg = setTimeout(() => {
           api.topAnat
             .autoCompleteGenes(e.target.value, false)
-            .then((r) => {
-              setRP((prev) => ({
+            .then(r => {
+              setRP(prev => ({
                 ...prev,
                 bg: {
                   list: r.data.bg_list,
                   message: r.message,
                 },
               }));
-              if (
-                r.data.fg_list.selectedSpecies !==
-                requestParameters.fg.list.selectedSpecies
-              ) {
+              if (r.data.fg_list.selectedSpecies !== requestParameters.fg.list.selectedSpecies) {
                 addNotification({
                   id: random().toString(),
                   children: (
                     <p>
-                      Foreground and background species differ. You can either
-                      change your background or the default one will be used.
+                      Foreground and background species differ. You can either change your background or the default one
+                      will be used.
                     </p>
                   ),
                   className: `is-danger`,
                 });
               }
             })
-            .catch((err) => {
+            .catch(err => {
               console.debug('[ERROR] api.topAnat.autoComplete', err);
             });
         }, 1000);
@@ -155,12 +142,11 @@ const useTopAnat = (flowState, setFlowState) => {
     [dataForm, requestParameters, flowState]
   );
   const checkBoxHandler = React.useCallback(
-    (key) => (e) =>
-      propsForm.handleChange(key, (event) => event.target.checked)(e),
+    key => e => propsForm.handleChange(key, event => event.target.checked)(e),
     []
   );
   const onSelectCustomStage = React.useCallback(
-    (id) => (e) => {
+    id => e => {
       if (!requestParameters) {
         addNotification({
           id: random().toString(),
@@ -176,16 +162,14 @@ const useTopAnat = (flowState, setFlowState) => {
         } else {
           // remove
           tmp.splice(
-            tmp.findIndex((a) => a === id),
+            tmp.findIndex(a => a === id),
             1
           );
         }
         propsForm.handleChange('stages', () => tmp)();
       } else {
         propsForm.handleChange('stages', () =>
-          e === 'all'
-            ? 'all'
-            : requestParameters.fg.list.stages.map((s) => s.id)
+          e === 'all' ? 'all' : requestParameters.fg.list.stages.map(s => s.id)
         )();
       }
     },
@@ -193,11 +177,11 @@ const useTopAnat = (flowState, setFlowState) => {
   );
 
   const cancelJob = React.useCallback(
-    (jobId) => () => {
+    jobId => () => {
       if (jobId) {
         api.topAnat
           .cancelJob(jobId)
-          .then((res) => {
+          .then(res => {
             addNotification({
               id: random().toString(),
               children: res.message,
@@ -208,7 +192,7 @@ const useTopAnat = (flowState, setFlowState) => {
               requestParameters,
             });
           })
-          .catch((err) => {
+          .catch(err => {
             console.debug('[ERROR] api.topAnat.cancelJob(%s)', jobId, err);
             navigate(PATHS.ANALYSIS.TOP_ANAT);
           });
@@ -217,7 +201,7 @@ const useTopAnat = (flowState, setFlowState) => {
     [dataForm, requestParameters]
   );
   const startNewJob = React.useCallback(
-    (newJob) => () => {
+    newJob => () => {
       navigate(PATHS.ANALYSIS.TOP_ANAT, {
         form: newJob ? undefined : dataForm,
         requestParameters,

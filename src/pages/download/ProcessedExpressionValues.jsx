@@ -16,56 +16,38 @@ import imagePath from '../../helpers/imagePath';
 import config from '../../config.json';
 import { getMetadata } from '~/helpers/metadata';
 
-const FULL_LENGTH_LABEL = "Full length RNA-Seq";
-const DROPLET_BASED_LABEL = "Droplet based RNA-Seq";
+const FULL_LENGTH_LABEL = 'Full length RNA-Seq';
+const DROPLET_BASED_LABEL = 'Droplet based RNA-Seq';
 
 export async function loader() {
   try {
     const res = await api.search.species.processedValues();
-    const speciesList = res.data.downloadFilesGroups.map((o) => ({
+    const speciesList = res.data.downloadFilesGroups.map(o => ({
       ...o,
       ...o.members[0],
     }));
 
     const files = {};
-    speciesList.forEach((s) => {
+    speciesList.forEach(s => {
       files[s.id.toString()] = {
-        affymetrixData: s.downloadFiles.find(
-          (d) => d.category === 'affy_data'
-        ),
-        affymetrixAnnot: s.downloadFiles.find(
-          (d) => d.category === 'affy_annot'
-        ),
-        rnaSeqData: s.downloadFiles.find((d) => d.category === 'rnaseq_data'),
-        rnaSeqAnnot: s.downloadFiles.find(
-          (d) => d.category === 'rnaseq_annot'
-        ),
-        fullLengthAnnot: s.downloadFiles.find(
-          (d) => d.category === 'full_length_annot'
-        ),
-        fullLengthData: s.downloadFiles.find(
-          (d) => d.category === 'full_length_data'
-        ),
-        fullLengthH5ad: s.downloadFiles.find(
-          (d) => d.category === 'full_length_h5ad'
-        ),
-        dropletBasedAnnot: s.downloadFiles.find(
-          (d) => d.category === 'droplet_based_annot'
-        ),
-        dropletBasedData: s.downloadFiles.find(
-          (d) => d.category === 'droplet_based_data'
-        ),
-        dropletBasedH5ad: s.downloadFiles.find(
-          (d) => d.category === 'droplet_based_h5ad'
-        ),
+        affymetrixData: s.downloadFiles.find(d => d.category === 'affy_data'),
+        affymetrixAnnot: s.downloadFiles.find(d => d.category === 'affy_annot'),
+        rnaSeqData: s.downloadFiles.find(d => d.category === 'rnaseq_data'),
+        rnaSeqAnnot: s.downloadFiles.find(d => d.category === 'rnaseq_annot'),
+        fullLengthAnnot: s.downloadFiles.find(d => d.category === 'full_length_annot'),
+        fullLengthData: s.downloadFiles.find(d => d.category === 'full_length_data'),
+        fullLengthH5ad: s.downloadFiles.find(d => d.category === 'full_length_h5ad'),
+        dropletBasedAnnot: s.downloadFiles.find(d => d.category === 'droplet_based_annot'),
+        dropletBasedData: s.downloadFiles.find(d => d.category === 'droplet_based_data'),
+        dropletBasedH5ad: s.downloadFiles.find(d => d.category === 'droplet_based_h5ad'),
       };
     });
     return {
       speciesList,
       files,
       kwList: res.data.speciesIdToKeywords,
-      allSpeciesName: speciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
-    }
+      allSpeciesName: speciesList.map(s => ` ${s.name} ${s.speciesName}`).join(', '),
+    };
   } catch (error) {
     throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
   }
@@ -74,11 +56,11 @@ export async function loader() {
 export function meta({ data }) {
   return getMetadata({
     title: 'Bgee Processed expression values download page',
-    description: 'Download TSV files containing sample annotations, experiment information, and processed expression values',
+    description:
+      'Download TSV files containing sample annotations, experiment information, and processed expression values',
     keywords: `dataset, data download, gene expression, RNA-Seq, Affymetrix, ${FULL_LENGTH_LABEL}, scRNA-Seq, expression data annotations, ${data.allSpeciesName}`,
   });
 }
-
 
 const ProcessedExpressionValues = ({ loaderData }) => {
   const { speciesList, files, kwList } = loaderData;
@@ -88,9 +70,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
     const tmp = JSON.parse(JSON.stringify(speciesList));
     if (search === '') return tmp;
     const regExp = new RegExp(search, 'i');
-    return tmp.filter(({ id }) =>
-      !kwList[id] ? false : Boolean(kwList[id].find((a) => regExp.test(a)))
-    );
+    return tmp.filter(({ id }) => (!kwList[id] ? false : Boolean(kwList[id].find(a => regExp.test(a)))));
   }, [speciesList, search, kwList]);
   const speciesID = useQuery('id');
 
@@ -100,23 +80,15 @@ const ProcessedExpressionValues = ({ loaderData }) => {
         <Bulma.Title size={3}>Processed expression values</Bulma.Title>
       </div>
       <p className="is-size-5">
-        This page provides annotations and experiment information (e.g.,
-        annotations to anatomy and development, quality scores used in QCs, chip
-        or library information), and processed expression values (e.g., read
-        counts, TPM and FPKM values, log values of Affymetrix probeset
-        normalized signal intensities). Click on a species to browse files
-        available for download. It is possible to download these data directly
-        into R using our{' '}
-        <LinkExternal to="https://bioconductor.org/packages/BgeeDB/">
-          R package
-        </LinkExternal>
-        . See also{' '}
-        <Link
-          to={PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}
-          className="internal-link"
-        >
+        This page provides annotations and experiment information (e.g., annotations to anatomy and development, quality
+        scores used in QCs, chip or library information), and processed expression values (e.g., read counts, TPM and
+        FPKM values, log values of Affymetrix probeset normalized signal intensities). Click on a species to browse
+        files available for download. It is possible to download these data directly into R using our{' '}
+        <LinkExternal to="https://bioconductor.org/packages/BgeeDB/">R package</LinkExternal>. See also{' '}
+        <Link to={PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS} className="internal-link">
           gene expression calls
-        </Link>.
+        </Link>
+        .
       </p>
       <p className="is-size-5">
         All data are available under the{' '}
@@ -136,15 +108,8 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                 <ExpressionSearch
                   search={search}
                   setSearch={setSearch}
-                  elements={expressionPageHelper.autocompleteSpecies(
-                    filteredSpecies,
-                    kwList,
-                    search
-                  )}
-                  onRender={expressionPageHelper.autocompleteSpeciesRender(
-                    setSearch,
-                    navigate
-                  )}
+                  elements={expressionPageHelper.autocompleteSpecies(filteredSpecies, kwList, search)}
+                  onRender={expressionPageHelper.autocompleteSpeciesRender(setSearch, navigate)}
                 />
               </div>
             </div>
@@ -155,9 +120,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
         <Bulma.Card.Header>
           <Bulma.Card.Header.Title className="is-size-4 has-text-primary">
             Species with data in Bgee{' '}
-            <span className="ml-2 has-text-grey is-size-6">
-              (click on species to see more details)
-            </span>
+            <span className="ml-2 has-text-grey is-size-6">(click on species to see more details)</span>
           </Bulma.Card.Header.Title>
         </Bulma.Card.Header>
         <Bulma.Card.Body>
@@ -170,15 +133,12 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                   navigate(
                     isSelected
                       ? `${PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES}?id=${species.id}`
-                      : PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES
-                  , {replace: true});
+                      : PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES,
+                    { replace: true }
+                  );
                 }}
                 onRenderSelection={(species, { onClose }) => (
-                  <div
-                    className={classnames(
-                      'expression-species is-flex is-flex-direction-row p-4'
-                    )}
-                  >
+                  <div className={classnames('expression-species is-flex is-flex-direction-row p-4')}>
                     <div className="image-container">
                       <Bulma.Image
                         className="m-0"
@@ -221,33 +181,21 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                               See documentation
                             </Link>
                           </p>
-                          {files[species.id.toString()]?.rnaSeqAnnot ||
-                          files[species.id.toString()]?.rnaSeqData ? (
+                          {files[species.id.toString()]?.rnaSeqAnnot || files[species.id.toString()]?.rnaSeqData ? (
                             <>
                               <div className="buttons-wrapper">
                                 {files[species.id.toString()]?.rnaSeqAnnot && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_rna-seq_annotation-file"
-                                    label={
-                                      files[species.id.toString()]?.rnaSeqAnnot
-                                        .path
-                                    }
+                                    label={files[species.id.toString()]?.rnaSeqAnnot.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.rnaSeqAnnot.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.rnaSeqAnnot.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download experiments/libraries info
-                                          {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.rnaSeqAnnot.size
-                                          )})`}
+                                          {` (${readableFileSize(files[species.id.toString()]?.rnaSeqAnnot.size)})`}
                                         </span>
                                       </button>
                                     </a>
@@ -257,25 +205,14 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_rna-seq_data-file"
-                                    label={
-                                      files[species.id.toString()]?.rnaSeqData
-                                        .path
-                                    }
+                                    label={files[species.id.toString()]?.rnaSeqData.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]?.rnaSeqData
-                                          .path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.rnaSeqData.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download read counts and TPMs
-                                          {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.rnaSeqData.size
-                                          )})`}
+                                          {` (${readableFileSize(files[species.id.toString()]?.rnaSeqData.size)})`}
                                         </span>
                                       </button>
                                     </a>
@@ -293,9 +230,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                               </p>
                             </>
                           ) : (
-                            <p className="is-size-6 has-text-grey mb-2">
-                              No data
-                            </p>
+                            <p className="is-size-6 has-text-grey mb-2">No data</p>
                           )}
                         </div>
                         <div className="mt-4">
@@ -312,59 +247,35 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                           files[species.id.toString()]?.affymetrixData ? (
                             <>
                               <div className="buttons-wrapper">
-                                {files[species.id.toString()]
-                                  ?.affymetrixAnnot && (
+                                {files[species.id.toString()]?.affymetrixAnnot && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_affymetrix_annotation-file"
-                                    label={
-                                      files[species.id.toString()]
-                                        ?.affymetrixAnnot.path
-                                    }
+                                    label={files[species.id.toString()]?.affymetrixAnnot.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.affymetrixAnnot.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.affymetrixAnnot.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download experiments/chips info
-                                          {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.affymetrixAnnot.size
-                                          )})`}
+                                          {` (${readableFileSize(files[species.id.toString()]?.affymetrixAnnot.size)})`}
                                         </span>
                                       </button>
                                     </a>
                                   </GaEvent>
                                 )}
-                                {files[species.id.toString()]
-                                  ?.affymetrixData && (
+                                {files[species.id.toString()]?.affymetrixData && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_affymetrix_data-file"
-                                    label={
-                                      files[species.id.toString()]
-                                        ?.affymetrixData.path
-                                    }
+                                    label={files[species.id.toString()]?.affymetrixData.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.affymetrixData.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.affymetrixData.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download signal intensities
-                                          {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.affymetrixData.size
-                                          )})`}
+                                          {` (${readableFileSize(files[species.id.toString()]?.affymetrixData.size)})`}
                                         </span>
                                       </button>
                                     </a>
@@ -382,9 +293,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                               </p>
                             </>
                           ) : (
-                            <p className="is-size-6 has-text-grey mb-2">
-                              No data
-                            </p>
+                            <p className="is-size-6 has-text-grey mb-2">No data</p>
                           )}
                         </div>
                         <div className="mt-4">
@@ -402,87 +311,57 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                           files[species.id.toString()]?.dropletBasedH5ad ? (
                             <>
                               <div className="buttons-wrapper">
-                                {files[species.id.toString()]
-                                  ?.dropletBasedAnnot && (
+                                {files[species.id.toString()]?.dropletBasedAnnot && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_droplet-based_annotation-file"
-                                    label={
-                                      files[species.id.toString()]
-                                        ?.dropletBasedAnnot.path
-                                    }
+                                    label={files[species.id.toString()]?.dropletBasedAnnot.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.dropletBasedAnnot.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.dropletBasedAnnot.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download experiments/libraries info
                                           {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.dropletBasedAnnot.size
+                                            files[species.id.toString()]?.dropletBasedAnnot.size
                                           )})`}
                                         </span>
                                       </button>
                                     </a>
                                   </GaEvent>
                                 )}
-                                {files[species.id.toString()]
-                                  ?.dropletBasedData && (
+                                {files[species.id.toString()]?.dropletBasedData && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_droplet-based_data-file"
-                                    label={
-                                      files[species.id.toString()]
-                                        ?.dropletBasedData.path
-                                    }
+                                    label={files[species.id.toString()]?.dropletBasedData.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.dropletBasedData.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.dropletBasedData.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download UMI counts and CPMs per cell-type
                                           {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.dropletBasedData.size
+                                            files[species.id.toString()]?.dropletBasedData.size
                                           )})`}
                                         </span>
                                       </button>
                                     </a>
                                   </GaEvent>
                                 )}
-                                {files[species.id.toString()]
-                                  ?.dropletBasedH5ad && (
+                                {files[species.id.toString()]?.dropletBasedH5ad && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_droplet-based_h5ad-file"
-                                    label={
-                                      files[species.id.toString()]
-                                        ?.dropletBasedH5ad.path
-                                    }
+                                    label={files[species.id.toString()]?.dropletBasedH5ad.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.dropletBasedH5ad.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.dropletBasedH5ad.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download UMI counts per cell
                                           {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.dropletBasedH5ad.size
+                                            files[species.id.toString()]?.dropletBasedH5ad.size
                                           )})`}
                                         </span>
                                       </button>
@@ -501,9 +380,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                               </p>
                             </>
                           ) : (
-                            <p className="is-size-6 has-text-grey mb-2">
-                              No data
-                            </p>
+                            <p className="is-size-6 has-text-grey mb-2">No data</p>
                           )}
                         </div>
                         <div className="mt-4">
@@ -521,88 +398,52 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                           files[species.id.toString()]?.fullLengthH5ad ? (
                             <>
                               <div className="buttons-wrapper">
-                                {files[species.id.toString()]
-                                  ?.fullLengthAnnot && (
+                                {files[species.id.toString()]?.fullLengthAnnot && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_full-length_annotation-file"
-                                    label={
-                                      files[species.id.toString()]
-                                        ?.fullLengthAnnot.path
-                                    }
+                                    label={files[species.id.toString()]?.fullLengthAnnot.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.fullLengthAnnot.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.fullLengthAnnot.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download experiments/libraries info
-                                          {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.fullLengthAnnot.size
-                                          )})`}
+                                          {` (${readableFileSize(files[species.id.toString()]?.fullLengthAnnot.size)})`}
                                         </span>
                                       </button>
                                     </a>
                                   </GaEvent>
                                 )}
-                                {files[species.id.toString()]
-                                  ?.fullLengthData && (
+                                {files[species.id.toString()]?.fullLengthData && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_full-length_data-file"
-                                    label={
-                                      files[species.id.toString()]
-                                        ?.fullLengthData.path
-                                    }
+                                    label={files[species.id.toString()]?.fullLengthData.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.fullLengthData.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.fullLengthData.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download read counts and TPMs per cell-type
-                                          {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.fullLengthData.size
-                                          )})`}
+                                          {` (${readableFileSize(files[species.id.toString()]?.fullLengthData.size)})`}
                                         </span>
                                       </button>
                                     </a>
                                   </GaEvent>
                                 )}
-                                {files[species.id.toString()]
-                                  ?.fullLengthH5ad && (
+                                {files[species.id.toString()]?.fullLengthH5ad && (
                                   <GaEvent
                                     category="Processed Expression Values"
                                     action="download_full-length_h5ad-file"
-                                    label={
-                                      files[species.id.toString()]
-                                        ?.fullLengthH5ad.path
-                                    }
+                                    label={files[species.id.toString()]?.fullLengthH5ad.path}
                                   >
-                                    <a
-                                      href={
-                                        files[species.id.toString()]
-                                          ?.fullLengthH5ad.path
-                                      }
-                                    >
+                                    <a href={files[species.id.toString()]?.fullLengthH5ad.path}>
                                       <button className="button is-light is-multiline">
                                         <ion-icon name="download-outline" />
                                         <span className="is-size-6 ml-2">
                                           Download read counts per cell
-                                          {` (${readableFileSize(
-                                            files[species.id.toString()]
-                                              ?.fullLengthH5ad.size
-                                          )})`}
+                                          {` (${readableFileSize(files[species.id.toString()]?.fullLengthH5ad.size)})`}
                                         </span>
                                       </button>
                                     </a>
@@ -620,9 +461,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                               </p>
                             </>
                           ) : (
-                            <p className="is-size-6 has-text-grey mb-2">
-                              No data
-                            </p>
+                            <p className="is-size-6 has-text-grey mb-2">No data</p>
                           )}
                           <p className=" is-size-6">
                             <a

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import {Link} from "react-router";
+import { Link } from 'react-router';
 import PATHS from '../../paths/paths';
 
 const COOKIE_KEY = 'BGEE-PP';
@@ -39,9 +39,8 @@ const CookieMessage = () => {
     <>
       <div className="left">
         <span className="privacycolor">
-          This website requires cookies, and limited processing of your personal
-          data in order to function. By using the site you are agreeing to this
-          as outlined in our{' '}
+          This website requires cookies, and limited processing of your personal data in order to function. By using the
+          site you are agreeing to this as outlined in our{' '}
           <Link to={PATHS.ABOUT.PRIVACY_POLICY} className=" is-underlined color-white">
             privacy notice
           </Link>
