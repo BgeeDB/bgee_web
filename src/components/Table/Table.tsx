@@ -35,13 +35,42 @@ const Table = ({
   identifierAtFilter = false,
   emptyTableMessage = 'No data',
   isRequestPerPage = false,
-  paginationParamPageKey = null,
-  paginationResultCountKey = null,
+  paginationParamPageKey = undefined,
+  paginationResultCountKey = undefined,
   manualMaxPage = -1,
   minThWidth = null,
   hasPaginationTop = false,
   hasScrollTop = false,
-}: any) => {
+}: {
+  fullwidth?: boolean;
+  classNames?: string;
+  title?: string;
+  columns: any[];
+  data: any[];
+  onFilter?: (search: string) => (obj: any) => boolean;
+  sortable?: boolean;
+  multiSortable?: boolean;
+  onSortCustom?: (sortOption: any) => (a: any, b: any) => number;
+  initialSorting?: { key: string; sort: 'ascending' | 'descending' };
+  onRenderCell?: (obj: any, columnKey: string) => React.ReactNode;
+  onRenderRow?: (obj: any) => React.ReactNode;
+  striped?: boolean;
+  pagination?: boolean;
+  defaultPaginationSize?: number;
+  customHeader?: any;
+  // customHeader?: React.ReactNode;
+  mappingObj?: (obj: any) => any;
+  name?: string;
+  identifierAtFilter?: boolean;
+  emptyTableMessage?: React.ReactNode | string;
+  isRequestPerPage?: boolean;
+  paginationParamPageKey?: string | undefined;
+  paginationResultCountKey?: string | undefined;
+  manualMaxPage?: number;
+  minThWidth?: number | null;
+  hasPaginationTop?: boolean;
+  hasScrollTop?: boolean;
+}) => {
   const mappedData = React.useMemo(
     () => data.map((obj, key) => ({ ...obj, identifierRow: key + 1 })).map(mappingObj),
     [data, mappingObj]

@@ -1,6 +1,18 @@
 import config from '../../config.json';
 
-const GaEvent = ({ category, action, label, value, children }: any) => {
+const GaEvent = ({
+  category,
+  action,
+  label,
+  value,
+  children,
+}: {
+  category: string;
+  action: string;
+  label: string;
+  value: number;
+  children: React.ReactNode;
+}) => {
   const handleClick = () => {
     if (category && action) {
       const script = document.createElement('script');

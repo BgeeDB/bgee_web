@@ -16,7 +16,33 @@ const Columns = ({
   fullhd = {},
   touch = {},
   ...props
-}: any) => (
+}: {
+  className?: string;
+  breakpoint?: string;
+  gap?: string | number;
+  multiline?: boolean;
+  centered?: boolean;
+  vCentered?: boolean;
+  mobile?: {
+    gap?: string | number;
+  };
+  tablet?: {
+    gap?: string | number;
+  };
+  desktop?: {
+    gap?: string | number;
+  };
+  widescreen?: {
+    gap?: string | number;
+  };
+  fullhd?: {
+    gap?: string | number;
+  };
+  touch?: {
+    gap?: string | number;
+  };
+  [key: string]: any;
+}) => (
   <Element
     {...props}
     {...{ mobile, tablet, desktop, widescreen, fullhd, touch }}

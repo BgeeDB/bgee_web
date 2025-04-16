@@ -4,7 +4,7 @@ import Bulma from '../Bulma';
 import NewsItem from '../NewsItem';
 
 const markdownFiles = import.meta.glob('../../markdown/news/*.md', { eager: true });
-const news = Object.entries(markdownFiles).map(([path, module]: any) => {
+const news = Object.entries(markdownFiles).map(([path, module]: [string, any]) => {
   const filename = path.replace(/^.*[/\\]/, '');
   // e.g. News-2023-04-24.md
   const date = filename.replace(/^News-(.*)\.md$/, '$1');

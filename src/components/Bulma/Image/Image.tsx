@@ -15,7 +15,20 @@ const Image = ({
   imgClassnames,
   renderAs = 'figure',
   ...props
-}: any) => {
+}: {
+  className?: string;
+  alt?: string;
+  size?: string | number;
+  fallback?: string;
+  rounded?: boolean;
+  src: string;
+  fullwidth?: boolean;
+  width?: number | string;
+  height?: number | string;
+  imgClassnames?: string;
+  renderAs?: any;
+  [key: string]: any;
+}) => {
   const [state, setState] = useState({ src });
   useEffect(() => {
     setState({ src });
@@ -41,7 +54,7 @@ const Image = ({
           },
           imgClassnames
         )}
-        onError={() => state.src !== fallback && setState({ src: fallback })}
+        onError={() => fallback && state.src !== fallback && setState({ src: fallback })}
         src={state.src}
         alt={alt}
         style={{ width, height }}

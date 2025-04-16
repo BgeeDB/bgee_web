@@ -6,7 +6,15 @@ import api from '../../api';
 import PATHS from '../../paths/paths';
 import AutoCompleteSearch from '../AutoCompleteSearch/AutoCompleteSearch';
 
-const GeneSearch = ({ classNames, children, searchTerm = '' }: any) => {
+const GeneSearch = ({
+  classNames,
+  children,
+  searchTerm = '',
+}: {
+  classNames?: string;
+  children?: React.ReactNode;
+  searchTerm?: string;
+}) => {
   const navigate = useNavigate();
 
   const renderOption = useCallback((option, search) => {

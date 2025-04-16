@@ -1,6 +1,20 @@
 import classnames from '../../helpers/classnames';
 
-const Tooltip = ({ children, title, content, style, className, isLeft = false }: any) => (
+const Tooltip = ({
+  children,
+  title,
+  content,
+  style,
+  className,
+  isLeft = false,
+}: {
+  children?: React.ReactNode;
+  title?: string;
+  content?: string;
+  style?: React.CSSProperties;
+  className?: string;
+  isLeft?: boolean;
+}) => (
   <div className={classnames('tooltip', className)} style={style}>
     {children}
     <span className={classnames('tooltip-content', isLeft && 'isLeft')}>

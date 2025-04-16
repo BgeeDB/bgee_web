@@ -1,6 +1,20 @@
 import classnames from '../../helpers/classnames';
 
-const LinkExternal = ({ id, to, text, className, children, ...props }: any) => (
+const LinkExternal = ({
+  id,
+  to,
+  text,
+  className,
+  children,
+  ...props
+}: {
+  id?: string;
+  to: string;
+  text?: string;
+  className?: string;
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => (
   <a
     href={to}
     target="_blank"

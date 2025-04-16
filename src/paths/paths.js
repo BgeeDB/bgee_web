@@ -1,5 +1,5 @@
 import config from '../config.json';
-import { URL_ROOT, URL_VERSION } from '~/helpers/constants';
+import { URL_ROOT, URL_VERSION } from '../helpers/constants';
 
 const SPARQL_ARCH = `${config.archive ? `${URL_VERSION}` : ''}`;
 const PATHS = {

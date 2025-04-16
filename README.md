@@ -34,6 +34,7 @@ npm run dev
 ```sh
 npm run fmt
 npm run lint
+npm run typecheck
 ```
 
 > [!NOTE]

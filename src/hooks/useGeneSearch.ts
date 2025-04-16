@@ -14,7 +14,7 @@ const useGeneSearch = () => {
           if (resp.code === 200) {
             setResResultListGenes(resp.data.result);
           } else {
-            setResResultListGenes(null);
+            setResResultListGenes(undefined);
           }
         })
         .catch(() => {
@@ -24,7 +24,7 @@ const useGeneSearch = () => {
           setIsLoading(false);
         });
     } else {
-      setResResultListGenes(null);
+      setResResultListGenes(undefined);
     }
   }, []);
 

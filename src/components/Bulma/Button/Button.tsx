@@ -25,7 +25,29 @@ const Button = ({
   light,
   text,
   ...props
-}: any) => {
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  renderAs?: string;
+  color?: string;
+  size?: string;
+  outlined?: boolean;
+  inverted?: boolean;
+  submit?: boolean;
+  reset?: boolean;
+  fullwidth?: boolean;
+  status?: string;
+  loading?: boolean;
+  disabled?: boolean;
+  remove?: boolean;
+  isSelected?: boolean;
+  isStatic?: boolean;
+  rounded?: boolean;
+  onClick?: (event: React.MouseEvent) => void;
+  light?: boolean;
+  text?: boolean;
+  [key: string]: any;
+}) => {
   let otherProps = {};
   if (submit) {
     otherProps = {

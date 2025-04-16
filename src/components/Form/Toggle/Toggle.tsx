@@ -1,4 +1,18 @@
-const Toggle = ({ controlClassName, elements, value, onChange, error, disabled }: any) => (
+const Toggle = ({
+  controlClassName,
+  elements,
+  value,
+  onChange,
+  error,
+  disabled,
+}: {
+  controlClassName?: string;
+  elements: Array<{ key?: string; value: string; text: string }>;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string | boolean;
+  disabled?: boolean;
+}) => (
   <div className={`control ${controlClassName || ''}`}>
     <div className="field has-addons">
       {elements.map((element) => (

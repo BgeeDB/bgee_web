@@ -1,7 +1,7 @@
 import classnames from '../../helpers/classnames';
 import { normalizeAlign } from '../../helpers/bulma';
 
-const buildResponsiveness = (currentViewport, { display, textAlign, textSize, only, invisible } = {}) => {
+const buildResponsiveness = (currentViewport, { display, textAlign, textSize, only, invisible }: any = {}) => {
   const suffix = only ? '-only' : '';
 
   return classnames({
@@ -22,7 +22,6 @@ const useBulmaElementClassNames = ({
   alignContent,
   alignItems,
   flexGrow,
-  ratio,
   clearfix,
   paddingless,
   pull,
@@ -66,7 +65,7 @@ const useBulmaElementClassNames = ({
   untilWidescreen,
   untilFullhd,
   ...props
-}) => [
+}: any) => [
   classnames(
     {
       [`has-text-${textColor}`]: textColor,

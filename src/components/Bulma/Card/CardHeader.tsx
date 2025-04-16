@@ -1,7 +1,7 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const CardHeaderIcon = ({ className, ...props }: any) => (
+const CardHeaderIcon = ({ className, ...props }: { className?: string; [key: string]: any }) => (
   <Element {...props} className={classnames('card-header-icon', className)} />
 );
 
@@ -9,7 +9,7 @@ CardHeaderIcon.propTypes = {};
 
 CardHeaderIcon.defaultProps = {};
 
-const CardHeaderTitle = ({ className, ...props }: any) => (
+const CardHeaderTitle = ({ className, ...props }: { className?: string; [key: string]: any }) => (
   <Element {...props} className={classnames('card-header-title', className)} />
 );
 
@@ -17,7 +17,7 @@ CardHeaderTitle.propTypes = {};
 
 CardHeaderTitle.defaultProps = {};
 
-const CardHeader = ({ className, ...props }: any) => (
+const CardHeader = ({ className, ...props }: { className?: string; [key: string]: any }) => (
   <Element {...props} className={classnames('card-header', className)} />
 );
 

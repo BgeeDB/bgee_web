@@ -1,7 +1,23 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const Tile = ({ children, className, kind, vertical, size, color, ...props }: any) => (
+const Tile = ({
+  children,
+  className,
+  kind,
+  vertical,
+  size,
+  color,
+  ...props
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  kind?: 'ancestor' | 'parent' | 'child';
+  vertical?: boolean;
+  size?: string;
+  color?: string;
+  [key: string]: any;
+}) => (
   <Element
     {...props}
     className={classnames('tile', className, {

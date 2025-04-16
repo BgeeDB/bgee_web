@@ -14,7 +14,44 @@ const Column = ({
   fullhd = {},
   touch = {},
   ...props
-}: any) => (
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  size?: string | number;
+  offset?: string | number;
+  narrow?: boolean;
+  mobile?: {
+    size?: string | number;
+    offset?: string | number;
+    narrow?: boolean;
+  };
+  tablet?: {
+    size?: string | number;
+    offset?: string | number;
+    narrow?: boolean;
+  };
+  desktop?: {
+    size?: string | number;
+    offset?: string | number;
+    narrow?: boolean;
+  };
+  widescreen?: {
+    size?: string | number;
+    offset?: string | number;
+    narrow?: boolean;
+  };
+  fullhd?: {
+    size?: string | number;
+    offset?: string | number;
+    narrow?: boolean;
+  };
+  touch?: {
+    size?: string | number;
+    offset?: string | number;
+    narrow?: boolean;
+  };
+  [key: string]: any;
+}) => (
   <Element
     {...props}
     {...{ mobile, tablet, desktop, widescreen, fullhd, touch }}

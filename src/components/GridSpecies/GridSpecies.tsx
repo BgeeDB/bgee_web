@@ -35,11 +35,19 @@ const GridSpecies = ({
   expandable,
   defaultSelection,
   scrollAt = true,
-}: any) => {
+}: {
+  speciesList: any[];
+  onRenderSelection?: (species: any, props: { onClose: () => void }) => React.ReactNode;
+  onClick?: (species: any, selected: boolean) => void;
+  to?: (species: any) => string;
+  expandable?: boolean;
+  defaultSelection?: string | number;
+  scrollAt?: boolean;
+}) => {
   const speciesID = useQuery('id');
 
   const [selectedSpecies, setSelectedSpecies] = React.useState(
-    defaultSelection ? parseInt(defaultSelection, 10) : undefined
+    defaultSelection ? parseInt(defaultSelection.toString(), 10) : undefined
   );
 
   React.useEffect(() => {

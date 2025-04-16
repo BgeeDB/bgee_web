@@ -12,7 +12,18 @@ const Title = ({
   colorClassName,
   renderAs = 'h1',
   ...props
-}: any) => (
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  size?: string | number;
+  subtitle?: boolean;
+  weight?: string;
+  spaced?: boolean;
+  heading?: boolean;
+  colorClassName?: string;
+  renderAs?: any;
+  [key: string]: any;
+}) => (
   <Element
     {...props}
     renderAs={renderAs}
