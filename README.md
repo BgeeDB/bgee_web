@@ -5,6 +5,8 @@
 
 # 🐝 Bgee website
 
+[![Tests](https://github.com/vemonet/bgee_web/actions/workflows/test.yml/badge.svg)](https://github.com/vemonet/bgee_web/actions/workflows/test.yml)
+
 Code for the Bgee website available at [https://www.bgee.org](https://www.bgee.org). Bgee is a database for retrieval and comparison of gene expression patterns across multiple animal species.
 
 This website uses [React Router 7](https://reactrouter.com/home) to serve the pages with server-side rendering (SSR).

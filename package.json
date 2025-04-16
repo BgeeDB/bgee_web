@@ -11,7 +11,7 @@
     "fmt": "prettier --write . && eslint . --fix",
     "lint": "prettier --check . && eslint .",
     "test": "npx playwright test",
-    "postinstall": "npx playwright install",
+    "postinstall": "npx playwright install --with-deps",
     "prepare": "husky",
     "upgrade": "npx npm-check-updates -u && npm i",
     "archive": "node scripts/archiveCreation.js"
