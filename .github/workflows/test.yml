@@ -1,7 +1,7 @@
 name: Tests
 on:
   push:
-    branches: ['main', 'develop']
+    branches: ['main', 'develop', 'migrate-react-router']
   workflow_dispatch:
   workflow_call:
   pull_request:
@@ -27,3 +27,16 @@ jobs:
 
       - name: 📦 Build
         run: npm run build
+
+      - name: ✅ Run Playwright tests
+        run: npm test
+
+      # - name: Install Playwright Browsers
+      #   run: npx playwright install --with-deps
+
+      # - uses: actions/upload-artifact@v4
+      #   if: ${{ !cancelled() }}
+      #   with:
+      #     name: playwright-report
+      #     path: playwright-report/
+      #     retention-days: 30

@@ -41,6 +41,14 @@ npm run typecheck
 >
 > Formatting will be run automatically when you commit.
 
+### ✅ Tests
+
+Run the tests with [`playwright`](https://playwright.dev/)
+
+```sh
+npm test
+```
+
 ### ⏫ Upgrade dependencies
 
 Upgrade dependencies to their latest available version in the `package.json`.
