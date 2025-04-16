@@ -2,14 +2,23 @@ import axiosInstance from './constant';
 import errorHandler from '../errorHandler';
 
 const feedback = {
-  submit: ({ sourceUrl, rating, comment, email }) =>
+  submit: ({
+    sourceUrl,
+    rating,
+    comment,
+    email,
+  }: {
+    sourceUrl: string;
+    rating: number;
+    comment: string;
+    email?: string;
+  }) =>
     new Promise((resolve, reject) => {
-      const data = {
+      const data: any = {
         source_url: sourceUrl,
         rating,
         comment,
       };
-
       if (email) data.email = email;
 
       axiosInstance

@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import config from '../config.json';
 import { URL_ROOT } from '~/helpers/constants';
 
 export const PARAM_PAGE_KEY = 'pageNumber';
@@ -14,29 +13,18 @@ export const usePaginationLink = (paginationParamPageKey, paginationResultCountK
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
 
   const generatePaginationLink = useCallback(
-    (page, count) => {
-      if (page < 1 || count < 0) {
-        return '#';
-      }
-
+    (page: number, count: number = 0) => {
+      if (page < 1 || count < 0) return '#';
       const sp = Object.fromEntries(searchParams.entries());
-
       const newSp = new URLSearchParams({
         ...sp,
       });
-
-      if (page) {
-        newSp.set(keyForPage, page);
-      }
-      if (count) {
-        newSp.set(keyForPageSize, count);
-      }
-
+      if (page) newSp.set(keyForPage, page.toString());
+      if (count) newSp.set(keyForPageSize, count.toString());
       return `${URL_ROOT}${pathname}?${newSp.toString()}`;
     },
     [searchParams]
   );
-
   return { generatePaginationLink };
 };
 

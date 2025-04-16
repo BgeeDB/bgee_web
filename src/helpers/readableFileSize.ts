@@ -8,7 +8,7 @@ const UNIT_MAPPING = {
 
 const DIVISOR = 1000;
 
-const readableFileSize = (size) => {
+const readableFileSize = (size: number) => {
   let unit = 0;
   let tmpSize = size;
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAxiosAddNotif } from './prod/constant';
 import random from '../helpers/random';
 
-const errorHandler = (error) => {
+const errorHandler = (error: any) => {
   if (axios.isCancel(error)) {
     console.error(error.message);
   }

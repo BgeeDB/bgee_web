@@ -2,8 +2,6 @@ import React from 'react';
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router';
 
 import type { Route } from './+types/root';
-import './styles/global.scss';
-
 import { ModalProvider } from './contexts/ModalContext';
 import { APP_VERSION, URL_ROOT } from './helpers/constants';
 import config from './config.json';
@@ -14,19 +12,7 @@ import Footer from './components/Layout/Footer/Footer';
 import CookieMessage from './components/CookieMessage';
 import { NotificationProvider, NotificationContext } from './contexts/NotificationsContext';
 import { setAxiosAddNotif } from './api/prod/constant';
-
-export const links: Route.LinksFunction = () => [
-  // { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  // {
-  //   rel: "preconnect",
-  //   href: "https://fonts.gstatic.com",
-  //   crossOrigin: "anonymous",
-  // },
-  // {
-  //   rel: "stylesheet",
-  //   href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-  // },
-];
+import './styles/global.scss';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { addNotification } = React.useContext(NotificationContext);
@@ -143,3 +129,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     </main>
   );
 }
+
+// export const links: Route.LinksFunction = () => [
+//   { rel: "preconnect", href: "https://fonts.googleapis.com" },
+// ];

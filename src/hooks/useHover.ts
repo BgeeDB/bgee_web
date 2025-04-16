@@ -2,7 +2,7 @@ import React from 'react';
 
 function useHover() {
   const [value, setValue] = React.useState(false);
-  const ref = React.useRef(null);
+  const ref = React.useRef<any>(null);
   const handleMouseOver = () => setValue(true);
   const handleMouseOut = () => setValue(false);
   React.useEffect(

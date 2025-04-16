@@ -1,5 +1,4 @@
 import { visit } from 'unist-util-visit';
-import config from '../config.json';
 import { URL_ROOT } from '~/helpers/constants';
 
 const rehypeLink = (navigate) => () => (tree) => {

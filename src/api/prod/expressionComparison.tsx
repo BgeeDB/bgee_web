@@ -3,7 +3,7 @@ import axiosInstance, { getAxiosAddNotif } from './constant';
 import errorHandler from '../errorHandler';
 import random from '../../helpers/random';
 
-export const EXPRESSION_COMPARISON_API = {
+export const EXPRESSION_COMPARISON_API: any = {
   getResults: null,
 };
 

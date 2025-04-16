@@ -1,5 +1,7 @@
 const own = {}.hasOwnProperty;
 
+// TODO: REMOVE, not used anywhere
+
 /**
  * Check if `node` has a set `name` property.
  *

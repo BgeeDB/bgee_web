@@ -1,6 +1,6 @@
 export const monoSort =
-  ({ key, sort }) =>
-  ({ [key]: a }, { [key]: b }) => {
+  <T extends string>({ key, sort }: { key: T; sort: 'ascending' | 'descending' | string }) =>
+  ({ [key]: a }: Record<T, any>, { [key]: b }: Record<T, any>) => {
     const AFormatted = typeof a === 'string' ? a.toLowerCase() : a;
     const bFormatted = typeof b === 'string' ? b.toLowerCase() : b;
     if (AFormatted === bFormatted) return 0;

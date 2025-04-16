@@ -1,6 +1,6 @@
 import axiosInstance from './constant';
 
-const DEFAULT_PARAMETERS = (page, action) => {
+const DEFAULT_PARAMETERS = (page: string, action: string = '') => {
   const params = new URLSearchParams();
 
   params.append('display_type', 'json');
@@ -10,7 +10,7 @@ const DEFAULT_PARAMETERS = (page, action) => {
   return params;
 };
 const get = {
-  dataSources: () =>
+  dataSources: (): any =>
     new Promise((resolve, reject) => {
       const params = DEFAULT_PARAMETERS('source');
 

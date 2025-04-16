@@ -6,7 +6,7 @@ import config from '../../config.json';
 
 const { ID_FULL_LENGTH } = config.dataTypeIds;
 
-export const TOP_ANAT_CANCEL_API = {
+export const TOP_ANAT_CANCEL_API: any = {
   autoCompleteGenes: null,
   runJob: null,
   getJob: null,
@@ -17,7 +17,7 @@ export const TOP_ANAT_CANCEL_API = {
 const DEFAULT_PARAMETERS = (page = 'top_anat') => {
   const params = new URLSearchParams();
 
-  params.append('ajax', 1);
+  params.append('ajax', '1');
   params.append('display_type', 'json');
   params.append('page', page);
 
@@ -25,7 +25,7 @@ const DEFAULT_PARAMETERS = (page = 'top_anat') => {
 };
 
 const topAnat = {
-  autoCompleteGenes: (genes, isFg = true) =>
+  autoCompleteGenes: (genes: string, isFg = true): any =>
     new Promise((resolve, reject) => {
       if (TOP_ANAT_CANCEL_API.autoCompleteGenes) {
         TOP_ANAT_CANCEL_API.autoCompleteGenes();
@@ -47,7 +47,7 @@ const topAnat = {
           reject(error?.response);
         });
     }),
-  runJob: (form) =>
+  runJob: (form): any =>
     new Promise((resolve, reject) => {
       if (TOP_ANAT_CANCEL_API.runJob) {
         TOP_ANAT_CANCEL_API.runJob();
@@ -58,7 +58,7 @@ const topAnat = {
 
       const params = DEFAULT_PARAMETERS();
       params.append('action', 'submit_job');
-      params.append('display_rp', 1);
+      params.append('display_rp', '1');
       params.append('fg_list', form.genes);
       params.append('bg_list', form.genesBg);
       if (form.rnaSeq) params.append('data_type', 'RNA_SEQ');
@@ -104,7 +104,7 @@ const topAnat = {
           reject(error?.response);
         });
     }),
-  getJob: (searchId, jobId, requestParams) =>
+  getJob: (searchId, jobId, requestParams): any =>
     new Promise((resolve, reject) => {
       if (TOP_ANAT_CANCEL_API.getJob) {
         TOP_ANAT_CANCEL_API.getJob();
@@ -112,7 +112,7 @@ const topAnat = {
       }
       const params = DEFAULT_PARAMETERS();
       params.append('action', 'tracking_job');
-      if (requestParams) params.append('display_rp', 1);
+      if (requestParams) params.append('display_rp', '1');
       if (jobId) params.append('job_id', jobId);
       params.append('data', searchId);
       axiosInstance
@@ -128,7 +128,7 @@ const topAnat = {
           reject(error);
         });
     }),
-  cancelJob: (jobId) =>
+  cancelJob: (jobId): any =>
     new Promise((resolve, reject) => {
       if (TOP_ANAT_CANCEL_API.cancelJob) {
         TOP_ANAT_CANCEL_API.cancelJob();
@@ -152,7 +152,7 @@ const topAnat = {
           reject(error?.response);
         });
     }),
-  getResults: (searchId) =>
+  getResults: (searchId): any =>
     new Promise((resolve, reject) => {
       if (TOP_ANAT_CANCEL_API.getResults) {
         TOP_ANAT_CANCEL_API.getResults();
@@ -160,8 +160,8 @@ const topAnat = {
       }
       const params = DEFAULT_PARAMETERS();
       params.append('action', 'get_results');
-      params.append('gene_info', 1);
-      params.append('display_rp', 1);
+      params.append('gene_info', '1');
+      params.append('display_rp', '1');
       params.append('data', searchId);
       axiosInstance
         .get(`/?${params.toString()}`, {

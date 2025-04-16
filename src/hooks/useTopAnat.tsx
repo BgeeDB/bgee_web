@@ -25,7 +25,7 @@ export const TOP_ANAT_FLOW = {
 
 const useTopAnat = (flowState, setFlowState) => {
   const { addNotification } = React.useContext(NotificationContext);
-  const [requestParameters, setRP] = React.useState(TOP_ANAT_DEFAULT_RP);
+  const [requestParameters, setRP]: any = React.useState(TOP_ANAT_DEFAULT_RP);
   const [results, setResults] = React.useState();
 
   const navigate = useNavigate();
@@ -188,8 +188,10 @@ const useTopAnat = (flowState, setFlowState) => {
               className: 'is-success',
             });
             navigate(PATHS.ANALYSIS.TOP_ANAT, {
-              form: dataForm,
-              requestParameters,
+              state: {
+                form: dataForm,
+                requestParameters,
+              },
             });
           })
           .catch((err) => {
@@ -203,15 +205,17 @@ const useTopAnat = (flowState, setFlowState) => {
   const startNewJob = React.useCallback(
     (newJob) => () => {
       navigate(PATHS.ANALYSIS.TOP_ANAT, {
-        form: newJob ? undefined : dataForm,
-        requestParameters,
+        state: {
+          form: newJob ? undefined : dataForm,
+          requestParameters,
+        },
       });
     },
     [dataForm, requestParameters]
   );
   const resetForm = React.useCallback(() => {
     setRP(TOP_ANAT_DEFAULT_RP);
-    setResults();
+    setResults(undefined);
     reset();
   }, []);
 

@@ -4,11 +4,11 @@ import useModal from '../hooks/useModal';
 import Element from '../components/Bulma/Element/Element';
 import classnames from '../helpers/classnames';
 
-const ModalContext = React.createContext();
+const ModalContext = React.createContext({});
 const { Provider } = ModalContext;
 
 const Modal = () => {
-  const { modalContent, hideModal, modal, customOnClose } = React.useContext(ModalContext);
+  const { modalContent, hideModal, modal, customOnClose }: any = React.useContext(ModalContext);
 
   if (modal)
     return ReactDOM.createPortal(
@@ -25,7 +25,7 @@ const Modal = () => {
         />
         {modalContent}
       </Element>,
-      document.querySelector('#modal')
+      document.querySelector('#modal') as HTMLElement
     );
   return null;
 };

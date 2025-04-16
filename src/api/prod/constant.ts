@@ -12,7 +12,11 @@ let axiosAddNotif = null;
 export const setAxiosAddNotif = (fct) => {
   axiosAddNotif = fct;
 };
-export const getAxiosAddNotif = () => axiosAddNotif || (() => () => {});
+export const getAxiosAddNotif = () =>
+  axiosAddNotif ||
+  ((data: any) => () => {
+    console.debug('axiosAddNotif', data);
+  });
 
 export default axiosInstance;
 

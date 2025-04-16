@@ -1,7 +1,7 @@
 import React from 'react';
 
 const useDetectClickOutside = (onClickOutside) => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<any>(null);
 
   const clickListener = React.useCallback(
     (e) => {

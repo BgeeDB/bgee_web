@@ -11,7 +11,6 @@ import TagSource from '../../../components/TagSource/TagSource';
 import { DATA_TYPES, PROC_EXPR_VALUES, RAW_DATA_ANNOTS } from './useLogic';
 import PATHS from '../../../paths/paths';
 import { getChildValueFromAttribute } from '../../../helpers/selects';
-import config from '../../../config.json';
 import { URL_ROOT } from '~/helpers/constants';
 
 const LINK_TO_RAW_DATA_ANNOTS = 'LINK_TO_RAW_DATA_ANNOTS';
@@ -233,10 +232,9 @@ const RawDataAnnotationResults = ({
         </div>
       )}
       <Table
-        title={isExprCalls ? 'Order of results is independent of expression level' : null}
+        title={isExprCalls ? 'Order of results is independent of expression level' : undefined}
         pagination
         defaultPaginationSize={50}
-        classNamesTable="is-striped"
         columns={columnDescriptions}
         data={mappedResults}
         customHeader={customHeader}

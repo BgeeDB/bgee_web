@@ -2,10 +2,10 @@ import React from 'react';
 
 const useModal = () => {
   const [modal, setModal] = React.useState(false);
-  const [modalContent, setModalContent] = React.useState();
+  const [modalContent, setModalContent]: any = React.useState();
   const [customOnClose, setCustomOnClose] = React.useState();
 
-  const handleModal = React.useCallback((content = false) => {
+  const handleModal = React.useCallback((content: string | undefined = undefined) => {
     setModal((m) => !m);
     if (content) {
       setModalContent(content);
