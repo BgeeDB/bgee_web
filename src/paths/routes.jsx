@@ -1,10 +1,11 @@
 import PATHS from './paths';
 
-// import Home from '../pages/Home';
+// NOTE: still mostly just used in src/components/Modal/MenuModal.jsx for the menu links label
+// Each page metadata has been moved directly to their route file
 
+// import Home from '../pages/Home';
 // import TopAnatAnalysis from '../pages/analysis/TopAnat';
 // import ExpComp from '../pages/analysis/ExpComp';
-
 // import GeneList from '../pages/search/GeneList';
 // import Gene from '../pages/search/Gene';
 // import RawDataAnnotations from '../pages/search/rawdata/RawDataAnnotations';
@@ -13,12 +14,9 @@ import PATHS from './paths';
 // import SpeciesList from '../pages/search/SpeciesList';
 // import Species from '../pages/search/Species';
 // import SpeciesGeneList from "../pages/search/SpeciesGeneList";
-
 // import Experiment from '../pages/search/experiments/Experiment';
-
 // import ProcessedExpressionValues from '../pages/download/ProcessedExpressionValues';
 // import GeneExpressionCallsDownload from '../pages/download/GeneExpressionCalls';
-
 // import RPackageFile from '../static/resources/rPackage';
 // import AnnotationsFile from '../static/resources/annotations';
 // import OntologiesFile from '../static/resources/ontologies';
@@ -50,13 +48,10 @@ import PATHS from './paths';
 // import TeamFile from '../static/about/team';
 // import SABFile from '../static/about/bgeesab';
 // import PrivacyPolicyFile from '../static/about/privacyPolicy';
-
 // import Error from '../pages/Error';
 // import DataDumps from '../pages/download/DataDumps';
 // import NewsPage from '../pages/about/NewsPage';
 // import DataSource from '../pages/about/DataSource';
-
-// NOTE: still mostly just used in src/components/Modal/MenuModal.jsx for the menu links label
 
 const ANALYSIS = {
   [PATHS.ANALYSIS.TOP_ANAT]: {

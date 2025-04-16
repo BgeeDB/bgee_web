@@ -56,9 +56,9 @@ const main = async () => {
 
     try {
       console.log('\x1b[31m%s\x1b[0m', 'Building app');
-      execSync('yarn build:cra', { stdio: 'inherit' });
+      execSync('npm run build', { stdio: 'inherit' });
       /* Fix symlinks manually because 'webpackConfig.resolve.symlinks = false;' & '"preserveSymlinks": true,' fail! */
-      execSync('sh fix_symlinks.sh');
+      execSync('sh scripts/fix_symlinks.sh');
       console.log('Moving directory');
       execSync(`mv ./build "${buildDirectory}"`, { stdio: 'inherit' });
       console.log('Removing unnecessary directories\n');
