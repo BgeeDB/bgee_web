@@ -501,34 +501,6 @@ span.icon {
 @import '../../node_modules/bulma/sass/helpers/visibility';
 
 @import '../../node_modules/bulma/bulma';
-// @import '../../node_modules/@creativebulma/bulma-collapsible';
-
-.custom-accordion {
-  .message {
-    margin-bottom: 0.5rem;
-  }
-  .message a,
-  .message a.message-header {
-    color: $link !important;
-    font-weight: normal;
-  }
-  .message-header {
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    &.is-active {
-      border-radius: 4px 4px 0 0;
-    }
-  }
-  .message-body {
-    border-width: 0;
-    background-color: $body-background-color;
-    &.is-active {
-      border-width: 0 1px 1px;
-      border-radius: 0 0 4px 4px;
-    }
-  }
-}
 
 .color-primary {
   color: $primary !important;

@@ -1,6 +1,5 @@
 import { Link } from 'react-router';
 import arrayHelper from './arrayHelper';
-// import Accordion from '../components/Accordion';
 import LinkExternal from '../components/LinkExternal';
 import Bulma from '../components/Bulma';
 import classnames from './classnames';
@@ -127,18 +126,6 @@ const gridBuilder = ({ cols, content, fillRow }) => (
 const staticBuilder = (json, prefixKey = '') =>
   json.map(({ type, id, classNames, ...props }, key) => {
     switch (type) {
-      // case 'accordion':
-      //   const elements = props.children.map(({ title, body }) => {
-      //     let formattedBody = null;
-      //     if (typeof body === 'string') formattedBody = body;
-      //     if (Array.isArray(body))
-      //       formattedBody = staticBuilder(body, `${prefixKey}-${key}`);
-      //     return {
-      //       title,
-      //       body: formattedBody,
-      //     };
-      //   });
-      //   return <Accordion key={`${prefixKey}-${key}`} elements={elements} />;
       case 'break_line':
         return <br key={`${prefixKey}-${key}`} />;
       case 'bold':

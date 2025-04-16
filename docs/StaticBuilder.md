@@ -10,18 +10,9 @@ class helpers. (ex: notification with `is-danger` or `is-primary`)
 
 There are 21 different elements, with their properties:
 
-- Accordion
-
-```
-{
-    type: 'accordion',
-    children: Array of {title: string, body: Array of Elements}
-}
-```
-
 - Break Line
 
-```
+```ts
 {
     type: 'break_line',
 }
@@ -29,7 +20,7 @@ There are 21 different elements, with their properties:
 
 - Bold
 
-```
+```ts
 {
     type: 'bold',
     content: string
@@ -38,7 +29,7 @@ There are 21 different elements, with their properties:
 
 - Card
 
-```
+```ts
 {
     type: 'card',
     image: {
@@ -54,7 +45,7 @@ There are 21 different elements, with their properties:
 
 - Columns
 
-```
+```ts
 {
    type: 'columns',
    content: Array of  {
@@ -67,7 +58,7 @@ There are 21 different elements, with their properties:
 
 - Grid
 
-```
+```ts
 {
     type: 'grid',
     cols: number, // number of columns by row
@@ -78,7 +69,7 @@ There are 21 different elements, with their properties:
 
 - Link Anchor
 
-```
+```ts
 {
     type: 'link_anchor',
     selector: string,
@@ -88,7 +79,7 @@ There are 21 different elements, with their properties:
 
 - Link External
 
-```
+```ts
 {
     type: 'link_external',
     path: string,
@@ -98,7 +89,7 @@ There are 21 different elements, with their properties:
 
 - Link Image
 
-```
+```ts
 {
     type: 'link_image',
     path: string,
@@ -108,7 +99,7 @@ There are 21 different elements, with their properties:
 
 - Image (only)
 
-```
+```ts
 {
     type: 'only_image',
     src: string,
@@ -119,7 +110,7 @@ There are 21 different elements, with their properties:
 
 - Link Internal
 
-```
+```ts
 {
     type: 'link_internal',
     path: string,
@@ -129,7 +120,7 @@ There are 21 different elements, with their properties:
 
 - Notification
 
-```
+```ts
 {
     type: 'notification',
     content: string,
@@ -138,7 +129,7 @@ There are 21 different elements, with their properties:
 
 - Ordered List
 
-```
+```ts
 {
     type: 'ordered_list',
     children: Array of Elements,
@@ -147,7 +138,7 @@ There are 21 different elements, with their properties:
 
 - Pre-formatted Code
 
-```
+```ts
 {
     type: 'pre_code',
     content: string,
@@ -156,7 +147,7 @@ There are 21 different elements, with their properties:
 
 - Rich Text
 
-```
+```ts
 {
     type: 'rich_text',
     content: Array of Rich Elements,
@@ -165,7 +156,7 @@ There are 21 different elements, with their properties:
 
 - Section
 
-```
+```ts
 {
     type: 'section',
     title: string,
@@ -175,7 +166,7 @@ There are 21 different elements, with their properties:
 
 - Separator
 
-```
+```ts
 {
     type: 'separator',
 }
@@ -185,7 +176,7 @@ There are 21 different elements, with their properties:
 
 For a better understanding, please check the Table component.
 
-```
+```ts
 {
     type: 'table',
     fullWidth: boolean,
@@ -202,7 +193,7 @@ For a better understanding, please check the Table component.
 
 - Text
 
-```
+```ts
 {
     type: 'text',
     content: string
@@ -211,7 +202,7 @@ For a better understanding, please check the Table component.
 
 - Title
 
-```
+```ts
 {
     type: 'title',
     content: string,
@@ -220,7 +211,7 @@ For a better understanding, please check the Table component.
 
 - Unordered List
 
-```
+```ts
 {
     type: 'unordered_list',
     children: Array of Elements,
@@ -234,7 +225,7 @@ Some are similar to the previous Elements.
 
 - Break Line
 
-```
+```ts
 {
     type: 'break_line',
 }
@@ -242,7 +233,7 @@ Some are similar to the previous Elements.
 
 - Bold
 
-```
+```ts
 {
     type: 'bold',
     content: string
@@ -251,7 +242,7 @@ Some are similar to the previous Elements.
 
 - Code
 
-```
+```ts
 {
     type: 'code',
     content: string
@@ -260,7 +251,7 @@ Some are similar to the previous Elements.
 
 - Italic
 
-```
+```ts
 {
     type: 'italic',
     content: string
@@ -269,7 +260,7 @@ Some are similar to the previous Elements.
 
 - Link Anchor
 
-```
+```ts
 {
     type: 'link_anchor',
     selector: string
@@ -279,7 +270,7 @@ Some are similar to the previous Elements.
 
 - Link Internal
 
-```
+```ts
 {
     type: 'link_internal',
     path: string
@@ -289,7 +280,7 @@ Some are similar to the previous Elements.
 
 - Link External
 
-```
+```ts
 {
     type: 'link_external',
     path: string
@@ -299,7 +290,7 @@ Some are similar to the previous Elements.
 
 - Link Mail
 
-```
+```ts
 {
     type: 'link_mail',
     email: string
@@ -309,7 +300,7 @@ Some are similar to the previous Elements.
 
 - Link Phone Number
 
-```
+```ts
 {
     type: 'link_phone_number',
     phoneNumber: string
@@ -319,7 +310,7 @@ Some are similar to the previous Elements.
 
 - Pre-formatted Code
 
-```
+```ts
 {
     type: 'xxx',
 }
@@ -327,7 +318,7 @@ Some are similar to the previous Elements.
 
 - Rich Text
 
-```
+```ts
 {
     type: 'rich_text',
     content: Array of Rich Text Elements
@@ -336,7 +327,7 @@ Some are similar to the previous Elements.
 
 - Text
 
-```
+```ts
 {
     type: 'text',
     content: string
@@ -345,7 +336,7 @@ Some are similar to the previous Elements.
 
 - Underline
 
-```
+```ts
 {
     type: 'underline',
     content: string
