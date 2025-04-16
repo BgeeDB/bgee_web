@@ -17,7 +17,8 @@ export async function loader() {
     const res = await api.search.species.list();
     return res.data;
   } catch (error) {
-    throw new Response(error.data.message || 'Failed to load species data', { status: 404 });
+    // throw new Response(error.data.message || error.message || 'Failed to load data from API', { status: 404 });
+    return [];
   }
 }
 
@@ -53,7 +54,7 @@ const HomeCard = (props) => {
   );
 };
 
-const Home = ({ loaderData }) => {
+export default function Home({ loaderData }) {
   const { species: speciesList } = loaderData;
 
   React.useEffect(() => {
@@ -291,6 +292,4 @@ const Home = ({ loaderData }) => {
       </Bulma.Section>
     </>
   );
-};
-
-export default Home;
+}

@@ -80,8 +80,6 @@ export function getMetadata({
       rel: 'canonical',
       href: link,
     });
-    // <meta property="og:url" content={meta.link} />
-    // <link rel="canonical" href={meta.link} />
   }
 
   // Add Schema.org structured data if provided

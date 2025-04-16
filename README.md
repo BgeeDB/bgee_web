@@ -5,9 +5,9 @@
 
 # 🐝 Bgee website
 
-Code for the Bgee website available at [https://www.bgee.org](https://www.bgee.org).
+Code for the Bgee website available at [https://www.bgee.org](https://www.bgee.org). Bgee is a database for retrieval and comparison of gene expression patterns across multiple animal species.
 
-It uses [React Router 7](https://reactrouter.com/home) to serve the pages with server-side rendering (SSR).
+This website uses [React Router 7](https://reactrouter.com/home) to serve the pages with server-side rendering (SSR).
 
 ## 🛠️ Development
 
@@ -112,13 +112,13 @@ docker run -p 3000:3000 bgee-web
 
 2 routing approaches are available:
 
-- [File-based routes](https://reactrouter.com/how-to/file-route-conventions) in `src/routes/`
-  - Used for routes to markdown files
+- **[File-based routes](https://reactrouter.com/how-to/file-route-conventions)** in `src/routes/`
   - We recommend to use this approach for new pages
+  - Currently used for all routes to markdown files, and the gene page
   - To add a route to `/gene/XYZ`:
     - Create a file named `gene.$geneId.tsx`
-    - Create a folder named `gene.$geneId` with a `route.tsx` file in it
-- [Manually defined routes](https://reactrouter.com/start/framework/routing) in `src/routes.ts`
+    - Create a folder named `gene.$geneId` with a `route.tsx` file in it (see example below)
+- **[Manually defined routes](https://reactrouter.com/start/framework/routing)** in `src/routes.ts`
   - Currently used for most routes defined in `src/pages`
   - Link a URL path to a component file using the `route(path, file)` function
 

@@ -4,7 +4,6 @@ import api from '../../api';
 import PATHS from '../../paths/paths';
 import config from '../../config.json';
 import { getMetadata } from '~/helpers/metadata';
-// import { speciesToLdJSON } from "~/helpers/schemaDotOrg";
 
 function getCanonicalURL(sp) {
   return PATHS.SEARCH.GENE_LIST_ITEM_BY_SPECIES.replace(':speciesId', sp.id).replace(
@@ -20,6 +19,12 @@ export async function loader({ params }) {
       api.search.species.name(params.speciesId),
     ]);
     const species = speciesRes.data.species;
+    if (
+      params.speciesName &&
+      params.speciesName !== species.speciesFullNameWithoutSpace?.replace('_', '-').toLowerCase()
+    ) {
+      throw Error('Species name does not match');
+    }
     const speciesScientificName = `${species.genus} ${species.speciesName}`;
     const speciesDisplay = `${speciesScientificName}${species.name ? ` (${species.name})` : ''}`;
     return {
@@ -29,8 +34,8 @@ export async function loader({ params }) {
       speciesDisplay,
     };
   } catch (error) {
-    console.warn(error);
-    throw new Response(error.data.message || 'Failed to load species data', { status: 404 });
+    console.warn(error.message);
+    throw new Response(error?.data?.message || error.message || 'Failed to load species data', { status: 404 });
   }
 }
 

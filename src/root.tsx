@@ -116,12 +116,15 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = 'Error';
+  let message = 'Something wrong happened!';
   let details = 'An unexpected error occurred.';
   let stack: string | undefined;
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? '404' : message;
-    details = error.data || details;
+    message = error.status === 404 ? '404 not found. We could not understand your query.' : message;
+    details =
+      error.status === 404
+        ? error.data || 'Page not found.'
+        : 'Try again later or contact the administrator through the &quot;Contact us&quot; support menu link.';
     // error.status === 404
     //   ? "The requested page could not be found."
     //   : error.statusText || details;

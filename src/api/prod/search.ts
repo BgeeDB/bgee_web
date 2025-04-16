@@ -4,7 +4,7 @@ import errorHandler from '../errorHandler';
 import PATHS from '../../paths/paths';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 
-export const SEARCH_CANCEL_API = {
+export const SEARCH_CANCEL_API: any = {
   genes: {
     autoComplete: null,
     geneSearchResult: null,
@@ -28,7 +28,7 @@ export const SEARCH_CANCEL_API = {
   },
 };
 
-const DEFAULT_PARAMETERS = (page, action = undefined) => {
+const DEFAULT_PARAMETERS: any = (page, action = undefined) => {
   const params = new URLSearchParams();
 
   params.append('display_type', 'json');
@@ -39,12 +39,12 @@ const DEFAULT_PARAMETERS = (page, action = undefined) => {
 };
 
 const search = {
-  anatomicalHomology: ({ type, query }: any, species = undefined, aeList = undefined) =>
+  anatomicalHomology: ({ type, query }: any, species: undefined | string[] = undefined, aeList = undefined) =>
     new Promise((resolve, reject) => {
       let params = DEFAULT_PARAMETERS('anat_similarities');
       if (type === 'form') {
         if (aeList) params.append('ae_list', aeList);
-        species.forEach((s) => params.append('species_list', s));
+        if (species) species.forEach((s) => params.append('species_list', s));
       } else if (type === 'query') {
         params = new URLSearchParams(query);
 

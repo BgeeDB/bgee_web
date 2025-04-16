@@ -18,7 +18,7 @@ export async function loader({ params }) {
     const res = await api.search.species.species(params.id);
     return res.data;
   } catch (error) {
-    throw new Response(error.data.message || 'Failed to load species data', { status: 404 });
+    throw new Response(error.data.message || error.message || 'Failed to load species data', { status: 404 });
   }
 }
 

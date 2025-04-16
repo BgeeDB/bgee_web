@@ -47,7 +47,7 @@ export async function loader() {
       allSpeciesName: singleSpeciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
     };
   } catch (error) {
-    throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
+    throw new Response(error.data?.message || error.message || 'Failed to load gene expression data', { status: 404 });
   }
 }
 

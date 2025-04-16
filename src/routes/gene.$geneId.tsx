@@ -96,7 +96,7 @@ export function meta({ data }) {
   });
 }
 
-const GeneDetails = ({ loaderData }) => {
+export default function GeneDetails({ loaderData }) {
   const { details, homologs, xRefs, exprData, notExprData } = loaderData;
   const { name, geneId, description, species, synonyms } = details;
   const loc = useLocation();
@@ -254,6 +254,4 @@ const GeneDetails = ({ loaderData }) => {
       </div>
     </>
   );
-};
-
-export default GeneDetails;
+}

@@ -13,9 +13,9 @@
     "paths": {
       "~/*": ["./src/*"]
     },
-    "strict": false,
-    "allowJs": true,
+    "strict": true,
     "checkJs": false,
+    "allowJs": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,

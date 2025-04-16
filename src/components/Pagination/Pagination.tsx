@@ -10,7 +10,7 @@ const Pagination = ({ current, total }) => {
   const { generatePaginationLink } = usePaginationLink(paginationParamPageKey, paginationResultCountKey);
 
   const center = React.useMemo(() => {
-    const pages = [];
+    const pages: number[] = [];
     const pageBtw = total - 2;
     if (pageBtw <= 3) {
       for (let i = 1; i <= pageBtw; ++i) pages.push(i + 1);

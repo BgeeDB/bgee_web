@@ -130,9 +130,9 @@ const GeneList = () => {
     const params = new URLSearchParams(queryParams);
 
     if (params.get('search')) {
-      setSearch(params.get('search'));
+      setSearch(params.get('search') || '');
       setResults(undefined);
-      searchResultHandler(params.get('search'));
+      searchResultHandler(params.get('search') || '');
     } else {
       setResults(undefined);
     }
