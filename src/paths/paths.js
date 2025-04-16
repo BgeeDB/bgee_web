@@ -1,8 +1,6 @@
 import config from '../config.json';
+import { URL_ROOT, URL_VERSION } from '~/helpers/constants';
 
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 const SPARQL_ARCH = `${config.archive ? `${URL_VERSION}` : ''}`;
 const PATHS = {
   HOME: `${URL_ROOT}/`,

@@ -8,10 +8,7 @@ import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
 import { isEmpty } from '../../../helpers/arrayHelper';
-
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+import { URL_ROOT } from '~/helpers/constants';
 
 // building the page_type array depending on config.json
 export const EXPERIMENTS = 'experiments';

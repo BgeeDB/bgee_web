@@ -23,10 +23,8 @@ import {
 } from '../../pages/search/rawdata/useLogic';
 import TagSource from '../TagSource/TagSource';
 import config from '../../config.json';
+import { URL_ROOT } from '~/helpers/constants';
 
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 const DATA_TYPES = [
   {
     key: 'AFFYMETRIX',

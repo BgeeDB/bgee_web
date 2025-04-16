@@ -7,16 +7,13 @@ import { flattenDevStagesList } from './components/filters/DevelopmentalAndLifeS
 import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
+import { URL_ROOT } from '~/helpers/constants';
 // DEBUG: remove in PROD
 // import maxExpScoreCsv from '../../../assets/maxExpScore.csv'
 
 // to workaround backend server issues
 // import apiResp1 from '../../../assets/response_query1.INS.json';
 // import apiResp2 from '../../../assets/response_query2.INS.json';
-
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
 // TODO: create an API endpoint to query root terms for condition params?
 export const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';

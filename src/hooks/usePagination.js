@@ -1,10 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import config from '../config.json';
-
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+import { URL_ROOT } from '~/helpers/constants';
 
 export const PARAM_PAGE_KEY = 'pageNumber';
 export const RESULTS_COUNT_KEY = 'results';

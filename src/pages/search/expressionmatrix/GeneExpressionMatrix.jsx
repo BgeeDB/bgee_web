@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import Button from '../../../components/Bulma/Button/Button';
-import './rawDataAnnotations.scss';
 // import RawDataAnnotationResults from './RawDataAnnotationResults';
 import DevelopmentalAndLifeStages from './components/filters/DevelopmentalAndLifeStages/DevelopmentalAndLifeStages';
 import Species from './components/filters/Species/Species';
@@ -18,10 +17,8 @@ import config from '../../../config.json';
 import GeneExpressionMatrixResults from './GeneExpressionMatrixResults';
 import UserFeedback from './components/UserFeedback';
 import { getMetadata } from '~/helpers/metadata';
-
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+import { URL_ROOT } from '~/helpers/constants';
+import './rawDataAnnotations.scss';
 
 export function meta() {
   return getMetadata({

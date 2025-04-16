@@ -1,8 +1,5 @@
 import config from '../config.json';
-
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+import { URL_ROOT } from '~/helpers/constants';
 
 const expressionPageHelper = {
   autocompleteSpecies: (list, kwList, search) =>

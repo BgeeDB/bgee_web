@@ -5,7 +5,7 @@ import type { Route } from './+types/root';
 import './styles/global.scss';
 
 import { ModalProvider } from './contexts/ModalContext';
-import { APP_VERSION } from './helpers/constants';
+import { APP_VERSION, URL_ROOT } from './helpers/constants';
 import config from './config.json';
 import Bulma from './components/Bulma';
 import Alert from './components/Alert';
@@ -31,8 +31,6 @@ export const links: Route.LinksFunction = () => [
 export function Layout({ children }: { children: React.ReactNode }) {
   const { addNotification } = React.useContext(NotificationContext);
   const loc = useLocation();
-  const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-  const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
   const body = React.useMemo(
     () =>
       loc.pathname === '/' || loc.pathname === `${URL_ROOT}/` || loc.pathname === `${URL_ROOT}` ? (
@@ -40,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       ) : (
         <Bulma.Section className="is-flex-grow-1">{children}</Bulma.Section>
       ),
-    [loc, URL_ROOT, children]
+    [loc, children]
   );
 
   React.useEffect(() => {

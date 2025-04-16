@@ -7,10 +7,7 @@ import config from '../../config.json';
 import obfuscateMailLink from '../../helpers/obfuscateMailLink';
 import Bulma from '../Bulma';
 import assets from '../../assets';
-
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `${URL_VERSION}` : ''}`;
+import { URL_ROOT } from '~/helpers/constants';
 
 const SIDE_MENU = [
   {

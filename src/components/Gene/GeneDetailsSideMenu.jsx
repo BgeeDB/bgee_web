@@ -3,10 +3,7 @@ import { useNavigate, useLocation } from 'react-router';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import PATHS from '../../paths/paths';
 import config from '../../config.json';
-
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+import { URL_ROOT } from '~/helpers/constants';
 
 const GeneDetailsSideMenu = ({ homologs = null, xRefs }) => {
   const navigate = useNavigate();

@@ -9,12 +9,11 @@ import config from '../../config.json';
 import { APP_VERSION } from '../../helpers/constants';
 import { setAxiosAddNotif } from '../../api/prod/constant';
 import { NotificationContext } from '../../contexts/NotificationsContext';
+import { URL_ROOT } from '~/helpers/constants';
 
 const Layout = ({ children }) => {
   const { addNotification } = React.useContext(NotificationContext);
   const loc = useLocation();
-  const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-  const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
   const body = React.useMemo(
     () =>
       loc.pathname === '/' || loc.pathname === `${URL_ROOT}/` || loc.pathname === `${URL_ROOT}` ? (
