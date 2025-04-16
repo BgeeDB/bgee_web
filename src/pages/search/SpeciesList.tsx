@@ -9,9 +9,9 @@ export async function loader() {
   try {
     const speciesRes = await api.search.species.list();
     return { speciesList: speciesRes.data.species };
-  } catch (error) {
+  } catch (error: any) {
     // console.warn(error)
-    throw new Response(error.data.message || error.message || 'Failed to load species data', { status: 404 });
+    throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
   }
 }
 

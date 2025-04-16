@@ -60,7 +60,7 @@ const DataSource = () => {
     api.get
       .dataSources()
       .then(({ data }) => {
-        const categories = new Set();
+        const categories: Set<string> = new Set();
         data.sources.forEach((s) => {
           categories.add(s.category);
         });

@@ -128,7 +128,6 @@ const GeneList = () => {
 
   React.useEffect(() => {
     const params = new URLSearchParams(queryParams);
-
     if (params.get('search')) {
       setSearch(params.get('search') || '');
       setResults(undefined);
@@ -149,7 +148,7 @@ const GeneList = () => {
   //   [search, results]
   // );
 
-  const count = results.totalMatchCount;
+  const count = results?.totalMatchCount;
 
   return (
     <>
@@ -223,7 +222,7 @@ const GeneList = () => {
                 { text: 'Match', key: 'match', hide: MEDIA_QUERIES.TABLET },
               ]}
               onSortCustom={customGeneListSorter}
-              data={results.geneMatches}
+              data={results?.geneMatches}
               onFilter={onFilter}
               customHeader={customHeader}
               onRenderCell={onRenderCell(search)}

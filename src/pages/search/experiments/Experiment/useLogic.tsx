@@ -7,7 +7,7 @@ import { getChildValueFromAttribute } from '../../../../helpers/selects';
 import PATHS from '../../../../paths/paths';
 import { PROC_EXPR_VALUES } from '../../rawdata/useLogic';
 
-const getColumnValues = (cell, attributes = []) =>
+const getColumnValues = (cell, attributes: string[] = []) =>
   attributes
     .map((attribute) => {
       const attributeParts = attribute.split('.');

@@ -20,13 +20,25 @@ const SelectMultipleWithAutoComplete = ({
   className,
   style,
   hasBoldLabel,
+}: {
+  getOptionsFunction: (val: string) => Promise<any> | any;
+  label: string;
+  placeholder: string;
+  autoFocus?: boolean;
+  minCharToSearch?: number;
+  selectedOptions?: Array<{ label: string; value: string }>;
+  setSelectedOptions: (selectedOptions: Array<{ label: string; value: string }>) => void;
+  optionActions?: (data: any) => React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  hasBoldLabel?: boolean;
 }) => {
   const [search, setSearch] = useState('');
   const searchDebounced = useDebounce(search, 300);
   const [isLoading, setIsLoading] = useState(false);
-  const [autocompleteList, setAutocompleteList] = useState([]);
+  const [autocompleteList, setAutocompleteList]: any = useState([]);
 
-  const inputRef = useRef();
+  const inputRef = useRef<any>(null);
 
   const searchHandler = useCallback(
     (val) => {
@@ -112,6 +124,7 @@ const SelectMultipleWithAutoComplete = ({
     const level = data.level || 0;
 
     return (
+      // @ts-expect-error Type '{ children: Element; }' is missing properties from type: label, type, and 17 more.
       <components.Option {...otherProps}>
         <div className="is-flex">
           <span className="checkboxLabel" style={{ paddingLeft: level * 16 }}>
@@ -153,12 +166,12 @@ const SelectMultipleWithAutoComplete = ({
           }}
           noOptionsMessage={renderNoOptions}
           isLoading={isLoading}
-          allowSelectAll
+          // allowSelectAll
           isMulti
           placeholder={placeholder}
           ref={inputRef}
           onChange={(allSelected) => {
-            setSelectedOptions(allSelected);
+            setSelectedOptions([...allSelected]);
           }}
           value={selectedOptions}
           onInputChange={onInputChange}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLoaderData, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 
 import Button from '../../../components/Bulma/Button/Button';
 import PATHS from '../../../paths/paths';
@@ -9,7 +9,6 @@ import DevelopmentalAndLifeStages from './components/filters/DevelopmentalAndLif
 import Species from './components/filters/Species/Species';
 import useLogic, {
   AFFYMETRIX,
-  ALL_DATA_TYPES_ID,
   DATA_TYPES,
   EST,
   EXPERIMENTS,
@@ -83,7 +82,13 @@ const APP_VERSION = config.version;
 const URL_VERSION = APP_VERSION.replaceAll('.', '-');
 const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
-const RawDataAnnotations = ({ isExprCalls = false, loaderData = undefined }) => {
+const RawDataAnnotations = ({
+  isExprCalls = false,
+  loaderData = undefined,
+}: {
+  isExprCalls?: boolean;
+  loaderData?: any;
+}) => {
   const initSearchResult = loaderData ? loaderData.initSearchResult : {};
   const {
     searchResult,
@@ -139,11 +144,11 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData = undefined }) => 
     resetForm,
     setFilters,
     triggerSearch,
-    triggerCounts,
+    // triggerCounts,
     setPageType,
     addConditionalParam,
     getSearchParams,
-  } = useLogic(isExprCalls, initSearchResult);
+  }: any = useLogic(isExprCalls, initSearchResult);
 
   const loc = useLocation();
   const [pageIsBrowseResult, setPageIsBrowseResult] = useState(false);
@@ -487,7 +492,7 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData = undefined }) => 
                   filters={filters}
                   setFilters={setFilters}
                   triggerSearch={triggerSearch}
-                  triggerCounts={triggerCounts}
+                  // triggerCounts={triggerCounts}
                 />
               )}
               {isLoading ? (
@@ -503,7 +508,7 @@ const RawDataAnnotations = ({ isExprCalls = false, loaderData = undefined }) => 
               ) : (
                 <RawDataAnnotationResults
                   results={results}
-                  resultCount={allCounts[dataType]}
+                  // resultCount={allCounts[dataType]}
                   dataType={dataType}
                   maxPage={maxPage}
                   columnDescriptions={columnsDesc}

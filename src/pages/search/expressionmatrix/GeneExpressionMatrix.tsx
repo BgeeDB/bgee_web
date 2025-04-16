@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react';
 
 import Button from '../../../components/Bulma/Button/Button';
-// import RawDataAnnotationResults from './RawDataAnnotationResults';
-import DevelopmentalAndLifeStages from './components/filters/DevelopmentalAndLifeStages/DevelopmentalAndLifeStages';
 import Species from './components/filters/Species/Species';
 import useLogic, { TAB_PAGE_EXPR_CALL } from './useLogic';
 import CellTypes from './components/filters/CellTypes';
 import Tissues from './components/filters/Tissues/Tissues';
-import Sex from './components/filters/Sex/Sex';
-import Strain from './components/filters/Strain/Strain';
 import Gene from './components/filters/Gene/Gene';
 import DataType from './components/filters/DataType/DataType';
 import DataQualityParameter from './components/filters/DataQualityParameter';
-import CallType from './components/filters/CallType';
-import config from '../../../config.json';
+// import DevelopmentalAndLifeStages from './components/filters/DevelopmentalAndLifeStages/DevelopmentalAndLifeStages';
+// import Sex from './components/filters/Sex/Sex';
+// import Strain from './components/filters/Strain/Strain';
+// import CallType from './components/filters/CallType';
 import GeneExpressionMatrixResults from './GeneExpressionMatrixResults';
 import UserFeedback from './components/UserFeedback';
 import { getMetadata } from '~/helpers/metadata';
@@ -35,36 +33,24 @@ const GeneExpressionMatrix = ({ isExprCalls = false }) => {
     maxExpScore,
     dataType,
     show,
-    devStages,
-    hasDevStageSubStructure,
-    selectedDevStages,
     selectedSpecies,
     selectedCellTypes,
     hasTissueSubStructure,
     hasCellTypeSubStructure,
-    selectedStrain,
     selectedGene,
     selectedTissue,
-    speciesSexes,
-    selectedSexes,
     isLoading,
     isFirstSearch,
     dataTypesExpCalls,
     dataQuality,
-    callTypes,
-    setCallTypes,
     setDataQuality,
     setDataTypesExpCalls,
     onChangeSpecies,
     getSpeciesLabel,
     setSelectedCellTypes,
     setSelectedTissue,
-    toggleSex,
-    setSelectedStrain,
     setSelectedGene,
     setHasTissueSubStructure,
-    setSelectedDevStages,
-    setDevStageSubStructure,
     setHasCellTypeSubStructure,
     setShow,
     AutoCompleteByType,
@@ -73,18 +59,31 @@ const GeneExpressionMatrix = ({ isExprCalls = false }) => {
     addConditionalParam,
     getSearchParams,
     onToggleExpandCollapse,
-  } = useLogic(isExprCalls);
+    // devStages,
+    // hasDevStageSubStructure,
+    // selectedDevStages,
+    // selectedStrain,
+    // speciesSexes,
+    // selectedSexes,
+    // callTypes,
+    // setCallTypes,
+    // toggleSex,
+    // setSelectedStrain,
+    // setSelectedDevStages,
+    // setDevStageSubStructure,
+  }: any = useLogic(isExprCalls);
 
   // DEBUG: remove console log in prod
   // console.log(`[GeneExpressionMatrix] anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setPageIsBrowseResult] = useState(false);
   const defaultResults = searchResult?.results?.[dataType] || [];
   const resultExprsCall = searchResult?.expressionData?.expressionCalls || [];
   const results = isExprCalls ? resultExprsCall : defaultResults;
-  const defaultColumDesc = searchResult?.columnDescriptions?.[dataType] || [];
-  const columnDescExprsCall = searchResult?.columnDescriptions || [];
-  const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
+  // const defaultColumDesc = searchResult?.columnDescriptions?.[dataType] || [];
+  // const columnDescExprsCall = searchResult?.columnDescriptions || [];
+  // const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
 
   const detailedData = TAB_PAGE_EXPR_CALL;
 
@@ -147,7 +146,7 @@ const GeneExpressionMatrix = ({ isExprCalls = false }) => {
                               addConditionalParam={addConditionalParam}
                             />
                           </div>
-                          {false && ( // TODO: display dev stage as condition param?
+                          {/* {false && ( // TODO: display dev stage as condition param?
                             <div className="my-2 maxWidth50">
                               <DevelopmentalAndLifeStages
                                 devStages={devStages}
@@ -178,7 +177,7 @@ const GeneExpressionMatrix = ({ isExprCalls = false }) => {
                                 addConditionalParam={addConditionalParam}
                               />
                             </div>
-                          )}
+                          )} */}
                         </>
                       )}
                     </div>
@@ -189,9 +188,9 @@ const GeneExpressionMatrix = ({ isExprCalls = false }) => {
                     {selectedGene.length > 0 && (
                       <>
                         <DataType dataTypes={dataTypesExpCalls} setDataTypes={setDataTypesExpCalls} />
-                        {false && ( // TODO: remove permanently?
+                        {/* {false && ( // TODO: remove permanently?
                           <CallType callTypes={callTypes} setCallTypes={setCallTypes} />
-                        )}
+                        )} */}
                         <hr />
                         <DataQualityParameter dataQuality={dataQuality} setDataQuality={setDataQuality} />
                       </>
@@ -272,8 +271,8 @@ const GeneExpressionMatrix = ({ isExprCalls = false }) => {
 
             <GeneExpressionMatrixResults
               results={results}
-              columnDescriptions={columnsDesc}
-              searchParams={getSearchParams}
+              // columnDescriptions={columnsDesc}
+              // searchParams={getSearchParams}
               genes={genes}
               anatomicalTerms={anatomicalTerms}
               anatomicalTermsProps={anatomicalTermsProps}

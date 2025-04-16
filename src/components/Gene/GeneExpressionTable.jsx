@@ -5,7 +5,6 @@ import api from '../../api';
 import classnames from '../../helpers/classnames';
 import LinkExternal from '../LinkExternal';
 import useQuery from '../../hooks/useQuery';
-import schemaDotOrg from '../../helpers/schemaDotOrg';
 import { MEDIA_QUERIES } from '../../helpers/constants/mediaQueries';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import Table from '../Table';
@@ -24,6 +23,7 @@ import {
 import TagSource from '../TagSource/TagSource';
 import config from '../../config.json';
 import { URL_ROOT } from '~/helpers/constants';
+// import schemaDotOrg from '../../helpers/schemaDotOrg';
 
 const DATA_TYPES = [
   {
@@ -449,8 +449,8 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
       .expression(geneId, speciesId, fields, !dataTypeExpr ? ['all'] : dt, notExpressed)
       .then((res) => {
         setData(res.data);
-        if (res.data.requestedConditionParameters.find((r) => r === 'Anat. entity'))
-          if (!notExpressed) schemaDotOrg.setGeneExpressionLdJSON(res.data);
+        // if (res.data.requestedConditionParameters.find((r) => r === 'Anat. entity'))
+        //   if (!notExpressed) schemaDotOrg.setGeneExpressionLdJSON(res.data);
       })
       .catch((err) => {
         console.error(err);
@@ -458,9 +458,9 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
       })
       .finally(() => setIsLoading(false));
 
-    return () => {
-      if (!notExpressed) schemaDotOrg.unsetGeneExpressionLdJSON();
-    };
+    // return () => {
+    //   if (!notExpressed) schemaDotOrg.unsetGeneExpressionLdJSON();
+    // };
   }, [hashExpr, dataTypeExpr]);
 
   return (

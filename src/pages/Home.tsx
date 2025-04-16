@@ -17,6 +17,7 @@ export async function loader() {
     const res = await api.search.species.list();
     return res.data;
   } catch (error) {
+    console.warn('Error loading species list:', error);
     // throw new Response(error.data.message || error.message || 'Failed to load data from API', { status: 404 });
     return [];
   }

@@ -18,10 +18,10 @@ import obolibraryLinkFromID, { obolibraryNCBITaxonLinkFromID } from './obolibrar
 //   })
 // });
 
-export const geneToLdJSON = ({ name, geneId, description, synonyms, species, xRefs, path }) => ({
+export const geneToLdJSON = ({ name, geneId, description, synonyms, species, xRefs, url }) => ({
   '@context': 'https://schema.org/',
   '@type': 'Gene',
-  '@id': config.genericDomain + path,
+  '@id': url,
   'http://purl.org/dc/terms/conformsTo': {
     '@id': 'https://bioschemas.org/profiles/Gene/1.0-RELEASE',
     '@type': 'CreativeWork',
@@ -32,7 +32,7 @@ export const geneToLdJSON = ({ name, geneId, description, synonyms, species, xRe
   name,
   subjectOf: {
     '@type': 'WebPage',
-    url: config.permanentVersionedDomain + path,
+    url: url,
     name: `Gene: ${name} - ${geneId} - ${species.genus} ${species.speciesName}${
       species.name ? ` (${species.name})` : ''
     }`,
@@ -51,34 +51,29 @@ export const geneToLdJSON = ({ name, geneId, description, synonyms, species, xRe
 });
 
 export const geneHomologsToLdJSON = (homo) => {
-  const ldJson = [];
-  homo.forEach((h) => {
-    ldJson.push({
-      '@context': 'https://schema.org/',
-      '@type': 'https://schema.org/Taxon',
-      '@id': `https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=${h.taxon.id}`,
-      'http://purl.org/dc/terms/conformsTo': {
-        '@id': 'https://bioschemas.org/profiles/Taxon/1.0-RELEASE',
-        '@type': 'CreativeWork',
-      },
-      identifier: h.taxon.id,
-      name: h.taxon.scientificName,
-      alternateName: h.taxon.name,
-    });
-  });
-
-  return ldJson;
+  return homo.map((h) => ({
+    '@context': 'https://schema.org/',
+    '@type': 'https://schema.org/Taxon',
+    '@id': `https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=${h.taxon.id}`,
+    'http://purl.org/dc/terms/conformsTo': {
+      '@id': 'https://bioschemas.org/profiles/Taxon/1.0-RELEASE',
+      '@type': 'CreativeWork',
+    },
+    identifier: h.taxon.id,
+    name: h.taxon.scientificName,
+    alternateName: h.taxon.name,
+  }));
 };
 
-export const geneExpressionToLdJSON = (genes) => {
-  const ldJson = [];
+export const geneExpressionToLdJSON = (genes, url: string) => {
+  const ldJson: any[] = [];
   genes.forEach((g) => {
     const { anatEntity, cellType } = g.condition;
     if (g.condition.cellType)
       ldJson.push({
         '@context': 'https://schema.org/',
         '@type': 'Gene',
-        '@id': window.location.href,
+        '@id': url,
         expressedIn: {
           '@type': 'AnatomicalStructure',
           name: `${cellType.name} in ${anatEntity.name}`,
@@ -102,7 +97,7 @@ export const geneExpressionToLdJSON = (genes) => {
       ldJson.push({
         '@context': 'https://schema.org/',
         '@type': 'Gene',
-        '@id': window.location.href,
+        '@id': url,
         expressedIn: {
           '@type': 'AnatomicalStructure',
           '@id': obolibraryLinkFromID(anatEntity.id),
@@ -111,7 +106,6 @@ export const geneExpressionToLdJSON = (genes) => {
         },
       });
   });
-
   return ldJson;
 };
 
@@ -143,9 +137,7 @@ const fileDownloadProps = (file) => ({
 });
 
 export const datasetToLdJSON = () => {
-  const url = config.genericDomain;
-  const ldJson = [];
-  ldJson.push({
+  return {
     '@context': 'https://schema.org/',
     '@id': 'https://www.bgee.org/#schema-org',
     '@graph': [
@@ -188,12 +180,12 @@ export const datasetToLdJSON = () => {
       },
       {
         '@type': 'Dataset',
-        '@id': url,
+        '@id': config.genericDomain,
         'http://purl.org/dc/terms/conformsTo': {
           '@id': 'https://bioschemas.org/profiles/Dataset/1.0-RELEASE',
           '@type': 'CreativeWork',
         },
-        url: url,
+        url: config.genericDomain,
         name: 'Bgee gene expression data',
         description:
           'Bgee is a database for retrieval and comparison of gene expression patterns across multiple animal species. It provides an intuitive answer to the question -where is a gene expressed?- and supports research in cancer and agriculture, as well as evolutionary biology.',
@@ -410,9 +402,7 @@ export const datasetToLdJSON = () => {
         version: config.version,
       },
     ],
-  });
-
-  return ldJson[0];
+  };
 };
 
 export const speciesToLdJSON = ({
@@ -420,8 +410,7 @@ export const speciesToLdJSON = ({
   species: { genus, name, speciesName, id },
   url,
 }) => {
-  // const url = config.genericDomain + pathname;
-  const json = {
+  const json: any = {
     '@context': 'https://schema.org/',
     '@id': url,
     '@type': 'Taxon',
@@ -727,73 +716,3 @@ export const speciesToLdJSON = ({
 
   return json;
 };
-
-export const schemaDotOrg = {
-  setHomeDatasetLdJSON: (species) => {
-    /* add ld+json @ bottom of body */
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'dataset-ld+json';
-    script.text = JSON.stringify(datasetToLdJSON(), null, 4);
-    const body = document.querySelector('body');
-    body.appendChild(script);
-  },
-  unsetHomeDatasetLdJSON: () => {
-    /* remove ld+json @ bottom of body */
-    document.getElementById('dataset-ld+json')?.remove();
-  },
-  setSpeciesLdJSON: (species) => {
-    /* add ld+json @ bottom of body */
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'species-ld+json';
-    script.text = JSON.stringify(speciesToLdJSON(species), null, 4);
-    const body = document.querySelector('body');
-    body.appendChild(script);
-  },
-  unsetSpeciesLdJSON: () => {
-    /* remove ld+json @ bottom of body */
-    document.getElementById('species-ld+json')?.remove();
-  },
-  setGeneLdJSON: (gene) => {
-    /* add ld+json @ bottom of body */
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'gene-ld+json';
-    script.text = JSON.stringify(geneToLdJSON(gene), null, 4);
-    const body = document.querySelector('body');
-    body.appendChild(script);
-  },
-  unsetGeneLdJSON: () => {
-    /* remove ld+json @ bottom of body */
-    document.getElementById('gene-ld+json')?.remove();
-  },
-  setGeneHomologsLdJSON: (gene) => {
-    /* add ld+json @ bottom of body */
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'gene_homologs-ld+json';
-    script.text = JSON.stringify(geneHomologsToLdJSON([...gene.orthologsByTaxon, ...gene.paralogsByTaxon]), null, 4);
-    const body = document.querySelector('body');
-    body.appendChild(script);
-  },
-  unsetGeneHomologsLdJSON: () => {
-    /* remove ld+json @ bottom of body */
-    document.getElementById('gene_homologs-ld+json')?.remove();
-  },
-  setGeneExpressionLdJSON: (genes) => {
-    /* add ld+json @ bottom of body */
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'gene_expression-ld+json';
-    script.text = JSON.stringify(geneExpressionToLdJSON(genes.calls), null, 4);
-    const body = document.querySelector('body');
-    body.appendChild(script);
-  },
-  unsetGeneExpressionLdJSON: () => {
-    /* remove ld+json @ bottom of body */
-    document.getElementById('gene_expression-ld+json')?.remove();
-  },
-};
-
-export default schemaDotOrg;

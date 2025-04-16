@@ -54,7 +54,7 @@ const TopAnat = () => {
     requestParameters,
     results,
     setResults,
-  } = useTopAnat(flowState, setFlowState);
+  }: any = useTopAnat(flowState, setFlowState);
 
   const oldResultFragment = '#/result/';
   if (loc.hash !== '' && loc.hash.match(oldResultFragment)) {
@@ -217,6 +217,7 @@ const TopAnat = () => {
       });
     }
   }, [requestParameters, flowState]);
+
   /*
    * Effect @ url change
    */

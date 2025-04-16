@@ -39,7 +39,11 @@ const DEFAULT_PARAMETERS: any = (page, action = undefined) => {
 };
 
 const search = {
-  anatomicalHomology: ({ type, query }: any, species: undefined | string[] = undefined, aeList = undefined) =>
+  anatomicalHomology: (
+    { type, query }: any,
+    species: undefined | string[] = undefined,
+    aeList: undefined | string = undefined
+  ) =>
     new Promise((resolve, reject) => {
       let params = DEFAULT_PARAMETERS('anat_similarities');
       if (type === 'form') {
@@ -355,7 +359,7 @@ const search = {
       }),
   },
   rawData: {
-    search: (form, isOnlyCounts, bypassInitSearchParam = false) =>
+    search: (form, isOnlyCounts, bypassInitSearchParam = false): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('data', form.pageType);
 

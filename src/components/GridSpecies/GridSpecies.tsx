@@ -41,7 +41,7 @@ const GridSpecies = ({
   onClick?: (species: any, selected: boolean) => void;
   to?: (species: any) => string;
   expandable?: boolean;
-  defaultSelection?: string | number;
+  defaultSelection?: string | URLSearchParams | null;
   scrollAt?: boolean;
 }) => {
   const speciesID = useQuery('id');

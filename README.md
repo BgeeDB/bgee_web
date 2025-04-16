@@ -219,7 +219,7 @@ https://reactrouter.com/6.30.0/upgrading/v5 | https://reactrouter.com/upgrading/
 - [ ] Upgrade the `bulma` dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/7f2324a734e4b8c3f18ac880344372eaf3727320), but still work to do to get the exact same style right (dark theme causes problems for those who have it enabled system-wide).
 - [ ] If you want to improve the code base quality, set `checkJs` to `true` in `tsconfig.json`, and start fixing the type issues.
 
-> Rename `.js` to `.jsx` in folder:
+> Rename files `.js` to `.jsx` in folder and subfolders:
 >
 > ```bash
 > find . -type f -name "*.js" -exec bash -c 'mv "$0" "${0%.js}.jsx"' {} \;

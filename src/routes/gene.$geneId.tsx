@@ -9,7 +9,7 @@ import GeneExpressionGraph from '~/components/Gene/GeneExpressionGraph';
 import GeneExpressionTable from '~/components/Gene/GeneExpressionTable';
 import GeneHomologs from '~/components/Gene/GeneHomologs';
 import GeneXRefs from '~/components/Gene/GeneXRefs';
-import { geneHomologsToLdJSON, geneToLdJSON } from '~/helpers/schemaDotOrg';
+import { geneHomologsToLdJSON, geneToLdJSON, geneExpressionToLdJSON } from '~/helpers/schemaDotOrg';
 import GENE_DETAILS_HTML_IDS from '~/helpers/constants/GeneDetailsHtmlIds';
 import imagePath from '~/helpers/imagePath';
 import GeneDetailsSideMenu from '~/components/Gene/GeneDetailsSideMenu';
@@ -89,9 +89,10 @@ export function meta({ data }) {
       geneToLdJSON({
         ...data.details,
         xRefs: data.xRefs?.gene?.xRefs,
-        path: data.pathname,
+        url: canonicalLink,
       }),
       geneHomologsToLdJSON([...data.homologs.orthologsByTaxon, ...data.homologs.paralogsByTaxon]),
+      geneExpressionToLdJSON(data.exprData.calls, canonicalLink),
     ],
   });
 }

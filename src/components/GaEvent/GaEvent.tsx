@@ -10,7 +10,7 @@ const GaEvent = ({
   category: string;
   action: string;
   label: string;
-  value: number;
+  value?: number;
   children: React.ReactNode;
 }) => {
   const handleClick = () => {

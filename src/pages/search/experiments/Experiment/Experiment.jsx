@@ -169,7 +169,6 @@ const Experiment = () => {
           customHeader={customHeader}
           fullwidth={false}
           minThWidth="10rem"
-          classNamesTable="is-striped"
           hasPaginationTop
           hasScrollTop
         />

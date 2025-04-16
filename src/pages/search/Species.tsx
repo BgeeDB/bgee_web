@@ -17,8 +17,8 @@ export async function loader({ params }) {
   try {
     const res = await api.search.species.species(params.id);
     return res.data;
-  } catch (error) {
-    throw new Response(error.data.message || error.message || 'Failed to load species data', { status: 404 });
+  } catch (error: any) {
+    throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
   }
 }
 
@@ -49,7 +49,7 @@ const Species = () => {
   const data = useLoaderData();
 
   const files = React.useMemo(() => {
-    const src = {
+    const src: any = {
       anatOnlyXpr: {},
       fullXpr: {},
       affymetrix: {},

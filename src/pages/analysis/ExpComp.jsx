@@ -353,7 +353,7 @@ const ExpComp = () => {
         })
         .catch((err) => {
           console.error(err);
-          setResults();
+          setResults(undefined);
         })
         .finally(() => {
           setLoading(false);

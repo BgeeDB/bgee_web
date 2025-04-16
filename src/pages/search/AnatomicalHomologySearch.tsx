@@ -7,7 +7,6 @@ import PATHS from '../../paths/paths';
 import LinkExternal from '../../components/LinkExternal';
 import { customAnatomicalHomologySorter } from '../../helpers/sortTable';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
-import config from '../../config.json';
 import { getMetadata } from '~/helpers/metadata';
 import { URL_ROOT } from '~/helpers/constants';
 
@@ -95,13 +94,13 @@ const AnatomicalHomologySearch = () => {
   const [loading, setLoading] = React.useState(false);
   const [anatomicalEntities, setAnatomicalEntities] = React.useState('');
   const [error, setError] = React.useState('');
-  const [selectedSpecies, setSelectedSpecies] = React.useState([]);
+  const [selectedSpecies, setSelectedSpecies]: any = React.useState([]);
   const { search: searchParams, pathname } = useLocation();
-  const [results, set] = React.useState(DEFAULT_RESULTS);
-  const [speciesList, setSpeciesList] = React.useState([]);
+  const [results, set]: any = React.useState(DEFAULT_RESULTS);
+  const [speciesList, setSpeciesList]: any = React.useState([]);
 
   const onToggleSpecies = React.useCallback(
-    (speciesId) => () => {
+    (speciesId: string) => () => {
       setSelectedSpecies((prev) => {
         let curr = [...prev];
         if (speciesId !== 'ALL') {
@@ -148,7 +147,7 @@ const AnatomicalHomologySearch = () => {
         selectedSpecies,
         anatomicalEntities
       )
-      .then(({ data, storableParams: { queryString } }) => {
+      .then(({ data, storableParams: { queryString } }: any) => {
         setResults({
           signature: queryString,
           data,
@@ -157,7 +156,7 @@ const AnatomicalHomologySearch = () => {
       })
       .catch((err) => {
         console.error(err);
-        setResults();
+        setResults(undefined);
       })
       .finally(() => {
         setLoading(false);
@@ -172,7 +171,7 @@ const AnatomicalHomologySearch = () => {
           type: 'query',
           query: searchParams,
         })
-        .then(({ data, storableParams: { queryString }, requestParameters }) => {
+        .then(({ data, storableParams: { queryString }, requestParameters }: any) => {
           setResults({
             signature: queryString,
             data,

@@ -33,9 +33,9 @@ export async function loader({ params }) {
       speciesScientificName,
       speciesDisplay,
     };
-  } catch (error) {
-    console.warn(error.message);
-    throw new Response(error?.data?.message || error.message || 'Failed to load species data', { status: 404 });
+  } catch (error: any) {
+    // console.warn(error.message);
+    throw new Response(error.data?.message || error.message || 'Failed to load species data', { status: 404 });
   }
 }
 

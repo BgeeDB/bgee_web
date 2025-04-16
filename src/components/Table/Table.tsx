@@ -51,7 +51,7 @@ const Table = ({
   sortable?: boolean;
   multiSortable?: boolean;
   onSortCustom?: (sortOption: any) => (a: any, b: any) => number;
-  initialSorting?: { key: string; sort: 'ascending' | 'descending' };
+  initialSorting?: { key: string; sort: 'ascending' | 'descending' }[];
   onRenderCell?: (obj: any, columnKey: string) => React.ReactNode;
   onRenderRow?: (obj: any) => React.ReactNode;
   striped?: boolean;
@@ -67,7 +67,7 @@ const Table = ({
   paginationParamPageKey?: string | undefined;
   paginationResultCountKey?: string | undefined;
   manualMaxPage?: number;
-  minThWidth?: number | null;
+  minThWidth?: string | null;
   hasPaginationTop?: boolean;
   hasScrollTop?: boolean;
 }) => {
@@ -80,7 +80,7 @@ const Table = ({
   const { width } = useWindowSize();
   const usedWidth = React.useMemo(() => table?.current?.offsetWidth || width, [table, width]);
 
-  const [sortOption, setSortOption] = React.useState(initialSorting);
+  const [sortOption, setSortOption]: any = React.useState(initialSorting);
 
   const defineSortOption = React.useCallback(
     (key) => (event) => {
