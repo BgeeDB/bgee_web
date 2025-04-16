@@ -223,6 +223,7 @@ https://reactrouter.com/6.30.0/upgrading/v5 | https://reactrouter.com/upgrading/
   - [x] A solution could be to migrate to their "react" approach: https://ionicframework.com/docs/api/icon but it throws errors when we try it and does not work at all.
 - [ ] **Hydration issue in the `raw-data` page**, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR.
 - [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/7f2324a734e4b8c3f18ac880344372eaf3727320), but still work to do to get the exact same style right (dark theme causes problems for those who have it enabled system-wide).
+- [ ] Fix `scripts/archiveCreation.js` script.
 
 > Rename files `.js` to `.jsx` in folder and subfolders:
 >
