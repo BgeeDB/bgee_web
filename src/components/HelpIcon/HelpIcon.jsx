@@ -1,9 +1,10 @@
 import Tooltip from '../Tooltip';
+import { CircleHelp, Info } from 'lucide-react';
 
 const HelpIcon = ({ title, content, style, className = undefined, isLeft = false, iconName = 'help-circle' }) => (
   <Tooltip title={title} content={content} style={style} className={className} isLeft={isLeft}>
     <span className="icon is-clickable">
-      <ion-icon name={iconName} size="large" />
+      {iconName === 'info' ? <Info /> : <CircleHelp color="white" fill="black" size={20} />}
     </span>
   </Tooltip>
 );

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
+import { Download, X } from 'lucide-react';
+
 import PATHS from '../../paths/paths';
 import useQuery from '../../hooks/useQuery';
 import Bulma from '../../components/Bulma';
@@ -157,7 +159,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
                             See processed expression values
                           </Link>
                           <div className="close" onClick={onClose}>
-                            <ion-icon name="close-outline" />
+                            <X />
                           </div>
                         </div>
                         <p className="is-size-3">
@@ -188,7 +190,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
                                       label={files[species.id.toString()].anatSimple.path}
                                     >
                                       <a className="button" href={files[species.id.toString()].anatSimple.path}>
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-7 ml-2">Simple file</span>
                                       </a>
                                     </GaEvent>
@@ -202,7 +204,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
                                       label={files[species.id.toString()].anatAdvanced.path}
                                     >
                                       <a className="button" href={files[species.id.toString()].anatAdvanced.path}>
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-7 ml-2">Advanced File</span>
                                       </a>
                                     </GaEvent>
@@ -221,7 +223,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
                                       label={files[species.id.toString()].fullSimple.path}
                                     >
                                       <a className="button" href={files[species.id.toString()].fullSimple.path}>
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-7 ml-2">Simple file</span>
                                       </a>
                                     </GaEvent>
@@ -235,7 +237,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
                                       label={files[species.id.toString()].fullAdvanced.path}
                                     >
                                       <a className="button" href={files[species.id.toString()].fullAdvanced.path}>
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-7 ml-2">Advanced File</span>
                                       </a>
                                     </GaEvent>

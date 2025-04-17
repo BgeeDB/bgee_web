@@ -1,5 +1,6 @@
 import React from 'react';
 import Bulma from '../Bulma';
+import { Plus, Minus } from 'lucide-react';
 
 const MAX_ELEMENTS = 8;
 
@@ -17,9 +18,7 @@ const GeneExpandableList = ({ items, renderElement }) => {
         {elements.map((ref, key) => renderElement(ref, key, elements))}
         {items.length > MAX_ELEMENTS && (
           <Bulma.Button size="small" className="ml-3" onClick={() => setExpand((prev) => !prev)}>
-            <span className="icon">
-              <ion-icon name={expand ? 'remove-outline' : 'add-outline'} size="large" />
-            </span>
+            <span className="icon">{expand ? <Minus /> : <Plus />}</span>
           </Bulma.Button>
         )}
       </div>

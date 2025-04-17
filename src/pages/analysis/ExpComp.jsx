@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
+import { Download, ChevronDown } from 'lucide-react';
+
 import Table from '../../components/Table';
 import Bulma from '../../components/Bulma';
 import api from '../../api';
@@ -81,7 +83,7 @@ const GeneItemNb = ({ itemTab }) => {
 
 const ExpandCell = ({ onClick }) => (
   <a className="expand-button" onClick={onClick} onKeyPress={onClick} role="button" tabIndex={0}>
-    <Bulma.IonIcon name="chevron-down-sharp" />
+    <ChevronDown />
   </a>
 );
 
@@ -215,7 +217,7 @@ const customHeader = () => (searchElement, pageSizeElement, data) => {
           >
             TSV
             <span className="icon is-small ml-1">
-              <ion-icon name="download-outline" />
+              <Download size={15} />
             </span>
           </Bulma.Button>
         </div>

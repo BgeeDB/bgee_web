@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Star } from 'lucide-react';
+
 import Bulma from '../../../../components/Bulma';
 import api from '../../../../api';
 
@@ -45,10 +47,25 @@ const UserFeedback = () => {
         {[1, 2, 3, 4, 5].map((star) => (
           <button type="button" key={star} className="button is-ghost p-1" onClick={() => setRating(star)}>
             <span className="icon">
-              <ion-icon
+              {star <= rating ? (
+                <Star
+                  // size={24}
+                  color="#ffd700"
+                  fill="black"
+                  style={{ transition: 'color 0.3s' }}
+                />
+              ) : (
+                <Star
+                  // size={24}
+                  color="#666"
+                  style={{ transition: 'color 0.3s' }}
+                />
+              )}
+              {/* TODO: check it renders well */}
+              {/* <ion-icon
                 name={star <= rating ? 'star' : 'star-outline'}
                 style={{ color: star <= rating ? '#ffd700' : '#666' }}
-              />
+              /> */}
             </span>
           </button>
         ))}

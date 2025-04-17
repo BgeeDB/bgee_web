@@ -1,7 +1,8 @@
 import { Link } from 'react-router';
+import { Newspaper, Bookmark } from 'lucide-react';
+
 import TopAnatHistoryModal from './TopAnatHistoryModal';
 import PATHS from '../../paths/paths';
-import Bulma from '../Bulma';
 import Tooltip from '../Tooltip';
 
 const EXAMPLES = [
@@ -60,17 +61,17 @@ const TopAnatHead = () => (
     <div id="helpers-top-anat" className="my-4 is-flex">
       <TopAnatHistoryModal />
       <Link to={PATHS.SUPPORT.TUTORIAL_TOPANAT} className="button is-bgee-link is-outlined mr-2">
-        <Bulma.IonIcon name="newspaper-outline" />
+        <Newspaper size={15} className="mr-1" />
         <span>Documentation</span>
       </Link>
       <div className="is-align-items-center is-flex">
-        <span className="icon-text">
-          <Bulma.IonIcon name="bookmarks-sharp" />
+        <span className="icon-text is-flex is-align-items-center mr-1">
+          <Bookmark size={15} className="mr-1" />
           <span>Examples</span>
         </span>
         <div className="ml-1 buttons">
           {EXAMPLES.map((ex, key) => (
-            <Tooltip key={ex.id} title={`Example ${key + 1}`} content={ex.description}>
+            <Tooltip key={ex.id} title={`Example ${key + 1}`} content={ex.description} className="mr-1">
               <Link
                 to={PATHS.ANALYSIS.TOP_ANAT_RESULT.replace(':id', ex.id)}
                 className="button is-bgee-link is-outlined m-0"

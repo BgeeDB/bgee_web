@@ -1,5 +1,5 @@
 import React from 'react';
-import Bulma from '../Bulma';
+import { Info } from 'lucide-react';
 
 const InfoIcon = ({ title, content, tooltip }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -8,7 +8,7 @@ const InfoIcon = ({ title, content, tooltip }) => {
     <>
       <button type="button" className="button is-ghost" onClick={() => setIsOpen(true)}>
         <span title={tooltip}>
-          <Bulma.IonIcon name="information-circle" size="large" />
+          <Info />
         </span>
       </button>
       <div className={`modal ${isOpen ? 'is-active' : ''}`}>

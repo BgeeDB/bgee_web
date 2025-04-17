@@ -25,6 +25,7 @@
     "bulma": "^0.9.4",
     "d3": "^7.9.0",
     "isbot": "^5",
+    "lucide-react": "^0.488.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.5.0",

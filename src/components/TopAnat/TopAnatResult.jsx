@@ -1,4 +1,6 @@
 import React from 'react';
+import { Download } from 'lucide-react';
+
 import Bulma from '../Bulma';
 import classnames from '../../helpers/classnames';
 import { TOP_ANAT_FLOW } from '../../hooks/useTopAnat';
@@ -117,7 +119,7 @@ const TopAnatResult = ({ results, searchId, fg, status, title }) => {
                   >
                     All stages, expression type &quot;Present&quot;
                     <span className="icon ml-1">
-                      <ion-icon name="download-outline" size="large" />
+                      <Download size={15} />
                     </span>
                   </Bulma.Button>
                 </GaEvent>
@@ -143,7 +145,7 @@ const TopAnatResult = ({ results, searchId, fg, status, title }) => {
                           fg.list.stages.find((s) => s.id === r.devStageId)?.name
                         }, expression type "Present" (${r.results.length})`}
                         <span className="icon is-small">
-                          <ion-icon name="download-outline" size="large" />
+                          <Download size={15} />
                         </span>
                       </Bulma.Button>
                     </GaEvent>
@@ -163,7 +165,7 @@ const TopAnatResult = ({ results, searchId, fg, status, title }) => {
                   >
                     <span>TSV</span>
                     <span className="icon is-small">
-                      <ion-icon name="download-outline" />
+                      <Download size={15} />
                     </span>
                   </a>
                 </div>

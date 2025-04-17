@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router';
+import { Download } from 'lucide-react';
 
 import Bulma from '../../../components/Bulma';
 import Table from '../../../components/Table';
@@ -226,7 +227,7 @@ const RawDataAnnotationResults = ({
           >
             Export current page in TSV
             <span className="icon is-small ml-1">
-              <ion-icon name="download-outline" />
+              <Download size={15} />
             </span>
           </Bulma.Button>
         </div>

@@ -1,4 +1,5 @@
 import Bulma from '../Bulma';
+import { ChevronUp } from 'lucide-react';
 
 const GoTop = () => (
   <Bulma.Button
@@ -15,7 +16,7 @@ const GoTop = () => (
     className="go-top"
   >
     <span className="icon">
-      <ion-icon name="chevron-up-outline" />
+      <ChevronUp />
     </span>
   </Bulma.Button>
 );

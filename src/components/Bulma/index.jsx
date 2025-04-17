@@ -10,7 +10,6 @@ import Element from './Element/Element';
 import Footer from './Footer/Footer';
 import Icon from './Icon/Icon';
 import Image from './Image/Image';
-import IonIcon from './Icon/IonIcon';
 import Hero from './Hero/Hero';
 import Media from './Media/Media';
 import Message from './Message/Message';
@@ -35,7 +34,6 @@ const Bulma = {
   Footer,
   Icon,
   Image,
-  IonIcon,
   Hero,
   Media,
   Message,

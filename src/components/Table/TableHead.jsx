@@ -1,4 +1,6 @@
 import { useContext } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
 import { isHideMediaQuery } from '../../helpers/constants/mediaQueries';
 import { TableContext } from '../../contexts/TableContext';
 import HelpIcon from '../HelpIcon';
@@ -22,7 +24,7 @@ const cssSortOption = (key, sortOpts) => {
     return (
       <>
         <span className="icon is-small">
-          <ion-icon name="caret-down-outline" />
+          <ChevronDown />
         </span>
         {typeof pos === 'number' && <sup>{pos}</sup>}
       </>
@@ -31,7 +33,7 @@ const cssSortOption = (key, sortOpts) => {
     return (
       <>
         <span className="icon is-small">
-          <ion-icon name="caret-up-outline" />
+          <ChevronUp />
         </span>
         {typeof pos === 'number' && <sup>{pos}</sup>}
       </>
@@ -66,7 +68,7 @@ const TableHead = ({ minThWidth }) => {
                       isLeft={key > columns.length / 2}
                       title={item.text}
                       className="helpIcon"
-                      iconName="information-circle"
+                      iconName="info"
                       content={item.infoBubble}
                     />
                   )}

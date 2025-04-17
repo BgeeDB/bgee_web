@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
+import { Download } from 'lucide-react';
+
 import Bulma from '../../../../../components/Bulma';
 import { Renderer } from './Renderer';
 import { Tooltip } from './Tooltip';
@@ -374,7 +376,7 @@ export const Heatmap = ({
                 >
                   PNG
                   <span className="icon is-small ml-1">
-                    <ion-icon name="download-outline" />
+                    <Download size={15} />
                   </span>
                 </Bulma.Button>
 
@@ -387,7 +389,7 @@ export const Heatmap = ({
                 >
                   SVG
                   <span className="icon is-small ml-1">
-                    <ion-icon name="download-outline" />
+                    <Download size={15} />
                   </span>
                 </Bulma.Button>
 
@@ -400,7 +402,7 @@ export const Heatmap = ({
                 >
                   TSV
                   <span className="icon is-small ml-1">
-                    <ion-icon name="download-outline" />
+                    <Download size={15} />
                   </span>
                 </Bulma.Button>
               </div>

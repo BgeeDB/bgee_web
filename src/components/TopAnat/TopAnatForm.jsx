@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { ChevronUp, File, Mail } from 'lucide-react';
+
 import Bulma from '../Bulma';
 import InfoIcon from '../InfoIcon';
 import TextArea from '../Form/TextArea';
@@ -277,7 +279,7 @@ const TopAnatForm = ({
               <div className="message-header">
                 <p className="is-size-5">Advanced Options</p>
                 <span className={`icon is-medium ${expandOpts ? 'open' : ''}`}>
-                  <ion-icon name="chevron-up-outline" size="large" />
+                  <ChevronUp />
                 </span>
               </div>
             </article>
@@ -567,7 +569,7 @@ const TopAnatForm = ({
           error={errors.email}
           icons={
             <span className="icon is-left">
-              <ion-icon name="mail-outline" />
+              <Mail />
             </span>
           }
         />
@@ -580,7 +582,7 @@ const TopAnatForm = ({
           disabled={formDisabled}
           icons={
             <span className="icon is-left">
-              <ion-icon name="document-outline" />
+              <File size={15} />
             </span>
           }
         />

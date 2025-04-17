@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
+
 import { isEmpty } from '../../../helpers/arrayHelper';
 import SelectMultipleWithAutoComplete from '../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { getOptionsForFilter } from '../../../helpers/selects';
@@ -64,7 +66,7 @@ const RawDataAnnotationsFilters = ({ filters, setFilters, triggerSearch, dataFil
             Apply filters
           </button>
           <button className="button is-small is-danger is-light mt-2 ml-2" type="button" onClick={eraseFilters}>
-            <ion-icon name="trash" tooltop />
+            <Trash2 size={15} tooltop />
           </button>
         </div>
       )}

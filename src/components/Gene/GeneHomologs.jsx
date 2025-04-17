@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { ChevronDown } from 'lucide-react';
+
 import LinkExternal from '../LinkExternal';
 import PATHS from '../../paths/paths';
 import Bulma from '../Bulma';
@@ -43,7 +45,7 @@ const ExpressionComparisonCellParalogs = ({ query }) => (
 );
 const ExpandCell = ({ onClick }) => (
   <a className="expand-button" onClick={onClick}>
-    <Bulma.IonIcon name="chevron-down-sharp" />
+    <ChevronDown />
   </a>
 );
 const GenesCell = ({ genes }) => {

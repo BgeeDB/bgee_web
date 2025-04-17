@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
+import { Download, X } from 'lucide-react';
+
 import PATHS from '../../paths/paths';
 import useQuery from '../../hooks/useQuery';
 import Bulma from '../../components/Bulma';
@@ -163,7 +165,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                             See gene expression calls
                           </Link>
                           <div className="close" onClick={onClose}>
-                            <ion-icon name="close-outline" />
+                            <X />
                           </div>
                         </div>
                         <p className="is-size-3">
@@ -193,7 +195,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.rnaSeqAnnot.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download experiments/libraries info
                                           {` (${readableFileSize(files[species.id.toString()]?.rnaSeqAnnot.size)})`}
@@ -210,7 +212,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.rnaSeqData.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download read counts and TPMs
                                           {` (${readableFileSize(files[species.id.toString()]?.rnaSeqData.size)})`}
@@ -256,7 +258,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.affymetrixAnnot.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download experiments/chips info
                                           {` (${readableFileSize(files[species.id.toString()]?.affymetrixAnnot.size)})`}
@@ -273,7 +275,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.affymetrixData.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download signal intensities
                                           {` (${readableFileSize(files[species.id.toString()]?.affymetrixData.size)})`}
@@ -320,7 +322,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.dropletBasedAnnot.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download experiments/libraries info
                                           {` (${readableFileSize(
@@ -339,7 +341,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.dropletBasedData.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download UMI counts and CPMs per cell-type
                                           {` (${readableFileSize(
@@ -358,7 +360,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.dropletBasedH5ad.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download UMI counts per cell
                                           {` (${readableFileSize(
@@ -407,7 +409,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.fullLengthAnnot.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download experiments/libraries info
                                           {` (${readableFileSize(files[species.id.toString()]?.fullLengthAnnot.size)})`}
@@ -424,7 +426,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.fullLengthData.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download read counts and TPMs per cell-type
                                           {` (${readableFileSize(files[species.id.toString()]?.fullLengthData.size)})`}
@@ -441,7 +443,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                                   >
                                     <a href={files[species.id.toString()]?.fullLengthH5ad.path}>
                                       <button className="button is-light is-multiline">
-                                        <ion-icon name="download-outline" />
+                                        <Download size={15} />
                                         <span className="is-size-6 ml-2">
                                           Download read counts per cell
                                           {` (${readableFileSize(files[species.id.toString()]?.fullLengthH5ad.size)})`}

@@ -1,4 +1,6 @@
 import React, { useContext } from 'react';
+import { CirclePlus } from 'lucide-react';
+
 import classnames from '../../helpers/classnames';
 import { isHideMediaQuery } from '../../helpers/constants/mediaQueries';
 import { TableContext } from '../../contexts/TableContext';
@@ -47,7 +49,7 @@ const PlusModalCell = ({ row, defaultRender }) => {
   );
   return showTableModalButton ? (
     <td className="table-modal-button" onClick={showModalDetails(row)}>
-      <ion-icon name="add-circle" />
+      <CirclePlus />
     </td>
   ) : null;
 };

@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
+import { Eye, Trash2, List } from 'lucide-react';
+
 import Bulma from '../Bulma';
 import { ModalContext } from '../../contexts/ModalContext';
 import PATHS from '../../paths/paths';
@@ -31,7 +33,7 @@ const ModalContent = ({ history, onRemove, onLoad, hideModal }) => (
           </div>
           <div style={{ minWidth: 100 }}>
             <Bulma.Button className="is-outlined mr-2" color="info" type="button" onClick={onLoad && onLoad(h.id)}>
-              <Bulma.IonIcon name="eye-outline" />
+              <Eye />
             </Bulma.Button>
             <Bulma.Button
               className="is-outlined mr-2"
@@ -39,7 +41,7 @@ const ModalContent = ({ history, onRemove, onLoad, hideModal }) => (
               type="button"
               onClick={onRemove && onRemove(h.id)}
             >
-              <Bulma.IonIcon name="trash-outline" />
+              <Trash2 />
             </Bulma.Button>
           </div>
         </div>
@@ -115,7 +117,7 @@ const TopAnatHistoryModal = () => {
         showModal(() => <ModalContent history={history} onLoad={onLoad} onRemove={onRemove} hideModal={hideModal} />)
       }
     >
-      <Bulma.IonIcon className="mr-1" name="list-outline" /> Recent jobs
+      <List size={15} className="mr-1" /> Recent jobs
     </button>
   );
 };

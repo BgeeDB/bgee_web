@@ -218,6 +218,14 @@ $size-3: 1.5rem (= 21px)
 
 The images are stored externally of the project. You will find the path of the images in the `src/config.json` file at the key `imageDomain`. Be careful, the image used for the 'external icon' link is directly defined in the SCSS. If you are moving it, don't forget to change the path.
 
+If you need icon you can find them there: https://lucide.dev/icons
+
+```tsx
+import { ChevronDown } from 'lucide-react';
+
+<ChevronDown size={15} />;
+```
+
 ## ☑️ To do
 
 https://reactrouter.com/6.30.0/upgrading/v5 | https://reactrouter.com/upgrading/v6

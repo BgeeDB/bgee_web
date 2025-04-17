@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { Download } from 'lucide-react';
+
 import Bulma from '../../../../components/Bulma';
 import Table from '../../../../components/Table';
 import useLogic from './useLogic';
@@ -151,7 +153,7 @@ const Experiment = () => {
                   >
                     {url.text}
                     <span className="icon is-small ml-1">
-                      <ion-icon name="download-outline" />
+                      <Download size={15} />
                     </span>
                   </Bulma.Button>
                 ))}
