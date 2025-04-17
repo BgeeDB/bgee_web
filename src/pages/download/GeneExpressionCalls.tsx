@@ -48,7 +48,7 @@ export async function loader() {
       kwList: res.data.speciesIdToKeywords,
       allSpeciesName: singleSpeciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
     };
-  } catch (error) {
+  } catch (error: any) {
     throw new Response(error.data?.message || error.message || 'Failed to load gene expression data', { status: 404 });
   }
 }

@@ -62,6 +62,12 @@ test.describe('Search pages', () => {
     // expect(await page.locator('text=Mus musculus').count()).toBeGreaterThan(0);
     await expect(page.getByText('Mus musculus')).toBeVisible();
   });
+
+  test('display expression comparison', async ({ page }) => {
+    await page.goto('/analysis/expr-comparison');
+    await expect(page).toHaveTitle(/Expression comparison analysis/);
+    await expect(page.getByText('Compare expression of several genes.')).toBeVisible();
+  });
 });
 
 test.describe('Other pages', () => {
@@ -69,7 +75,7 @@ test.describe('Other pages', () => {
   //   await page.goto('/');
   // });
 
-  test('species are loaded', async ({ page }) => {
+  test('display home page', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Bgee/);
     expect(await page.locator('text=Drosophila melanogaster').count()).toBeGreaterThan(0);

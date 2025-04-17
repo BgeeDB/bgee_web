@@ -15,7 +15,7 @@ const DEFAULT_PARAMETERS = (queryBase) => {
 };
 
 const expressionComparison = {
-  getResults: ({ type, data: dataForm }) =>
+  getResults: ({ type, data: dataForm }): any =>
     new Promise((resolve, reject) => {
       const params = DEFAULT_PARAMETERS(type === 'query' ? dataForm : undefined);
       if (type === 'query') params.append('display_rp', '1');

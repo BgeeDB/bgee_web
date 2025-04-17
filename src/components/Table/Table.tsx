@@ -52,7 +52,7 @@ const Table = ({
   multiSortable?: boolean;
   onSortCustom?: (sortOption: any) => (a: any, b: any) => number;
   initialSorting?: { key: string; sort: 'ascending' | 'descending' }[];
-  onRenderCell?: (obj: any, columnKey: string) => React.ReactNode;
+  onRenderCell?: (obj: any, defaultRender: any, expandAction: any) => any;
   onRenderRow?: (obj: any) => React.ReactNode;
   striped?: boolean;
   pagination?: boolean;

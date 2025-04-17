@@ -50,7 +50,7 @@ export async function loader() {
       kwList: res.data.speciesIdToKeywords,
       allSpeciesName: speciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
     };
-  } catch (error) {
+  } catch (error: any) {
     throw new Response(error.data?.message || error.message || 'Failed to load processed values', { status: 404 });
   }
 }

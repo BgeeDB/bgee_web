@@ -8,7 +8,6 @@ import api from '../../api';
 import PATHS from '../../paths/paths';
 import LinkExternal from '../../components/LinkExternal/LinkExternal';
 import classnames from '../../helpers/classnames';
-import { NotificationContext } from '../../contexts/NotificationsContext';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 import { getMetadata } from '~/helpers/metadata';
 
@@ -26,7 +25,13 @@ export function meta() {
   });
 }
 
-const AnatEntitiesCell = ({ multiSpeciesCondition = null, condition = null }) => {
+const AnatEntitiesCell = ({
+  multiSpeciesCondition = null,
+  condition = null,
+}: {
+  multiSpeciesCondition?: any;
+  condition?: any;
+}) => {
   if (condition) {
     return (
       <>
@@ -46,7 +51,7 @@ const AnatEntitiesCell = ({ multiSpeciesCondition = null, condition = null }) =>
   }
 
   if (multiSpeciesCondition) {
-    const items = [];
+    const items: any[] = [];
     if (multiSpeciesCondition.cellTypes && multiSpeciesCondition.cellTypes.length > 0) {
       multiSpeciesCondition.cellTypes.forEach((cellType, key) => {
         items.push(
@@ -111,7 +116,7 @@ const GenesCell = ({ genes }) => (
 );
 
 const SpeciesCell = ({ genes }) => {
-  const speciesList = [];
+  const speciesList: any[] = [];
   genes.forEach((item) => {
     if (speciesList.length === 0) {
       speciesList.push(item.species);
@@ -314,10 +319,9 @@ const onSort = (sortOpts) => (a, b) => {
 const ExpComp = () => {
   const navigate = useNavigate();
   const [error, setError] = React.useState(false);
-  const [geneInfo, setGeneInfo] = React.useState();
-  const { addNotification } = React.useContext(NotificationContext);
+  const [geneInfo, setGeneInfo]: any = React.useState();
   const [loading, setLoading] = React.useState(false);
-  const [results, set] = React.useState(DEFAULT_RESULTS);
+  const [results, set]: any = React.useState(DEFAULT_RESULTS);
   const { search: searchParams } = useLocation();
 
   const setResults = React.useCallback((d) => {
@@ -506,7 +510,6 @@ const ExpComp = () => {
             sortable
             multiSortable
             pagination
-            classNamesTable="is-striped"
             onFilter={onFilter}
             onSortCustom={onSort}
             initialSorting={[
@@ -566,7 +569,7 @@ const ExpComp = () => {
               },
             ]}
             data={results?.data?.comparisonResults || []}
-            customHeader={customHeader(addNotification)}
+            customHeader={customHeader()}
             onRenderCell={onRenderCell}
           />
         </div>

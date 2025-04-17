@@ -42,6 +42,15 @@ const RawDataAnnotationResults = ({
   pageNumber,
   isExprCalls,
   searchParams,
+}: {
+  results: any[];
+  columnDescriptions: any[];
+  maxPage: number;
+  pageType: string;
+  dataType: string;
+  pageNumber: number;
+  isExprCalls: boolean;
+  searchParams: any;
 }) => {
   const loc = useLocation();
 
@@ -184,7 +193,7 @@ const RawDataAnnotationResults = ({
 
   const buildTSVhref = useMemo(() => {
     const base = `data:text/tab-separated-values;charset=utf-8,`;
-    const colHeaders = [];
+    const colHeaders: string[] = [];
 
     // We create column headers by filtering the export = false
     columnDescriptions

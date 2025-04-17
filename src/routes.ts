@@ -8,7 +8,7 @@ export default [
 
   // Analysis routes
   route(PATHS.ANALYSIS.TOP_ANAT + '/:id?/:jobId?', './pages/analysis/TopAnat.tsx'),
-  route(PATHS.ANALYSIS.EXPRESSION_COMPARISON, './pages/analysis/ExpComp.jsx'),
+  route(PATHS.ANALYSIS.EXPRESSION_COMPARISON, './pages/analysis/ExpComp.tsx'),
 
   // Search routes (gene resolution is in the routes/ folder)
   route(PATHS.SEARCH.GENE, './pages/search/GeneList.tsx'),
@@ -17,12 +17,12 @@ export default [
   route(PATHS.SEARCH.SPECIES_ITEM, './pages/search/Species.tsx'),
   route(PATHS.SEARCH.GENE_LIST_ITEM + '/:speciesName?', './pages/search/SpeciesGeneList.tsx'),
   route(PATHS.SEARCH.EXPRESSION_MATRIX, './pages/search/expressionmatrix/GeneExpressionMatrix.tsx'),
-  route(PATHS.SEARCH.EXPERIMENT, './pages/search/experiments/Experiment/Experiment.jsx'),
+  route(PATHS.SEARCH.EXPERIMENT, './pages/search/experiments/Experiment/Experiment.tsx'),
 
   // Download routes
   route(PATHS.DOWNLOAD.DATA_DUMPS, './pages/download/DataDumps.tsx'),
-  route(PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS, './pages/download/GeneExpressionCalls.jsx'),
-  route(PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES, './pages/download/ProcessedExpressionValues.jsx'),
+  route(PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS, './pages/download/GeneExpressionCalls.tsx'),
+  route(PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES, './pages/download/ProcessedExpressionValues.tsx'),
 
   // Resources routes
   route(PATHS.RESOURCES.R_PACKAGES, './static/resources/rPackage.ts'),
