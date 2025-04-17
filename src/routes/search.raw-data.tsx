@@ -11,12 +11,11 @@ export function meta() {
   });
 }
 
-// Enabled basic SSR for when a species_id is provided in the URL, to help SEO to find experiments links
+// NOTE: This enables basic SSR for when a species_id is provided in the URL, to help SEO to find experiments links
 // But the search is retriggered on the client side to get all data
 export async function loader({ request }) {
   const url = new URL(request.url);
   const speciesId = url.searchParams.get('species_id');
-  // const isExprCalls = url.searchParams.get('pageType') === TAB_PAGE_EXPR_CALL.id || url.pathname.includes('/expression-calls');
   if (speciesId && url.searchParams.size === 1) {
     // Preload when species ID provided for SEO
     const { resp, searchParams } = await searchRawData({
