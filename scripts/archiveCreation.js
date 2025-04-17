@@ -38,9 +38,8 @@ const main = async () => {
 
     const html = await fs.readFile('./public/index.html', 'utf8');
     const noIndexSource = await fs.readFile('./archives/resources/htmlHead.txt', 'utf8');
-    const tmpHtml = html
-      .replace('<head>', `<head>${noIndexSource}`)
-      .replace('/js/ionicons-5.5.4/ionicons.esm.js', `/${URL_VERSION}/js/ionicons-5.5.4/ionicons.esm.js`);
+    const tmpHtml = html.replace('<head>', `<head>${noIndexSource}`);
+    // .replace('/js/ionicons-5.5.4/ionicons.esm.js', `/${URL_VERSION}/js/ionicons-5.5.4/ionicons.esm.js`);
     await fs.writeFile('./public/index.html', tmpHtml);
     console.log('Setting noindex in html');
 
