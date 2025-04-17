@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { isEmpty } from '../../../helpers/arrayHelper';
-import SelectMultipleWithAutoComplete from '../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
-import './rawDataAnnotations.scss';
+import SelectMultipleWithAutoComplete from '../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { getOptionsForFilter } from '../../../helpers/selects';
 import classnames from '../../../helpers/classnames';
+import './rawDataAnnotations.scss';
 
 const RawDataAnnotationsFilters = ({ filters, setFilters, triggerSearch, dataFilters = {}, dataType }) => {
   const [hasChanged, setHasChanged] = useState(false);
   const eraseFilters = () => {
-    if (filters[dataType] !== {} && filters[dataType] !== undefined) {
+    if (filters[dataType] && Object.keys(filters[dataType]).length > 0) {
       setFilters((old) => ({ ...old, [dataType]: {} }));
       triggerSearch(true, true);
       setHasChanged(false);

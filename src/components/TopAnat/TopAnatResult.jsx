@@ -45,7 +45,7 @@ const COLUMNS = [
 ];
 const MERGE_KEY = 'merge';
 
-const TopAnatResult = ({ results, searchId, fg, status, title, jobId, data }) => {
+const TopAnatResult = ({ results, searchId, fg, status, title }) => {
   const [selectedStage, setSelectedStage] = React.useState(MERGE_KEY);
   const onRenderCell = React.useCallback(({ cell, key }, defaultRender) => {
     if (key === 0) return <LinkExternal to={obolibraryLinkFromID(cell)}>{cell}</LinkExternal>;

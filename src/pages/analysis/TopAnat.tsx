@@ -277,8 +277,8 @@ const TopAnat = () => {
         searchId={id}
         title={data?.jobDescription}
         fg={requestParameters.value.fg}
-        jobId={jobId}
-        data={data}
+        // jobId={jobId}
+        // data={data}
       />
     </>
   );

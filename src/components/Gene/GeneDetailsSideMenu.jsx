@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import PATHS from '../../paths/paths';
-import config from '../../config.json';
 import { URL_ROOT } from '~/helpers/constants';
 
 const GeneDetailsSideMenu = ({ homologs = null, xRefs }) => {

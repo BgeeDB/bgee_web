@@ -21,7 +21,6 @@ import {
   PROC_EXPR_VALUES,
 } from '../../pages/search/rawdata/useLogic';
 import TagSource from '../TagSource/TagSource';
-import config from '../../config.json';
 import { URL_ROOT } from '~/helpers/constants';
 // import schemaDotOrg from '../../helpers/schemaDotOrg';
 
@@ -338,7 +337,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
           );
         case 'fdr':
           return defaultRender(cell.fdr, key);
-        case 'proc_expr_values':
+        case 'proc_expr_values': {
           let searchParams = `pageType=${PROC_EXPR_VALUES}&gene_id=${geneId}&species_id=${speciesId}&cell_type_descendant=true&stage_descendant=true&anat_entity_descendant=true&only_propagated=true`;
           if (data.requestedConditionParameters.find((r) => r === 'Anat. entity')) {
             searchParams += `&anat_entity_id=${cell?.condition?.anatEntity?.id}`;
@@ -360,11 +359,12 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
             }
           }
           return <Link to={`${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?${searchParams}`}>See source data</Link>;
+        }
         case 'strain':
           return defaultRender(cell.condition.strain, key);
         case 'sex':
           return defaultRender(cell.condition.sex, key);
-        case 'sources':
+        case 'sources': {
           const col = columns.find((c) => c.key === key);
           const source = {};
           ALL_DATA_TYPES.forEach((dt) => {
@@ -399,6 +399,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
               <TagSource source={source} />
             </div>
           );
+        }
         default:
           return defaultRender(cell?.[key] || key, key);
       }

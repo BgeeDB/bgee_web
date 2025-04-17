@@ -1,5 +1,5 @@
 import { getMetadata } from '~/helpers/metadata';
-import RawDataAnnotations from './RawDataAnnotations';
+import RawDataAnnotations from '~/pages/search/rawdata/RawDataAnnotations';
 
 export function meta() {
   return getMetadata({

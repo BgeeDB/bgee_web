@@ -134,7 +134,7 @@ const staticBuilder = (json, prefixKey = '') =>
             <b>{props.content}</b>
           </p>
         );
-      case 'card':
+      case 'card': {
         const Component = () => (
           <div key={`${prefixKey}-${key}`} id={id} className={classnames('card custom-card', classNames)}>
             {props.image && (
@@ -165,6 +165,7 @@ const staticBuilder = (json, prefixKey = '') =>
             </a>
           );
         return <Component />;
+      }
       case 'columns':
         return (
           <div key={`${prefixKey}-${key}`} id={id} className={classnames('columns', classNames)}>

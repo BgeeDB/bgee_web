@@ -1,4 +1,3 @@
-import config from '../config.json';
 import { URL_ROOT } from '~/helpers/constants';
 
 const expressionPageHelper = {

@@ -4,7 +4,7 @@ import LinkExternal from '../LinkExternal';
 import PATHS from '../../paths/paths';
 import Bulma from '../Bulma';
 import isPlural from '../../helpers/isPlural';
-import { MEDIA_QUERIES, MEDIA_QUERIES_SIZE } from '../../helpers/constants/mediaQueries';
+import { MEDIA_QUERIES } from '../../helpers/constants/mediaQueries';
 // import useWindowSize from '../../hooks/useWindowSize';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import Table from '../Table';

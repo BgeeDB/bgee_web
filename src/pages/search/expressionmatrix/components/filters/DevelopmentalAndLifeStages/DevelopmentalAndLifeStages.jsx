@@ -1,5 +1,5 @@
 import useLogic from './useLogic';
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import HelpIcon from '../../../../../../components/HelpIcon';
 // import { COND_PARAM2_DEVSTAGE_KEY } from '../../../../rawdata/useLogic';
 import { COND_PARAM2_DEVSTAGE_KEY } from '../../../useLogic';

@@ -1,5 +1,5 @@
 import HelpIcon from '../../../../../../components/HelpIcon';
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { getIdAndNameLabel } from '../../../../../../helpers/selects';
 // import { COND_PARAM2_ANAT_KEY } from '../../../../rawdata/useLogic';
 import { COND_PARAM2_ANAT_KEY } from '../../../useLogic';

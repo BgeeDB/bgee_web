@@ -528,7 +528,7 @@ const useLogic = (isExprCalls) => {
     const filtersToCheck = (isExprCalls ? data?.filters : data?.filters?.[nextDataType]) || {};
     const searchParams = new URLSearchParams(requestParameters);
     const initFilters = {};
-    Object.entries(filtersToCheck).forEach(([_, f]) => {
+    Object.entries(filtersToCheck).forEach(([, f]) => {
       const ids = searchParams.getAll(f.urlParameterName);
       const nextValues = f.values.filter((v) => ids.includes(v.id));
 
@@ -1083,7 +1083,7 @@ const useLogic = (isExprCalls) => {
 
           // add additional data to previous ones
           const exprData = searchResult;
-          exprData.expressionData.expressionCalls.push(...resp?.data.expressionData.expressionCalls);
+          if (resp) exprData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
           setSearchResult(exprData);
 
           // Finally, we set the values we are interested in

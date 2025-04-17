@@ -1,7 +1,7 @@
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 
-const Icon = ({ size, color, className, align, text, renderAs = 'span', ...props }) => (
+const Icon = ({ size, color, className, align, renderAs = 'span', ...props }) => (
   <Element
     {...props}
     renderAs={renderAs}

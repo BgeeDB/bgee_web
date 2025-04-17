@@ -82,7 +82,7 @@ const TopAnatBanner = ({ results, status }) => {
           <p className="mt-2">Job is running - Job ID: {results.jobId}</p>
         </Bulma.Notification>
       );
-    case TOP_ANAT_FLOW.GOT_RESULTS:
+    case TOP_ANAT_FLOW.GOT_RESULTS: {
       const nbRecords = results.analysis.reduce((acc, analysis) => acc + analysis.results.length, 0);
       const nbAnalysis = results.analysis.length;
       const nbAnalysisSuccess = results.analysis.reduce(
@@ -102,6 +102,7 @@ const TopAnatBanner = ({ results, status }) => {
           </p>
         </Bulma.Notification>
       );
+    }
     default:
       return null;
   }

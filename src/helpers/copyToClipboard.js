@@ -29,12 +29,13 @@ const copyToClipboard = (text) => {
   let successful = false;
   try {
     successful = document.execCommand('copy');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     try {
       window.clipboardData.setData('text', text);
       successful = true;
     } catch (err) {
-      console.error('unable to copy using clipboardData: ', err);
+      console.error('Unable to copy using clipboardData: ', err);
     }
   }
   document.body.removeChild(el);

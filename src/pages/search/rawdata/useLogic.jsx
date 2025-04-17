@@ -531,7 +531,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     const filtersToCheck = (isExprCalls ? data?.filters : data?.filters?.[nextDataType]) || {};
     const searchParams = new URLSearchParams(requestParameters);
     const initFilters = {};
-    Object.entries(filtersToCheck).forEach(([_, f]) => {
+    Object.entries(filtersToCheck).forEach(([, f]) => {
       const ids = searchParams.getAll(f.urlParameterName);
       const nextValues = f.values.filter((v) => ids.includes(v.id));
 
@@ -685,6 +685,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       setLocalCount(
         isExprCalls ? { assayCount: resp?.data?.expressionCallCount } : resp?.data?.resultCount?.[dataType]
       );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // We remove all the parameters that we may have sent
       navigate(`${URL_ROOT}${loc.pathname}`, { replace: true });

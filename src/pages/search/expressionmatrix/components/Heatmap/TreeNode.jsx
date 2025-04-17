@@ -39,11 +39,11 @@ const TreeNode = ({ node, depth, index, yScale, toggleCollapse, labelFont }) => 
         </text>
       ) : null}
 
-      {false && (
+      {/* {false && (
         <text x={depth < 2 ? depth * 20 + 20 : depth * 20 + 10} y={yPos} fontSize="12">
           {node.label}
         </text>
-      )}
+      )} */}
 
       {node.cellTypeLabel && node.cellTypeId !== 'GO:0005575' ? (
         <text x={depth < 2 ? depth * 20 + 20 : depth * 20 + 10} y={yPos} fontSize="14" fontFamily={labelFont}>

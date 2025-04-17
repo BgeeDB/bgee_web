@@ -1,4 +1,4 @@
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { COND_PARAM2_STRAIN_KEY } from '../../../useLogic';
 
 const Strain = ({ selectedStrain, setSelectedStrain, AutoCompleteByType, addConditionalParam, selectedSpecies }) => {

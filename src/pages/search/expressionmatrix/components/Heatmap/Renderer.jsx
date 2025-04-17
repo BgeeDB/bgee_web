@@ -25,7 +25,7 @@ export const Renderer = forwardRef(
       backgroundColor,
       marginLeft,
       xLabelRotation,
-      yLabelJustify,
+      // yLabelJustify,
       showLegend,
       showMissingData,
       showDescMax,
@@ -384,77 +384,75 @@ export const Renderer = forwardRef(
       );
     });
 
-    const yLabels = yLblOrdered.map((term, i) => {
-      const y = yScale(term.label);
+    // const yLabels = yLblOrdered.map((term, i) => {
+    //   const y = yScale(term.label);
+    //   if (!y) {
+    //     return null;
+    //   }
+    //   const idx = i;
+    //   // Calculate x position based on yLabelJustify
+    //   const xPos = yLabelJustify === 'left' ? -1 * marginLeft : -5;
+    //   const anchor = yLabelJustify === 'left' ? 'start' : 'end';
+    //   // Calculate y position
+    //   const yPos = y + yScale.bandwidth() / 2;
+    //   // Change display depending on hierarchical level
+    //   let lblTree = '';
+    //   let lblIndicator = '';
+    //   const lblTerm = term.label;
+    //   if (term.depth > 0) {
+    //     if (term.isTopLevelTerm) {
+    //       lblIndicator = '?'; // '(?)';
+    //       if (term.isExpanded)
+    //         lblIndicator = '\u{025B3}'; // '^'
+    //       // else if(term.hasBeenQueried) lblIndicator = '\u{025BD}'; // 'v';
+    //       else lblIndicator = '<'; // 'v';
+    //     }
 
-      if (!y) {
-        return null;
-      }
+    //     if (yLabelJustify === 'left') {
+    //       lblTree = `${'-'.repeat(2 * term.depth)}${lblIndicator} ${term.label}`;
+    //     } else {
+    //       let suffix = '';
+    //       for (let lvl = 1; lvl <= term.depth; lvl += 1) {
+    //         if (lvl === term.depth) {
+    //           if (term.isLastChild) {
+    //             suffix = `\u{02500}\u{02518}${suffix}`; // lower-right corner
+    //           } else {
+    //             // postfix = `\u{02500}\u{02525}${postfix}`;
+    //             suffix = `\u{02500}\u{02524}${suffix}`; // t-crossing left
+    //           }
+    //         } else if (term.embeddedInLvls.includes(lvl)) {
+    //           // postfix = `\u{02500}\u{02502}${postfix}`;
+    //           suffix = `\u{000A0}\u{02502}${suffix}`; // vertical line
+    //         } else {
+    //           suffix = `\u{000A0}\u{000A0}${suffix}`; // blank space
+    //         }
+    //       }
+    //       // displayText = `${term.label} ${indicator}${'-'.repeat(2*term.depth)}`;
+    //       lblTree = `${suffix}`;
+    //     }
+    //   }
+    //   // console.log(`[Renderer] yLabel: ${JSON.stringify(term)}`);
 
-      const idx = i;
-      // Calculate x position based on yLabelJustify
-      const xPos = yLabelJustify === 'left' ? -1 * marginLeft : -5;
-      const anchor = yLabelJustify === 'left' ? 'start' : 'end';
-      // Calculate y position
-      const yPos = y + yScale.bandwidth() / 2;
-      // Change display depending on hierarchical level
-      let lblTree = '';
-      let lblIndicator = '';
-      const lblTerm = term.label;
-      if (term.depth > 0) {
-        if (term.isTopLevelTerm) {
-          lblIndicator = '?'; // '(?)';
-          if (term.isExpanded)
-            lblIndicator = '\u{025B3}'; // '^'
-          // else if(term.hasBeenQueried) lblIndicator = '\u{025BD}'; // 'v';
-          else lblIndicator = '<'; // 'v';
-        }
+    //   // term.label + '\u{02518}' // '.'.repeat(2*term.depth);
+    //   // term.label + ' '.repeat(2*term.depth);
 
-        if (yLabelJustify === 'left') {
-          lblTree = `${'-'.repeat(2 * term.depth)}${lblIndicator} ${term.label}`;
-        } else {
-          let suffix = '';
-          for (let lvl = 1; lvl <= term.depth; lvl += 1) {
-            if (lvl === term.depth) {
-              if (term.isLastChild) {
-                suffix = `\u{02500}\u{02518}${suffix}`; // lower-right corner
-              } else {
-                // postfix = `\u{02500}\u{02525}${postfix}`;
-                suffix = `\u{02500}\u{02524}${suffix}`; // t-crossing left
-              }
-            } else if (term.embeddedInLvls.includes(lvl)) {
-              // postfix = `\u{02500}\u{02502}${postfix}`;
-              suffix = `\u{000A0}\u{02502}${suffix}`; // vertical line
-            } else {
-              suffix = `\u{000A0}\u{000A0}${suffix}`; // blank space
-            }
-          }
-          // displayText = `${term.label} ${indicator}${'-'.repeat(2*term.depth)}`;
-          lblTree = `${suffix}`;
-        }
-      }
-      // console.log(`[Renderer] yLabel: ${JSON.stringify(term)}`);
-
-      // term.label + '\u{02518}' // '.'.repeat(2*term.depth);
-      // term.label + ' '.repeat(2*term.depth);
-
-      return (
-        <text
-          key={`heatMapYLabel-${idx}`}
-          x={xPos}
-          y={yPos}
-          textAnchor={anchor}
-          dominantBaseline="middle"
-          fontSize={15}
-          fontFamily="monospace"
-          onClick={() => onToggleExpandCollapse(term)}
-        >
-          <tspan fontFamily="sans-serif">{lblTerm} </tspan>
-          <tspan fill="red">{lblIndicator}</tspan>
-          {lblTree}
-        </text>
-      );
-    });
+    //   return (
+    //     <text
+    //       key={`heatMapYLabel-${idx}`}
+    //       x={xPos}
+    //       y={yPos}
+    //       textAnchor={anchor}
+    //       dominantBaseline="middle"
+    //       fontSize={15}
+    //       fontFamily="monospace"
+    //       onClick={() => onToggleExpandCollapse(term)}
+    //     >
+    //       <tspan fontFamily="sans-serif">{lblTerm} </tspan>
+    //       <tspan fill="red">{lblIndicator}</tspan>
+    //       {lblTree}
+    //     </text>
+    //   );
+    // });
 
     const domain = colorScale.domain();
     const max = domain[domain.length - 1];
@@ -492,7 +490,7 @@ export const Renderer = forwardRef(
           {allShapes}
           {xLabelsTop}
           {xLabelsBottom}
-          {false && { yLabels }}
+          {/* {false && { yLabels }} */}
 
           <g transform={`translate(-${marginLeft - 10}, 5)`}>
             <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />

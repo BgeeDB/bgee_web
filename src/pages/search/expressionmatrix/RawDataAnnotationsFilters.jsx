@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { isEmpty } from '../../../helpers/arrayHelper';
-import SelectMultipleWithAutoComplete from '../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import './rawDataAnnotations.scss';
 import { getOptionsForFilter } from '../../../helpers/selects';
 import classnames from '../../../helpers/classnames';

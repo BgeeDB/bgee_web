@@ -16,8 +16,6 @@ export default [
   route(PATHS.SEARCH.SPECIES, './pages/search/SpeciesList.tsx'),
   route(PATHS.SEARCH.SPECIES_ITEM, './pages/search/Species.tsx'),
   route(PATHS.SEARCH.GENE_LIST_ITEM + '/:speciesName?', './pages/search/SpeciesGeneList.tsx'),
-  route(PATHS.SEARCH.RAW_DATA_ANNOTATIONS, './pages/search/rawdata/RawDataAnnotations.tsx'),
-  route(PATHS.SEARCH.EXPRESSION_CALLS, './pages/search/rawdata/ExpressionCalls.tsx'),
   route(PATHS.SEARCH.EXPRESSION_MATRIX, './pages/search/expressionmatrix/GeneExpressionMatrix.tsx'),
   route(PATHS.SEARCH.EXPERIMENT, './pages/search/experiments/Experiment/Experiment.jsx'),
 

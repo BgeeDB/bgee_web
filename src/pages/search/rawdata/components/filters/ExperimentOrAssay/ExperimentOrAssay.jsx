@@ -1,4 +1,4 @@
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { getIdAndNameLabel } from '../../../../../../helpers/selects';
 
 const ExperimentOrAssay = ({ selectedExpOrAssay, setSelectedExpOrAssay, AutoCompleteByType }) => {

@@ -5,7 +5,6 @@ import api from '../../api';
 import Heatmap from '../Heatmap/Heatmap';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import useQuery from '../../hooks/useQuery';
-import config from '../../config.json';
 import { URL_ROOT } from '~/helpers/constants';
 
 const DATA_TYPES = [
@@ -443,7 +442,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
 
         // add additional data to previous ones
         const exprData = searchResult;
-        exprData.expressionData.expressionCalls.push(...resp?.data.expressionData.expressionCalls);
+        if (resp) exprData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
         setSearchResult(exprData);
 
         // Finally, we set the values we are interested in

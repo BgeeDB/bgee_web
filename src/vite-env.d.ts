@@ -1,12 +1,6 @@
-/**
- * TypeScript declarations for custom HTML elements used in the Bgee Web application
- */
-
 declare module '*.md';
 
-/**
- * Define types for Ionic Icons to properly work with TypeScript JSX
- */
+// Define types for Ionic Icons to properly work with TypeScript JSX
 declare namespace JSX {
   interface IntrinsicElements {
     'ion-icon': any;

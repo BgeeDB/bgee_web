@@ -12,7 +12,6 @@ import TagSource from '../../../components/TagSource/TagSource';
 import { DATA_TYPES, PROC_EXPR_VALUES, RAW_DATA_ANNOTS } from './useLogic';
 import PATHS from '../../../paths/paths';
 import { getChildValueFromAttribute } from '../../../helpers/selects';
-import config from '../../../config.json';
 import { URL_ROOT } from '~/helpers/constants';
 
 const LINK_TO_RAW_DATA_ANNOTS = 'LINK_TO_RAW_DATA_ANNOTS';
