@@ -32,6 +32,7 @@ const AutoCompleteSearch = ({
   const [autocompleteList, setAutocompleteList] = useState([]);
 
   const inputRef = useRef();
+  const containerRef = useRef();
 
   const onSelectChoice = useCallback(
     (option) => () => {
@@ -113,23 +114,19 @@ const AutoCompleteSearch = ({
   useEffect(() => {
     if (autoFocus && inputRef.current) inputRef.current?.focus();
 
-    const onClick = () => {
-      setAutocompleteList([]);
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setAutocompleteList([]);
+      }
     };
-    if (!document.getElementById('root')) return;
-    document.getElementById('root').addEventListener('click', onClick);
-    const onClickInput = (e) => {
-      e.stopPropagation();
-    };
-    document.getElementById('autocomplete-search').addEventListener('click', onClickInput);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.getElementById('root').removeEventListener('click', onClick);
-      document.getElementById('autocomplete-search')?.removeEventListener('click', onClickInput);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
-    <div className="content">
+    <div className="content" ref={containerRef}>
       <div className="field">
         {!!label && (
           <label className="label" htmlFor="autocomplete-search">

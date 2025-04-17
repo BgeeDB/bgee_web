@@ -66,7 +66,7 @@ const RawDataAnnotationsFilters = ({ filters, setFilters, triggerSearch, dataFil
             Apply filters
           </button>
           <button className="button is-small is-danger is-light mt-2 ml-2" type="button" onClick={eraseFilters}>
-            <Trash2 size={15} tooltop />
+            <Trash2 size={15} />
           </button>
         </div>
       )}

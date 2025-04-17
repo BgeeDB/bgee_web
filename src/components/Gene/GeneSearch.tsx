@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
+
 import Bulma from '../Bulma';
 import classnames from '../../helpers/classnames';
 import api from '../../api';
@@ -23,7 +24,7 @@ const GeneSearch = ({
     let lastPart;
 
     if (search) {
-      console.log('option', option, search);
+      // console.log('option', option, search);
       const firstIndex = option.toLowerCase().indexOf(search.toLowerCase());
       if (firstIndex === 0) {
         redPart = option.substring(firstIndex, search.length);
@@ -39,7 +40,7 @@ const GeneSearch = ({
       redPart = option;
     }
     return (
-      <span>
+      <span style={{ cursor: 'default' }}>
         {firstPart}
         <strong className="has-text-primary">{redPart}</strong>
         {lastPart}

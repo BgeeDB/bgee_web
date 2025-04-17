@@ -63,7 +63,7 @@ export function getMetadata({
       content: `${config.genericDomain}/img/logo/bgee13-logo.png`,
     },
 
-    // TODO: this is what they use originally, but I think it should be DC.rights https://datatracker.ietf.org/doc/html/rfc2731
+    // TODO: this is what was used originally, but I think it should be DC.rights https://datatracker.ietf.org/doc/html/rfc2731
     {
       name: 'dcterms.rights',
       content: `Bgee copyright 2007/${new Date().getFullYear()} SIB/UNIL`,
