@@ -137,7 +137,7 @@ docker run -p 3000:3000 bgee-web
 
 - **[File-based routes](https://reactrouter.com/how-to/file-route-conventions)** in **`src/routes/`**
   - We recommend to use this approach for new pages
-  - Currently used for all routes to markdown files, and the gene item page
+  - Currently used for all routes to markdown files, the gene items, and raw data pages
   - To add a route to `/gene/XYZ`:
     - Create a file named `gene.$geneId.tsx` (see example below)
     - Create a folder named `gene.$geneId` with a `route.tsx` file in it

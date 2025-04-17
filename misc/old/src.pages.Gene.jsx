@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLoaderData, useNavigate, useParams } from 'react-router';
+
 import PATHS from '../../paths/paths';
 import api from '../../api';
 import GeneDetails from '../../components/Gene/GeneDetails';

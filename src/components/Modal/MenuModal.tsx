@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+
 import ROUTES from '../../paths/routes';
 import PATHS from '../../paths/paths';
 import config from '../../config.json';

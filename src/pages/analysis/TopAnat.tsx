@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router';
+
 import PATHS from '../../paths/paths';
 import api from '../../api';
 import TopAnatBanner from '../../components/TopAnat/TopAnatBanner';

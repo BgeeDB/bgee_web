@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router';
+
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
 import { getIdAndNameLabel, getOptionsForFilter } from '../../../helpers/selects';

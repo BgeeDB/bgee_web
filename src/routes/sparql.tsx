@@ -13,7 +13,7 @@ export default function Page() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Only import the component on the client side, web components breaks in SSR
+    // Only import the component on the client side, web components break in SSR
     import('@sib-swiss/sparql-editor');
     setIsMounted(true);
   }, []);

@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
+
 import { URL_ROOT } from '~/helpers/constants';
 
 export const PARAM_PAGE_KEY = 'pageNumber';

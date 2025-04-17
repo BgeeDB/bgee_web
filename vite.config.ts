@@ -13,13 +13,13 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
 export default defineConfig({
   plugins: [
-    tsconfigPaths(),
     mdx({
       providerImportSource: '/src/helpers/mdxComponents.tsx',
       remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm, remarkToc],
       rehypePlugins: [rehypeHighlight, rehypeSanitize, rehypeRaw, rehypeSlug],
     }),
     reactRouter(),
+    tsconfigPaths(),
   ],
   optimizeDeps: {
     include: ['react/jsx-runtime'],

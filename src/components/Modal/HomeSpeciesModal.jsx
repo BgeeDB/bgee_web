@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+
 import PATHS from '../../paths/paths';
 import Bulma from '../Bulma';
 import { ModalContext } from '../../contexts/ModalContext';

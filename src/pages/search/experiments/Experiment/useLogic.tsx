@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router';
+
 import LinkExternal from '../../../../components/LinkExternal';
 import { COLUMN_TYPES } from '../../../../helpers/constants/columnDescriptions';
 import obolibraryLinkFromID from '../../../../helpers/obolibraryLinkFromID';

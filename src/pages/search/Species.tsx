@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLoaderData } from 'react-router';
+
 import PATHS from '~/paths/paths';
 import Bulma from '~/components/Bulma';
 import api from '~/api';

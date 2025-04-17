@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+
 import Bulma from '../../components/Bulma';
 import api from '../../api';
 import PATHS from '../../paths/paths';

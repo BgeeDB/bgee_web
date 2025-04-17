@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+
 import Bulma from '../Bulma';
 import api from '../../api';
 import Heatmap from '../Heatmap/Heatmap';

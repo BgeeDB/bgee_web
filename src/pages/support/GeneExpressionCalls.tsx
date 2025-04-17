@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+
 import useAnchorAtMount from '../../hooks/useAnchorAtMount';
 import PATHS from '../../paths/paths';
 import GoTop from '../../components/GoTop';

@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+
 import arrayHelper from './arrayHelper';
 import LinkExternal from '../components/LinkExternal';
 import Bulma from '../components/Bulma';

@@ -45,7 +45,7 @@ export async function loader({ request }) {
   return { initSearchResult: {} };
 }
 
-export default function RawDataPage({ loaderData }) {
+export default function RawData({ loaderData }) {
   const { initSearchResult } = loaderData;
 
   return <RawDataAnnotations initSearchResult={initSearchResult} />;
