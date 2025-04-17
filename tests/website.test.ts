@@ -10,7 +10,7 @@ await expect(page.getByText('WBGene00000001')).toBeVisible();
 */
 
 test.describe('Items pages', () => {
-  test('display a gene page', async ({ page }) => {
+  test('display a gene', async ({ page }) => {
     await page.goto('/gene/ENSG00000130208');
     await expect(page).toHaveTitle(/APOC1 expression in human/);
     expect(await page.locator('text=apolipoprotein').count()).toBeGreaterThan(0);
@@ -42,7 +42,7 @@ test.describe('Search pages', () => {
     expect(await page.locator('text=ENSG00000130208').count()).toBeGreaterThan(0);
   });
 
-  test('search raw-data', async ({ page }) => {
+  test('search raw data', async ({ page }) => {
     await page.goto('/search/raw-data');
     await expect(page).toHaveTitle(/Raw data/);
     await expect(page.getByText('DRP000415')).toBeVisible();

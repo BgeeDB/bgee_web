@@ -14,9 +14,13 @@ import { NotificationProvider, NotificationContext } from './contexts/Notificati
 import { setAxiosAddNotif } from './api/prod/constant';
 import './styles/global.scss';
 
+/**
+ * All of the app layout goes here
+ */
 export function Layout({ children }: { children: React.ReactNode }) {
   const { addNotification } = React.useContext(NotificationContext);
   const loc = useLocation();
+
   const body = React.useMemo(
     () =>
       loc.pathname === '/' || loc.pathname === `${URL_ROOT}/` || loc.pathname === `${URL_ROOT}` ? (
@@ -33,12 +37,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
       document.getElementById(loc.hash.replace('#', ''))?.scrollIntoView();
     }
   }, [loc.hash]);
+
   React.useEffect(() => {
     setAxiosAddNotif(addNotification);
     return () => {
       setAxiosAddNotif(null);
     };
-  }, [addNotification]);
+  }, []);
 
   return (
     <html lang="en">
@@ -55,6 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div id="notifications"></div>
             <div className="layout">
               <Header />
+              {/* <section className="section"> */}
               {config.archive && (
                 <Alert type="danger" light>
                   <span>
@@ -71,6 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Alert>
               )}
               {body}
+              {/* {children}</section> */}
               <Footer />
               <CookieMessage />
             </div>
@@ -87,9 +94,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
           g.async=true; g.src='https://matomo.sib.swiss/js/container_F5WPJc2X.js'; s.parentNode.insertBefore(g,s);
         `}
         </script>
-        {/* NOTE: the module below is at the origin of hydration errors */}
-        {/* <script type="module" src="/js/ionicons-5.5.4/ionicons.esm.js"></script>
-        <script noModule src="/js/ionicons-5.5.4/ionicons.js"></script> */}
       </body>
     </html>
   );
@@ -99,6 +103,9 @@ export default function App() {
   return <Outlet />;
 }
 
+/**
+ * Displaying error done here
+ */
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = 'Something wrong happened!';
   let details = 'An unexpected error occurred.';

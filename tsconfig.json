@@ -21,7 +21,6 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "noImplicitAny": false,
-    "jsxImportSource": "react"
+    "noImplicitAny": false
   }
 }

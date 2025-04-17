@@ -1,18 +1,14 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
 /.react-router/
+
+# production
+/build
 
 # testing
 /coverage
 playwright-report/
 test-results/
-
-# production
-/build
 
 # archives
 /archives/1*
@@ -60,3 +56,5 @@ src/styles/global.css
 
 # YARN
 .yarn
+/.pnp
+.pnp.js
