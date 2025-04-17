@@ -45,27 +45,30 @@ const UserFeedback = () => {
 
       <div className="stars mb-3">
         {[1, 2, 3, 4, 5].map((star) => (
-          <button type="button" key={star} className="button is-ghost p-1" onClick={() => setRating(star)}>
+          <button
+            type="button"
+            key={star}
+            className="button is-ghost p-1"
+            onClick={() => setRating(star)}
+            style={{ outline: 'none' }}
+          >
             <span className="icon">
               {star <= rating ? (
                 <Star
-                  // size={24}
                   color="#ffd700"
-                  fill="black"
+                  fill="#ffd700"
                   style={{ transition: 'color 0.3s' }}
+                  className="mr-2"
+                  // size={24}
                 />
               ) : (
                 <Star
-                  // size={24}
                   color="#666"
                   style={{ transition: 'color 0.3s' }}
+                  className="mr-2"
+                  // size={24}
                 />
               )}
-              {/* TODO: check it renders well */}
-              {/* <ion-icon
-                name={star <= rating ? 'star' : 'star-outline'}
-                style={{ color: star <= rating ? '#ffd700' : '#666' }}
-              /> */}
             </span>
           </button>
         ))}

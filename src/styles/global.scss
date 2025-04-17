@@ -449,19 +449,19 @@ table.table {
           .expand-content {
             display: block;
           }
-          .expand-button ion-icon {
-            transform: rotate(180deg);
-            transition: 0.35s;
-          }
+          // .expand-button ion-icon {
+          //   transform: rotate(180deg);
+          //   transition: 0.35s;
+          // }
         }
       }
       td {
         .expand-content {
           display: none;
         }
-        .expand-button ion-icon {
-          transition: 0.35s;
-        }
+        // .expand-button ion-icon {
+        //   transition: 0.35s;
+        // }
       }
     }
   }
@@ -766,10 +766,6 @@ img[src*='#tutoimgborder'] {
   }
 }
 
-ion-icon {
-  pointer-events: none;
-}
-
 .tags-source {
   .tag.tag-source:not(:last-child) {
     margin-right: 0.15rem;
@@ -920,10 +916,6 @@ label.label {
       display: flex;
       align-items: center;
       color: #aaaaaa !important;
-      ion-icon {
-        font-size: 28px;
-        margin-right: 5px;
-      }
     }
   }
   .center-in-grid {
@@ -958,9 +950,6 @@ label.label {
     .close {
       margin-left: 5px;
       cursor: pointer;
-      ion-icon {
-        font-size: 20px;
-      }
     }
     .image-container {
       width: 260px;
@@ -1042,10 +1031,10 @@ label.label {
 
 .table-modal-button {
   cursor: pointer;
-  ion-icon {
-    font-size: 28px;
-    color: $primary;
-  }
+  // ion-icon {
+  //   font-size: 28px;
+  //   color: $primary;
+  // }
 }
 
 .gene-expression-modal-grid {
@@ -1258,10 +1247,10 @@ h1.title.in-md {
   border-radius: 8px;
   background: transparent;
   cursor: pointer;
-  ion-icon {
-    color: $light-color;
-    margin-right: 5px;
-  }
+  // ion-icon {
+  //   color: $light-color;
+  //   margin-right: 5px;
+  // }
 }
 
 .navbar-item-button:active,
