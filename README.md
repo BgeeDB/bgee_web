@@ -45,7 +45,7 @@ npm run typecheck
 
 ### ✅ Tests
 
-Run the tests with [`playwright`](https://playwright.dev/)
+Run the tests with [`playwright`](https://playwright.dev/):
 
 ```sh
 npm test
@@ -53,7 +53,7 @@ npm test
 
 ### ⏫ Upgrade dependencies
 
-Upgrade dependencies to their latest available version in the `package.json`.
+Upgrade dependencies to their latest available version in the `package.json` file:
 
 ```sh
 npm run upgrade
@@ -145,6 +145,7 @@ When creating a new route the file resolving this route can contain special expo
 Here is an example where we make multiple API calls in parallel in the `loader`, and use its results to define the page metadata and page content:
 
 ```tsx
+import api from '~/api';
 import config from '~/config.json';
 import PATHS from '~/paths/paths';
 import { geneToLdJSON } from '~/helpers/schemaDotOrg';
@@ -169,9 +170,9 @@ export async function loader({ params, request }) {
 export function meta({ data }) {
   return getMetadata({
     title: `${data.genes.name} expression in ${data.species.name}`,
-    description: `Gene expression data for ${data.genes.name} in ${data.species.name}`,
+    description: `Gene expression for ${data.genes.name} in ${data.species.name}`,
     keywords: `gene expression, ${data.genes.name}, ${data.species.name}`,
-    link: `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', data.genes.id).replace(':speciesId', data.species.id)}`,
+    link: `${config.genericDomain}${pathname}`,
     schemaorg: [geneToLdJSON(data.genes)],
   });
 }
@@ -204,6 +205,18 @@ export default function Page() {
 }
 ```
 
+### 🖼️ Images and icons
+
+The images are stored externally of the project. You will find the path of the images in the `src/config.json` file at the key `imageDomain`. Be careful, the image used for the 'external icon' link is directly defined in the SCSS. If you are moving it, don't forget to change the path.
+
+If you need to add new icons you can find them there: https://lucide.dev/icons
+
+```tsx
+import { ChevronDown } from 'lucide-react';
+
+<ChevronDown size={15} color="black" />;
+```
+
 ### 📐 Font size matrix
 
 ```
@@ -212,18 +225,6 @@ $size-6: 1rem (= 14px)
 $size-5: 1.1rem (= 15.4px)
 $size-4: 1.2rem (= 16.8px)
 $size-3: 1.5rem (= 21px)
-```
-
-### 🖼️ Where are the images?
-
-The images are stored externally of the project. You will find the path of the images in the `src/config.json` file at the key `imageDomain`. Be careful, the image used for the 'external icon' link is directly defined in the SCSS. If you are moving it, don't forget to change the path.
-
-If you need icon you can find them there: https://lucide.dev/icons
-
-```tsx
-import { ChevronDown } from 'lucide-react';
-
-<ChevronDown size={15} />;
 ```
 
 ## ☑️ To do
@@ -235,9 +236,9 @@ import { ChevronDown } from 'lucide-react';
 - [x] **Migrate to TypeScript**: most main pages converted, some components too, tried to use proper types as much as possible
 - [x] **CI/CD**: updated `eslint` rules, added basic tests of the website pages with [playwright](https://playwright.dev/), added automatic formatting and linting on commit with `husky` and `lint-staged`, added a GitHub action to run all tests automatically on push and PR.
 - [ ] **Hydration issue in the `raw-data` page**, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR.
-- [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/7f2324a734e4b8c3f18ac880344372eaf3727320), but still work to do to get the exact same style right (dark theme causes problems for those who have it enabled system-wide).
+- [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/4a2769b7951c9be9f53236978ff8d27516da269f), but still work to do to get the exact same style right (defaults are broken for many elements, and dark theme causes problems for those who have it enabled system-wide).
 - [ ] **Fix script** `scripts/archiveCreation.js`.
-- [ ] It would be nice to have have proper types on `api` functions in `src/api/prod`
+- [ ] It would be nice to have have proper args and return types on `api` functions in `src/api/prod`
 - [ ] Search for `TODO:` to fix in the code.
 
 > Rename files `.js` to `.jsx` in folder and subfolders:

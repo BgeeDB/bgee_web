@@ -88,7 +88,7 @@ const GeneItemNb = ({ itemTab }) => {
 
 const ExpandCell = ({ onClick }) => (
   <a className="expand-button" onClick={onClick} onKeyPress={onClick} role="button" tabIndex={0}>
-    <ChevronDown />
+    <ChevronDown color="black" size={15} />
   </a>
 );
 

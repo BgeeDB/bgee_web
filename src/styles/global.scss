@@ -449,19 +449,20 @@ table.table {
           .expand-content {
             display: block;
           }
-          // .expand-button ion-icon {
-          //   transform: rotate(180deg);
-          //   transition: 0.35s;
-          // }
+          // These lines enables the chevron to rotate in tables
+          .expand-button .lucide-chevron-down {
+            transform: rotate(180deg);
+            transition: 0.35s;
+          }
         }
       }
       td {
         .expand-content {
           display: none;
         }
-        // .expand-button ion-icon {
-        //   transition: 0.35s;
-        // }
+        .expand-button .lucide-chevron-down {
+          transition: 0.35s;
+        }
       }
     }
   }

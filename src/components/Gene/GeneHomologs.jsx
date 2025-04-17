@@ -45,7 +45,7 @@ const ExpressionComparisonCellParalogs = ({ query }) => (
 );
 const ExpandCell = ({ onClick }) => (
   <a className="expand-button" onClick={onClick}>
-    <ChevronDown />
+    <ChevronDown color="black" size={15} />
   </a>
 );
 const GenesCell = ({ genes }) => {
