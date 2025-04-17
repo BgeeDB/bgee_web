@@ -38,6 +38,8 @@ const DEFAULT_PARAMETERS: any = (page, action = undefined) => {
   return params;
 };
 
+// TODO: improve the functions return types. They are the source of all data in the app.
+
 const search = {
   anatomicalHomology: (
     { type, query }: any,

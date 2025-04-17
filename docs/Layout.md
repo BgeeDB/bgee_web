@@ -1,9 +1,9 @@
 ## Components
 
-You will find all the components about the layout in the following directory:
+You will find all the components about the layout in the following file:
 
 ```
-/src/components/Layout
+/src/root.tsx
 ```
 
 ## Organization

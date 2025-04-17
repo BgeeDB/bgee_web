@@ -1,22 +1,24 @@
-import Element from '../Element/Element';
-import classnames from '../../../helpers/classnames';
-import TagGroup from './TagGroup';
+// import Element from '../Element/Element';
+// import classnames from '../../../helpers/classnames';
+// import TagGroup from './TagGroup';
 
-const Tag = ({ children, className, color, size, rounded, remove, renderAs = 'span', ...props }) => (
-  <Element
-    {...props}
-    renderAs={renderAs}
-    className={classnames('tag', className, {
-      [`is-${size}`]: size,
-      [`is-${color}`]: color,
-      'is-rounded': rounded,
-      'is-delete': remove,
-    })}
-  >
-    {!remove && children}
-  </Element>
-);
+// // TODO: REMOVE, never used
 
-Tag.Group = TagGroup;
+// const Tag = ({ children, className, color, size, rounded, remove, renderAs = 'span', ...props }) => (
+//   <Element
+//     {...props}
+//     renderAs={renderAs}
+//     className={classnames('tag', className, {
+//       [`is-${size}`]: size,
+//       [`is-${color}`]: color,
+//       'is-rounded': rounded,
+//       'is-delete': remove,
+//     })}
+//   >
+//     {!remove && children}
+//   </Element>
+// );
 
-export default Tag;
+// Tag.Group = TagGroup;
+
+// export default Tag;

@@ -18,9 +18,9 @@ const ExpressionSearch = ({ search, setSearch, elements, onRender }) => {
       return () => {};
     }
     // TODO: this will probably need to be fixed a bit like we did AutoCompleteSearch (using ref and mousedown event)
-    document.getElementById('root')?.addEventListener('click', clickOutside);
+    document?.getElementById('root')?.addEventListener('click', clickOutside);
     return () => {
-      document.getElementById('root').removeEventListener('click', clickOutside);
+      document?.getElementById('root')?.removeEventListener('click', clickOutside);
     };
   }, []);
 

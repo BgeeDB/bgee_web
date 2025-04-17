@@ -1,23 +1,25 @@
-import Element from '../Element/Element';
-import classnames from '../../../helpers/classnames';
-import MessageBody from './MessageBody';
-import MessageHeader from './MessageHeader';
+// import Element from '../Element/Element';
+// import classnames from '../../../helpers/classnames';
+// import MessageBody from './MessageBody';
+// import MessageHeader from './MessageHeader';
 
-const Message = ({ children, className, color, size, renderAs = 'article', ...props }) => (
-  <Element
-    {...props}
-    renderAs={renderAs}
-    className={classnames('message', className, {
-      [`is-${color}`]: color,
-      [`is-${size}`]: size,
-    })}
-  >
-    {children}
-  </Element>
-);
+// // TODO: REMOVE, never used
 
-Message.Body = MessageBody;
+// const Message = ({ children, className, color, size, renderAs = 'article', ...props }) => (
+//   <Element
+//     {...props}
+//     renderAs={renderAs}
+//     className={classnames('message', className, {
+//       [`is-${color}`]: color,
+//       [`is-${size}`]: size,
+//     })}
+//   >
+//     {children}
+//   </Element>
+// );
 
-Message.Header = MessageHeader;
+// Message.Body = MessageBody;
 
-export default Message;
+// Message.Header = MessageHeader;
+
+// export default Message;

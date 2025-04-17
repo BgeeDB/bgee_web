@@ -1,38 +1,40 @@
-import { useState } from 'react';
-import './tagInput.scss';
+// import { useState } from 'react';
+// import './tagInput.scss';
 
-const TagInput = () => {
-  const [tags, setTags] = useState([]);
+// // TODO: REMOVE, never used
 
-  const handleKeyDown = (e) => {
-    if (e.key !== 'Enter') return;
-    const value = e.target.value;
-    if (!value.trim()) return;
-    setTags([...tags, value]);
-    e.target.value = '';
-  };
+// const TagInput = () => {
+//   const [tags, setTags] = useState([]);
 
-  const removeTag = (index) => {
-    setTags(tags.filter((el, i) => i !== index));
-  };
+//   const handleKeyDown = (e) => {
+//     if (e.key !== 'Enter') return;
+//     const value = e.target.value;
+//     if (!value.trim()) return;
+//     setTags([...tags, value]);
+//     e.target.value = '';
+//   };
 
-  return (
-    <div className="div-container">
-      <div>
-        <input onKeyDown={handleKeyDown} type="text" className="input mb-2" placeholder="Experiment or assay ID" />
-      </div>
-      <div className="conteneur-result">
-        {tags.map((tag, index) => (
-          <div className="tag-item" key={index}>
-            <span className="text">{tag}</span>
-            <span className="close" onClick={() => removeTag(index)}>
-              X
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+//   const removeTag = (index) => {
+//     setTags(tags.filter((el, i) => i !== index));
+//   };
 
-export default TagInput;
+//   return (
+//     <div className="div-container">
+//       <div>
+//         <input onKeyDown={handleKeyDown} type="text" className="input mb-2" placeholder="Experiment or assay ID" />
+//       </div>
+//       <div className="conteneur-result">
+//         {tags.map((tag, index) => (
+//           <div className="tag-item" key={index}>
+//             <span className="text">{tag}</span>
+//             <span className="close" onClick={() => removeTag(index)}>
+//               X
+//             </span>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default TagInput;

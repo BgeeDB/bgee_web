@@ -1,17 +1,19 @@
-import classnames from '../../../helpers/classnames';
-import Element from '../Element/Element';
+// import classnames from '../../../helpers/classnames';
+// import Element from '../Element/Element';
 
-const Content = ({ children, className, size, ...props }) => (
-  <Element
-    {...props}
-    className={classnames('content', className, {
-      [`is-${size}`]: size,
-    })}
-  >
-    {children}
-  </Element>
-);
+// // TODO: REMOVE, never used
 
-Content.defaultProps = {};
+// const Content = ({ children, className, size, ...props }) => (
+//   <Element
+//     {...props}
+//     className={classnames('content', className, {
+//       [`is-${size}`]: size,
+//     })}
+//   >
+//     {children}
+//   </Element>
+// );
 
-export default Content;
+// Content.defaultProps = {};
+
+// export default Content;

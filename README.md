@@ -228,21 +228,17 @@ import { ChevronDown } from 'lucide-react';
 
 ## ☑️ To do
 
-https://reactrouter.com/6.30.0/upgrading/v5 | https://reactrouter.com/upgrading/v6
-
 - [x] **Enable SSR** for most pages requiring it using `react-router` 7: gene, species, gene-list, experiments, home, gene expression calls.
-
-  - [x] In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some SSR for experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
-  - [x] Migrate from `react-markdown` to `mdx` to render markdown (use same plugins and style)
-
+  - [x] In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some basic SSR for experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
+  - [x] Migrate from `react-markdown` to [`mdx`](https://mdxjs.com/) to render markdown (use same plugins and style)
+  - [x] Migrate from `ion-icons` to [`lucide-react`](https://lucide.dev/) (ion-icons were not compatible with SSR, triggering hydration issues, plus how the icons were imported was not optimal)
 - [x] **Migrate to TypeScript**: most main pages converted, some components too, tried to use proper types as much as possible
-- [x] **CI/CD**: updated `eslint` rules, added automatic formatting and linting on commit with `husky` and `lint-staged`
-- [ ] **Hydration issue in `src/root.tsx`** the `<script type="module" src="/js/ionicons-5.5.4/ionicons.esm.js"></script>` lines are used to import ion icons, it creates problem with SSR because they are web components and it's not well supported by SSR.
-  - [x] A solution could be to migrate to their "react" approach: https://ionicframework.com/docs/api/icon but it throws errors when we try it and does not work at all.
-  - [ ] Other solution could be to use another library more designed for react, the following icons are used: close-outline, download-outline, trash, star, star-outline, chevron-up-outline, mail-outline...
+- [x] **CI/CD**: updated `eslint` rules, added basic tests of the website pages with [playwright](https://playwright.dev/), added automatic formatting and linting on commit with `husky` and `lint-staged`, added a GitHub action to run all tests automatically on push and PR.
 - [ ] **Hydration issue in the `raw-data` page**, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR.
 - [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/7f2324a734e4b8c3f18ac880344372eaf3727320), but still work to do to get the exact same style right (dark theme causes problems for those who have it enabled system-wide).
-- [ ] Fix `scripts/archiveCreation.js` script.
+- [ ] **Fix script** `scripts/archiveCreation.js`.
+- [ ] It would be nice to have have proper types on `api` functions in `src/api/prod`
+- [ ] Search for `TODO:` to fix in the code.
 
 > Rename files `.js` to `.jsx` in folder and subfolders:
 >

@@ -4,7 +4,6 @@ import { Download } from 'lucide-react';
 import Bulma from '../../../../components/Bulma';
 import Table from '../../../../components/Table';
 import useLogic from './useLogic';
-import './ExperimentStyles.scss';
 import { AFFYMETRIX, EST, ID_FULL_LENGTH, IN_SITU, RNA_SEQ } from '../../rawdata/useLogic';
 import { FULL_LENGTH_LABEL } from '../../../../api/prod/constant';
 import PATHS from '../../../../paths/paths';
@@ -12,6 +11,7 @@ import config from '../../../../config.json';
 import { useLoaderData } from 'react-router';
 import { getMetadata } from '~/helpers/metadata';
 import api from '~/api';
+import './ExperimentStyles.scss';
 
 export async function loader({ params }) {
   const res = await api.search.experiments.getExperiment(params.id);

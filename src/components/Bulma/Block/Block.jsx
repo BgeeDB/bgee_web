@@ -1,8 +1,10 @@
-import Element from '../Element/Element';
-import classnames from '../../../helpers/classnames';
+// import Element from '../Element/Element';
+// import classnames from '../../../helpers/classnames';
 
-const Block = ({ className, ...props }) => <Element {...props} className={classnames('block', className)} />;
+// // TODO: REMOVE, never used
 
-Block.propTypes = {};
+// const Block = ({ className, ...props }) => <Element {...props} className={classnames('block', className)} />;
 
-export default Block;
+// Block.propTypes = {};
+
+// export default Block;

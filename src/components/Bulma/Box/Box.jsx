@@ -1,14 +1,16 @@
-import Element from '../Element/Element';
-import classnames from '../../../helpers/classnames';
+// import Element from '../Element/Element';
+// import classnames from '../../../helpers/classnames';
 
-const Box = ({ children, className, ...props }) => (
-  <Element {...props} className={classnames('box', className)}>
-    {children}
-  </Element>
-);
+// // TODO: REMOVE, never used
 
-Box.propTypes = {};
+// const Box = ({ children, className, ...props }) => (
+//   <Element {...props} className={classnames('box', className)}>
+//     {children}
+//   </Element>
+// );
 
-Box.defaultProps = {};
+// Box.propTypes = {};
 
-export default Box;
+// Box.defaultProps = {};
+
+// export default Box;

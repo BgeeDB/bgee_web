@@ -27,12 +27,24 @@ const AutoCompleteSearch = ({
   selectedOptions,
   children,
   autoFocus = false,
+}: {
+  children?: React.ReactNode | string;
+  renderOption?: (option: any, search?: string) => React.ReactNode;
+  getOptionsFunction?: (search: string) => any;
+  onSelectOption?: (option: any) => void;
+  onRemoveOption?: (option: any) => void;
+  searchTerm?: string;
+  label?: string;
+  hasSearchButton?: boolean;
+  selectedOptions?: any[];
+  placeholder?: string;
+  autoFocus?: boolean;
 }) => {
   const [search, setSearch] = useState('');
   const [autocompleteList, setAutocompleteList] = useState([]);
 
-  const inputRef = useRef();
-  const containerRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const onSelectChoice = useCallback(
     (option) => () => {

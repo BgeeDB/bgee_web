@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+
 import PATHS from '../../paths/paths';
 import Bulma from '../Bulma';
 import NewsItem from '../NewsItem';

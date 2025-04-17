@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+
 import assets from '../../../assets';
 import PATHS from '../../../paths/paths';
 import Bulma from '../../Bulma';
@@ -111,7 +112,7 @@ const Header = () => {
                       to={path}
                       className="navbar-item"
                       onClick={(event) => {
-                        event.target.blur();
+                        (event.target as HTMLElement).blur();
                         setHamburgerActive(false);
                       }}
                     >

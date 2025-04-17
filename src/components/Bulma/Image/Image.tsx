@@ -21,7 +21,7 @@ const Image = ({
   size?: string | number;
   fallback?: string;
   rounded?: boolean;
-  src: string;
+  src?: string;
   fullwidth?: boolean;
   width?: number | string;
   height?: number | string;

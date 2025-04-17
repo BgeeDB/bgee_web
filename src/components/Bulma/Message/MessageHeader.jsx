@@ -1,12 +1,14 @@
-import Element from '../Element/Element';
-import classnames from '../../../helpers/classnames';
+// import Element from '../Element/Element';
+// import classnames from '../../../helpers/classnames';
 
-const MessageHeader = ({ children, className, ...props }) => (
-  <Element {...props} className={classnames('message-header', className)}>
-    {children}
-  </Element>
-);
+// // TODO: REMOVE, never used
 
-MessageHeader.propTypes = {};
+// const MessageHeader = ({ children, className, ...props }) => (
+//   <Element {...props} className={classnames('message-header', className)}>
+//     {children}
+//   </Element>
+// );
 
-export default MessageHeader;
+// MessageHeader.propTypes = {};
+
+// export default MessageHeader;
