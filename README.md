@@ -23,6 +23,12 @@ Install dependencies:
 npm i
 ```
 
+Install dependencies without running the script to install `playwright` for tests:
+
+```sh
+npm i --ignore-scripts
+```
+
 ### 🔨 Development server
 
 Start development server at http://localhost:5173:
