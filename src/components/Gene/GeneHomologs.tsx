@@ -194,7 +194,6 @@ const GeneHomologs = ({ homologs, geneId, isLoading }) => {
             {!isLoading && homologs?.orthologsByTaxon.length > 0 && (
               <>
                 <Table
-                  responsive
                   columns={[
                     {
                       key: 'taxonName',

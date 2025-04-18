@@ -1,42 +1,43 @@
-// import React from 'react';
-// import { Link, useLocation } from 'react-router';
-// import { Helmet } from 'react-helmet';
-// import Bulma from '../Bulma';
-// import PATHS from '../../paths/paths';
-// import api from '../../api';
-// import GeneSearch from './GeneSearch';
-// import GeneExpandableList from './GeneExpandableList';
-// import GeneExpressionGraph from './GeneExpressionGraph';
-// import GeneExpressionTable from './GeneExpressionTable';
-// import GeneHomologs from './GeneHomologs';
-// import GeneXRefs from './GeneXRefs';
-// import schemaDotOrg from '../../helpers/schemaDotOrg';
-// import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
-// import imagePath from '../../helpers/imagePath';
-// import GeneDetailsSideMenu from './GeneDetailsSideMenu';
-// import { PROC_EXPR_VALUES } from '../../pages/search/rawdata/useLogic';
-// import config from '../../config.json';
-// import './GeneDetails.scss';
+import React from 'react';
+import { Link, useLocation } from 'react-router';
 
-// const GeneDetails = ({
-//   details,
-//   details: { name, geneId, description, expressionSummary, species, synonyms, geneMappedToSameGeneIdCount },
-// }) => {
-//   const loc = useLocation();
-//   const [isLoading, setIsLoading] = React.useState(true);
-//   const [homologs, setHomologs] = React.useState();
-//   const [xRefs, setXRefs] = React.useState();
+import Bulma from '../Bulma';
+import PATHS from '../../paths/paths';
+import GeneSearch from './GeneSearch';
+import GeneDetailsSideMenu from './GeneDetailsSideMenu';
+import GeneExpandableList from './GeneExpandableList';
+import GeneExpressionGraph from './GeneExpressionGraph';
+import GeneExpressionTable from './GeneExpressionTable';
+import GeneHomologs from './GeneHomologs';
+import GeneXRefs from './GeneXRefs';
+import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
+import imagePath from '../../helpers/imagePath';
+import { PROC_EXPR_VALUES } from '../../pages/search/rawdata/useLogic';
+import './GeneDetails.scss';
 
-// // TODO: REMOVE, not used anymore, replaced by routes/gene.$geneId.tsx
+const GeneDetails = ({
+  details: { name, geneId, description, expressionSummary, species, synonyms },
+  homologs,
+  xRefs,
+  exprData,
+  notExprData,
+}) => {
+  const loc = useLocation();
 
-// const GeneDetails = ({
-//   details,
-//   details: { name, geneId, description, species, synonyms, geneMappedToSameGeneIdCount },
-// }) => {
-//   const loc = useLocation();
-//   const [isLoading, setIsLoading] = React.useState(true);
-//   const [homologs, setHomologs] = React.useState();
-//   const [xRefs, setXRefs] = React.useState();
+  React.useEffect(() => {
+    if (loc.hash) {
+      const element = document.getElementById(loc.hash.replace('#', ''));
+      if (element) {
+        setTimeout(() => {
+          window.scrollTo({
+            top: element.offsetTop,
+            behavior: 'smooth',
+          });
+        }, 1500); // wait for all the elements to load and then scroll. Might need an adjustment
+      }
+    }
+  }, []);
+
 
 //   React.useEffect(() => {
 //     Promise.allSettled([

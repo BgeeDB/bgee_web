@@ -49,6 +49,17 @@ const Heatmap = ({
   termProps,
   yLabelJustify = 'right',
   onToggleExpandCollapse,
+}: {
+  width: number;
+  height?: number;
+  backgroundColor: string;
+  data: any[];
+  getChildData: (parentId: string, selectedTissueId: string) => any;
+  getHomologsData?: () => void;
+  yTerms: any[];
+  termProps: any;
+  yLabelJustify?: string;
+  onToggleExpandCollapse: (id: string) => void;
 }) => {
   // COMPONENT STATE
   const [hoveredCell, setHoveredCell] = useState(null);
@@ -163,7 +174,7 @@ const Heatmap = ({
     const value = !showHomologs;
     setShowHomologs(value);
     localStorage.setItem(STORAGE_KEYS.SHOW_HOMOLOGS, JSON.stringify(value));
-    getHomologsData();
+    if (getHomologsData) getHomologsData();
   };
 
   const updateShowSettings = () => {
@@ -245,7 +256,7 @@ const Heatmap = ({
     document.body.removeChild(downloadLink);
   };
 
-  const svgRef = useRef();
+  const svgRef = useRef<SVGSVGElement>(null);
   const downloadSvg = () => {
     const svgElement = svgRef.current;
     if (!svgElement) return;
@@ -284,20 +295,24 @@ const Heatmap = ({
 
       // Draw the image onto the canvas
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
+      if (ctx) {
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      }
 
       // Convert canvas to PNG and trigger download
       canvas.toBlob((blob) => {
-        const pngUrl = URL.createObjectURL(blob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = pngUrl;
-        downloadLink.download = 'Bgee-genex-heatmap.png';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        URL.revokeObjectURL(pngUrl);
+        if (blob) {
+          const pngUrl = URL.createObjectURL(blob);
+          const downloadLink = document.createElement('a');
+          downloadLink.href = pngUrl;
+          downloadLink.download = 'Bgee-genex-heatmap.png';
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+          URL.revokeObjectURL(pngUrl);
+        }
       }, 'image/png');
     };
     img.src = svgUrl;
@@ -309,6 +324,7 @@ const Heatmap = ({
         <div className="column">
           <Renderer
             ref={svgRef}
+            // @ts-expect-error Type not assignable to type
             width={graphWidth}
             height={graphHeight - COLOR_LEGEND_HEIGHT}
             backgroundColor={bgColor}
@@ -433,13 +449,13 @@ const Heatmap = ({
                       <tr>
                         <td>Graph width:</td>
                         <td>
-                          <input type="text" size="10" value={graphWidth} onChange={updateGraphWidth} />
+                          <input type="text" size={10} value={graphWidth} onChange={updateGraphWidth} />
                         </td>
                       </tr>
                       <tr>
                         <td>Graph height:</td>
                         <td>
-                          <input type="text" size="10" value={graphHeight} onChange={updateGraphHeight} />
+                          <input type="text" size={10} value={graphHeight} onChange={updateGraphHeight} />
                         </td>
                       </tr>
                       <tr>
@@ -451,14 +467,14 @@ const Heatmap = ({
                       <tr>
                         <td>Y label width:</td>
                         <td>
-                          <input type="text" size="10" value={marginLeft} onChange={updateYLabelWidth} />
+                          <input type="text" size={10} value={marginLeft} onChange={updateYLabelWidth} />
                         </td>
                       </tr>
                       {SHOW_DEBUG_OPTIONS ? (
                         <tr>
                           <td>X label rotation:</td>
                           <td>
-                            <input type="text" size="10" value={xLabelRotation} onChange={updateXLabelRotation} />
+                            <input type="text" size={10} value={xLabelRotation} onChange={updateXLabelRotation} />
                           </td>
                         </tr>
                       ) : null}
@@ -498,7 +514,7 @@ const Heatmap = ({
                       <tr>
                         <td>background color:</td>
                         <td>
-                          <input type="text" size="10" value={bgColor} onChange={updateBgColor} />
+                          <input type="text" size={10} value={bgColor} onChange={updateBgColor} />
                         </td>
                       </tr>
                       <tr>

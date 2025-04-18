@@ -38,7 +38,7 @@ test.describe('Search pages', () => {
     const searchInput = page.getByPlaceholder('Examples: dlx, ENSG00000254647');
     await searchInput.fill('Apoc1');
     await searchInput.press('Enter');
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(2000);
     expect(await page.locator('text=ENSG00000130208').count()).toBeGreaterThan(0);
   });
 

@@ -42,8 +42,8 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   const initHash = initSearch.get('data');
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [searchResult, setSearchResult] = useState();
-  const [anatomicalTerms, setAnatomicalTerms] = useState([]);
+  const [searchResult, setSearchResult]: any = useState();
+  const [anatomicalTerms, setAnatomicalTerms]: [any[], any] = useState([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState({});
   const [dataType, setDataTypes] = useState(ALL_DATA_TYPES);
   const dataTypeKey = 'data_type';
@@ -60,12 +60,12 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
 
   // In order to disable the search button if the search has already been made
   const formSearchButtonIsDisabled = useMemo(() => {
-    const oldDataType = (dataTypeExpr?.split(',') || DATA_TYPES.map((d) => d.key)).sort();
+    const oldDataType = (dataTypeExpr?.toString().split(',') || DATA_TYPES.map((d) => d.key)).sort();
 
     return JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
   }, [dataType, dataTypeExpr]);
 
-  const getSearchParams = () => {
+  const getSearchParams = (): any => {
     const params = {
       hash: initHash,
       isFirstSearch: true,
@@ -106,7 +106,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
       },
     };
     const parents = { [ROOT_TERM_ANAT_ENTITY]: [] };
-    const children = { [ROOT_TERM_ANAT_ENTITY]: [] };
+    const children: { [key: string]: string[] } = { [ROOT_TERM_ANAT_ENTITY]: [] };
     expressionCalls.forEach((exprCall) => {
       const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
@@ -145,7 +145,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
         console.error(`[GeneExpressionGraph.prepTermHierarchy] term not found: ${termId}`);
       }
       // Initialize the nested structure
-      const nestedTerm = {
+      const nestedTerm: any = {
         id: termId,
         label: term.isSingleCell ? `${term.label} : ${term.cellTypeLabel}` : term.label,
         anatEntityId: term.anatEntityId,
@@ -219,7 +219,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
     };
 
     // Start the recursive search from each root term in the nested structure
-    nestedStructure.forEach((root) => addChildren(root, root.depth));
+    nestedStructure.forEach((root) => addChildren(root));
 
     // Return the updated termProps
     return newTerms;
@@ -276,17 +276,15 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   };
 
   useEffect(() => {
-    const params = getSearchParams();
-    triggerInitialSearch(params);
+    triggerInitialSearch();
   }, [geneId, speciesId]);
 
   useEffect(() => {
-    const params = getSearchParams();
-    triggerInitialSearch(params);
+    triggerInitialSearch();
   }, [dataType]);
 
   // Perform API data request for subordinate terms
-  const triggerSearchChildren = async (parentId, selectedTissueId) => {
+  const triggerSearchChildren = async (parentId: string, selectedTissueId: string) => {
     // DEBUG: remove console log in prod
     console.log(`[GeneExpressionGraph] triggerSearchChildren:\n"${parentId}"`);
 
@@ -343,7 +341,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
         }
 
         // update anatomical terms
-        const newChildTerms = new Set();
+        const newChildTerms = new Set<any>();
         resp?.data.expressionData.expressionCalls.forEach((exprCall) => {
           const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
           const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
@@ -555,7 +553,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
             <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.key}>
               <input
                 type="checkbox"
-                checked={dataType.find((d) => d === c.key) || false}
+                checked={!!dataType.find((d) => d === c.key)}
                 onChange={(e) => {
                   setDataTypes((prev) => {
                     const curr = [...prev];

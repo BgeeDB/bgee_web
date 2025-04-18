@@ -67,7 +67,7 @@ const CUSTOM_FIELDS = [
 ];
 
 const columnsGenerator = (cFields, data) => () => {
-  let c = [];
+  let c: any[] = [];
   if (!data) return null;
 
   if (data.requestedConditionParameters.find((r) => r === 'Anat. entity')) {
@@ -125,7 +125,7 @@ const columnsGenerator = (cFields, data) => () => {
   return c;
 };
 const AnatEntityCell = ({ cell }) => {
-  const cellInfo = [];
+  const cellInfo: React.ReactNode[] = [];
 
   if (cell.condition.cellType) {
     cellInfo.push(
@@ -175,8 +175,8 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
   const hashExpr = useQuery(exprKey);
   const dataTypeExpr = useQuery(dataTypeKey);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [data, setData] = React.useState();
-  const [cFields, setCFields] = React.useState({ anat: true });
+  const [data, setData]: any = React.useState();
+  const [cFields, setCFields]: any = React.useState({ anat: true });
   const [dataType, setDataTypes] = React.useState(DATA_TYPES.map((d) => d.key));
 
   const columns = React.useMemo(columnsGenerator(cFields, data), [cFields, data]);
@@ -184,11 +184,11 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
   // In order to disable the search button in the search has already been made
   const formSearchButtonIsDisabled = React.useMemo(() => {
     const oldQuery = Object.entries(cFields)
-      .reduce((acc, [key, value]) => (value ? [...acc, key] : acc), [])
+      .reduce((acc: any[], [key, value]) => (value ? [...acc, key] : acc), [])
       .sort()
       .join(',');
 
-    const oldDataType = (dataTypeExpr?.split(',') || DATA_TYPES.map((d) => d.key)).sort();
+    const oldDataType = (dataTypeExpr?.toString().split(',') || DATA_TYPES.map((d) => d.key)).sort();
 
     return oldQuery === (hashExpr || 'anat') && JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
   }, [cFields, hashExpr, dataType, dataTypeExpr]);
@@ -240,7 +240,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
             <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.key}>
               <input
                 type="checkbox"
-                checked={dataType.find((d) => d === c.key) || false}
+                checked={!!dataType.find((d) => d === c.key) || false}
                 onChange={(e) => {
                   setDataTypes((prev) => {
                     const curr = [...prev];
@@ -277,7 +277,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
               queryParams.set(
                 exprKey,
                 Object.entries(cFields)
-                  .reduce((acc, [key, value]) => (value ? [...acc, key] : acc), [])
+                  .reduce((acc: any[], [key, value]) => (value ? [...acc, key] : acc), [])
                   .join(',')
               );
               if (
@@ -366,7 +366,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
         case 'sex':
           return defaultRender(cell.condition.sex, key);
         case 'sources': {
-          const col = columns.find((c) => c.key === key);
+          const col = columns ? columns.find((c) => c.key === key) : [];
           const source = {};
           ALL_DATA_TYPES.forEach((dt) => {
             source[dt.id] = false;
@@ -433,17 +433,20 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
       return;
     }
     setIsLoading(true);
-    const fields = {};
+    const fields: any = {};
     if (hashExpr) {
-      hashExpr.split(',').forEach((key) => {
-        fields[key] = true;
-      });
+      hashExpr
+        .toString()
+        .split(',')
+        .forEach((key) => {
+          fields[key] = true;
+        });
     } else fields.anat = true;
     setCFields(fields);
 
     let dt;
     if (dataTypeExpr) {
-      dt = dataTypeExpr.split(',');
+      dt = dataTypeExpr.toString().split(',');
     } else dt = DATA_TYPES.map((d) => d.key);
     setDataTypes(dt);
 
@@ -485,7 +488,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
           <>
             <Table
               identifierAtFilter
-              columns={columns}
+              columns={columns || []}
               data={data.calls}
               emptyTableMessage={
                 <span>

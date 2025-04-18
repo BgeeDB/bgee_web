@@ -28,7 +28,7 @@ export const SEARCH_CANCEL_API: any = {
   },
 };
 
-const DEFAULT_PARAMETERS: any = (page, action = undefined) => {
+const DEFAULT_PARAMETERS: any = (page: string, action: string | undefined = undefined) => {
   const params = new URLSearchParams();
 
   params.append('display_type', 'json');
@@ -91,7 +91,7 @@ const search = {
         });
     }),
   genes: {
-    autoComplete: (val) =>
+    autoComplete: (val: string) =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('search', 'auto_complete_gene_search');
         params.append('query', `${val}`);
@@ -107,7 +107,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    AutoCompleteByType: (searchType, query, speciesId) =>
+    AutoCompleteByType: (searchType: string, query: string, speciesId: string) =>
       new Promise((resolve, reject) => {
         let params = new URLSearchParams();
 
@@ -146,7 +146,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    geneSearchResult: (val) =>
+    geneSearchResult: (val: string) =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('gene');
         params.append('query', `${val}`);
@@ -180,7 +180,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    expression: (geneId, speciesId, fields, dataType, isNotExpressed = false) =>
+    expression: (geneId: string, speciesId: string, fields, dataType, isNotExpressed = false): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('gene', 'expression');
         if (isNotExpressed) params.append('expr_type', 'not_expressed');
@@ -208,7 +208,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    homologs: (geneId, speciesId) =>
+    homologs: (geneId: string, speciesId: string): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('gene', 'homologs');
         params.append('gene_id', geneId);
@@ -226,7 +226,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    xrefs: (geneId, speciesId) =>
+    xrefs: (geneId: string, speciesId: string): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('gene', 'xrefs');
         params.append('gene_id', geneId);
@@ -278,7 +278,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    species: (speciesId): any =>
+    species: (speciesId: string): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('species');
         params.append('species_id', speciesId);
@@ -311,7 +311,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    speciesDevelopmentSexe: (speciesId) =>
+    speciesDevelopmentSexe: (speciesId: string) =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('data');
         params.append('detailed_rp', '1');
@@ -328,7 +328,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    name: (speciesId): any =>
+    name: (speciesId: string): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('species', 'name');
         params.append('species_id', speciesId);
@@ -344,7 +344,7 @@ const search = {
             reject(error?.response);
           });
       }),
-    geneList: (speciesId): any =>
+    geneList: (speciesId: string): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('gene', 'species_list');
         params.append('species_id', speciesId);
@@ -482,7 +482,7 @@ const search = {
       }),
   },
   experiments: {
-    getExperiment: (experimentId): any =>
+    getExperiment: (experimentId: string): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('data');
         params.append('exp_id', experimentId);
@@ -537,7 +537,7 @@ const search = {
       }),
 
     // Initial search, requesting the top-level terms
-    initialSearch: (form) =>
+    initialSearch: (form): any =>
       new Promise((resolve, reject) => {
         // populate request params
         const params = DEFAULT_PARAMETERS('data', 'expr_calls');
@@ -637,7 +637,7 @@ const search = {
           });
       }),
 
-    initialSearchComplementary: (form) =>
+    initialSearchComplementary: (form): any =>
       new Promise((resolve, reject) => {
         // populate request params
         const params = DEFAULT_PARAMETERS('data', 'expr_calls');

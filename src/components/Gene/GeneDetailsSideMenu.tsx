@@ -5,7 +5,16 @@ import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import PATHS from '../../paths/paths';
 import { URL_ROOT } from '~/helpers/constants';
 
-const GeneDetailsSideMenu = ({ homologs = null, xRefs }) => {
+const GeneDetailsSideMenu = ({
+  homologs = null,
+  xRefs,
+}: {
+  homologs: {
+    orthologs: number;
+    paralogs: number;
+  } | null;
+  xRefs: any;
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,12 +45,12 @@ const GeneDetailsSideMenu = ({ homologs = null, xRefs }) => {
         <li onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.EXPRESSION_ABSENT_TABLE)}>
           <a className="is-size-5 has-text-weight-semibold">Expression Absent</a>
         </li>
-        {homologs?.orthologs > 0 && (
+        {homologs?.orthologs && homologs?.orthologs > 0 && (
           <li key={GENE_DETAILS_HTML_IDS.ORTHOLOGS} onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.ORTHOLOGS)}>
             <a className="is-size-5 has-text-weight-semibold">Orthologs</a>
           </li>
         )}
-        {homologs?.paralogs > 0 && (
+        {homologs?.paralogs && homologs?.paralogs > 0 && (
           <li key={GENE_DETAILS_HTML_IDS.PARALOGS} onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.PARALOGS)}>
             <a className="is-size-5 has-text-weight-semibold">Paralogs</a>
           </li>

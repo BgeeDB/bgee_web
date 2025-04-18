@@ -41,7 +41,7 @@ npm run fmt
 
 > [!NOTE]
 >
-> Formatting will be run automatically when you commit.
+> Formatting will be run automatically when you commit with `husky` and `lint-staged`.
 
 Just lint:
 
