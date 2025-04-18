@@ -12,9 +12,18 @@ body:
       label: Describe the issue
       description: |
         Describe the issue.
-        What did you expect to happen?
-        What did you see instead?
-        Feel free to include screenshots if that can help.
+
+        - What did you expect to happen?
+        - What did you see instead?
+        - Feel free to include screenshots if that can help.
+    validations:
+      required: true
+
+  - id: page-url
+    type: input
+    attributes:
+      label: Page URL
+      description: Please provide a link to the page.
     validations:
       required: true
 
@@ -29,11 +38,3 @@ body:
         - label: Safari
         - label: Brave
         - label: Zen
-
-  - id: page-url
-    type: input
-    attributes:
-      label: Page URL
-      description: Please provide a link to the page.
-    validations:
-      required: true
