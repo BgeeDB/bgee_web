@@ -8,15 +8,14 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+import rehypeLink from './src/helpers/rehypeLink';
 
 export default defineConfig({
   plugins: [
     mdx({
       providerImportSource: '/src/helpers/mdxComponents.tsx',
-      remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm, remarkToc],
-      rehypePlugins: [rehypeHighlight, rehypeSanitize, rehypeRaw, rehypeSlug],
+      remarkPlugins: [remarkGfm, remarkToc],
+      rehypePlugins: [rehypeHighlight, rehypeSanitize, rehypeRaw, rehypeSlug, rehypeLink],
     }),
     reactRouter(),
     tsconfigPaths(),

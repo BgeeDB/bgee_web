@@ -1,7 +1,8 @@
 import { visit } from 'unist-util-visit';
-import { URL_ROOT } from '~/helpers/constants';
 
-const rehypeLink = (navigate) => () => (tree) => {
+import { URL_ROOT } from './constants';
+
+const rehypeLink = () => (tree) => {
   visit(tree, 'element', (node) => {
     const isInternal = /(^#)|(^\/)|(^https:\/\/www.bgee.org)/gi;
     if (node.tagName === 'a') {
@@ -12,10 +13,8 @@ const rehypeLink = (navigate) => () => (tree) => {
         node.properties.href = node.properties.href
           .replace(isInternalAndNotAnchor, `${URL_ROOT}`)
           .replaceAll(regex, '/');
-        node.properties.onclick = (e) => {
-          e.preventDefault();
-          navigate(e.target.href.replace(window.location.origin, ''));
-        };
+        // Add a data attribute to identify internal links that need client-side navigation in mdxComponents
+        node.properties['data-internal-link'] = true;
       } else {
         node.properties.classname = 'external-link';
         node.properties.target = '_blank';
