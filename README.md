@@ -251,6 +251,7 @@ $size-3: 1.5rem (= 21px)
 - [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/4a2769b7951c9be9f53236978ff8d27516da269f), but still work to do to get the exact same style right (defaults are broken for many elements, and dark theme causes problems for those who have it enabled system-wide).
 - [ ] **Fix script** `scripts/archiveCreation.js`.
 - [ ] It would be nice to have have proper args and return types on `api` functions in `src/api/prod`
+- [ ] When there are no Expression graph data, then don't display it at all, in `src/components/Gene/GeneExpressionTable.tsx` e.g. http://localhost:5173/gene/ENSCAFG00000010803
 - [ ] Search for `TODO:` to fix in the code.
 
 > Rename files `.js` to `.jsx` in folder and subfolders:

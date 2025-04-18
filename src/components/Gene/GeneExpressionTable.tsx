@@ -174,7 +174,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
   const location = useLocation();
   const hashExpr = useQuery(exprKey);
   const dataTypeExpr = useQuery(dataTypeKey);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(exprData ? false : true);
   const [data, setData]: any = React.useState();
   const [cFields, setCFields]: any = React.useState({ anat: true });
   const [dataType, setDataTypes] = React.useState(DATA_TYPES.map((d) => d.key));
