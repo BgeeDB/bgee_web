@@ -11,6 +11,7 @@
     "fmt": "prettier --write . && eslint . --fix",
     "lint": "prettier --check . && eslint .",
     "test": "npx playwright test",
+    "all": "npm run fmt && npm run typecheck && npm test",
     "postinstall": "npx playwright install --with-deps",
     "prepare": "husky",
     "upgrade": "npx npm-check-updates -u -x bulma && npm i",

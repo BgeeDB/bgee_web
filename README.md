@@ -43,12 +43,6 @@ npm run fmt
 >
 > Formatting will be run automatically when you commit with `husky` and `lint-staged`.
 
-Just lint:
-
-```sh
-npm run lint
-```
-
 Check types with TypeScript:
 
 ```sh
@@ -61,6 +55,12 @@ Run the tests with [`playwright`](https://playwright.dev/):
 
 ```sh
 npm test
+```
+
+Run everything (format, type check, tests):
+
+```sh
+npm run all
 ```
 
 ### ⏫ Upgrade dependencies
@@ -226,7 +226,7 @@ If you need to add new icons you can find them there: https://lucide.dev/icons
 ```tsx
 import { ChevronDown } from 'lucide-react';
 
-<ChevronDown size={15} color="black" />;
+<ChevronDown size={15} color="black" fill="white" />;
 ```
 
 ### 📐 Font size matrix
