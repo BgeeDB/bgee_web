@@ -4,9 +4,9 @@ import isPlural from '../../helpers/isPlural';
 import { TOP_ANAT_FLOW } from '../../hooks/useTopAnat';
 
 const TopAnatBanner = ({ results, status }) => {
-  const refLaunching = useRef();
-  const refGotJob = useRef();
-  const refGotResult = useRef();
+  const refLaunching = useRef<HTMLProgressElement>(null);
+  const refGotJob = useRef<HTMLProgressElement>(null);
+  const refGotResult = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     if (refGotResult?.current) {

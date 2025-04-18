@@ -125,6 +125,7 @@ const TopAnatForm = ({
                           <Bulma.Button
                             size="small"
                             className="toggle-button"
+                            // @ts-expect-error Type false|"danger" is not assignable to type string|undefined
                             color={!rp.customBg && 'danger'}
                             onClick={() => setRP((prev) => ({ ...prev, customBg: false }))}
                             disabled={formDisabled || (!formDisabled && !rp.customBg)}

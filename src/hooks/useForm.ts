@@ -1,7 +1,6 @@
 import React from 'react';
 
-/*
-initialValue {Object}
+/* initialValue {Object}
 onSubmit
 validations {Object}
     [key]:
@@ -17,7 +16,7 @@ validations {Object}
         isValid: (any) => boolean,
         message: string,
       },
- */
+*/
 const useForm = (opts) => {
   const [data, setData] = React.useState(opts?.initialValue || {});
   const [errors, setErrors] = React.useState({});
@@ -26,10 +25,11 @@ const useForm = (opts) => {
   const reset = React.useCallback(() => setData(opts?.initialValue || {}), []);
   const resetError = React.useCallback(() => setErrors({}), []);
   const handleChange = React.useCallback(
-    (key, sanitizeFn) => (e) => {
-      const value = sanitizeFn ? sanitizeFn(e) : e.target.value;
-      setData((d) => ({ ...d, [key]: value }));
-    },
+    (key, sanitizeFn: any = undefined) =>
+      (e: any = undefined) => {
+        const value = sanitizeFn ? sanitizeFn(e) : e.target.value;
+        setData((d) => ({ ...d, [key]: value }));
+      },
     []
   );
   const handleSubmit = async (e) => {
@@ -39,7 +39,7 @@ const useForm = (opts) => {
       let valid = true;
       const newErrors = {};
 
-      const valArray = Object.entries(validations);
+      const valArray: any = Object.entries(validations);
       for (let idx = 0; idx < valArray.length; idx += 1) {
         const key = valArray[idx][0];
         const validation = valArray[idx][1];

@@ -172,7 +172,7 @@ export async function loader({ params, request }) {
     return {
       genes: genesResp.data.genes,
       species: speciesResp.data.species,
-      pathname: new URL(request.url).pathname,
+      requestUrl: request.url,
     };
   } catch (error: any) {
     throw new Response(error.data?.message || error.message || 'Page not found', { status: 404 });
@@ -184,7 +184,7 @@ export function meta({ data }) {
     title: `${data.genes.name} expression in ${data.species.name}`,
     description: `Gene expression for ${data.genes.name} in ${data.species.name}`,
     keywords: `gene expression, ${data.genes.name}, ${data.species.name}`,
-    link: `${config.genericDomain}${pathname}`,
+    link: data.requestUrl,
     schemaorg: [geneToLdJSON(data.genes)],
   });
 }

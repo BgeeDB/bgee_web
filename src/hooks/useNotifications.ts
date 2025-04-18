@@ -1,14 +1,18 @@
 import React from 'react';
 
-let timeout = [];
+let timeout: {
+  t: NodeJS.Timeout;
+  moment: number;
+  id: string;
+}[] = [];
 const TIMEOUT_NOTIF = 5000;
 const CLEAR_INTERVAL = 5000;
 
 const useNotifications = () => {
-  const [notifications, setNotifications] = React.useState([]);
+  const [notifications, setNotifications]: any = React.useState([]);
 
   const closeNotif = React.useCallback((id) => {
-    const notif = timeout.splice(
+    const notif: any = timeout.splice(
       timeout.findIndex((t) => t.id === id),
       1
     );
@@ -22,6 +26,7 @@ const useNotifications = () => {
       return curr;
     });
   }, []);
+
   const addNotification = React.useCallback((notif) => {
     setNotifications((n) => [...n, notif]);
     const t = setTimeout(() => {
@@ -29,6 +34,7 @@ const useNotifications = () => {
     }, notif.timeout || TIMEOUT_NOTIF);
     timeout.push({ t, moment: Date.now(), id: notif.id });
   }, []);
+
   const addNotifications = React.useCallback((arrNotif) => {
     setNotifications((n) => [...n, ...arrNotif]);
     arrNotif.forEach((notif) => {
@@ -38,6 +44,7 @@ const useNotifications = () => {
       timeout.push({ t, moment: Date.now(), id: notif.id });
     });
   }, []);
+
   React.useEffect(() => {
     const i = setInterval(() => {
       timeout.forEach((t) => {
@@ -51,7 +58,7 @@ const useNotifications = () => {
 
   const cleanNotifications = React.useCallback(() => {
     setNotifications([]);
-    timeout.forEach((t) => clearTimeout(t));
+    timeout.forEach((t: any) => clearTimeout(t));
     timeout = [];
   }, []);
 

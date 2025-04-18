@@ -1,14 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-/*
-- Check if present in page (dont check if visible)
-expect(await page.locator('text=WBGene00000001').count()).toBeGreaterThan(0);
-- Check if first one is visible
-await expect(page.locator('text=WBGene00000001').first()).toBeVisible();
-- Check if only one visible
-await expect(page.getByText('WBGene00000001')).toBeVisible();
-*/
-
 test.describe('Items pages', () => {
   test('display a gene', async ({ page }) => {
     await page.goto('/gene/ENSG00000130208');
@@ -93,3 +84,12 @@ test.describe('Other pages', () => {
     await expect(page.getByText('GTEx cleaning for Bgee')).toBeVisible();
   });
 });
+
+/*
+- Check if present in page (dont check if visible)
+expect(await page.locator('text=WBGene00000001').count()).toBeGreaterThan(0);
+- Check if first one is visible
+await expect(page.locator('text=WBGene00000001').first()).toBeVisible();
+- Check if only one visible
+await expect(page.getByText('WBGene00000001')).toBeVisible();
+*/

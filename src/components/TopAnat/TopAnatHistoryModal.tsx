@@ -70,7 +70,7 @@ export const addTopAnatHistory = (id, speciesId, speciesName, title = '') => {
 const TopAnatHistoryModal = () => {
   const navigate = useNavigate();
   const [history, setHistory] = React.useState([]);
-  const { showModal, hideModal } = React.useContext(ModalContext);
+  const { showModal, hideModal }: any = React.useContext(ModalContext);
 
   React.useEffect(() => {
     const h = JSON.parse(window.localStorage.getItem(HISTORY_KEY) || '[]');

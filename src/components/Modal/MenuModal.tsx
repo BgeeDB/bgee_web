@@ -284,7 +284,7 @@ const ModalCard = ({ active, toggle }) => (
           <div key={key}>
             <p className="menu-label my-3">{title}</p>
             <ul className="menu-list">
-              {children.map(({ key: keyChild, type, title: pageTitle, ...childProps }) => {
+              {children.map(({ key: keyChild, type, title: pageTitle, ...childProps }: any) => {
                 let link;
                 switch (type) {
                   case 'mail':

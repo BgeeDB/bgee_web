@@ -4,7 +4,7 @@ import Pagination from '../Pagination';
 import { TableContext } from '../../contexts/TableContext';
 
 const TablePagination = () => {
-  const { table, data, usedWidth, pagination, currentPage, pageSize, manualMaxPage, isRequestPerPage } =
+  const { table, data, usedWidth, pagination, currentPage, pageSize, manualMaxPage, isRequestPerPage }: any =
     useContext(TableContext);
 
   const showEntriesText = React.useMemo(() => {

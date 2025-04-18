@@ -15,7 +15,7 @@ const GenesDetailsModal = ({ data }) => {
         <>
           <p>Other species detected in ID list: </p>
           <ul className="unordered">
-            {Object.entries(data.detectedSpecies).map(([key, value]) =>
+            {Object.entries(data.detectedSpecies).map(([key, value]: any) =>
               key === data.selectedSpecies.toString() ? null : (
                 <li key={key}>
                   <p>

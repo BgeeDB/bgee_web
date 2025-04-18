@@ -1,26 +1,25 @@
-import PATHS from '~/paths/paths';
 import api from '~/api';
 import GeneDetails from '~/components/Gene/GeneDetails';
 import { geneHomologsToLdJSON, geneToLdJSON, geneExpressionToLdJSON } from '~/helpers/schemaDotOrg';
-import config from '~/config.json';
 import { getMetadata } from '~/helpers/metadata';
 
 export async function loader({ params, request }) {
   try {
     // Get general gene information
     const geneInfoResponse = await api.search.genes.getGeneralInformation(params.geneId);
-    const geneDetails = geneInfoResponse.data.genes[0]; // Get the first gene
+    // NOTE: we directly get the first gene
+    const geneDetails = geneInfoResponse.data.genes[0];
     if (!geneDetails) throw new Error('Page not found');
 
     const { geneId, species } = geneDetails;
-    // Get homologs and xrefs in parallel
+    // Get data in parallel
     const [homologsResult, xRefsResult, exprResult, notExprResult]: any = await Promise.allSettled([
       api.search.genes.homologs(geneId, species.id),
       api.search.genes.xrefs(geneId, species.id),
       api.search.genes.expression(geneId, species.id, {}, ['all'], false),
       api.search.genes.expression(geneId, species.id, {}, ['all'], true),
     ]);
-    // Process homologs and xrefs data
+    // Process homologs data
     const homologs =
       homologsResult.status === 'fulfilled'
         ? {
@@ -35,6 +34,7 @@ export async function loader({ params, request }) {
     homologsResult.value.data.paralogsByTaxon.forEach((o) => {
       if (o.genes.length > homologs.paralogs) homologs.paralogs = o.genes.length;
     });
+    // Process xrefs and expression data
     const xRefs = xRefsResult.status === 'fulfilled' ? xRefsResult.value.data : {};
     const exprData = exprResult.status === 'fulfilled' ? exprResult.value.data : {};
     const notExprData = notExprResult.status === 'fulfilled' ? notExprResult.value.data : {};
@@ -44,7 +44,7 @@ export async function loader({ params, request }) {
       xRefs,
       exprData,
       notExprData,
-      pathname: new URL(request.url).pathname,
+      requestUrl: request.url,
     };
   } catch (error: any) {
     // console.error('Error loading gene data:', error);
@@ -61,24 +61,20 @@ export function meta({ data }) {
   const speciesNameBrackets = species.name ? ` (${species.name})` : '';
   const nameExpr = name ? `${name}, ${name} expression, ` : '';
   const synonymsExpr = synonyms ? `, ${synonyms.join(', ')}` : '';
-  const canonicalLink = `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', geneId)
-    .replace(':speciesId', species.id)
-    // .replace(':speciesId', geneMappedToSameGeneIdCount === 1 ? '' : species.id)
-    .replace(/\/$/, '')}`;
 
   return getMetadata({
     title: `${name} expression in ${speciesName}`,
     description: `Bgee gene expression data for ${hasNameOpener}${geneId}${hasNameCloser} in ${latinName}${speciesNameBrackets}`,
     keywords: `gene expression, ${nameExpr}${geneId}, ${geneId} expression${synonymsExpr}`,
-    link: canonicalLink,
+    link: data.requestUrl,
     schemaorg: [
       geneToLdJSON({
         ...data.details,
         xRefs: data.xRefs?.gene?.xRefs,
-        url: canonicalLink,
+        url: data.requestUrl,
       }),
       geneHomologsToLdJSON([...data.homologs.orthologsByTaxon, ...data.homologs.paralogsByTaxon]),
-      geneExpressionToLdJSON(data.exprData.calls, canonicalLink),
+      geneExpressionToLdJSON(data.exprData.calls, data.requestUrl),
     ],
   });
 }

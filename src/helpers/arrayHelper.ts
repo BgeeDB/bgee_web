@@ -7,14 +7,13 @@
  *        fillChunk {boolean} will fill the last chunk to match the chunk size
  *        defaultItemFactory {function} will generate an item to fill the chunk
  */
-
-const chunkArray = (arr, chunkSize, customOpts) => {
+const chunkArray = (arr: any[], chunkSize: number, customOpt: any = {}) => {
   const options = {
     fillChunk: false,
     defaultItemFactory: undefined,
-    ...(customOpts || {}),
+    ...customOpt,
   };
-  const results = [];
+  const results: any[] = [];
   const tmp = JSON.parse(JSON.stringify(arr));
 
   while (tmp.length) {

@@ -4,8 +4,8 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { isHideMediaQuery } from '../../helpers/constants/mediaQueries';
 import { TableContext } from '../../contexts/TableContext';
 import HelpIcon from '../HelpIcon';
-import './override.scss';
 import classnames from '../../helpers/classnames';
+import './override.scss';
 
 const cssSortOption = (key, sortOpts) => {
   let pos;
@@ -41,8 +41,10 @@ const cssSortOption = (key, sortOpts) => {
 
   return null;
 };
+
 const TableHead = ({ minThWidth }) => {
-  const { columns, sortable, sortOption, defineSortOption, showTableModalButton, usedWidth } = useContext(TableContext);
+  const { columns, sortable, sortOption, defineSortOption, showTableModalButton, usedWidth }: any =
+    useContext(TableContext);
   const minWidthStyle = minThWidth ? { minWidth: minThWidth } : {};
   return (
     <thead>

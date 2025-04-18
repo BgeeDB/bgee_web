@@ -10,7 +10,7 @@ const Tooltip = ({
 }: {
   children?: React.ReactNode;
   title?: string;
-  content?: string;
+  content?: React.ReactNode;
   style?: React.CSSProperties;
   className?: string;
   isLeft?: boolean;

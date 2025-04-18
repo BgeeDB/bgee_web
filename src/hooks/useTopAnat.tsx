@@ -24,7 +24,7 @@ export const TOP_ANAT_FLOW = {
   GOT_RESULTS: 'gotResults',
 };
 
-const useTopAnat = (flowState, setFlowState) => {
+const useTopAnat = (flowState: string, setFlowState) => {
   const { addNotification } = React.useContext(NotificationContext);
   const [requestParameters, setRP]: any = React.useState(TOP_ANAT_DEFAULT_RP);
   const [results, setResults] = React.useState();

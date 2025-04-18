@@ -5,7 +5,15 @@ import ModalCardBody from './ModalCardBody';
 import ModalCardFooter from './ModalCardFooter';
 import ModalCardTitle from './ModalCardTitle';
 
-const ModalCard = ({ className, children, ...props }) => (
+const ModalCard = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => (
   <Element {...props} className={classnames('modal-card', className)}>
     {children}
   </Element>

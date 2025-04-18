@@ -10,8 +10,8 @@ import staticBuilder from '../../helpers/staticBuilder';
 import uuid from '../../helpers/uuid';
 
 const PlusModalCell = ({ row, defaultRender }) => {
-  const { showModal, hideModal } = React.useContext(ModalContext);
-  const { columns, onRenderCell, showTableModalButton } = useContext(TableContext);
+  const { showModal, hideModal }: any = React.useContext(ModalContext);
+  const { columns, onRenderCell, showTableModalButton }: any = useContext(TableContext);
 
   const showModalDetails = React.useCallback(
     (item) => () => {
@@ -66,7 +66,7 @@ const TableBody = () => {
     currentPage,
     pageSize,
     isRequestPerPage,
-  } = useContext(TableContext);
+  }: any = useContext(TableContext);
   const defaultRender = React.useCallback(
     (cell, key) => {
       let style;
