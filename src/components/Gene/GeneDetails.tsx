@@ -19,8 +19,8 @@ const GeneDetails = ({
   details: { name, geneId, description, expressionSummary, species, synonyms },
   homologs,
   xRefs,
-  exprData,
-  notExprData,
+  exprData = undefined,
+  notExprData = undefined,
 }) => {
   const loc = useLocation();
 

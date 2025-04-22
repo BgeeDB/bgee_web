@@ -6,19 +6,27 @@ import { getMetadata } from '~/helpers/metadata';
 export async function loader({ params, request }) {
   try {
     // Get general gene information
+    const startTime = performance.now();
     const geneInfoResponse = await api.search.genes.getGeneralInformation(params.geneId);
     // NOTE: we directly get the first gene
     const geneDetails = geneInfoResponse.data.genes[0];
+    console.log(`Got gene details in (${(performance.now() - startTime).toFixed(2)}ms)`);
     if (!geneDetails) throw new Error('Page not found');
 
     const { geneId, species } = geneDetails;
+    const homologsStartTime = performance.now();
     // Get data in parallel
-    const [homologsResult, xRefsResult, exprResult, notExprResult]: any = await Promise.allSettled([
+    // const [homologsResult, xRefsResult, exprResult, notExprResult]: any = await Promise.allSettled([
+    const [homologsResult, xRefsResult]: any = await Promise.allSettled([
       api.search.genes.homologs(geneId, species.id),
       api.search.genes.xrefs(geneId, species.id),
-      api.search.genes.expression(geneId, species.id, {}, ['all'], false),
-      api.search.genes.expression(geneId, species.id, {}, ['all'], true),
+      // TODO: adding expression calls here slows down a lot the page loading
+      // api.search.genes.expression(geneId, species.id, {}, ['all'], false),
+      // api.search.genes.expression(geneId, species.id, {}, ['all'], true),
     ]);
+    console.log(
+      `Got the rest in (${(performance.now() - homologsStartTime).toFixed(2)}ms) Total: ${(performance.now() - startTime).toFixed(2)}ms`
+    );
     // Process homologs data
     const homologs =
       homologsResult.status === 'fulfilled'
@@ -36,14 +44,14 @@ export async function loader({ params, request }) {
     });
     // Process xrefs and expression data
     const xRefs = xRefsResult.status === 'fulfilled' ? xRefsResult.value.data : {};
-    const exprData = exprResult.status === 'fulfilled' ? exprResult.value.data : {};
-    const notExprData = notExprResult.status === 'fulfilled' ? notExprResult.value.data : {};
+    // const exprData = exprResult.status === 'fulfilled' ? exprResult.value.data : {};
+    // const notExprData = notExprResult.status === 'fulfilled' ? notExprResult.value.data : {};
     return {
       details: geneDetails,
       homologs,
       xRefs,
-      exprData,
-      notExprData,
+      // exprData,
+      // notExprData,
       requestUrl: request.url,
     };
   } catch (error: any) {
@@ -74,15 +82,16 @@ export function meta({ data }) {
         url: data.requestUrl,
       }),
       geneHomologsToLdJSON([...data.homologs.orthologsByTaxon, ...data.homologs.paralogsByTaxon]),
-      geneExpressionToLdJSON(data.exprData.calls, data.requestUrl),
+      // TODO: geneExpressionToLdJSON(data.exprData.calls, data.requestUrl),
     ],
   });
 }
 
 export default function GenePage({ loaderData }) {
-  const { details, homologs, xRefs, exprData, notExprData } = loaderData;
+  const { details, homologs, xRefs } = loaderData;
 
   return (
-    <GeneDetails details={details} homologs={homologs} xRefs={xRefs} exprData={exprData} notExprData={notExprData} />
+    <GeneDetails details={details} homologs={homologs} xRefs={xRefs} />
+    // exprData={exprData} notExprData={notExprData}
   );
 }

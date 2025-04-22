@@ -426,7 +426,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
 
   React.useEffect(() => {
     if (exprData && !hashExpr && !dataTypeExpr) {
-      // If the expression data is already provided with the components props
+      // If the expression data is already provided with the components props (e.g. SSR)
       // then we don't need to call the API
       setData(exprData);
       setIsLoading(false);

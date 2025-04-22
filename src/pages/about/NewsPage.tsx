@@ -1,3 +1,6 @@
+// import fs from 'fs';
+// import path from 'path';
+
 import Bulma from '../../components/Bulma';
 import GoTop from '../../components/GoTop';
 import NewsItem from '../../components/NewsItem';
@@ -11,11 +14,43 @@ const news = Object.entries(markdownFiles).map(([path, module]: [string, any]) =
   return { date, markdown: module.default };
 });
 
+// // Function to read markdown files directly from filesystem
+// const readMarkdownFiles = () => {
+//   const newsDir = path.join(__dirname, '../../markdown/news');
+//   const files = fs.readdirSync(newsDir).filter(file => file.endsWith('.md'));
+
+//   const newsItems = files.map(filename => {
+//     const filePath = path.join(newsDir, filename);
+//     const content = fs.readFileSync(filePath, 'utf8');
+//     const date = filename.replace(/^News-(.*)\.md$/, '$1');
+//     return { date, markdown: content };
+//   });
+
+//   return newsItems.sort((a, b) => b.date.localeCompare(a.date));
+// };
+
+// const newsMd = typeof window === 'undefined'
+//   ? readMarkdownFiles()
+//   : [];
+
 news.sort((a, b) => {
   return b.date.localeCompare(a.date);
 });
 
 export function meta() {
+  // const newsDir = path.join(__dirname, '../../markdown/news');
+  // const files = fs.readdirSync(newsDir).filter(file => file.endsWith('.md'));
+
+  // const newsItems = files.map(filename => {
+  //   const filePath = path.join(newsDir, filename);
+  //   const content = fs.readFileSync(filePath, 'utf8');
+  //   const date = filename.replace(/^News-(.*)\.md$/, '$1');
+  //   return { date, markdown: content };
+  // });
+
+  // newsItems.sort((a, b) => b.date.localeCompare(a.date));
+  // console.log('newsItems', newsMd);
+
   return getMetadata({
     title: 'Bgee news',
     description: 'Bgee news describing each new releases',

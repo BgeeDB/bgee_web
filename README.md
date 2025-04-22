@@ -23,15 +23,15 @@ Install dependencies:
 npm i
 ```
 
-Install dependencies without running the script to install `playwright` for tests:
+> Alternatively, install dependencies without running the script to install `playwright` for tests:
+>
+> ```sh
+> npm i --ignore-scripts
+> ```
 
-```sh
-npm i --ignore-scripts
-```
+### ⚡ Start server
 
-### 🔨 Development server
-
-Start development server at http://localhost:5173:
+Start development server at http://localhost:5173
 
 ```bash
 npm run dev
@@ -45,15 +45,15 @@ Format and lint with `prettier` and `eslint`:
 npm run fmt
 ```
 
-> [!NOTE]
->
-> Formatting will be run automatically when you commit with `husky` and `lint-staged`.
-
 Check types with TypeScript:
 
 ```sh
 npm run typecheck
 ```
+
+> [!NOTE]
+>
+> Formatting and type checking will be run automatically when you commit with `husky` and `lint-staged`.
 
 ### ✅ Tests
 
@@ -248,20 +248,15 @@ $size-3: 1.5rem (= 21px)
 ## ☑️ To do
 
 - [x] **Enable SSR** for most pages requiring it using `react-router` 7: gene, species, gene-list, experiments, home, gene expression calls.
-  - [x] In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some basic SSR for experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
+  - [x] In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some basic SSR for the experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
   - [x] Migrate from `react-markdown` to [`mdx`](https://mdxjs.com/) to render markdown (use same plugins and style)
-  - [x] Migrate from `ion-icons` to [`lucide-react`](https://lucide.dev/) (ion-icons were not compatible with SSR, triggering hydration issues, plus how the icons were imported was not optimal)
-- [x] **Migrate to TypeScript**: most main pages converted, some components too, tried to use proper types as much as possible
+  - [x] Migrate from `ion-icons` to [`lucide-react`](https://lucide.dev/): ion-icons were not compatible with SSR, triggering hydration issues, plus how the icons were imported was a nightmare (5MB 1300+ svg files on GitHub, in `public` folder)
+- [x] **Migrate to TypeScript**: most main pages converted, lots of components too, tried to use proper types as much as possible
 - [x] **CI/CD**: updated `eslint` rules, added basic tests of the website pages with [playwright](https://playwright.dev/), added automatic formatting and linting on commit with `husky` and `lint-staged`, added a GitHub action to run all tests automatically on push and PR.
-- [ ] **Hydration issue in the `raw-data` page**, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR.
-- [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this branch](https://github.com/vemonet/bgee_web/commit/4a2769b7951c9be9f53236978ff8d27516da269f), but still work to do to get the exact same style right (defaults are broken for many elements, and dark theme causes problems for those who have it enabled system-wide).
+- [ ] **Improve gene page loading speed**: the 2 API calls to get expression data for a gene takes 2s (homologs and xRefs takes 200ms). Putting them in the `loader` then greatly slows down the server response (~2s to respond is really slow from a user perspective). We could move back these calls to client in a `useEffect`, but we need to get the expression data in the `loader` to be able to set schema.org JSON-LD about it in `meta`. Could it be possible to make the calls to get expression data faster?
 - [ ] **Fix script** `scripts/archiveCreation.js`.
+- [ ] **Update the project docs** in the `docs` folder
+- [ ] **Hydration issue in the `raw-data` page**, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR (see [issue](https://github.com/JedWatson/react-select/issues/5937)).
+- [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this commit](https://github.com/vemonet/bgee_web/commit/4a2769b7951c9be9f53236978ff8d27516da269f), but still work to do to get the exact same style right (default colors are broken for many elements, and dark theme causes problems for those who have it enabled system-wide).
 - [ ] It would be nice to have have proper args and return types on `api` functions in `src/api/prod`
-- [ ] When there are no Expression graph data, then don't display it at all, in `src/components/Gene/GeneExpressionTable.tsx` e.g. http://localhost:5173/gene/ENSCAFG00000010803
 - [ ] Search for `TODO:` to fix in the code.
-
-> Rename files `.js` to `.jsx` in folder and subfolders:
->
-> ```bash
-> find . -type f -name "*.js" -exec bash -c 'mv "$0" "${0%.js}.jsx"' {} \;
-> ```

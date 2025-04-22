@@ -19,11 +19,12 @@ const GeneDetailsSideMenu = ({
   const location = useLocation();
 
   const handlerMenuClick = React.useCallback(
-    (id) => {
+    (id: string) => {
       navigate(`${URL_ROOT}${location.pathname}${location.search}#${id}`, { replace: true });
     },
     [location]
   );
+  console.log('GeneDetailsSideMenu', homologs?.paralogs);
 
   return (
     <aside className="menu">
@@ -45,15 +46,19 @@ const GeneDetailsSideMenu = ({
         <li onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.EXPRESSION_ABSENT_TABLE)}>
           <a className="is-size-5 has-text-weight-semibold">Expression Absent</a>
         </li>
-        {homologs?.orthologs && homologs?.orthologs > 0 && (
+        {homologs?.orthologs && homologs?.orthologs > 0 ? (
           <li key={GENE_DETAILS_HTML_IDS.ORTHOLOGS} onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.ORTHOLOGS)}>
             <a className="is-size-5 has-text-weight-semibold">Orthologs</a>
           </li>
+        ) : (
+          <></>
         )}
-        {homologs?.paralogs && homologs?.paralogs > 0 && (
+        {homologs?.paralogs && homologs?.paralogs > 0 ? (
           <li key={GENE_DETAILS_HTML_IDS.PARALOGS} onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.PARALOGS)}>
             <a className="is-size-5 has-text-weight-semibold">Paralogs</a>
           </li>
+        ) : (
+          <></>
         )}
         {xRefs && (
           <li key={GENE_DETAILS_HTML_IDS.XREFS} onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.XREFS)}>
