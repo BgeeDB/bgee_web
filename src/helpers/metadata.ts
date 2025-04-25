@@ -1,19 +1,12 @@
-import config from '~/config.json';
 import type { MetaDescriptor } from 'react-router';
+
+import config from '~/config.json';
 
 /**
  * Generates metadata for the Bgee web application.
  *
  * This function creates an array of metadata objects for use with HTML meta tags,
  * including Open Graph tags, Dublin Core terms, and optional Schema.org JSON-LD.
- *
- * @param {Object} options - Configuration options for the metadata.
- * @param {string} [options.title] - The title of the page.
- * @param {string} [options.description] - The description of the page.
- * @param {string} [options.keywords=] - Keywords for the page, comma-separated.
- * @param {string} [options.link] - The canonical URL of the page, used for og:url.
- * @param {Array<Object>} [options.schemaorg] - A list of JSON-LD scripts to add to the page for Schema.org structured data.
- * @returns {MetaDescriptor[]} An array of metadata objects to be rendered as meta tags.
  */
 export function getMetadata({
   title = 'Bgee: gene expression data in animals',
@@ -21,12 +14,14 @@ export function getMetadata({
   keywords = 'bgee, gene expression, evolution, ontology, anatomy, development, evo-devo database, anatomical ontology, developmental ontology, gene expression evolution',
   link = '',
   schemaorg = [],
+  img = `${config.genericDomain}/img/logo/bgee13-logo.png`,
 }: {
   title?: string;
   description?: string;
   keywords?: string;
   link?: string;
   schemaorg?: Array<{ [key: string]: any }>;
+  img?: string;
 }): MetaDescriptor[] {
   const metadata: MetaDescriptor[] = [
     { title: title },
@@ -56,11 +51,11 @@ export function getMetadata({
     },
     {
       property: 'og:logo',
-      content: `${config.genericDomain}/img/logo/bgee13-logo.png`,
+      content: img,
     },
     {
       property: 'og:image',
-      content: `${config.genericDomain}/img/logo/bgee13-logo.png`,
+      content: img,
     },
 
     // TODO: this is what was used originally, but I think it should be DC.rights https://datatracker.ietf.org/doc/html/rfc2731

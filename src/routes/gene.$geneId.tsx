@@ -63,15 +63,15 @@ export async function loader({ params, request }) {
 export function meta({ data }) {
   const { name, geneId, species, synonyms } = data.details;
   const latinName = `${species.genus} ${species.speciesName}`;
-  const speciesName = species.name ? species.name : `${species.genus} ${species.speciesName}`;
   const hasNameOpener = name ? `${name} (` : '';
   const hasNameCloser = name ? `)` : '';
   const speciesNameBrackets = species.name ? ` (${species.name})` : '';
   const nameExpr = name ? `${name}, ${name} expression, ` : '';
+  const nameExists = name ? `${name} - ` : '';
   const synonymsExpr = synonyms ? `, ${synonyms.join(', ')}` : '';
 
   return getMetadata({
-    title: `${name} expression in ${speciesName}`,
+    title: `${nameExists}${geneId} expression in ${latinName}${speciesNameBrackets}`,
     description: `Bgee gene expression data for ${hasNameOpener}${geneId}${hasNameCloser} in ${latinName}${speciesNameBrackets}`,
     keywords: `gene expression, ${nameExpr}${geneId}, ${geneId} expression${synonymsExpr}`,
     link: data.requestUrl,
