@@ -158,7 +158,7 @@ When creating a new route the file resolving this route can contain special expo
 
 > [!IMPORTANT]
 >
-> When creating new files **only create `.ts` or `.tsx` files**, they provide much more help and reliability than `.js` files.
+> When creating new files **only create `.ts` or `.tsx` files**, they provide much more help through IDE completion and reliability than `.js` files.
 
 Here is an example where we make multiple API calls in parallel in the `loader`, and use its results to define the page metadata and page content:
 
@@ -227,7 +227,7 @@ export default function Page() {
 
 The images are stored externally of the project. You will find the path of the images in the `src/config.json` file at the key `imageDomain`. Be careful, the image used for the 'external icon' link is directly defined in the SCSS. If you are moving it, don't forget to change the path.
 
-If you need to add new icons you can find them there: https://lucide.dev/icons
+If you need to add new icons you can find them there: https://lucide.dev/icons and use them like that:
 
 ```tsx
 import { ChevronDown } from 'lucide-react';
@@ -247,21 +247,25 @@ $size-3: 1.5rem (= 21px)
 
 ## ☑️ To do
 
+### Important
+
 - [x] **Enable SSR** for most pages requiring it using `react-router` 7: gene, species, gene-list, experiments, home, gene expression calls.
   - [x] In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some basic SSR for the experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
   - [x] Migrate from `react-markdown` to [`mdx`](https://mdxjs.com/) to render markdown (use same plugins and style)
   - [x] Migrate from `ion-icons` to [`lucide-react`](https://lucide.dev/): ion-icons were not compatible with SSR, triggering hydration issues, plus how the icons were imported was a nightmare (5MB 1300+ svg files on GitHub, in `public` folder)
 - [x] **Migrate to TypeScript**: most main pages converted, lots of components too, tried to use proper types as much as possible
 - [x] **CI/CD**: updated `eslint` rules, added basic tests of the website pages with [playwright](https://playwright.dev/), added automatic formatting and linting on commit with `husky` and `lint-staged`, added a GitHub action to run all tests automatically on push and PR.
-- [ ] **Expression Matrix** does not show any results (not sure why, Harry will need to check it). Which is funny because it is the component I touched the least (since it was obviously still in development)
-  - [ ] The `setSearchResult` returned by useLogic is null (the code never reaches one of the `setSearchResult`). None of the `triggerSearch()` functions are never even called, so no idea how it even ended up working in prod. And I tried this directly with the unmodified code from `develop`.
-  - [ ] On bgee.org we can see when we click an example that there something in the page that adds some more search params in the URI, this does not happens in the new version, so something might be broken before getting there. Also the list of genes in URL is not added to the UI filters. But no error in console.log
-  - [ ] Overall `useLogic` how you are doing right now is impressively unreliable and overengineered: you probably don't need 1500 lines of code to take a dictionary of filters, request the API, and pass back the results to the react component that will take care of rendering the DOM.
-  - [ ] Also please comment the part of code you don't want to be shown or executed. Using `{ false &&` is really "not ideal" to say the least, and commenting multiline is really easy (use the shortcut ctrl+/ or cmd+/)
+- [x] Commented out 13 unused bulma components, search for `TODO: REMOVE`. Removed the accordeon component that was using an unmaintained package and was not used anywhere.
+- [x] **Expression Matrix** and **raw data** logic is an insane unefficient mess that triggers many rerenders of the page for no reason. See `TODO:` comments in its `useLogic.jsx` file at the end of the `initFromUrlParams` function. ⚠️ Do not use raw data as base for a new component, it should be rewritten deeply too first. How the logic is written is crazy: inefficient, unreliable, triggering dozens of rerender for no reason on the simplest search, and insanely hard to read and debug (the amount of console.log in the logic confirm this)
 - [ ] **Improve gene page loading speed**: the 2 API calls to get expression data for a gene takes 2s (homologs and xRefs takes 200ms). Putting them in the `loader` then greatly slows down the server response (~2s to respond is really slow from a user perspective). We could move back these calls to client in a `useEffect`, but we need to get the expression data in the `loader` to be able to set schema.org JSON-LD about it in `meta`. Could it be possible to make the calls to get expression data faster?
-- [ ] **Fix script** `scripts/archiveCreation.js`.
-- [ ] **Update the project docs** in the `docs` folder
+- [ ] Merge `develop` branch in `main`. Or make `develop` the default branch.
+- [ ] **Fix script** `scripts/archiveCreation.js`
+
+### Future
+
+- [ ] **Update the project docs** in the `docs` folder? Or delete it, a well maintained README.md is better.
 - [ ] **Hydration issue in the `raw-data` page**, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR (see [issue](https://github.com/JedWatson/react-select/issues/5937)).
 - [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this commit](https://github.com/vemonet/bgee_web/commit/4a2769b7951c9be9f53236978ff8d27516da269f), but still work to do to get the exact same style right (default colors are broken for many elements, and dark theme causes problems for those who have it enabled system-wide).
-- [ ] It would be nice to have have proper args and return types on `api` functions in `src/api/prod`
-- [ ] Search for `TODO:` to fix in the code.
+  - [ ] Would be also a good idea to migrate off SASS and use standard CSS. There are many warnings when running in dev due to using deprecated SASS features. CSS has evolved and now supports many features from SASS (e.g. variables and nested CSS). `postcss` could be interesting to make sure older browsers support newer CSS features
+- [ ] It would be nice to have have proper args and return types on `api` functions in `src/api/prod` (but the java API return types are not defined anywhere, the OpenAPI specs are not up-to-date)
+- [ ] Search for `TODO:` to fix in the code, and `: any` types to define properly.

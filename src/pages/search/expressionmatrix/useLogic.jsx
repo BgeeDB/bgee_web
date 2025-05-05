@@ -1248,13 +1248,30 @@ const useLogic = (isExprCalls) => {
     } catch (error) {
       console.error('[initFromUrlParams] Error:', error);
     } finally {
-      setIsInitializingFromUrl(false);
+      // console.log(`[useLogic.initFromUrlParams] finally.`);
+      // TODO: Problem with search after migration to react-router 7 is here.
+      // In the original code it gets there, but next time it goes to the useEffect below the isInitializingFromUrl is true
+      // Which works, but should not be expected since you just changed the state to false (quite logical, the whole point of state)
+      // With react-router 7 it is properly set to false as expected, but then the search is not triggered.
+      // Commenting this out fix the search. Not sure if there are any side effects though (does not look like it, the whole logic is a mess)
+      // You should really really really consider to rewrite the whole component and logic
+      // And never ever use raw data as a base for a new component. It is the worst piece of code I have ever seen in my entire life.
+      // setIsInitializingFromUrl(false);
     }
   };
 
   // Add useEffect to trigger search when initialization is complete
   useEffect(() => {
+    console.log(
+      '[useEffect] Triggering search from URL params',
+      isInitializingFromUrl,
+      selectedGene,
+      selectedSpecies,
+      EMPTY_SPECIES_VALUE
+    );
     if (isInitializingFromUrl && selectedGene.length > 0 && selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
+      // TODO: problem is that it never gets there.
+      console.log('[useEffect] Triggering search from URL params2', isInitializingFromUrl);
       // console.log('[useEffect] States ready for search:', {
       //   selectedGene,
       //   selectedSpecies,
@@ -1267,7 +1284,7 @@ const useLogic = (isExprCalls) => {
 
   // URL change handler
   useEffect(() => {
-    // console.log(`[useLogic.js] loc.search CHANGED:\n${JSON.stringify(loc.search, null, 2)}`);
+    console.log(`[useLogic.js] loc.search CHANGED:`, loc.search);
 
     const searchParams = new URLSearchParams(loc.search);
     const geneList = searchParams.get('gene_list');

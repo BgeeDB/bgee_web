@@ -24,7 +24,7 @@ export function meta() {
   });
 }
 
-const GeneExpressionMatrix = ({ isExprCalls = false }) => {
+const GeneExpressionMatrix = ({ isExprCalls = true }) => {
   const {
     searchResult,
     genes,
@@ -76,6 +76,7 @@ const GeneExpressionMatrix = ({ isExprCalls = false }) => {
   // DEBUG: remove console log in prod
   // console.log(`[GeneExpressionMatrix] anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
 
+  // TODO: remove this useless state, wth is it even doing?
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setPageIsBrowseResult] = useState(false);
   const defaultResults = searchResult?.results?.[dataType] || [];
@@ -87,6 +88,8 @@ const GeneExpressionMatrix = ({ isExprCalls = false }) => {
 
   const detailedData = TAB_PAGE_EXPR_CALL;
 
+  // TODO: remove this useless useEffect, wth is it even doing? Changing a state that is not used anywhere?
+  // Burning through CPU cycles for no reason?
   useEffect(() => {
     const params = getSearchParams();
     if (params?.initSearch?.get('filters_for_all') === '1') {

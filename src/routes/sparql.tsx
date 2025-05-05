@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getMetadata } from '~/helpers/metadata';
+// import '@sib-swiss/sparql-editor';
+// Internal server error: self is not defined
+// at file:///Users/vemonet/dev/bgee/bgee_web/node_modules/node_modules/@zazuko/yasgui/build/yasgui.min.js:2:203
 
 export function meta() {
   return getMetadata({

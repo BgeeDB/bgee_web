@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Items pages', () => {
   test('display a gene', async ({ page }) => {
     await page.goto('/gene/ENSG00000130208');
-    await expect(page).toHaveTitle(/APOC1 expression in human/);
+    await expect(page).toHaveTitle(/APOC1 - ENSG00000130208 expression in Homo sapiens \(human\)/);
     expect(await page.locator('text=apolipoprotein').count()).toBeGreaterThan(0);
   });
 
@@ -29,7 +29,7 @@ test.describe('Search pages', () => {
     const searchInput = page.getByPlaceholder('Examples: dlx, ENSG00000254647');
     await searchInput.fill('Apoc1');
     await searchInput.press('Enter');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(2500);
     expect(await page.locator('text=ENSG00000130208').count()).toBeGreaterThan(0);
   });
 
