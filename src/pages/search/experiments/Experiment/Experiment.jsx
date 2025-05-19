@@ -61,10 +61,10 @@ const Experiment = () => {
   return (
     <>
       <Helmet>
-        <title>{`${data.experiment.name ? data.experiment.name : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`}</title>
+        <title>{`${data.experiment.name ? `${data.experiment.id} ${data.experiment.name}` : `${data.experiment.id} ${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`}</title>
         <meta name="description" content={`${data.experiment.description ? data.experiment.description : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
         <meta name="keywords" content={`experiment,${data.experiment.id}${data.experiment.name ? `,${data.experiment.name}`: ''}`} />
-        <meta property='og:title' content={`${data.experiment.name ? data.experiment.name : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
+        <meta property='og:title' content={`${data.experiment.name ? `${data.experiment.id} ${data.experiment.name}` : `${data.experiment.id}  ${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
         <meta property='og:description' content={`${data.experiment.description ? data.experiment.description : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
         <meta property="og:url" content={`${config.genericDomain}${PATHS.SEARCH.EXPERIMENT.replace(':id', data?.experiment?.id)}`} />
         <link rel="canonical" href={`${config.genericDomain}${PATHS.SEARCH.EXPERIMENT.replace(':id', data?.experiment?.id)}`} />
