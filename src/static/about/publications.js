@@ -274,7 +274,7 @@ const publications = [
               {
                 type: 'link_external',
                 text: 'A large collection of bioinformatics question-query pairs over federated knowledge graphs: methodology and applications',
-                path: 'https://doi.org/10.48550/arXiv.2410.06010',
+                path: 'https://doi.org/10.1093/gigascience/giaf045',
               },
               {
                 type: 'break_line',
@@ -285,7 +285,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content: 'arXiv, 2024.',
+                content: 'GigaScience, 2025, 14:giaf045.',
               },
             ],
           },
@@ -360,8 +360,8 @@ const publications = [
               },
               {
                 type: 'link_external',
-                text: 'Exploring Disease Model Mouse Using Knowledge Graphs: Combining Gene Expression, Orthology, and Disease Datasets',
-                path: 'https://doi.org/10.1101/2023.08.30.555283',
+                text: 'Federated SPARQL query performance evaluation for exploring disease model mouse: combining gene expression, orthology, and disease knowledge graphs',
+                path: 'https://doi.org/10.1186/s12911-025-03013-8',
               },
               {
                 type: 'break_line',
@@ -372,7 +372,7 @@ const publications = [
               },
               {
                 type: 'text',
-                content: 'bioXiv, 2023.',
+                content: 'BMC Medical Informatics and Decision Making, 2025, 25:189.',
               },
             ],
           },
