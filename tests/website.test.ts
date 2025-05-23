@@ -20,23 +20,28 @@ test.describe('Items pages', () => {
   });
 });
 
+// TODO: list of gene per species
+
 test.describe('Search pages', () => {
   test('search a gene', async ({ page }) => {
     await page.goto('/search/genes');
     await expect(page).toHaveTitle(/Gene search/);
-    expect(await page.locator('text=ENSG00000130208').count()).toBe(0);
+    expect(await page.getByText('ENSG00000130208').count()).toBe(0);
     // Search for a gene
     const searchInput = page.getByPlaceholder('Examples: dlx, ENSG00000254647');
     await searchInput.fill('Apoc1');
     await searchInput.press('Enter');
-    await page.waitForTimeout(2500);
-    expect(await page.locator('text=ENSG00000130208').count()).toBeGreaterThan(0);
+    // Wait for network to be idle
+    await page.waitForLoadState('networkidle');
+    // NOTE: Sometimes it happens that the assert below are timing out with chromium or webkit
+    await expect(page.getByText('ENSG00000130208').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('APOC1').first()).toBeVisible();
   });
 
   test('search raw data', async ({ page }) => {
     await page.goto('/search/raw-data');
     await expect(page).toHaveTitle(/Raw data/);
-    await expect(page.getByText('DRP000415')).toBeVisible();
+    await expect(page.getByText('DRP000415').first()).toBeVisible();
     // expect(await page.locator('text=DRP000415').count()).toBeGreaterThan(0);
   });
 
