@@ -20,24 +20,6 @@ const bgeesab = [
             content: [
               {
                 type: 'text',
-                content: 'Prof. ',
-              },
-              {
-                type: 'link_external',
-                path: 'https://profiles.stanford.edu/j-michael-cherry',
-                text: 'Mike Cherry',
-              },
-              {
-                type: 'text',
-                content: ', Professor (Research) of Genetics, Department of Genetics, Stanford School of Medicine, Stanford University, California, USA',
-              },
-            ],
-          },
-          {
-            type: 'rich_text',
-            content: [
-              {
-                type: 'text',
                 content: 'Dr. ',
               },
               {
@@ -201,6 +183,35 @@ const bgeesab = [
           {
             type: 'text',
             content: 'April 28 2023',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'section',
+    title: 'Former Bgee Scientific Advisory Board members',
+    children: [
+      {
+        type: 'unordered_list',
+        children: [
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'text',
+                content: 'Prof. ',
+              },
+              {
+                type: 'link_external',
+                path: 'https://profiles.stanford.edu/j-michael-cherry',
+                text: 'Mike Cherry',
+              },
+              {
+                type: 'text',
+                content: ', Professor (Research) of Genetics, Department of Genetics, Stanford School of Medicine, Stanford University, California, USA',
+              },
+            ],
           },
         ],
       },
