@@ -42,16 +42,24 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   // Init from URL
   const loc = useLocation();
   const initSearch = new URLSearchParams(loc.search);
-  const initDataType = initSearch.getAll('data_type') || ALL_DATA_TYPES;
   const initHash = initSearch.get('data');
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(true);
   const [searchResult, setSearchResult] = useState();
   const [anatomicalTerms, setAnatomicalTerms] = useState([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState({});
-  const [dataType, setDataTypes] = useState(initDataType);
+  const [dataType, setDataTypes] = useState(ALL_DATA_TYPES);
   const dataTypeKey = 'data_type';
   const dataTypeExpr = useQuery(dataTypeKey);
+
+  // Sync local state with URL parameter
+  useEffect(() => {
+    if (dataTypeExpr) {
+      setDataTypes(dataTypeExpr.split(','));
+    } else {
+      setDataTypes(ALL_DATA_TYPES);
+    }
+  }, [dataTypeExpr]);
 
   // In order to disable the search button if the search has already been made
   const formSearchButtonIsDisabled = useMemo(() => {
@@ -70,7 +78,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
       isFirstSearch: true,
       initSearch,
       pageType: EXPR_CALLS,
-      dataType,
+      dataType: dataTypeExpr?.split(','),
       dataQuality: 'SILVER',
       selectedExpOrAssay: [],
       selectedSpecies: speciesId,
@@ -629,6 +637,11 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
             height={800}
             backgroundColor='white'
           />
+        )}
+        {!isLoading && searchResult && heatmapData.length === 0 && (
+          <div className="is-flex is-justify-content-center is-align-items-center">
+            <p className="is-size-4">No data found</p>
+          </div>
         )}
       </div>
     </>
