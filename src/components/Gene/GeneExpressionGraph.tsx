@@ -52,7 +52,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   // Sync local state with URL parameter
   useEffect(() => {
     if (dataTypeExpr) {
-      setDataTypes(dataTypeExpr.split(','));
+      setDataTypes(dataTypeExpr.toString().split(','));
     } else {
       setDataTypes(ALL_DATA_TYPES);
     }
@@ -71,7 +71,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
       isFirstSearch: true,
       initSearch,
       pageType: EXPR_CALLS,
-      dataType: dataTypeExpr?.split(','),
+      dataType: dataTypeExpr?.toString().split(','),
       dataQuality: 'SILVER',
       selectedExpOrAssay: [],
       selectedSpecies: speciesId,

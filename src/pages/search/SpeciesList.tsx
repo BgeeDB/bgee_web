@@ -2,6 +2,7 @@ import PATHS from '~/paths/paths';
 import Bulma from '~/components/Bulma';
 import api from '~/api';
 import GridSpecies from '~/components/GridSpecies/GridSpecies';
+import CreativeCommons from '~/components/CreativeCommons/CreativeCommons';
 import config from '~/config.json';
 import { getMetadata } from '~/helpers/metadata';
 

@@ -230,7 +230,8 @@ const bgeesab = [
               },
               {
                 type: 'text',
-                content: ', Professor (Research) of Genetics, Department of Genetics, Stanford School of Medicine, Stanford University, California, USA',
+                content:
+                  ', Professor (Research) of Genetics, Department of Genetics, Stanford School of Medicine, Stanford University, California, USA',
               },
             ],
           },

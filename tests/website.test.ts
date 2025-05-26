@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Items pages', () => {
   test('display a gene', async ({ page }) => {
     await page.goto('/gene/ENSG00000130208');
-    await expect(page).toHaveTitle(/APOC1 - ENSG00000130208 expression in Homo sapiens \(human\)/);
+    await expect(page).toHaveTitle(/APOC1 ENSG00000130208 expression in Homo sapiens \(human\)/);
     expect(await page.locator('text=apolipoprotein').count()).toBeGreaterThan(0);
   });
 
@@ -33,9 +33,9 @@ test.describe('Search pages', () => {
     await searchInput.press('Enter');
     // Wait for network to be idle
     await page.waitForLoadState('networkidle');
-    // NOTE: Sometimes it happens that the assert below are timing out with chromium or webkit
-    await expect(page.getByText('ENSG00000130208').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText('APOC1').first()).toBeVisible();
+    // NOTE: Sometimes it happens that the assert below are timing out with chromium or webkit, even when waiting 10s
+    await expect(page.getByText('ENSG00000130208').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('APOC1').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('search raw data', async ({ page }) => {

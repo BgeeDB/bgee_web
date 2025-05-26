@@ -81,9 +81,9 @@ const videos = [
         alt: 'Bgee Course 2025: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
-{
-    type: 'break_line',
-},
+      {
+        type: 'break_line',
+      },
       {
         type: 'rich_text',
         content: [
