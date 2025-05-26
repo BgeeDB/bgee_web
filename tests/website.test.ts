@@ -35,7 +35,7 @@ test.describe('Search pages', () => {
     await page.waitForLoadState('networkidle');
     // NOTE: Sometimes it happens that the assert below are timing out with chromium or webkit, even when waiting 10s
     await expect(page.getByText('ENSG00000130208').first()).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('APOC1').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('APOC1').first()).toBeVisible();
   });
 
   test('search raw data', async ({ page }) => {

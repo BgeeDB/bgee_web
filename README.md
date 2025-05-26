@@ -211,7 +211,9 @@ export default function Page({ loaderData }) {
 
 > [!IMPORTANT]
 >
-> Try to avoid using too many `useEffect` with different dependency arrays, it can triggers many rerender, and get quite complex to understand what is happening. Instead prefer loading as much data as possible from the `loader` function, especially for static content like a gene page. For search pages with a lot of dynamic elements, like raw-data, you will still need to use `useEffect`, but do nit with parsimony.
+> Try to avoid using too many `useEffect` with different dependency arrays, it can trigger many rerenders, and it gets quite complex to understand what is happening. Instead prefer loading as much data as possible from the `loader` function, especially for static content like a gene page.
+>
+> For search pages with a lot of dynamic elements, like raw-data, you will still need to use `useEffect`, but do it with parsimony, if you have more than 3 of them, then you're probably doing something wrong.
 
 ### 📃 Add a new markdown page
 
