@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import PATHS from '../../routes/paths';
 import Bulma from '../../components/Bulma';
+import CreativeCommons from '../../components/CreativeCommons';
 import api from '../../api';
 import GridSpecies from '../../components/GridSpecies/GridSpecies';
 import config from "../../config.json";
@@ -56,6 +57,13 @@ const SpeciesList = () => {
           />
         </div>
       </div>
+      <Bulma.Section>
+        <Bulma.Columns>
+          <Bulma.C size={12} className="has-text-centered">
+            <CreativeCommons />
+          </Bulma.C>
+        </Bulma.Columns>
+      </Bulma.Section>
     </>
   );
 };

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import assets, {heroCounts}  from '../assets';
-import CreativeCommons from '../components/CreativeCommons';
 import PATHS from '../routes/paths';
 import Bulma from '../components/Bulma';
 import config from '../config.json';
@@ -246,14 +245,6 @@ const Home = () => {
               </p>
             </Bulma.C>
             )}
-          </Bulma.C>
-        </Bulma.Columns>
-      </Bulma.Section>
-
-      <Bulma.Section>
-        <Bulma.Columns>
-          <Bulma.C size={12} className="has-text-centered">
-            <CreativeCommons />
           </Bulma.C>
         </Bulma.Columns>
       </Bulma.Section>
