@@ -354,7 +354,10 @@ const ExpComp = () => {
             data,
           });
           if (storableParams?.queryString) {
-            navigate(`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${storableParams?.queryString}`, { replace: true });
+            navigate(`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${storableParams?.queryString}`, {
+              replace: true,
+              preventScrollReset: true,
+            });
           }
         })
         .catch((err) => {
@@ -368,7 +371,26 @@ const ExpComp = () => {
   };
 
   React.useEffect(() => {
-    if (searchParams && searchParams.replace('?', '') !== results?.signature) {
+    // Parse the search params to extract only the data query parameter
+    const searchParamsObj = new URLSearchParams(searchParams);
+
+    // Remove pagination parameters that we don't want to consider for data reloading
+    const paginationParams = ['pageNumber', 'results'];
+    const dataQuery = [...searchParamsObj.entries()]
+      .filter(([key]) => !paginationParams.includes(key))
+      .reduce((acc, [key, value]) => {
+        acc.set(key, value);
+        return acc;
+      }, new URLSearchParams())
+      .toString();
+
+    // Get the current signature without pagination params
+    const currentSignature = results?.signature
+      ?.split('&')
+      .filter((param) => !param.startsWith('pageNumber=') && !param.startsWith('results='))
+      .join('&');
+
+    if (searchParams && dataQuery && dataQuery !== currentSignature) {
       setLoading(true);
       api.expressionComparison
         .getResults({ type: 'query', data: searchParams })
@@ -392,7 +414,7 @@ const ExpComp = () => {
           setLoading(false);
         });
     }
-  }, [searchParams, results.signature]);
+  }, [searchParams, results?.signature]);
 
   return (
     <>

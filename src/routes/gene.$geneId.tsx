@@ -1,6 +1,6 @@
 import api from '~/api';
 import GeneDetails from '~/components/Gene/GeneDetails';
-import { geneHomologsToLdJSON, geneToLdJSON, geneExpressionToLdJSON } from '~/helpers/schemaDotOrg';
+import { geneHomologsToLdJSON, geneToLdJSON } from '~/helpers/schemaDotOrg';
 import { getMetadata } from '~/helpers/metadata';
 
 export async function loader({ params, request }) {
@@ -14,7 +14,7 @@ export async function loader({ params, request }) {
     if (!geneDetails) throw new Error('Page not found');
 
     const { geneId, species } = geneDetails;
-    const homologsStartTime = performance.now();
+    // const homologsStartTime = performance.now();
     // Get data in parallel
     // const [homologsResult, xRefsResult, exprResult, notExprResult]: any = await Promise.allSettled([
     const [homologsResult, xRefsResult]: any = await Promise.allSettled([
@@ -24,9 +24,7 @@ export async function loader({ params, request }) {
       // api.search.genes.expression(geneId, species.id, {}, ['all'], false),
       // api.search.genes.expression(geneId, species.id, {}, ['all'], true),
     ]);
-    console.log(
-      `Got the rest in (${(performance.now() - homologsStartTime).toFixed(2)}ms) Total: ${(performance.now() - startTime).toFixed(2)}ms`
-    );
+    // console.log(`Got the rest in (${(performance.now() - homologsStartTime).toFixed(2)}ms) Total: ${(performance.now() - startTime).toFixed(2)}ms`);
     // Process homologs data
     const homologs =
       homologsResult.status === 'fulfilled'
@@ -67,7 +65,7 @@ export function meta({ data }) {
   const hasNameCloser = name ? `)` : '';
   const speciesNameBrackets = species.name ? ` (${species.name})` : '';
   const nameExpr = name ? `${name}, ${name} expression, ` : '';
-  const nameExists = name ? `${name} - ` : '';
+  const nameExists = name ? `${name} ` : '';
   const synonymsExpr = synonyms ? `, ${synonyms.join(', ')}` : '';
 
   return getMetadata({
@@ -88,10 +86,10 @@ export function meta({ data }) {
 }
 
 export default function GenePage({ loaderData }) {
-  const { details, homologs, xRefs } = loaderData;
+  const { details, homologs, xRefs, exprData } = loaderData;
 
   return (
-    <GeneDetails details={details} homologs={homologs} xRefs={xRefs} />
-    // exprData={exprData} notExprData={notExprData}
+    <GeneDetails details={details} homologs={homologs} xRefs={xRefs} exprData={exprData} />
+    // notExprData={notExprData}
   );
 }

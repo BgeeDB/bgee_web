@@ -24,7 +24,6 @@ const GeneDetailsSideMenu = ({
     },
     [location]
   );
-  console.log('GeneDetailsSideMenu', homologs?.paralogs);
 
   return (
     <aside className="menu">

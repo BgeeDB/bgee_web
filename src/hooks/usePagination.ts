@@ -52,10 +52,13 @@ const usePagination = (
         ...sp,
         [keyForPage]: newPage,
       };
-      navigate({
-        search: new URLSearchParams(newParams).toString(),
-        pathname: `${URL_ROOT}${pathname}`,
-      });
+      navigate(
+        {
+          search: new URLSearchParams(newParams).toString(),
+          pathname: `${URL_ROOT}${pathname}`,
+        },
+        { preventScrollReset: true }
+      );
     },
     [searchParams]
   );
@@ -68,10 +71,13 @@ const usePagination = (
         [keyForPageSize]: newPageSize,
         [keyForPage]: 1, // Always reset the page when page size is changed
       };
-      navigate({
-        search: new URLSearchParams(params).toString(),
-        pathname: `${URL_ROOT}${pathname}`,
-      });
+      navigate(
+        {
+          search: new URLSearchParams(params).toString(),
+          pathname: `${URL_ROOT}${pathname}`,
+        },
+        { preventScrollReset: true }
+      );
     },
     [searchParams]
   );

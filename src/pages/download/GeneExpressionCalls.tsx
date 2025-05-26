@@ -131,7 +131,7 @@ const GeneExpressionCalls = ({ loaderData }) => {
                     isSelected
                       ? `${PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}?id=${species.id}`
                       : PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS,
-                    { replace: true }
+                    { replace: true, preventScrollReset: true }
                   );
                 }}
                 onRenderSelection={(species, { onClose }) => (

@@ -63,7 +63,8 @@ const bgeesab = [
               },
               {
                 type: 'text',
-                content: ', Associate Professor of Biomedical Informatics at the School of Medicine, University of Colorado, Colorado, USA',
+                content:
+                  ', Associate Professor of Biomedical Informatics at the School of Medicine, University of Colorado, Colorado, USA',
               },
             ],
           },
@@ -81,7 +82,8 @@ const bgeesab = [
               },
               {
                 type: 'text',
-                content: ', Chair of Medical Bioinformatics and a Principal Investigator at the MRC Human Genetics Unit, Institute of Genetics and Cancer, University of Edinburgh, Scotland',
+                content:
+                  ', Chair of Medical Bioinformatics and a Principal Investigator at the MRC Human Genetics Unit, Institute of Genetics and Cancer, University of Edinburgh, Scotland',
               },
             ],
           },
@@ -117,7 +119,8 @@ const bgeesab = [
               },
               {
                 type: 'text',
-                content: ', Group Leader at the Department of Molecular Life Sciences, Faculty of Science, University of Zurich, Zurich, Switzerland',
+                content:
+                  ', Group Leader at the Department of Molecular Life Sciences, Faculty of Science, University of Zurich, Zurich, Switzerland',
               },
             ],
           },
@@ -135,7 +138,8 @@ const bgeesab = [
               },
               {
                 type: 'text',
-                content: ', Research Director at CNRS; group leader at the Institut of Biology; Adjunct Professor of Evolutionary Genomics, ENS, Paris, France',
+                content:
+                  ', Research Director at CNRS; group leader at the Institut of Biology; Adjunct Professor of Evolutionary Genomics, ENS, Paris, France',
               },
             ],
           },
@@ -153,7 +157,8 @@ const bgeesab = [
               },
               {
                 type: 'text',
-                content: ', Professor at the Department of Preventive Medicine, Keck School of Medicine; Professor at the Department of Quantitative and Computational Biology, Dornsife School of Letters and Sciences; Director of the Gene Ontology Consortium, University of Southern California, California, USA',
+                content:
+                  ', Professor at the Department of Preventive Medicine, Keck School of Medicine; Professor at the Department of Quantitative and Computational Biology, Dornsife School of Letters and Sciences; Director of the Gene Ontology Consortium, University of Southern California, California, USA',
               },
             ],
           },

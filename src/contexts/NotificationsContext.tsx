@@ -6,11 +6,13 @@ import classnames from '../helpers/classnames';
 // Initialize the context with default values to avoid undefined destructuring
 const NotificationContext = React.createContext({
   notifications: [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addNotification: (data: any) => {
-    console.debug(`addNotification ${data}`);
+    // console.debug(`addNotification ${data}`);
   },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addNotifications: (arrNotif: any) => {
-    console.debug(`addNotifications ${arrNotif}`);
+    // console.debug(`addNotifications ${arrNotif}`);
   },
   cleanNotifications: () => {},
   closeNotif: (data: any) => {

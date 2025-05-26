@@ -38,7 +38,8 @@ const useTopAnat = (flowState: string, setFlowState) => {
         navigate(
           PATHS.ANALYSIS[res.data.jobResponse.jobStatus === 'RUNNING' ? 'TOP_ANAT_RESULT_JOB_ID' : 'TOP_ANAT_RESULT']
             .replace(':id', res.data.jobResponse.data)
-            .replace(':jobId', res.data.jobResponse.jobId)
+            .replace(':jobId', res.data.jobResponse.jobId),
+          { preventScrollReset: true }
         );
       })
       .catch((err) => {

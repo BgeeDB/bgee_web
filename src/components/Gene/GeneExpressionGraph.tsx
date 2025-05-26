@@ -594,7 +594,10 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
                 queryParams.set(dataTypeKey, dataType.join(','));
               else queryParams.delete(dataTypeKey);
 
-              navigate(`${URL_ROOT}${loc.pathname}?${queryParams.toString()}`, { replace: true });
+              navigate(`${URL_ROOT}${loc.pathname}?${queryParams.toString()}`, {
+                replace: true,
+                preventScrollReset: true,
+              });
             }}
           >
             Update

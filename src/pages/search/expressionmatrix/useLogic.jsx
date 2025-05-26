@@ -714,7 +714,7 @@ const useLogic = (isExprCalls) => {
               search: searchParams.toString(),
               pathname: `${URL_ROOT}${loc.pathname}`,
             },
-            { replace: true }
+            { replace: true, preventScrollReset: true }
           );
         } else {
           navigate({
@@ -732,7 +732,7 @@ const useLogic = (isExprCalls) => {
       }
     } catch (error) {
       console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
-      navigate(`${URL_ROOT}${loc.pathname}`, { replace: true });
+      navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
       setIsLoading(false);
     } finally {
       // console.log(`[useLogic.triggerInitialSearch] finally.`)
@@ -858,7 +858,7 @@ const useLogic = (isExprCalls) => {
                 search: searchParams.toString(),
                 pathname: `${URL_ROOT}${loc.pathname}`,
               },
-              { replace: true }
+              { replace: true, preventScrollReset: true }
             );
           } else {
             navigate({
@@ -887,7 +887,7 @@ const useLogic = (isExprCalls) => {
       })
       .catch(() => {
         // We remove all the parameters that we may have sent
-        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true });
+        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
         setIsLoading(false);
       })
       .finally(() => {
@@ -1193,7 +1193,7 @@ const useLogic = (isExprCalls) => {
               pathname: loc.pathname,
               search: `?gene_list=${encodedGeneList}`,
             },
-            { replace: true }
+            { replace: true, preventScrollReset: true }
           );
           return; // Exit the entire function
         }

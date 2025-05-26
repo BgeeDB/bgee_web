@@ -42,32 +42,41 @@ const Pagination = ({ current, total }) => {
 
   if (total === 1) return null;
 
+  // NOTE: Right now we use Link, but we could use a custom handler to navigate
+  // In all cases navigation in the Gene Search table always resets the scroll position to the top for no reason
+  // const navigate = useNavigate();
+  // const handleNavigate = (page: number) => {
+  //   console.log('handleNavigate page', page, generatePaginationLink(page));
+  //   navigate(generatePaginationLink(page), { replace: true, preventScrollReset: true });
+  // }
+
   const disabledPrevious = current === 1;
   const disabledNext = current === total;
   return (
     <nav className="pagination is-small is-centered" aria-label="pagination">
       <Link
         className="pagination-previous"
-        role="link"
         style={disabledPrevious ? disabledStyle : {}}
         to={generatePaginationLink(current - 1)}
+        preventScrollReset={true}
       >
         Previous
       </Link>
       <Link
         className="pagination-next"
-        role="link"
         style={disabledNext ? disabledStyle : {}}
         to={generatePaginationLink(current + 1)}
+        preventScrollReset={true}
       >
         Next
       </Link>
       <ul className="pagination-list">
         <li>
           <Link
-            className={`pagination-link  ${current === 1 ? 'is-current' : ''}`}
+            className={`pagination-link ${current === 1 ? 'is-current' : ''}`}
             aria-label="Goto page 1"
             to={generatePaginationLink(1)}
+            preventScrollReset={true}
           >
             1
           </Link>
@@ -80,9 +89,10 @@ const Pagination = ({ current, total }) => {
         {center.map((page) => (
           <li key={page}>
             <Link
-              className={`pagination-link  ${current === page ? 'is-current' : ''}`}
+              className={`pagination-link ${current === page ? 'is-current' : ''}`}
               aria-label={`Go to page ${page}`}
               to={generatePaginationLink(page)}
+              preventScrollReset={true}
             >
               {page}
             </Link>
@@ -95,9 +105,10 @@ const Pagination = ({ current, total }) => {
         )}
         <li>
           <Link
-            className={`pagination-link  ${current === total ? 'is-current' : ''}`}
+            className={`pagination-link ${current === total ? 'is-current' : ''}`}
             aria-label={`Goto page ${total}`}
             to={generatePaginationLink(total)}
+            preventScrollReset={true}
           >
             {total}
           </Link>

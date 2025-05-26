@@ -137,7 +137,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                     isSelected
                       ? `${PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES}?id=${species.id}`
                       : PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES,
-                    { replace: true }
+                    { replace: true, preventScrollReset: true }
                   );
                 }}
                 onRenderSelection={(species, { onClose }) => (

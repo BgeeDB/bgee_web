@@ -169,6 +169,7 @@ import PATHS from '~/paths/paths';
 import { geneToLdJSON } from '~/helpers/schemaDotOrg';
 import { getMetadata } from '~/helpers/metadata';
 
+/** Function executed on the server to render the DOM using the data retrieved */
 export async function loader({ params, request }) {
   try {
     const [genesResp, speciesResp] = await Promise.all([
@@ -185,6 +186,7 @@ export async function loader({ params, request }) {
   }
 }
 
+/** Define the metadata of the page, can use data retrieved in the loader */
 export function meta({ data }) {
   return getMetadata({
     title: `${data.genes.name} expression in ${data.species.name}`,
@@ -195,6 +197,7 @@ export function meta({ data }) {
   });
 }
 
+/** The component for the page, can use data retrieved in the loader  */
 export default function Page({ loaderData }) {
   const { genes, species } = loaderData;
 
@@ -257,13 +260,15 @@ $size-3: 1.5rem (= 21px)
 - [x] **CI/CD**: updated `eslint` rules, added basic tests of the website pages with [playwright](https://playwright.dev/), added automatic formatting and linting on commit with `husky` and `lint-staged`, added a GitHub action to run all tests automatically on push and PR.
 - [x] Commented out 13 unused bulma components, search for `TODO: REMOVE`. Removed the accordeon component that was using an unmaintained package and was not used anywhere.
 - [x] **Expression Matrix** and **raw data** logic is an insane unefficient mess that triggers many rerenders of the page for no reason. See `TODO:` comments in its `useLogic.jsx` file at the end of the `initFromUrlParams` function. ⚠️ Do not use raw data as base for a new component, it should be rewritten deeply too first. How the logic is written is crazy: inefficient, unreliable, triggering dozens of rerender for no reason on the simplest search, and insanely hard to read and debug (the amount of console.log in the logic confirm this)
-- [ ] **Improve gene page loading speed**: the 2 API calls to get expression data for a gene takes 2s (homologs and xRefs takes 200ms). Putting them in the `loader` then greatly slows down the server response (~2s to respond is really slow from a user perspective). We could move back these calls to client in a `useEffect`, but we need to get the expression data in the `loader` to be able to set schema.org JSON-LD about it in `meta`. Could it be possible to make the calls to get expression data faster?
-- [ ] Merge `develop` branch in `main`. Or make `develop` the default branch.
+- [x] **Improve gene page loading speed**: the 2 API calls to get expression data for a gene takes 2s (homologs and xRefs takes 200ms). Putting them in the `loader` then greatly slows down the server response (~2s to respond is really slow from a user perspective). We could move back these calls to client in a `useEffect`, but we need to get the expression data in the `loader` to be able to set schema.org JSON-LD about it in `meta`. Could it be possible to make the calls to get expression data faster?
+- [x] Avoid reloading a page when change to filters in gene `Expression table` after click on `Update` (Fix reload on pagination when all data are loaded)
+- [x] Do not reload when changing page in the Expression Comparison search results table
 - [ ] **Fix script** `scripts/archiveCreation.js`
 
 ### Future
 
 - [ ] **Update the project docs** in the `docs` folder? Or delete it, a well maintained README.md is better.
+- [ ] In a gene item page, if change filters for Expression table > click update > reload page with new URL filters > **Expression Graph is broken**
 - [ ] **Hydration issue in the `raw-data` page**, due to `react-select` using CSS-in-JS `emotion` library that is not compatible with SSR (see [issue](https://github.com/JedWatson/react-select/issues/5937)).
 - [ ] **Upgrade `bulma`** dependency from 0.9 to 1+. We managed to make it compile in [this commit](https://github.com/vemonet/bgee_web/commit/4a2769b7951c9be9f53236978ff8d27516da269f), but still work to do to get the exact same style right (default colors are broken for many elements, and dark theme causes problems for those who have it enabled system-wide).
   - [ ] Would be also a good idea to migrate off SASS and use standard CSS. There are many warnings when running in dev due to using deprecated SASS features. CSS has evolved and now supports many features from SASS (e.g. variables and nested CSS). `postcss` could be interesting to make sure older browsers support newer CSS features

@@ -31,12 +31,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
     [loc, children]
   );
 
-  React.useEffect(() => {
-    if (loc.hash !== '') {
-      /* console.debug(loc.hash); */
-      document.getElementById(loc.hash.replace('#', ''))?.scrollIntoView();
-    }
-  }, [loc.hash]);
+  // TODO: this might be causing unwanted scrolls to top when the page is loaded
+  // React.useEffect(() => {
+  //   if (loc.hash !== '') {
+  //     /* console.debug(loc.hash); */
+  //     document.getElementById(loc.hash.replace('#', ''))?.scrollIntoView();
+  //   }
+  // }, [loc.hash]);
 
   React.useEffect(() => {
     setAxiosAddNotif(addNotification);
@@ -60,7 +61,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div id="notifications"></div>
             <div className="layout">
               <Header />
-              {/* <section className="section"> */}
               {config.archive && (
                 <Alert type="danger" light>
                   <span>
@@ -77,7 +77,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Alert>
               )}
               {body}
-              {/* {children}</section> */}
               <Footer />
               <CookieMessage />
             </div>

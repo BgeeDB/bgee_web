@@ -62,7 +62,7 @@ const GeneSearch = ({
 
   const onSelectOption = useCallback(
     (option) => {
-      navigate(`${PATHS.SEARCH.GENE}?search=${option}`);
+      navigate(`${PATHS.SEARCH.GENE}?search=${option}`, { preventScrollReset: true });
     },
     [navigate]
   );

@@ -17,7 +17,7 @@ const expressionPageHelper = {
       role="button"
       onClick={() => {
         setSearch(s.word);
-        navigate(`${URL_ROOT}${location.pathname}?id=${s.info.id}`, { replace: true });
+        navigate(`${URL_ROOT}${location.pathname}?id=${s.info.id}`, { replace: true, preventScrollReset: true });
         setTimeout(() => {
           closeAutoComplete();
         }, 100);

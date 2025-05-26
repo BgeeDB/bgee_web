@@ -153,7 +153,7 @@ const AnatomicalHomologySearch = () => {
           signature: queryString,
           data,
         });
-        navigate(`${URL_ROOT}${pathname}?${queryString}`);
+        navigate(`${URL_ROOT}${pathname}?${queryString}`, { preventScrollReset: true });
       })
       .catch((err) => {
         console.error(err);

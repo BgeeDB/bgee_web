@@ -668,7 +668,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
             search: searchParams.toString(),
             pathname: `${URL_ROOT}${loc.pathname}`,
           },
-          { replace: true }
+          { replace: true, preventScrollReset: true }
         );
       } else {
         navigate({
@@ -689,7 +689,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // We remove all the parameters that we may have sent
-      navigate(`${URL_ROOT}${loc.pathname}`, { replace: true });
+      navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
       setIsLoading(false);
     }
     setIsFirstSearch(false);

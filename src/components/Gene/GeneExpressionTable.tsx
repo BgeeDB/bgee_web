@@ -287,7 +287,11 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
                 queryParams.set(dataTypeKey, dataType.join(','));
               else queryParams.delete(dataTypeKey);
 
-              navigate(`${URL_ROOT}${location.pathname}?${queryParams.toString()}`, { replace: true });
+              // Use navigate with preventScrollReset, state, and preventLoad to avoid loader re-execution
+              navigate(`${URL_ROOT}${location.pathname}?${queryParams.toString()}`, {
+                replace: true,
+                preventScrollReset: true,
+              });
             }}
           >
             Update
@@ -457,8 +461,8 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
         // if (res.data.requestedConditionParameters.find((r) => r === 'Anat. entity'))
         //   if (!notExpressed) schemaDotOrg.setGeneExpressionLdJSON(res.data);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
+        // console.error(err);
         setData();
       })
       .finally(() => setIsLoading(false));
