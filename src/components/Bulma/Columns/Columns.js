@@ -1,4 +1,3 @@
-import React from 'react';
 import BULMA from '../../../helpers/constants/bulma';
 import classnames from '../../../helpers/classnames';
 import Element from '../Element/Element';

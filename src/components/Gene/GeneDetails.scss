@@ -1,0 +1,14 @@
+#gene-body p.summary {
+  position: relative;
+  padding-left: 15px;     /* Space between the vertical line and the text */
+}
+
+#gene-body p.summary::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;             /* Thickness of the vertical line */
+  height: 100%;           /* Height of the vertical line */
+  background-color: grey; /* Colour of the vertical line */
+}

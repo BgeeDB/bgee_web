@@ -24,6 +24,7 @@ my ($check_url, $check_links) = (0, 0);
 my ($specific_url)            = ('');
 my ($check_content)           = ('');
 my ($build_cache)             = (0);
+my ($sleep_time)              = (1);
 my %opts   = ('help|?'          => \$help,
               'debug|verbose'   => \$debug,
               'sitemap=s'       => \$sitemap_path,
@@ -33,6 +34,7 @@ my %opts   = ('help|?'          => \$help,
               'url=s'           => \$specific_url,
               'check_content=s' => \$check_content,
               'build_cache'     => \$build_cache,
+              'sleep_time=i'    => \$sleep_time,
              );
 
 my $test_options = Getopt::Long::GetOptions(%opts);
@@ -49,6 +51,8 @@ my $firefox = Firefox::Marionette->new(
 #    page_load => '', # a shortcut to allow directly providing the page_load timeout, instead of needing to use timeouts from the capabilities parameter. Overrides all longer ways. the document to load or the session's page_load duration to elapse before returning, which, by default is 5 minutes.
 #    survive => '', # if this is set to a true value, firefox will not automatically exit when the object goes out of scope. See the reconnect parameter for an experimental technique for reconnecting.
 );
+#use Data::Dumper;
+#print Dumper $firefox->timeouts(), "\n";
 my $URL;
 my $url_count = 0;
 #Read local sitemap files
@@ -117,15 +121,34 @@ if ( $check_url ){
             diag("\t[[[ $cat availability ]]]");
             URL:
             for my $url ( $shuffle ? shuffle @{ $URL->{$cat} } : @{ $URL->{$cat} } ){
+                if ( $build_cache ){
+                    my $filename = build_cache_filename($url);
+                    if ( -e "$filename.html" && -s "$filename.html" ){
+                        ok(1, "[$url] already there");
+                        next URL;
+                    }
+                }
                 $firefox->go("$url");
                 #NOTE Firefox does not wait till the page is fully loaded (with ajax calls and everything). You have to search the DOM, and wait, with the async searched pattern
                 #NOTE Test with data https://www.bgee.org/gene/ENSG00000130208, or without https://www.bgee.org/gene/ENSG00000277044
                 #NOTE can be printed: print $firefox->await(...)->text();
                 #NOTE pages without async calls should not execute the await !!!
-                if ( $url =~ /^$ENV{'BASE_URL'}\/(gene|experiment)\// ){
+                if ( $url =~ /^$ENV{'BASE_URL'}\/gene\// ){
+                    #TODO  add a timeout!
                     $firefox->await(
-                        # gene expression table xpath | no gene expression xpath (so on xrefs because longer to run and be retrieved) | experiment table xpath
-                        sub { $firefox->find('/html/body/div[3]/div/section/div/div[2]/div[3]/div[5]/table/thead/tr/th[1]/div|/html/body/div[3]/div/section/div/div[2]/div[5]/div/div/div|/html/body/div[3]/div/section/div/div[5]/table/thead/tr/th[1]/div'); }
+                        # gene expression table xpath | no gene expression xpath (so on xrefs because longer to run and be retrieved)
+                        sub { #$firefox->find('/html/body/div[3]/div/section/div/div[2]/div[3]/div[2]/button') &&
+                              #NOTE the button is loaded quickly before the expression graph! Even if there is no data!
+                              $firefox->find('/html/body/div[3]/div/section/div/div[2]/div[4]/div[4]/div/div/div/div') &&
+                              $firefox->find('/html/body/div[3]/div/section/div/div[2]/div[5]/div[4]/div/div/div/div') &&
+                              $firefox->find('/html/body/div[3]/div/section/div/div[2]/div[@id="xrefs"]/div/div/div');
+                            }
+                    );
+                }
+                elsif ( $url =~ /^$ENV{'BASE_URL'}\/experiment\// ){
+                    $firefox->await(
+                        # experiment table xpath
+                        sub { $firefox->find('/html/body/div[3]/div/section/div/div[5]/table/thead/tr/th[1]/div'); }
                     );
                 }
                 my $status = 0;
@@ -141,9 +164,7 @@ if ( $check_url ){
                     my $html = $firefox->html();
                     $html =~ s{(<img[^>]*) src="/}{$1 src="$ENV{'BASE_URL'}/}g;
                     $html =~ s{ href="/}{ href="$ENV{'BASE_URL'}/}g;
-                    my ($filename) = $url =~ m|$ENV{'BASE_URL'}/(.*)|;
-                    $filename = $filename || 'index';
-                    $filename =~ s{/}{--}g; #FIXME URLs with parameters, i.e. ?query=..., are not yet supported
+                    my $filename = build_cache_filename($url);
                     write_file("$filename.html", {binmode => ':utf8'}, $html);
                 }
 
@@ -159,7 +180,7 @@ if ( $check_url ){
                     }
                     #TODO
                 }
-                sleep 1  if ( !$specific_url );
+                sleep $sleep_time  if ( !$specific_url );
             }
         };
         $count++;
@@ -175,6 +196,8 @@ my $tester = TAP::Harness->new({
 });
 
 $tester->runtests( sort keys %tests );
+
+$firefox->quit();
 exit 0;
 
 
@@ -187,6 +210,7 @@ sub help {
 \t--sitemap        Directory of a local sitemap.xml file [default: Use the remote one]
 \t--check_content  Pattern to search in page [default: None]
 \t--build_cache    Write a result html file, per page, for a cache [default: ".($build_cache==0 ? 'False' : 'True')."]
+\t--sleep_time     Time to sleep between elements of a list of URLs [default: $sleep_time second(s)]
 \t--debug          Verbose/Debug mode
 \t--help           This message\n\n";
     exit 1;
@@ -221,8 +245,8 @@ sub parse_sitemap {
 }
 
 # From https://stackoverflow.com/questions/16584001/using-functions-in-tap-harness-instead-of-test-files
-sub runner{
-    my($harness,$test) = @_;
+sub runner {
+    my ($harness, $test) = @_;
 
     my $builder = Test::More->builder;
 
@@ -240,5 +264,15 @@ sub runner{
 
     # the output ( needs at least one newline )
     return $out;
+}
+
+sub build_cache_filename {
+    my ($url) = @_;
+
+    my ($filename) = $url =~ m|$ENV{'BASE_URL'}/(.*)|;
+    $filename = $filename || 'index';
+    $filename =~ s{/}{--}g; #FIXME URLs with parameters, i.e. ?query=..., are not yet supported
+
+    return $filename;
 }
 

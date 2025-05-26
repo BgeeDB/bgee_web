@@ -24,7 +24,8 @@ const PATHS = {
     GENE_LIST_ITEM_BY_SPECIES: `${URL_ROOT}/gene-list/:speciesId/:speciesName`,
     RAW_DATA_ANNOTATIONS: `${URL_ROOT}/search/raw-data`,
     EXPRESSION_CALLS: `${URL_ROOT}/search/expression-calls`,
-    EXPERIMENT: `${URL_ROOT}/experiment/:id`,
+    EXPRESSION_MATRIX: `${URL_ROOT}/search/expression-matrix`,
+    EXPERIMENT: `${URL_ROOT}/experiment/:id`
   },
   DOWNLOAD: {
     GENE_EXPRESSION_CALLS: `${URL_ROOT}/download/gene-expression-calls`,

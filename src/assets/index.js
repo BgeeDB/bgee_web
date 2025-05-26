@@ -1,7 +1,7 @@
 import imagePath from '../helpers/imagePath';
 
 const assets = {
-  bgeeLogo: imagePath('/logo/logo-bgee-v2.svg'),
+  bgeeLogo: imagePath('/logo/logo-bgee-v3.svg'),
   blueskyLogo: imagePath('/logo/bluesky-logo.png'),
   linkedinLogo: imagePath('/logo/linkedin-logo.png'),
   mastodonLogo: imagePath('/logo/mastodon-logo.png'),

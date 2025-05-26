@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import Bulma from '../../../../components/Bulma';
 import Table from '../../../../components/Table';
@@ -32,6 +32,11 @@ const getUserFriendlyDataType = (dataType) => {
   }
 };
 
+const formatLargeNumber = (largeNumber) => {
+  const numberToDisplay = new Intl.NumberFormat('en').format(largeNumber || 0);
+  return numberToDisplay;
+};
+
 const Experiment = () => {
   const { data, columns, onRenderCell, onFilter } = useLogic();
 
@@ -56,14 +61,13 @@ const Experiment = () => {
   return (
     <>
       <Helmet>
-        <title>{`${data.experiment.name ? data.experiment.name : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`}</title>
+        <title>{`${data.experiment.name ? `${data.experiment.id} ${data.experiment.name}` : `${data.experiment.id} ${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`}</title>
         <meta name="description" content={`${data.experiment.description ? data.experiment.description : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
-        <meta
-          name="keywords"
-          content={`experiment,${data.experiment.id}${data.experiment.name ? `,${data.experiment.name}`: ''}`}
-        />
-        <link rel="canonical" href={`${config.genericDomain}${PATHS.SEARCH.EXPERIMENT
-            .replace(':id', data?.experiment?.id)}`} />
+        <meta name="keywords" content={`experiment,${data.experiment.id}${data.experiment.name ? `,${data.experiment.name}`: ''}`} />
+        <meta property='og:title' content={`${data.experiment.name ? `${data.experiment.id} ${data.experiment.name}` : `${data.experiment.id}  ${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
+        <meta property='og:description' content={`${data.experiment.description ? data.experiment.description : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`} />
+        <meta property="og:url" content={`${config.genericDomain}${PATHS.SEARCH.EXPERIMENT.replace(':id', data?.experiment?.id)}`} />
+        <link rel="canonical" href={`${config.genericDomain}${PATHS.SEARCH.EXPERIMENT.replace(':id', data?.experiment?.id)}`} />
       </Helmet>
 
       <div className="experimentPage">
@@ -102,6 +106,17 @@ const Experiment = () => {
               </span>
             </div>
 
+            {data?.experiment?.numberOfAnnotatedCells > 0 && (
+              <div className="is-flex is-flex-direction-row mr-2">
+                <span className="has-text-weight-semibold my-1 labelsLeft">
+                  Cell&nbsp;count:
+                </span>
+                <span className="my-1 is-flex-grow-1">
+                  {formatLargeNumber(data?.experiment?.numberOfAnnotatedCells)}
+                </span>
+              </div>
+            )}
+
             {data?.experiment?.dOI?.length > 0 && (
               <div className="is-flex is-flex-direction-row mr-2">
                 <span className="has-text-weight-semibold my-1 labelsLeft">
@@ -135,7 +150,7 @@ const Experiment = () => {
                   {data.experiment.id}
                 </a>
               )}
-              &nbsp;{data?.experiment?.xRef?.source?.name}
+              &nbsp; {data?.experiment?.xRef?.source?.name}
               </span>
             </div>
 

@@ -140,6 +140,10 @@ const Species = () => {
           <title>{metaTitle}</title>
           <meta name="description" content={metaDescription} />
           <meta name="keywords" content={metaKeywords} />
+          <meta property='og:title' content={metaTitle} />
+          <meta property='og:description' content={metaDescription} />
+          <meta property="og:image" content={`${config.genericDomain}${config.imageDomain}/species/${data.species.id}_light.jpg`} />
+          <meta property="og:url" content={metaLink} />
           <link rel="canonical" href={metaLink} />
         </Helmet>
       )}
@@ -203,6 +207,18 @@ const Species = () => {
             <div>
               <LinkExternal to={data.species.genomeAssemblyXRef}>
                 {data.species.genomeSource.name}
+              </LinkExternal>
+            </div>
+          </div>
+          <div className="is-flex">
+            <div style={{ width: 150 }}>
+              <p>
+                <b style={{ width: 140 }}>Intergenic</b>
+              </p>
+            </div>
+            <div>
+              <LinkExternal to={`${config.ftpDomain}/intergenic/ref_intergenic/`}>
+                Reference intergenic data for {data.species.genus} {data.species.speciesName}
               </LinkExternal>
             </div>
           </div>
@@ -420,7 +436,7 @@ const Species = () => {
           <div className="mt-2">
             <p
               className="is-size-5 has-text-primary has-text-weight-semibold"
-              id="proc-values-scrna-seq"
+              id="proc-values-fl-scrna-seq"
             >
               {FULL_LENGTH_LABEL}
             </p>
@@ -471,7 +487,7 @@ const Species = () => {
           <div className="mt-2">
             <p
               className="is-size-5 has-text-primary has-text-weight-semibold"
-              id="proc-values-scrna-seq"
+              id="proc-values-db-scrna-seq"
             >
               {DROPLET_BASED_LABEL}
             </p>

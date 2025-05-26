@@ -1,4 +1,3 @@
-import React from 'react';
 import classnames from '../../helpers/classnames';
 import { ALL_DATA_TYPES } from '../../pages/search/rawdata/useLogic';
 import './TagSource.scss';

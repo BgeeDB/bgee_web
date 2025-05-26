@@ -1,4 +1,3 @@
-import React from 'react';
 import classnames from '../../../helpers/classnames';
 import { normalizeAlign } from '../../../helpers/bulma';
 import Element from '../Element/Element';

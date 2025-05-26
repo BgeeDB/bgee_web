@@ -1,5 +1,4 @@
 import axios from 'axios';
-import React from 'react';
 import axiosInstance, { getAxiosAddNotif } from './constant';
 import errorHandler from '../errorHandler';
 import random from '../../helpers/random';

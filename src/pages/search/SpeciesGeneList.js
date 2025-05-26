@@ -78,8 +78,11 @@ const SpeciesGeneList = () => {
         <>
             <Helmet>
                 <title>{meta.title} gene list</title>
+                <meta property='og:title' content={`${meta.title} gene list`} />
                 <meta name="description" content={meta.description}/>
+                <meta property='og:description' content={meta.description} />
                 <meta name="keywords" content={meta.keywords}/>
+                <meta property="og:url" content={canonicalURL}/>
                 <link rel="canonical" href={canonicalURL}/>
             </Helmet>
 

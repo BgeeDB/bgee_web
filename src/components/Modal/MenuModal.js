@@ -30,6 +30,12 @@ const SIDE_MENU = [
                 path: PATHS.ANALYSIS.EXPRESSION_COMPARISON,
             },
             {
+                key: 'page.tools.expression-matrix.test',
+                title: ROUTES[PATHS.SEARCH.EXPRESSION_MATRIX].title,
+                type: 'internal',
+                path: PATHS.SEARCH.EXPRESSION_MATRIX,
+            },
+            {
                 key: 'page.tools.anatomical-homology-search.test',
                 title: ROUTES[PATHS.SEARCH.ANATOMICAL_HOMOLOGY].title,
                 type: 'internal',

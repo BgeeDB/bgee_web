@@ -12,16 +12,10 @@ const GeneExpressionCalls = () => {
     <>
       <Helmet>
         <title>Gene expression calls documentation</title>
-        <meta
-          name="description"
-          content="Documentation about the TSV download files
-     containing present/absent gene expression calls."
-        />
-        <meta
-          name="keywords"
-          content="dataset, data download, gene expression calls,
-          present/absent expression calls"
-        />
+        <meta property='og:title' content='Gene expression calls documentation' />
+        <meta name="description" content="Documentation about the TSV download files containing present/absent gene expression calls." />
+        <meta property='og:description' content='Documentation about the TSV download files containing present/absent gene expression calls.' />
+        <meta name="keywords" content="dataset, data download, gene expression calls, present/absent expression calls" />
       </Helmet>
       <div className="content has-text-centered">
         <p className="title is-5">

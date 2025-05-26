@@ -1,4 +1,3 @@
-import React from 'react';
 import axios from 'axios';
 import { getAxiosAddNotif } from './prod/constant';
 import random from '../helpers/random';

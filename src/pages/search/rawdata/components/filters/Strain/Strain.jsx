@@ -1,4 +1,3 @@
-import React from 'react';
 import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
 import { COND_PARAM2_STRAIN_KEY } from '../../../useLogic';
 

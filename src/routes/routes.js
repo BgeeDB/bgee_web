@@ -1,4 +1,3 @@
-import React from 'react';
 import PATHS from './paths';
 
 import Home from '../pages/Home';
@@ -9,6 +8,7 @@ import ExpComp from '../pages/analysis/ExpComp';
 import GeneList from '../pages/search/GeneList';
 import Gene from '../pages/search/Gene';
 import RawDataAnnotations from '../pages/search/rawdata/RawDataAnnotations';
+import GeneExpressionMatrix from '../pages/search/expressionmatrix/GeneExpressionMatrix';
 import AnatomicalHomologySearch from '../pages/search/AnatomicalHomologySearch';
 import SpeciesList from '../pages/search/SpeciesList';
 import Species from '../pages/search/Species';
@@ -127,6 +127,10 @@ const SEARCH = {
       description: 'Search for Present/absent expression calls',
       keywords: 'Present, absent, expression calls',
     },
+  },
+  [PATHS.SEARCH.EXPRESSION_MATRIX]: {
+    component: () => <GeneExpressionMatrix isExprCalls />,
+    title: 'Gene expression matrix (beta)',
   },
   [PATHS.SEARCH.EXPERIMENT]: {
     component: Experiment,

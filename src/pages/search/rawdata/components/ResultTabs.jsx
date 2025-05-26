@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { EXPERIMENTS, PROC_EXPR_VALUES, RAW_DATA_ANNOTS } from '../useLogic';
 
 const formatLargeNumber = (largeNumber) => {

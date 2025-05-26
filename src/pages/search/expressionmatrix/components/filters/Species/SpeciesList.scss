@@ -1,0 +1,22 @@
+.react-select-species__placeholder {
+  color: #bbbbbb !important;
+}
+
+.react-select-species__option {
+  cursor: pointer !important;
+}
+
+.react-select-species__option--is-selected {
+  color: rgb(51, 51, 51) !important;
+  background-color: white !important;
+}
+.react-select-species__option--is-focused,
+.react-select-species__option:active {
+  background-color: rgba(237, 46, 36, 0.15) !important;
+}
+
+.react-select-species__control--menu-is-open,
+.react-select-species__control--is-focused {
+  border-color: #dc3d35 !important;
+  box-shadow: 0 0 0 1px #f7544c !important;
+}

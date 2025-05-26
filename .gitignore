@@ -55,3 +55,6 @@ yarn-error.log*
 .idea/**/dbnavigator.xml
 .idea
 src/styles/global.css
+
+# YARN
+.yarn

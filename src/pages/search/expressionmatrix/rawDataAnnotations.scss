@@ -1,0 +1,187 @@
+.rawDataAnnotation {
+  .title-raw {
+    color: rgb(0, 187, 255);
+  }
+
+  .maxWidth50 {
+    max-width: 50vw;
+  }
+
+  //Info icon's color on column's header
+  .helpIcon .icon {
+    color: #d4d4d4;
+  }
+
+  // redefine global css ....
+  button,
+  .button {
+    font-size: 1rem !important;
+  }
+
+  .submit-reinit {
+    margin-top: 50px;
+    float: right;
+  }
+
+  .reinit {
+    margin-left: 10px;
+  }
+
+  .exp-assay {
+    width: 10px;
+    float: right;
+  }
+
+  .search-form {
+    align-items: center;
+  }
+
+  .resultPart {
+    background-color: #efefef;
+    padding: 1rem;
+  }
+
+  .filters {
+    display: flex;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding-bottom: 0.3rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .filterSelect {
+    margin: 0 4px;
+    flex: 1;
+    min-width: 14rem;
+    max-width: 30rem;
+  }
+
+  .cat-child {
+    margin-right: 2%;
+  }
+
+  .parent-experiment {
+    width: 500px;
+  }
+
+  .marginAutoBtn {
+    margin-left: auto;
+  }
+
+  .list-input {
+    display: flex;
+    width: 80%;
+  }
+
+  .lists {
+    display: flex;
+    margin-left: 2px;
+  }
+
+  .ongletWrapper {
+    margin-top: 0.8rem;
+    background-color: white;
+    overflow: auto;
+  }
+  .onglet {
+    background-color: lightgray;
+    padding: 1rem;
+    border-radius: 3px;
+    border: 1px solid white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .ongletActive {
+    background-color: #efefef;
+    border: 1px solid #efefef;
+  }
+  .pageActive {
+    color: #ed2e24 !important;
+  }
+  .ongletPageWrapper {
+    border-bottom: 1px solid grey;
+  }
+  .ongletPages {
+    padding-right: 1rem;
+    padding-left: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+  }
+  a.ongletPages:link,
+  a.ongletPages:visited {
+    color: #626262;
+  }
+  a.ongletPages:active,
+  a.ongletPages:hover {
+    color: #ed2e24;
+  }
+  .section {
+    background-color: #eeeeee;
+  }
+
+  .resultCounts {
+    text-align: right;
+    color: #920209;
+  }
+
+  .sex-container {
+    display: flex;
+  }
+
+  .sex-input-name {
+    display: flex;
+  }
+
+  .sex-name {
+    text-transform: capitalize;
+    margin-right: 8px;
+  }
+
+  .checkboxWrapper {
+    display: flex;
+    margin: 4px 0 4px 0;
+    cursor: pointer;
+  }
+
+  input[type='checkbox'] {
+    cursor: pointer;
+  }
+
+  label[for] {
+    margin-left: 4px;
+    cursor: pointer !important;
+  }
+
+  .labelWithHelpIcon {
+    display: flex;
+
+    .helpIcon {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+  }
+  .labelWithHelpIcon > span {
+    margin-top: 2px;
+  }
+
+  .progressWrapper {
+    display: flex;
+    justify-content: center;
+    $progress-bar-background-color: grey;
+  }
+  .react-select__multi-value__label {
+    max-width: 20rem;
+  }
+
+  .download-btn {
+    margin-left: auto;
+  }
+  .boldTitle {
+    font-weight: bold;
+    color: black;
+  }
+}

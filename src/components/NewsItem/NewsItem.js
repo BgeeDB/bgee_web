@@ -1,5 +1,4 @@
 /* eslint-disable react/no-children-prop,no-param-reassign,react/no-danger-with-children */
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useHistory } from 'react-router-dom';
 import rehypeHighlight from 'rehype-highlight';

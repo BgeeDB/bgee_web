@@ -86,21 +86,16 @@ const ProcessedExpressionValues = () => {
     [speciesList]
   );
 
+  const title = 'Bgee Processed expression values download page';
+  const description = 'Download TSV files containing sample annotations, experiment information, and processed expression values';
   return (
     <>
       <Helmet>
-        <title>Processed expression values download page</title>
-        <meta
-          name="description"
-          content="Download TSV files containing sample annotations,
-     experiment information, and processed expression values"
-        />
-        <meta
-          name="keywords"
-          content={`dataset, data download, gene expression,
-     RNA-Seq, Affymetrix, ${FULL_LENGTH_LABEL}, scRNA-Seq,
-     expression data annotations, ${allSpeciesName}`}
-        />
+        <title>{title}</title>
+        <meta property='og:title' content={title} />
+        <meta name="description" content={description} />
+        <meta property='og:description' content={description} />
+        <meta name="keywords" content={`dataset, data download, gene expression, RNA-Seq, Affymetrix, ${FULL_LENGTH_LABEL}, scRNA-Seq, expression data annotations, ${allSpeciesName}`} />
       </Helmet>
       <div className="content has-text-centered">
         <Bulma.Title size={3}>Processed expression values</Bulma.Title>

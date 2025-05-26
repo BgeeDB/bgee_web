@@ -1,4 +1,3 @@
-import React from 'react';
 import { Helmet } from 'react-helmet';
 import Bulma from '../Bulma';
 import PATHS from '../../routes/paths';

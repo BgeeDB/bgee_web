@@ -74,20 +74,16 @@ const GeneExpressionCalls = () => {
     [singleSpeciesList]
   );
 
+  const title = 'Bgee Gene expression calls download page';
+  const description = 'Download TSV files containing present/absent gene expression calls from Bgee';
   return (
     <>
       <Helmet>
-        <title>Gene expression calls download page</title>
-        <meta
-          name="description"
-          content="Download TSV files containing present/absent
-     gene expression calls from Bgee"
-        />
-        <meta
-          name="keywords"
-          content={`dataset, data download, gene expression calls,
-     present/absent expression calls, ${allSpeciesName}`}
-        />
+        <title>{title}</title>
+        <meta property='og:title' content={title} />
+        <meta name="description" content={description} />
+        <meta property='og:description' content={description} />
+        <meta name="keywords" content={`dataset, data download, gene expression calls, present/absent expression calls, ${allSpeciesName}`} />
       </Helmet>
       <div className="content has-text-centered">
         <Bulma.Title size={3}>Gene expression calls</Bulma.Title>

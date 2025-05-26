@@ -1,4 +1,3 @@
-import React from 'react';
 import { Helmet } from 'react-helmet';
 import Bulma from '../../components/Bulma';
 import classnames from '../../helpers/classnames';
@@ -7,18 +6,16 @@ import imagePath from '../../helpers/imagePath';
 import LinkExternal from '../../components/LinkExternal';
 import config from '../../config.json';
 
+const title = 'Bgee Data dumps download page';
+const description = 'Download a simplified view of the Bgee database in various formats.';
 const DataDumps = () => (
   <>
     <Helmet>
-      <title>Data dumps download page</title>
-      <meta
-        name="description"
-        content="Download a simplified view of the Bgee database in various formats."
-      />
-      <meta
-        name="keywords"
-        content="dataset, data download, MySQL, RDF, EasyBgee, gene expression data"
-      />
+      <title>{title}</title>
+      <meta property='og:title' content={title} />
+      <meta name="description" content={description} />
+      <meta property='og:description' content={description} />
+      <meta name="keywords" content="dataset, data download, MySQL, RDF, EasyBgee, gene expression data" />
     </Helmet>
     <div className="content has-text-centered">
       <Bulma.Title size={3}>Bgee data dumps</Bulma.Title>

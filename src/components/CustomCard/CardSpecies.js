@@ -1,4 +1,3 @@
-import React from 'react';
 import Bulma from '../Bulma';
 import imagePath from '../../helpers/imagePath';
 

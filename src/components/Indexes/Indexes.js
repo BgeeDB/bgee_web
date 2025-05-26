@@ -1,4 +1,3 @@
-import React from "react";
 import {Link} from "react-router-dom";
 import Bulma from "../Bulma";
 import PATHS from "../../routes/paths";

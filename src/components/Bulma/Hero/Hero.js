@@ -1,4 +1,3 @@
-import React from 'react';
 import Element from '../Element/Element';
 import classnames from '../../../helpers/classnames';
 import HeroHeader from './HeroHeader';

@@ -363,6 +363,20 @@ const team = [
             content: [
               {
                 type: 'text',
+                content: 'Mendes de Farias, Tarcisio ',
+              },
+              {
+                type: 'link_external',
+                text: '[ORCID]',
+                path: 'https://orcid.org/0000-0002-3175-5372',
+              },
+            ],
+          },
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'text',
                 content: 'Moret, Philippe ',
               },
               {

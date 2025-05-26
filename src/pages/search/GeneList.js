@@ -10,6 +10,7 @@ import splitWithOccurrences from '../../helpers/splitWithOccurrences';
 import { MEDIA_QUERIES } from '../../helpers/constants/mediaQueries';
 import { customGeneListSorter } from '../../helpers/sortTable';
 import Table from '../../components/Table';
+import config from "../../config.json";
 
 const onRenderCell =
   (search) =>
@@ -148,9 +149,13 @@ const GeneList = () => {
   return (
     <>
       <Helmet>
-        <title>{search ? `${search} - ` : ''} Gene search</title>
+        <title>{`${search ? `${search} - ` : ''}Gene search`}</title>
+        <meta property='og:title' content={`${search ? `${search} - ` : ''}Gene search`} />
         <meta name="description" content={meta.description} />
+        <meta property='og:description' content={meta.description} />
         <meta name="keywords" content={meta.keywords} />
+        <meta property="og:url" content={`${config.genericDomain}${PATHS.SEARCH.GENE}`} />
+        <link rel="canonical" href={`${config.genericDomain}${PATHS.SEARCH.GENE}`} />
       </Helmet>
       <div className="content has-text-centered">
         <Bulma.Title size={3}>Gene search</Bulma.Title>

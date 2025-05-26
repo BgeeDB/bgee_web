@@ -175,7 +175,7 @@ const AnatEntityCell = ({ cell }) => {
 // PAss to true if you want the two table to be handled separately in the url
 const SEPARATE_DATA_FORM = false;
 
-const GeneExpression = ({ geneId, speciesId, notExpressed }) => {
+const GeneExpressionTable = ({ geneId, speciesId, notExpressed }) => {
   const exprKey = React.useMemo(
     () =>
       notExpressed && SEPARATE_DATA_FORM ? 'not_expression' : 'expression',
@@ -524,12 +524,12 @@ const GeneExpression = ({ geneId, speciesId, notExpressed }) => {
         className="gradient-underline"
         id={
           notExpressed
-            ? GENE_DETAILS_HTML_IDS.EXPRESSION_ABSENT
-            : GENE_DETAILS_HTML_IDS.EXPRESSION
+            ? GENE_DETAILS_HTML_IDS.EXPRESSION_ABSENT_TABLE
+            : GENE_DETAILS_HTML_IDS.EXPRESSION_TABLE
         }
         renderAs="h2"
       >
-        {notExpressed ? 'Reported absence of expression' : 'Expression'}
+        {notExpressed ? 'Reported absence of expression' : 'Expression table'}
       </Bulma.Title>
       <div>
         {isLoading && (
@@ -708,4 +708,4 @@ const GeneExpression = ({ geneId, speciesId, notExpressed }) => {
   );
 };
 
-export default GeneExpression;
+export default GeneExpressionTable;

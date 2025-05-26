@@ -7,7 +7,8 @@ import PATHS from '../../routes/paths';
 import api from '../../api';
 import GeneSearch from './GeneSearch';
 import GeneExpandableList from './GeneExpandableList';
-import GeneExpression from './GeneExpression';
+import GeneExpressionGraph from './GeneExpressionGraph';
+import GeneExpressionTable from './GeneExpressionTable';
 import GeneHomologs from './GeneHomologs';
 import GeneXRefs from './GeneXRefs';
 import schemaDotOrg from '../../helpers/schemaDotOrg';
@@ -16,10 +17,11 @@ import imagePath from '../../helpers/imagePath';
 import GeneDetailsSideMenu from './GeneDetailsSideMenu';
 import { PROC_EXPR_VALUES } from '../../pages/search/rawdata/useLogic';
 import config from '../../config.json';
+import './GeneDetails.scss';
 
 const GeneDetails = ({
   details,
-  details: { name, geneId, description, species, synonyms, geneMappedToSameGeneIdCount },
+  details: { name, geneId, description, expressionSummary, species, synonyms, geneMappedToSameGeneIdCount },
 }) => {
   const loc = useLocation();
   const [isLoading, setIsLoading] = React.useState(true);
@@ -70,20 +72,18 @@ const GeneDetails = ({
 
   const meta = React.useMemo(() => {
     const latinName = `${species.genus} ${species.speciesName}`;
-    const speciesName = species.name
-      ? species.name
-      : `${species.genus} ${species.speciesName}`;
     const hasNameOpener = name ? `${name} (` : '';
     const hasNameCloser = name ? `)` : '';
-    const speciesNameBrackets = species.name ? ` ( ${species.name} )` : '';
+    const speciesNameBrackets = species.name ? ` (${species.name})` : '';
     const nameExpr = name ? `${name}, ${name} expression, ` : '';
+    const nameExists = name ? `${name} ` : '';
     const synonymsExpr = synonyms ? `, ${synonyms.join(', ')}` : '';
     const canonicalLink = `${config.genericDomain}${PATHS.SEARCH.GENE_ITEM_BY_SPECIES
         .replace(':geneId', geneId)
         .replace(':speciesId', geneMappedToSameGeneIdCount === 1 ? '' : species.id)
         .replace(/\/$/, '')}`;
     return {
-      title: `${name} expression in ${speciesName}`,
+      title: `${nameExists}${geneId} expression in ${latinName}${speciesNameBrackets}`,
       description: `Bgee gene expression data for ${hasNameOpener}${geneId}${hasNameCloser} in ${latinName}${speciesNameBrackets}`,
       keywords: `gene expression, ${nameExpr}${geneId}, ${geneId} expression${synonymsExpr}`,
       link: canonicalLink,
@@ -110,6 +110,9 @@ const GeneDetails = ({
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
         <meta name="keywords" content={meta.keywords} />
+        <meta property='og:title' content={meta.title} />
+        <meta property='og:description' content={meta.description} />
+        <meta property="og:url" content={meta.link} />
         <link rel="canonical" href={meta.link} />
       </Helmet>
       <div id="gene-wrapper">
@@ -142,7 +145,8 @@ const GeneDetails = ({
             <Bulma.Title size={4} className="gradient-underline" renderAs="h2">
               General information
             </Bulma.Title>
-            <div className=" near-columns">
+            { expressionSummary?.trim() && <p className="summary has-text-weight-bold">{expressionSummary}</p> }
+            <div className="near-columns">
               <Bulma.Columns className="my-0">
                 <Bulma.C size={3}>
                   <p className="has-text-weight-semibold">Gene identifier</p>
@@ -240,8 +244,10 @@ const GeneDetails = ({
               </Bulma.Columns>
             </div>
           </div>
-          <GeneExpression geneId={geneId} speciesId={species.id} />
-          <GeneExpression geneId={geneId} speciesId={species.id} notExpressed />
+
+          <GeneExpressionGraph geneId={geneId} speciesId={species.id} />
+          <GeneExpressionTable geneId={geneId} speciesId={species.id} />
+          <GeneExpressionTable geneId={geneId} speciesId={species.id} notExpressed />
           <GeneHomologs
             homologs={homologs}
             geneId={geneId}

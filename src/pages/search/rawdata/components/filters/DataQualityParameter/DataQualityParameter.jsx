@@ -1,4 +1,3 @@
-import React from 'react';
 import HelpIcon from '../../../../../../components/HelpIcon';
 import { ALL_DATA_QUALITIES } from '../../../useLogic';
 

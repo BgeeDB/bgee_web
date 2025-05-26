@@ -1,4 +1,3 @@
-import React from 'react';
 import config from '../../config.json';
 
 const GaEvent = ({ category, action, label, value, children }) => {

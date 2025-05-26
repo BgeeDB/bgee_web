@@ -87,6 +87,7 @@ const Footer = () => {
             <ul>
               <li><Link to={PATHS.ANALYSIS.TOP_ANAT} className="nav_a">TopAnat</Link></li>
               <li><Link to={PATHS.ANALYSIS.EXPRESSION_COMPARISON} className="nav_a">Expression comparison</Link></li>
+              <li><Link to={PATHS.SEARCH.EXPRESSION_MATRIX} className="nav_a">Gene expression matrix (beta)</Link></li>
             </ul>
           </div>
           <div className="nav-footer-col-spacer" />
@@ -120,17 +121,18 @@ const Footer = () => {
             <ul>
               <li><Link to={PATHS.SUPPORT.TUTORIALS} className="nav_a">Documentation and tutorials</Link></li>
               <li><Link to={PATHS.SUPPORT.FAQ} className="nav_a">FAQ</Link></li>
+              <li><Link to={PATHS.ABOUT.PRIVACY_POLICY} className="nav_a">Privacy notice</Link></li>
               <li><Link to={PATHS.ABOUT.PUBLICATION} className="nav_a">Cite us</Link></li>
-              <li>
-                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-                <a onClick={obfuscateMailLink(config.contactEmail)} className="nav_a">Contact us</a>
-              </li>
             </ul>
           </div>
           <div className="nav-footer-col-spacer"/>
           <div className="nav-footer-col">
             <div className="nav-footer-col-head">Share &amp; Social</div>
             <ul>
+              <li>
+                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+                <a onClick={obfuscateMailLink(config.contactEmail)} className="nav_a">Contact us</a>
+              </li>
               <li>
                 <a
                   href="#"

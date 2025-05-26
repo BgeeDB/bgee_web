@@ -1,5 +1,4 @@
 /* eslint-disable no-nested-ternary,jsx-a11y/label-has-associated-control,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions, no-case-declarations, react/no-array-index-key */
-import React from 'react';
 import Bulma from '../Bulma';
 import LinkExternal from '../LinkExternal';
 import GeneExpandableList from './GeneExpandableList';

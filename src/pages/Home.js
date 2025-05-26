@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import assets, {heroCounts}  from '../assets';
-import CreativeCommons from '../components/CreativeCommons';
 import PATHS from '../routes/paths';
 import Bulma from '../components/Bulma';
 import config from '../config.json';
@@ -19,7 +18,7 @@ const HomeCard = props => {
     return (<Bulma.C size={6}>
             <Bulma.Card id={id} className="mt-4 home-card">
                 <Bulma.Card.Body>
-                    <h2 className="has-text-primary is-size-2"><Link  to={linkUrl}>{title}</Link></h2>
+                    <h2 className="has-text-primary is-size-2"><Link to={linkUrl}>{title}</Link></h2>
                     <div className="content">
                         <p>{desc} <Link to={linkUrl} className="home-card-link">{linkText}</Link></p>
                     </div>
@@ -149,8 +148,7 @@ const Home = () => {
         <Bulma.Columns>
           <HomeCard id="card-gene-expression"
                     imgUrl="/home/gene_screenshot.webp" title="Gene expression"
-                    desc="Discover important details about your selected gene, including its expression
-                            in various conditions and its orthologs."
+                    desc="Discover important details about your selected gene, including its expression in various conditions and its orthologs."
                     linkUrl={PATHS.SEARCH.GENE}
                     linkText="Gene search"/>
           <HomeCard id="card-expression-comparison"
@@ -160,14 +158,12 @@ const Home = () => {
                     linkText="Compare"/>
           <HomeCard id="card-expression-enrichment-analysis"
                     imgUrl="/home/topanat_screenshot.webp" title="Expression enrichment analysis"
-                    desc="Tool similar to a GO enrichment test but rather than using Gene Ontology annotations
-                             it is based on anatomical annotations."
+                    desc="Tool similar to a GO enrichment test but rather than using Gene Ontology annotations it is based on anatomical annotations."
                     linkUrl={PATHS.ANALYSIS.TOP_ANAT}
                     linkText="Analyse"/>
           <HomeCard id="card-raw-data-annotations"
                     imgUrl="/home/raw_data_annotations_screenshot.webp" title="Raw data annotations"
-                    desc="Explore all libraries in Bgee that match your selected conditions and access their
-                            fully annotated raw (unprocessed) data."
+                    desc="Explore all libraries in Bgee that match your selected conditions and access their fully annotated raw (unprocessed) data."
                     linkUrl={PATHS.SEARCH.RAW_DATA_ANNOTATIONS}
                     linkText="Explore"/>
           <HomeCard id="card-expression-calls"
@@ -249,14 +245,6 @@ const Home = () => {
               </p>
             </Bulma.C>
             )}
-          </Bulma.C>
-        </Bulma.Columns>
-      </Bulma.Section>
-
-      <Bulma.Section>
-        <Bulma.Columns>
-          <Bulma.C size={12} className="has-text-centered">
-            <CreativeCommons />
           </Bulma.C>
         </Bulma.Columns>
       </Bulma.Section>

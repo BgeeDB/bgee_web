@@ -1,0 +1,21 @@
+id,label,parent_id,parent_label,depth,non_informative
+UBERON:0000010,peripheral nervous system,UBERON:0001062,anatomical entity,5,0
+UBERON:0000211,ligament,UBERON:0001062,anatomical entity,5,0
+UBERON:0000309,body wall,UBERON:0001062,anatomical entity,5,0
+UBERON:0000468,multicellular organism,UBERON:0001062,anatomical entity,4,0
+UBERON:0000949,endocrine system,UBERON:0001062,anatomical entity,5,0
+UBERON:0000990,reproductive system,UBERON:0001062,anatomical entity,4,0
+UBERON:0001004,respiratory system,UBERON:0001062,anatomical entity,4,0
+UBERON:0001007,digestive system,UBERON:0001062,anatomical entity,4,0
+UBERON:0001008,renal system,UBERON:0001062,anatomical entity,5,0
+UBERON:0001009,circulatory system,UBERON:0001062,anatomical entity,4,0
+UBERON:0001015,musculature,UBERON:0001062,anatomical entity,5,0
+UBERON:0001017,central nervous system,UBERON:0001062,anatomical entity,5,0
+UBERON:0001032,sensory system,UBERON:0001062,anatomical entity,5,0
+UBERON:0001434,skeletal system,UBERON:0001062,anatomical entity,5,0
+UBERON:0002193,hemolymphoid system,UBERON:0001062,anatomical entity,4,0
+UBERON:0002330,exocrine system,UBERON:0001062,anatomical entity,4,0
+UBERON:0002384,connective tissue,UBERON:0001062,anatomical entity,5,0
+UBERON:0002405,immune system,UBERON:0001062,anatomical entity,4,0
+UBERON:0002416,integumental system,UBERON:0001062,anatomical entity,4,0
+UBERON:0015204,glandular system,UBERON:0001062,anatomical entity,4,0

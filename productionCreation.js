@@ -98,6 +98,8 @@ const main = async () => {
 
     console.log('\x1b[31m%s\x1b[0m', 'Building app');
     execSync('yarn build:cra', { stdio: 'inherit' });
+    /* Fix symlinks manually because 'webpackConfig.resolve.symlinks = false;' & '"preserveSymlinks": true,' fail! */
+    execSync('sh fix_symlinks.sh');
     if (config.isRawDataOnly) {
       /* Back to default */
       await fs.writeFile('./src/routes/paths.js', paths);

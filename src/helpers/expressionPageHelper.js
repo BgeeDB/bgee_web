@@ -1,5 +1,4 @@
 /* eslint-disable react/destructuring-assignment,jsx-a11y/interactive-supports-focus,react/no-array-index-key,react/button-has-type,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,jsx-a11y/label-has-associated-control */
-import React from 'react';
 import config from '../config.json';
 
 const APP_VERSION = config.version;

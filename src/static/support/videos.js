@@ -56,6 +56,46 @@ const videos = [
         content: [
           {
             type: 'link_external',
+            path: 'https://www.youtube.com/watch?v=7yPFKwOpF2Q&list=PLbJBK0jNmCGJc3_20tO0P9t86bnaojhgJ',
+            text: 'Bgee Course 2025: Gene Expression Made Useful Easily: Tools and Database of Bgee',
+          },
+        ],
+      },
+      {
+        type: 'link_image',
+        path: 'https://www.youtube.com/watch?v=7yPFKwOpF2Q&list=PLbJBK0jNmCGJc3_20tO0P9t86bnaojhgJ',
+        src: imagePath('/videos/Bgee-Course-2025.png'),
+        alt: 'Bgee Course 2025: Gene Expression Made Useful Easily: Tools and Database of Bgee',
+        classNames: 'youtube-preview-image',
+      },
+{
+    type: 'break_line',
+},
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'link_external',
+            path: 'https://www.youtube.com/watch?v=k1gPNuNNFwk&list=PLbJBK0jNmCGLgWPLKe6stnNkFnwjpo6q9',
+            text: 'Bgee Course 2024: Gene Expression Made Useful Easily: Tools and Database of Bgee',
+          },
+        ],
+      },
+      {
+        type: 'link_image',
+        path: 'https://www.youtube.com/watch?v=k1gPNuNNFwk&list=PLbJBK0jNmCGLgWPLKe6stnNkFnwjpo6q9',
+        src: imagePath('/videos/Bgee-Course-2024.png'),
+        alt: 'Bgee Course 2024: Gene Expression Made Useful Easily: Tools and Database of Bgee',
+        classNames: 'youtube-preview-image',
+      },
+{
+    type: 'break_line',
+},
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'link_external',
             path: 'https://www.youtube.com/watch?v=vjrTq0fGCTk&list=PLbJBK0jNmCGKFCDZUnNoQra3T0E-VDhVu',
             text: 'Bgee Course 2023: Gene Expression Made Useful Easily: Tools and Database of Bgee',
           },

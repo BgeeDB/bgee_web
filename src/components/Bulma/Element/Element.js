@@ -1,4 +1,3 @@
-import React from 'react';
 import useBulmaElementClassNames from '../../../hooks/bulma/useBulmaElementClassNames';
 import classnames from '../../../helpers/classnames';
 

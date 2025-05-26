@@ -100,7 +100,6 @@ const Header = () => {
         {!config?.isRawDataOnly && (
             <div className={`navbar-menu ${hamburgerActive ? 'is-active' : ''}`}>
               <MenuModal />
-              
               <div className="navbar-start">
                 {NAVBAR_LEFT.map(({ key, title, type, path }) => {
                   switch (type) {

@@ -1,6 +1,5 @@
 /* eslint-disable import/no-useless-path-segments */
 /* eslint-disable import/named */
-import React from 'react';
 import HelpIcon from '../../../../../../components/HelpIcon';
 import { ALL_CALL_TYPE } from '../../../useLogic';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import classnames from '../../helpers/classnames';
 
 const LinkExternal = ({ id, to, text, className, children, ...props }) => (

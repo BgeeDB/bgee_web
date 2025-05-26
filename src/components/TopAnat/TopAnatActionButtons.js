@@ -1,4 +1,3 @@
-import React from 'react';
 import { TOP_ANAT_FLOW } from '../../hooks/useTopAnat';
 import GaEvent from '../GaEvent/GaEvent';
 import PATHS from '../../routes/paths';

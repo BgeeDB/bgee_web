@@ -26,26 +26,17 @@ const GeneDetailsSideMenu = ({ homologs = null, xRefs }) => {
         <li>
           <a href={`${PATHS.SUPPORT.TUTORIAL_GENE_PAGE}`} className="is-size-5 has-text-weight-semibold">See documentation</a>
         </li>
-        <li
-          onClick={() =>
-            handlerMenuClick(GENE_DETAILS_HTML_IDS.GENERAL_INFORMATION)
-          }
-        >
-          <a className="is-size-5 has-text-weight-semibold">
-            General information
-          </a>
+        <li onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.GENERAL_INFORMATION)}>
+          <a className="is-size-5 has-text-weight-semibold">General information</a>
         </li>
-        <li onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.EXPRESSION)}>
-          <a className="is-size-5 has-text-weight-semibold">Expression</a>
+        <li onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.EXPRESSION_GRAPH)}>
+          <a className="is-size-5 has-text-weight-semibold">Expression graph</a>
         </li>
-        <li
-          onClick={() =>
-            handlerMenuClick(GENE_DETAILS_HTML_IDS.EXPRESSION_ABSENT)
-          }
-        >
-          <a className="is-size-5 has-text-weight-semibold">
-            Expression Absent
-          </a>
+        <li onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.EXPRESSION_TABLE)}>
+          <a className="is-size-5 has-text-weight-semibold">Expression table</a>
+        </li>
+        <li onClick={() => handlerMenuClick(GENE_DETAILS_HTML_IDS.EXPRESSION_ABSENT_TABLE)}>
+          <a className="is-size-5 has-text-weight-semibold">Expression Absent</a>
         </li>
         {homologs?.orthologs > 0 && (
           <li

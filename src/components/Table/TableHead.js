@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { isHideMediaQuery } from '../../helpers/constants/mediaQueries';
 import { TableContext } from '../../contexts/TableContext';
 import HelpIcon from '../HelpIcon';

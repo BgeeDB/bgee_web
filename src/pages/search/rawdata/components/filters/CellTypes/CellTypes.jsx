@@ -1,4 +1,3 @@
-import React from 'react';
 import HelpIcon from '../../../../../../components/HelpIcon';
 import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
 import { getIdAndNameLabel } from '../../../../../../helpers/selects';

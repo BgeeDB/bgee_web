@@ -18,6 +18,48 @@ const collaborations = [
   },
   {
     type: 'section',
+    title: 'gget',
+    children: [
+      {
+        type: 'link_image',
+        src: imagePath('/gget-logo.png'),
+        path: 'https://github.com/pachterlab/gget',
+        alt: 'gget',
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'link_external',
+            path: 'https://github.com/pachterlab/gget',
+            text: 'gget',
+          },
+          {
+            type: 'text',
+            content:
+              ' is a free, open-source command-line tool and Python package that enables efficient querying of genomic databases.',
+          },
+        ],
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'link_external',
+            path: 'https://pachterlab.github.io/gget/en/bgee.html',
+            text: 'gget',
+          },
+          {
+            type: 'text',
+            content:
+              ' fetches orthology and gene expression data from Bgee using Ensembl IDs.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'section',
     title: 'OMA',
     children: [
       {
@@ -320,7 +362,7 @@ const collaborations = [
           {
             type: 'text',
             content:
-              "BioSODA uses the 'EasyBgee' relational database to expose a Bgee SPARQL endpoint reachable through the following URL: ",
+              "BioSODA uses the 'EasyBgee' relational database to expose a Bgee SPARQL endpoint, reachable through the following URL: ",
           },
           {
             type: 'code',

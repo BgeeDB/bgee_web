@@ -283,13 +283,10 @@ const TopAnatResult = ({
       <>
         <Helmet>
           <title>TopAnat {metaTitle}</title>
+          <meta property='og:title' content={`TopAnat ${metaTitle}`} />
           <meta name="description" content={metaDescription} />
-          <meta
-            name="keywords"
-            content="TopAnat, gene set enrichment analysis,
-     gene expression enrichment analysis, GO-like enrichment analysis,
-     gene expression patterns, topGO, BgeeDB"
-          />
+          <meta property='og:description' content={metaDescription} />
+          <meta name="keywords" content="TopAnat, gene set enrichment analysis, gene expression enrichment analysis, GO-like enrichment analysis, gene expression patterns, topGO, BgeeDB" />
         </Helmet>
         <div className="content has-text-centered">
           <p className="title is-4">{title}</p>

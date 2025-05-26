@@ -1,4 +1,3 @@
-import React from 'react';
 import Bulma from '../../components/Bulma';
 import GoTop from '../../components/GoTop';
 import NewsItem from '../../components/NewsItem';

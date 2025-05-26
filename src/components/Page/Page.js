@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import ROUTES from '../../routes/routes';
 import PATHS from '../../routes/paths';
+import config from '../../config.json';
 
 class Page extends React.PureComponent {
   constructor(props) {
@@ -49,10 +50,15 @@ class Page extends React.PureComponent {
         {meta && (
           <Helmet>
             {meta.title && <title>{meta.title}</title>}
+            {meta.title && <meta property='og:title' content={meta.title} />}
             {meta.description && (
               <meta name="description" content={meta.description} />
             )}
+            {meta.description && (
+              <meta property='og:description' content={meta.description} />
+            )}
             {meta.keywords && <meta name="keywords" content={meta.keywords} />}
+            <meta property="og:url" content={`${config.genericDomain}${props.location.pathname}`} />
           </Helmet>
         )}
         <Component {...props} />

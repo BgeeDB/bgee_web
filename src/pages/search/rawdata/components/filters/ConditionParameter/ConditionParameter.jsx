@@ -1,4 +1,3 @@
-import React from 'react';
 import HelpIcon from '../../../../../../components/HelpIcon';
 import { COND_PARAM2 } from '../../../useLogic';
 
@@ -15,9 +14,7 @@ const ConditionParameter = ({ conditionalParam2, setConditionalParam2, selectedS
   };
 
   const label = selectedSpecies === 9606 ? 'ethnicities' : 'strains';
-  const Label = selectedSpecies === 9606 ? 'Ethnicity'   : 'Strain';
 
-  // Override c.label from pages/search/rawdata/useLogic.js by Label because when COND_PARAM2.label is defined, the species taxid is not yet known!
   return (
     <div className="mt-4">
       <label>
@@ -45,6 +42,7 @@ const ConditionParameter = ({ conditionalParam2, setConditionalParam2, selectedS
       <div className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper mt-2">
         {COND_PARAM2.map((c) => {
           const isSelected = conditionalParam2.includes(c.id);
+          const ethnLabel = selectedSpecies === 9606 && c.label === 'Strain' ? 'Ethnicity' : c.label;
           return (
             <label
               className="checkbox ml-2 is-size-7 is-flex is-align-items-center"
@@ -55,7 +53,7 @@ const ConditionParameter = ({ conditionalParam2, setConditionalParam2, selectedS
                 checked={isSelected}
                 onChange={() => toggle(c.id)}
               />
-              <b className="mx-1">{Label}</b>
+              <b className="mx-1">{ethnLabel}</b>
             </label>
           );
         })}

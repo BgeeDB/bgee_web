@@ -1,4 +1,3 @@
-import React from 'react';
 import isPlural from '../../helpers/isPlural';
 
 const GenesDetailsModal = ({ data }) => {

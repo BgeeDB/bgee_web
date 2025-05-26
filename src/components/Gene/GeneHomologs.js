@@ -31,10 +31,22 @@ const TaxonNameCell = ({ id, scientificName }) => (
     </LinkExternal>
   </>
 );
-const ExpressionComparisonCell = ({ query }) => (
+const ExpressionComparisonCellHomologs = ({ query }) => (
   <Link to={`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${query}`} rel="nofollow">
     Compare expression
   </Link>
+);
+const ExpressionComparisonCellParalogs = ({ query }) => (
+  <p>
+    <span>Compare expression: </span>
+      <Link to={`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${query}`} rel="nofollow">
+        table
+      </Link>
+    <span> | </span>
+    <Link to={`${PATHS.SEARCH.EXPRESSION_MATRIX}?${query}`} rel="nofollow">
+      graph
+    </Link>
+  </p>
 );
 const ExpandCell = ({ onClick }) => (
   <a className="expand-button" onClick={onClick}>
@@ -134,9 +146,16 @@ const GeneHomologs = ({ homologs, geneId, isLoading }) => {
       switch (key) {
         case 'taxonName':
           return <TaxonNameCell key={key} {...cell.taxon} />;
-        case 'expressionComparison':
+        case 'expressionComparisonHomologs':
           return (
-            <ExpressionComparisonCell
+            <ExpressionComparisonCellHomologs
+              key={key}
+              query={cell.storableParams?.queryString}
+            />
+          );
+        case 'expressionComparisonParalogs':
+          return (
+            <ExpressionComparisonCellParalogs
               key={key}
               query={cell.storableParams?.queryString}
             />
@@ -226,7 +245,7 @@ const GeneHomologs = ({ homologs, geneId, isLoading }) => {
                       hide: MEDIA_QUERIES.MOBILE_L,
                     },
                     {
-                      key: 'expressionComparison',
+                      key: 'expressionComparisonHomologs',
                       text: 'Expression comparison',
                       hide: MEDIA_QUERIES.DESKTOP_HOMOLOGS,
                     },
@@ -294,7 +313,7 @@ const GeneHomologs = ({ homologs, geneId, isLoading }) => {
                       hide: MEDIA_QUERIES.MOBILE_P,
                     },
                     {
-                      key: 'expressionComparison',
+                      key: 'expressionComparisonParalogs',
                       text: 'Expression comparison',
                       hide: MEDIA_QUERIES.MOBILE_L,
                     },

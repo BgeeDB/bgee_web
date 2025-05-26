@@ -28,10 +28,30 @@
         ],
         "react/jsx-props-no-spreading": "off",
         "react/prop-types": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-uses-react": "off",
         "no-unused-vars": "warn",
         "jsx-a11y/anchor-is-valid": "off",
         "jsx-a11y/alt-text": "off",
         "no-console": "off",
-        "jsx-a11y/label-has-associated-control": "off"
+        "jsx-a11y/label-has-associated-control": "off",
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+              "js": "never",
+              "jsx": "never",
+              "ts": "never",
+              "tsx": "never"
+            }
+          ]
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".jsx", ".ts", ".tsx"],
+                "moduleDirectory": ["src", "node_modules"]
+            }
+        }
     }
 }

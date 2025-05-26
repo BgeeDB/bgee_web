@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Error = ({ location: { state } }) => (
   <div>
     <p className="mb-3 ml-4">Something wrong happened!</p>
