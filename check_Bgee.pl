@@ -51,6 +51,8 @@ my $firefox = Firefox::Marionette->new(
 #    page_load => '', # a shortcut to allow directly providing the page_load timeout, instead of needing to use timeouts from the capabilities parameter. Overrides all longer ways. the document to load or the session's page_load duration to elapse before returning, which, by default is 5 minutes.
 #    survive => '', # if this is set to a true value, firefox will not automatically exit when the object goes out of scope. See the reconnect parameter for an experimental technique for reconnecting.
 );
+#use Data::Dumper;
+#print Dumper $firefox->timeouts(), "\n";
 my $URL;
 my $url_count = 0;
 #Read local sitemap files
@@ -132,11 +134,13 @@ if ( $check_url ){
                 #NOTE can be printed: print $firefox->await(...)->text();
                 #NOTE pages without async calls should not execute the await !!!
                 if ( $url =~ /^$ENV{'BASE_URL'}\/gene\// ){
-                    #TODO add a timeout!
+                    #TODO  add a timeout!
                     $firefox->await(
                         # gene expression table xpath | no gene expression xpath (so on xrefs because longer to run and be retrieved)
-                        sub { $firefox->find('/html/body/div[3]/div/section/div/div[2]/div[3]/div[4]/div/div/div/div') &&
+                        sub { #$firefox->find('/html/body/div[3]/div/section/div/div[2]/div[3]/div[2]/button') &&
+                              #NOTE the button is loaded quickly before the expression graph! Even if there is no data!
                               $firefox->find('/html/body/div[3]/div/section/div/div[2]/div[4]/div[4]/div/div/div/div') &&
+                              $firefox->find('/html/body/div[3]/div/section/div/div[2]/div[5]/div[4]/div/div/div/div') &&
                               $firefox->find('/html/body/div[3]/div/section/div/div[2]/div[@id="xrefs"]/div/div/div');
                             }
                     );
@@ -192,6 +196,8 @@ my $tester = TAP::Harness->new({
 });
 
 $tester->runtests( sort keys %tests );
+
+$firefox->quit();
 exit 0;
 
 
