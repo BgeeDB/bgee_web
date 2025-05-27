@@ -1,0 +1,39 @@
+const hasOwn = {}.hasOwnProperty;
+/**
+ * JavaScript utility for conditionally joining classNames together
+ * Copy of https://www.npmjs.com/package/classnames
+ * @return {string} css classes concatenated.
+ * @param args
+ */
+
+const classnames = (...args: any[]) => {
+  const classes: string[] = [];
+
+  args.forEach((arg) => {
+    const argType = typeof arg;
+    if (argType === 'string' || argType === 'number') {
+      classes.push(arg);
+    } else if (Array.isArray(arg)) {
+      if (arg.length) {
+        const inner = classnames(...arg);
+        if (inner) {
+          classes.push(inner);
+        }
+      }
+    } else if (argType === 'object') {
+      if (arg.toString === Object.prototype.toString) {
+        for (const key in arg) {
+          if (hasOwn.call(arg, key) && arg[key]) {
+            classes.push(key);
+          }
+        }
+      } else {
+        classes.push(arg.toString());
+      }
+    }
+  });
+
+  return classes.join(' ');
+};
+
+export default classnames;

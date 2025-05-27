@@ -37,50 +37,31 @@
 
 ### Libraries used
 
-- CRACO
+- [Axios](https://axios-http.com/)
 
-Create React App Configuration Override is an easy and comprehensible configuration layer for create-react-app.
-We are using CRACO because all the images assets should be in the public directory. (we override the webpack public that resolves the image path)
-[Apache license] (https://github.com/gsoft-inc/gsoft-license/blob/master/LICENSE)
+Promised based HTTP client [MIT license](https://github.com/axios/axios/blob/master/LICENSE)
 
-- Axios
+- [Bulma](https://bulma.io/)
 
-Promised based HTTP client
-[MIT license] (https://github.com/axios/axios/blob/master/LICENSE)
+CSS Framework, highly customizable and modularizable. Is very lightweight as well as simple to customize. [MIT license](https://opensource.org/licenses/mit-license.php)
 
-- Bulma
+- [React Router](https://reactrouter.com/home)
 
-CSS Framework, highly customizable and modularizable.
-Is very lightweight as well as simple to customize.
-[MIT license] (https://opensource.org/licenses/mit-license.php)
+React routing library [MIT license](https://github.com/remix-run/react-router/blob/main/LICENSE)
 
-- dlv
+- [react-select](https://react-select.com/home)
 
-Safely get a dot-notated path within a nested object, with ability to return a
-default if the full key path does not exist or the value is undefined
-Very lightweight implementation
-[MIT license] (https://oss.ninja/mit/developit/)
+React select allow a lot of features with select box [MIT License](https://github.com/JedWatson/react-select/blob/master/LICENSE)
 
-- React-Helmet
+- [vite](https://vite.dev)
 
-React-Helmet will manage all of your changes to the document head.
-[MIT license] (https://github.com/nfl/react-helmet/blob/master/LICENSE)
-
-- React-Router
-
-React routing library
-[MIT license] (https://github.com/remix-run/react-router/blob/main/LICENSE)
-
-- react-select
-
-React select allow a lot of features with select box [MIT Licensed] (https://react-select.com/home)
+Modern build tool for JS projects: dev server and build for production
 
 ### Styles
 
-- node-sass
+- sass
 
-Library that provides binding for Node.js to LibSass.
-It will natively compile .scss to css automatically.
+Library that provides binding for Node.js to LibSass. It will natively compile .scss to css automatically.
 
 - sass-loader:
 
@@ -96,4 +77,3 @@ Performs automated scans of your JavaScript files for common syntax and style er
 
 Scans files for style issues and automatically reformats the code to ensure
 consistent rules are being followed on the project.
-

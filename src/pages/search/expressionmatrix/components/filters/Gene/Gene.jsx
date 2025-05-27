@@ -1,4 +1,4 @@
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { getGeneLabel } from '../../../../../../helpers/gene';
 
 const Gene = ({ selectedGene, setSelectedGene, AutoCompleteByType }) => {

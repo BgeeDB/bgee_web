@@ -1,5 +1,3 @@
-/* eslint-disable import/no-useless-path-segments */
-/* eslint-disable import/named */
 import HelpIcon from '../../../../../../components/HelpIcon';
 // import { ALL_CALL_TYPE } from '../../../../rawdata/useLogic';
 import { ALL_CALL_TYPE } from '../../../useLogic';
@@ -28,21 +26,15 @@ const CallType = ({ callTypes = [], setCallTypes }) => {
           }}
           content={
             <>
-              Retrieve present expression calls, indicating significant
-              expression of a gene in a condition, and/or absent expression
-              calls, indicating reported absence of expression of a gene in a
-              condition.
+              Retrieve present expression calls, indicating significant expression of a gene in a condition, and/or
+              absent expression calls, indicating reported absence of expression of a gene in a condition.
             </>
           }
         />
       </label>
       <div className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper mt-2">
         {ALL_CALL_TYPE.map((ct) => (
-          <label
-            key={ct.id}
-            className="checkbox ml-2 is-size-7 is-flex is-align-items-center"
-            id={ct.id}
-          >
+          <label key={ct.id} className="checkbox ml-2 is-size-7 is-flex is-align-items-center" id={ct.id}>
             <input
               type="checkbox"
               checked={!!callTypes.find((d) => d === ct.id) || false}

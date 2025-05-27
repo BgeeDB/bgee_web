@@ -74,4 +74,3 @@ Define the id for the "Full length" data type
 ## dataTypeSourceLetter.SL_FULL_LENGTH
 
 Define the Tag letters for "Full length" in the "supported data type" column (TagSource component)
-

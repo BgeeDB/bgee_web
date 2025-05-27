@@ -1,5 +1,5 @@
 import HelpIcon from '../../../../../../components/HelpIcon';
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { getIdAndNameLabel } from '../../../../../../helpers/selects';
 // import { COND_PARAM2_ANAT_KEY } from '../../../../rawdata/useLogic';
 import { COND_PARAM2_ANAT_KEY } from '../../../useLogic';
@@ -20,8 +20,7 @@ const CellTypes = ({
 
   const onSelect = (nextValue) => {
     setSelectedCellTypes(nextValue);
-    if(nextValue.length > 0)
-      addConditionalParam(COND_PARAM2_ANAT_KEY);
+    if (nextValue.length > 0) addConditionalParam(COND_PARAM2_ANAT_KEY);
   };
 
   return (
@@ -47,8 +46,8 @@ const CellTypes = ({
           }}
           content={
             <>
-              Retrieve data in the substructures of the selected terms, for
-              instance to retrieve data in all sub-cell-types of neuron cell.
+              Retrieve data in the substructures of the selected terms, for instance to retrieve data in all
+              sub-cell-types of neuron cell.
             </>
           }
         />

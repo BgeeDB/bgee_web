@@ -58,7 +58,7 @@ $footer-padding: 1rem;
 
 button,
 .button {
-  font-size: $size-4 !important;
+  font-size: $size-4;
 }
 body {
   margin: 0;
@@ -77,8 +77,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
   border: 1px solid #999;
   &.bio-query {
     background-color: #0ff;
@@ -86,6 +85,15 @@ code {
     border: none;
   }
 }
+
+/* NOTE: trying to avoid having to use a useMemo in root.tsx to add a section,
+But the section padding flickers on page load */
+// section.section:not(body.homepage section.section) {
+//   flex-grow: 1;
+// }
+// body.homepage section.section {
+//   padding: 0;
+// }
 
 /*
  * navbar style
@@ -123,9 +131,9 @@ $colors: map-merge($colors, $custom-colors);
     .navbar-end {
       a {
         .logo-associations {
-            img {
-              padding: 0 20px 0 0;
-            }
+          img {
+            padding: 0 20px 0 0;
+          }
         }
         &:last-child {
           .logo-associations {
@@ -141,7 +149,7 @@ $colors: map-merge($colors, $custom-colors);
 
 //separate styling of the navbar for the homepage
 body.homepage {
-  background: #F7F7F7;
+  background: #f7f7f7;
   .navbar {
     width: 100%;
     position: absolute !important;
@@ -171,7 +179,7 @@ body.homepage {
   .navbar-item {
     padding: 0 5px !important;
     font: {
-      size: .9rem;
+      size: 0.9rem;
     }
   }
 }
@@ -292,12 +300,11 @@ body.homepage {
       }
     }
   }
-
 }
 
 @media screen and (min-width: $desktop) {
   .navbar-end {
-      align-items: center !important;
+    align-items: center !important;
   }
 }
 
@@ -333,11 +340,7 @@ body.homepage {
   border-left: 0;
   border-right: 0;
   border-bottom: 2px #e2011b solid;
-  -webkit-border-image: linear-gradient(
-    to right,
-    $title-color 70%,
-    rgba(146, 2, 9, 0)
-  );
+  -webkit-border-image: linear-gradient(to right, $title-color 70%, rgba(146, 2, 9, 0));
   border-image: linear-gradient(to right, $title-color 70%, rgba(146, 2, 9, 0));
   border-image-slice: 1;
 }
@@ -354,8 +357,7 @@ a.mail-link {
 a.external-link {
   background-position: right center;
   background-repeat: no-repeat;
-  background-image: linear-gradient(transparent, transparent),
-    url('/img/external-link.png');
+  background-image: linear-gradient(transparent, transparent), url('/img/external-link.png');
   background-size: 9px;
   padding-right: 13px;
 }
@@ -424,10 +426,10 @@ $table-cell-border-width: 0;
   max-width: 500px;
 }
 
-th {
-  -ms-user-select: none;
-  -webkit-user-select: none;
-}
+// th {
+//   -ms-user-select: none;
+//   -webkit-user-select: none;
+// }
 table.table {
   &.sortable {
     thead > tr > th {
@@ -456,7 +458,8 @@ table.table {
           .expand-content {
             display: block;
           }
-          .expand-button ion-icon {
+          // These lines enables the chevron to rotate in tables
+          .expand-button .lucide-chevron-down {
             transform: rotate(180deg);
             transition: 0.35s;
           }
@@ -466,7 +469,7 @@ table.table {
         .expand-content {
           display: none;
         }
-        .expand-button ion-icon {
+        .expand-button .lucide-chevron-down {
           transition: 0.35s;
         }
       }
@@ -508,34 +511,6 @@ span.icon {
 @import '../../node_modules/bulma/sass/helpers/visibility';
 
 @import '../../node_modules/bulma/bulma';
-@import '../../node_modules/@creativebulma/bulma-collapsible';
-
-.custom-accordion {
-  .message {
-    margin-bottom: 0.5rem;
-  }
-  .message a,
-  .message a.message-header {
-    color: $link !important;
-    font-weight: normal;
-  }
-  .message-header {
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    &.is-active {
-      border-radius: 4px 4px 0 0;
-    }
-  }
-  .message-body {
-    border-width: 0;
-    background-color: $body-background-color;
-    &.is-active {
-      border-width: 0 1px 1px;
-      border-radius: 0 0 4px 4px;
-    }
-  }
-}
 
 .color-primary {
   color: $primary !important;
@@ -688,7 +663,7 @@ a.image.cc {
     justify-content: center;
     align-items: center;
     background: #f2f2f2;
-//    color: $primary;
+    //    color: $primary;
     color: #df011b;
     font: {
       size: 2rem;
@@ -696,7 +671,7 @@ a.image.cc {
     }
     text-align: center;
     border-radius: 8px;
-    transition: background .3s;
+    transition: background 0.3s;
     text-decoration: none;
     &:hover {
       background: $dark-bg-color;
@@ -777,7 +752,7 @@ a.youtube-preview-image img {
   margin-left: auto;
   margin-right: auto;
 }
-img[src*="#tutoimgborder"] {
+img[src*='#tutoimgborder'] {
   border: 1px solid #363636;
 }
 
@@ -799,10 +774,6 @@ img[src*="#tutoimgborder"] {
       margin-top: 0.5rem;
     }
   }
-}
-
-ion-icon {
-  pointer-events: none;
 }
 
 .tags-source {
@@ -955,10 +926,6 @@ label.label {
       display: flex;
       align-items: center;
       color: #aaaaaa !important;
-      ion-icon {
-        font-size: 28px;
-        margin-right: 5px;
-      }
     }
   }
   .center-in-grid {
@@ -993,9 +960,6 @@ label.label {
     .close {
       margin-left: 5px;
       cursor: pointer;
-      ion-icon {
-        font-size: 20px;
-      }
     }
     .image-container {
       width: 260px;
@@ -1077,10 +1041,10 @@ label.label {
 
 .table-modal-button {
   cursor: pointer;
-  ion-icon {
-    font-size: 28px;
-    color: $primary;
-  }
+  // ion-icon {
+  //   font-size: 28px;
+  //   color: $primary;
+  // }
 }
 
 .gene-expression-modal-grid {
@@ -1248,7 +1212,7 @@ h1.title.in-md {
   margin-right: 5px;
 }
 .inline-list-separator::after {
-  content: ", ";
+  content: ', ';
 }
 
 /**********************/
@@ -1293,10 +1257,10 @@ h1.title.in-md {
   border-radius: 8px;
   background: transparent;
   cursor: pointer;
-  ion-icon {
-    color: $light-color;
-    margin-right: 5px;
-  }
+  // ion-icon {
+  //   color: $light-color;
+  //   margin-right: 5px;
+  // }
 }
 
 .navbar-item-button:active,
@@ -1351,7 +1315,7 @@ h1.title.in-md {
 
 .home-hero-banner {
   padding: 120px 0;
-  background: rgb(204,20,20);
+  background: rgb(204, 20, 20);
   background: radial-gradient(farthest-corner at 31% 55%, #e2011b 0%, #0a0e11 88%);
   border-radius: 0 0 30px 30px;
   .hero-body {
@@ -1400,7 +1364,7 @@ h1.title.in-md {
           size: 1.4rem;
           weight: 400;
         }
-        transition: box-shadow .2s ease;
+        transition: box-shadow 0.2s ease;
         border-radius: 10px;
         &:hover {
           box-shadow: 0 0 40px 0px #000;
@@ -1415,7 +1379,8 @@ h1.title.in-md {
 }
 
 @media screen and (max-width: $desktop) {
-  .column.is-6, .column.is-6-tablet {
+  .column.is-6,
+  .column.is-6-tablet {
     width: 100%;
   }
   .home-hero-banner {
@@ -1482,7 +1447,8 @@ h1.title.in-md {
       }
     }
     .content {
-      p, a {
+      p,
+      a {
         margin: 0;
         font: {
           size: 1.2rem;
@@ -1508,7 +1474,9 @@ h1.title.in-md {
   }
 }
 
-.home-card, .home-card figure, .home-card img {
+.home-card,
+.home-card figure,
+.home-card img {
   border-radius: 16px;
 }
 
@@ -1519,17 +1487,18 @@ h1.title.in-md {
   //-ms-transform: scale(0.5, 1); /* IE 9 */
   //-o-transform: scale(0.5, 1); /* Opera */
   transform: scale(0.5, 1); /* W3C */
-  content: "\25BA";
+  content: '\25BA';
   position: relative;
   margin-left: 2px;
 }
 
-.home-card h2 a, .home-card h2 a:hover {
+.home-card h2 a,
+.home-card h2 a:hover {
   color: $title-color !important;
 }
 
 .home-card h2 a:after {
-  content: "";
+  content: '';
 }
 
 .home-card-footer {
@@ -1607,7 +1576,7 @@ h1.title.in-md {
 .footer {
   padding: 40px 0 0;
   border-radius: 30px 30px 0 0;
-  background: #09111C;
+  background: #09111c;
   .left-wrapper,
   .right-wrapper {
     display: flex;
@@ -1629,7 +1598,8 @@ h1.title.in-md {
     }
   }
   .copyright {
-    padding: 140px 0 20px;
+    padding: 0 0 20px;
+    // padding: 140px 0 20px;
   }
 }
 
@@ -1775,7 +1745,7 @@ h1.title.in-md {
           a {
             height: 60px;
             font: {
-              size: 1.6rem
+              size: 1.6rem;
             }
           }
         }

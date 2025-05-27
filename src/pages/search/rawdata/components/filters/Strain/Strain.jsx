@@ -1,13 +1,7 @@
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { COND_PARAM2_STRAIN_KEY } from '../../../useLogic';
 
-const Strain = ({
-  selectedStrain,
-  setSelectedStrain,
-  AutoCompleteByType,
-  addConditionalParam,
-  selectedSpecies,
-}) => {
+const Strain = ({ selectedStrain, setSelectedStrain, AutoCompleteByType, addConditionalParam, selectedSpecies }) => {
   const getStrainOptions = AutoCompleteByType('strain', (result) => ({
     label: result?.object,
     value: result?.object,
@@ -16,8 +10,7 @@ const Strain = ({
 
   const onSelect = (nextValue) => {
     setSelectedStrain(nextValue);
-    if(nextValue.length > 0)
-      addConditionalParam(COND_PARAM2_STRAIN_KEY);
+    if (nextValue.length > 0) addConditionalParam(COND_PARAM2_STRAIN_KEY);
   };
 
   const label = selectedSpecies === 9606 ? 'Ethnicity' : 'Strain';

@@ -1,0 +1,306 @@
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { Download, X } from 'lucide-react';
+
+import PATHS from '../../paths/paths';
+import useQuery from '../../hooks/useQuery';
+import Bulma from '../../components/Bulma';
+import api from '../../api';
+import CreativeCommons from '../../components/CreativeCommons';
+import GridSpecies from '../../components/GridSpecies/GridSpecies';
+import classnames from '../../helpers/classnames';
+import GaEvent from '../../components/GaEvent/GaEvent';
+import ExpressionSearch from '../../components/Search/ExpressionSearch';
+import expressionPageHelper from '../../helpers/expressionPageHelper';
+import LinkExternal from '../../components/LinkExternal';
+import imagePath from '../../helpers/imagePath';
+import { getMetadata } from '~/helpers/metadata';
+
+export async function loader() {
+  try {
+    const res = await api.search.species.exprCalls();
+    const singleSpeciesList = res.data.downloadFilesGroups.map((o) => ({
+      ...o,
+      ...o.members[0],
+    }));
+    const files = {};
+    singleSpeciesList.forEach((s) => {
+      files[s.id.toString()] = {
+        anatSimple: s.downloadFiles.find(
+          (f) =>
+            f.category === 'expr_simple' &&
+            f.conditionParameters.length === 1 &&
+            f.conditionParameters[0] === 'anat_entity'
+        ),
+        anatAdvanced: s.downloadFiles.find(
+          (f) =>
+            f.category === 'expr_advanced' &&
+            f.conditionParameters.length === 1 &&
+            f.conditionParameters[0] === 'anat_entity'
+        ),
+        fullSimple: s.downloadFiles.find((f) => f.category === 'expr_simple' && f.conditionParameters.length > 1),
+        fullAdvanced: s.downloadFiles.find((f) => f.category === 'expr_advanced' && f.conditionParameters.length > 1),
+      };
+    });
+    return {
+      singleSpeciesList,
+      files,
+      kwList: res.data.speciesIdToKeywords,
+      allSpeciesName: singleSpeciesList.map((s) => ` ${s.name} ${s.speciesName}`).join(', '),
+    };
+  } catch (error: any) {
+    throw new Response(error.data?.message || error.message || 'Failed to load gene expression data', { status: 404 });
+  }
+}
+
+export function meta({ data }) {
+  return getMetadata({
+    title: 'Bgee Gene expression calls download page',
+    description: 'Download TSV files containing present/absent gene expression calls from Bgee',
+    keywords: `dataset, data download, gene expression calls, present/absent expression calls, ${data.allSpeciesName}`,
+  });
+}
+
+const GeneExpressionCalls = ({ loaderData }) => {
+  const { singleSpeciesList, files, kwList } = loaderData;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [search, setSearch] = React.useState('');
+  const filteredSingleSpecies = React.useMemo(() => {
+    const tmp = JSON.parse(JSON.stringify(singleSpeciesList));
+    if (search === '') return tmp;
+    const regExp = new RegExp(search, 'i');
+    return tmp.filter(({ id }) => (!kwList[id] ? false : Boolean(kwList[id].find((a) => regExp.test(a)))));
+  }, [singleSpeciesList, search, kwList]);
+
+  const speciesID = useQuery('id');
+
+  return (
+    <>
+      <div className="content has-text-centered">
+        <Bulma.Title size={3}>Gene expression calls</Bulma.Title>
+      </div>
+      <p className="is-size-5">
+        This page provides calls of baseline presence/absence of expression, and of differential over-/under-expression,
+        either in single species, or made comparable between multiple species. Click on a species or a group of species
+        to browse files available for download. It is possible to download these data directly into R using our{' '}
+        <LinkExternal to="https://bioconductor.org/packages/BgeeDB/">R package</LinkExternal>. See also{' '}
+        <Link to={PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES} className="internal-link">
+          processed expression values
+        </Link>
+        .
+      </p>
+      <p className="is-size-5">
+        All data are available under the{' '}
+        <LinkExternal to="https://creativecommons.org/publicdomain/zero/1.0/">
+          Creative Commons Zero license (CC0)
+        </LinkExternal>
+        .
+      </p>
+      <Bulma.Card className="form search-input mx-auto my-3">
+        <Bulma.Card.Body>
+          <div className="content">
+            <div className="field">
+              <label className="label" htmlFor="search-species">
+                Search species
+              </label>
+              <ExpressionSearch
+                search={search}
+                setSearch={setSearch}
+                elements={expressionPageHelper.autocompleteSpecies(filteredSingleSpecies, kwList, search)}
+                onRender={expressionPageHelper.autocompleteSpeciesRender(setSearch, navigate, location)}
+              />
+            </div>
+          </div>
+        </Bulma.Card.Body>
+      </Bulma.Card>
+      <Bulma.Card className="mt-4">
+        <Bulma.Card.Header>
+          <Bulma.Card.Header.Title className="is-size-4 has-text-primary">
+            Single-species <span className="ml-2 has-text-grey is-size-7">(click on species to see more details)</span>
+          </Bulma.Card.Header.Title>
+        </Bulma.Card.Header>
+        <Bulma.Card.Body>
+          <div className="content">
+            <div className="grid-species">
+              <GridSpecies
+                speciesList={filteredSingleSpecies}
+                defaultSelection={speciesID}
+                onClick={(species, isSelected) => {
+                  navigate(
+                    isSelected
+                      ? `${PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}?id=${species.id}`
+                      : PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS,
+                    { replace: true, preventScrollReset: true }
+                  );
+                }}
+                onRenderSelection={(species, { onClose }) => (
+                  <div className={classnames('expression-species is-flex is-flex-direction-row p-4')}>
+                    <div className="image-container">
+                      <Bulma.Image
+                        className="m-0"
+                        src={imagePath(`/species/${species.id}_light.jpg`)}
+                        alt={`species ${species.genus} ${species.speciesName}- ${species.name}`}
+                        fallback="https://via.placeholder.com/260"
+                        height={260}
+                        width={260}
+                      />
+                    </div>
+                    <div
+                      className="is-flex is-flex-direction-column is-justify-content-space-around ml-4"
+                      style={{ height: '100%', flex: 1, overflow: 'hidden' }}
+                    >
+                      <div className="is-flex is-flex-direction-column">
+                        <div className="is-flex is-justify-content-flex-end">
+                          <Link
+                            className="internal-link grey"
+                            to={`${PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES}?id=${species.id}`}
+                          >
+                            See processed expression values
+                          </Link>
+                          <div className="close" onClick={onClose}>
+                            <X />
+                          </div>
+                        </div>
+                        <p className="is-size-3">
+                          <i>{`${species.genus} ${species.speciesName}`}</i>
+                          {species.name ? ` (${species.name})` : ''}
+                        </p>
+                      </div>
+                      <div>
+                        <div>
+                          <p className="has-text-weight-semibold is-size-5">
+                            Presence/Absence of expression
+                            <Link
+                              className="is-size-6 internal-link ml-2 grey has-text-weight-normal"
+                              to={`${PATHS.SUPPORT.TUTORIAL_GENE_EXPR}`}
+                            >
+                              See documentation
+                            </Link>
+                          </p>
+                          <div>
+                            <div>
+                              <p className="has-text-weight-semibold mt-3">Anatomical entities only</p>
+                              <div className="field has-addons">
+                                {files?.[species.id.toString()]?.anatSimple && (
+                                  <p className="control">
+                                    <GaEvent
+                                      category="Gene Expression Calls"
+                                      action="download_anat-only_simple-file"
+                                      label={files[species.id.toString()].anatSimple.path}
+                                    >
+                                      <a className="button" href={files[species.id.toString()].anatSimple.path}>
+                                        <Download size={15} />
+                                        <span className="is-size-7 ml-2">Simple file</span>
+                                      </a>
+                                    </GaEvent>
+                                  </p>
+                                )}
+                                {files?.[species.id.toString()]?.anatAdvanced && (
+                                  <p className="control">
+                                    <GaEvent
+                                      category="Gene Expression Calls"
+                                      action="download_anat-only_advanced-file"
+                                      label={files[species.id.toString()].anatAdvanced.path}
+                                    >
+                                      <a className="button" href={files[species.id.toString()].anatAdvanced.path}>
+                                        <Download size={15} />
+                                        <span className="is-size-7 ml-2">Advanced File</span>
+                                      </a>
+                                    </GaEvent>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="has-text-weight-semibold mt-3">All conditions parameters</p>
+                              <div className="field has-addons">
+                                {files?.[species.id.toString()]?.fullSimple && (
+                                  <p className="control">
+                                    <GaEvent
+                                      category="Gene Expression Calls"
+                                      action="download_all-conditions-parameters_simple-file"
+                                      label={files[species.id.toString()].fullSimple.path}
+                                    >
+                                      <a className="button" href={files[species.id.toString()].fullSimple.path}>
+                                        <Download size={15} />
+                                        <span className="is-size-7 ml-2">Simple file</span>
+                                      </a>
+                                    </GaEvent>
+                                  </p>
+                                )}
+                                {files?.[species.id.toString()]?.fullAdvanced && (
+                                  <p className="control">
+                                    <GaEvent
+                                      category="Gene Expression Calls"
+                                      action="download_all-conditions-parameters_advanced-file"
+                                      label={files[species.id.toString()].fullAdvanced.path}
+                                    >
+                                      <a className="button" href={files[species.id.toString()].fullAdvanced.path}>
+                                        <Download size={15} />
+                                        <span className="is-size-7 ml-2">Advanced File</span>
+                                      </a>
+                                    </GaEvent>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <p className=" is-size-7 mt-2">
+                              <span className="is-underlined is-italic has-text-weight-semibold">All conditions</span>:
+                              combinations anatomy-development-sex-strain
+                            </p>
+                            <p className=" is-size-7">
+                              <span className="is-underlined is-italic has-text-weight-semibold">Advanced file</span>:
+                              includes information by data types
+                            </p>
+                            <div className=" is-size-7">
+                              <a
+                                href="https://creativecommons.org/publicdomain/zero/1.0/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Public domain license"
+                              >
+                                <Bulma.Image
+                                  src={imagePath(`/cc-zero.png`)}
+                                  alt="Creative Commons Zero license (CC0)"
+                                  height={15}
+                                  width={80}
+                                  style={{ margin: 0, padding: 0, textAlign: 'left' }}
+                                />
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              />
+            </div>
+          </div>
+        </Bulma.Card.Body>
+      </Bulma.Card>
+      <Bulma.Card className="mt-4">
+        <Bulma.Card.Header>
+          <Bulma.Card.Header.Title className="is-size-4 has-text-primary">
+            Multi-species{' '}
+            <span className="ml-2 has-text-grey is-size-7">
+              (orthologous genes in homologous anatomical structures)
+            </span>
+          </Bulma.Card.Header.Title>
+        </Bulma.Card.Header>
+        <Bulma.Card.Body>
+          <div className="content">
+            <p>These files will be available in a future release.</p>
+          </div>
+        </Bulma.Card.Body>
+      </Bulma.Card>
+      <Bulma.Columns className="mt-4">
+        <Bulma.C size={12}>
+          <CreativeCommons />
+        </Bulma.C>
+      </Bulma.Columns>
+    </>
+  );
+};
+export default GeneExpressionCalls;

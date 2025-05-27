@@ -1,5 +1,5 @@
 import HelpIcon from '../../../../../../components/HelpIcon';
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import { getIdAndNameLabel } from '../../../../../../helpers/selects';
 import { COND_PARAM2_ANAT_KEY } from '../../../../rawdata/useLogic';
 
@@ -9,7 +9,7 @@ const Tissues = ({
   AutoCompleteByType,
   hasTissueSubStructure,
   setHasTissueSubStructure,
-  addConditionalParam
+  addConditionalParam,
 }) => {
   const getTissueOptions = AutoCompleteByType('anat_entity', (result) => ({
     label: getIdAndNameLabel(result?.object),
@@ -19,8 +19,7 @@ const Tissues = ({
 
   const onSelect = (nextValue) => {
     setSelectedTissue(nextValue);
-    if(nextValue.length > 0)
-      addConditionalParam(COND_PARAM2_ANAT_KEY);
+    if (nextValue.length > 0) addConditionalParam(COND_PARAM2_ANAT_KEY);
   };
 
   return (
@@ -46,8 +45,8 @@ const Tissues = ({
           }}
           content={
             <>
-              Retrieve data in the substructures of the selected terms, for
-              instance to retrieve data in all subparts of the brain.
+              Retrieve data in the substructures of the selected terms, for instance to retrieve data in all subparts of
+              the brain.
             </>
           }
         />

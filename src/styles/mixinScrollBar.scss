@@ -1,9 +1,5 @@
 // Scroll-bar management
-@mixin scrollbars(
-  $size,
-  $foreground-color,
-  $background-color: mix($foreground-color, white, 30%)
-) {
+@mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white, 30%)) {
   // For Google Chrome
   &::-webkit-scrollbar {
     width: $size;

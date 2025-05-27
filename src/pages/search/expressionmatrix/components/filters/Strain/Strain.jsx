@@ -1,13 +1,8 @@
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 // import { COND_PARAM2_STRAIN_KEY } from '../../../../rawdata/useLogic';
 import { COND_PARAM2_STRAIN_KEY } from '../../../useLogic';
 
-const Strain = ({
-  selectedStrain,
-  setSelectedStrain,
-  AutoCompleteByType,
-  addConditionalParam,
-}) => {
+const Strain = ({ selectedStrain, setSelectedStrain, AutoCompleteByType, addConditionalParam }) => {
   const getStrainOptions = AutoCompleteByType('strain', (result) => ({
     label: result?.object,
     value: result?.object,
@@ -16,8 +11,7 @@ const Strain = ({
 
   const onSelect = (nextValue) => {
     setSelectedStrain(nextValue);
-    if(nextValue.length > 0)
-      addConditionalParam(COND_PARAM2_STRAIN_KEY);
+    if (nextValue.length > 0) addConditionalParam(COND_PARAM2_STRAIN_KEY);
   };
 
   return (

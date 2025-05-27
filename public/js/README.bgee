@@ -1,7 +1,0 @@
-The svg/ folder comes from the release tarball available from https://github.com/ionic-team/ionicons (in the src/ folder).
-
-The js files come from https://unpkg.com/ionicons@X.Y.Z/dist/ionicons/###.js
-They have to be downloaded manually (until better)
-    with X.Y.Z the version number
-    with ###.js the js file
-
