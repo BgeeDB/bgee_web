@@ -276,12 +276,9 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   };
 
   useEffect(() => {
-    triggerInitialSearch();
-  }, [geneId, speciesId]);
-
-  useEffect(() => {
-    triggerInitialSearch();
-  }, [dataType]);
+    const params = getSearchParams();
+    triggerInitialSearch(params);
+  }, [geneId, speciesId, dataTypeExpr]);
 
   // Perform API data request for subordinate terms
   const triggerSearchChildren = async (parentId: string, selectedTissueId: string) => {
@@ -513,28 +510,28 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
       const expScore = result.expressionScore.expressionScore;
       const isExpressed = result.expressionState === 'expressed';
 
-      return {
-        x: gName,
-        y: termId,
-        termId,
-        termName,
-        geneId: gId,
-        geneName: gName,
-        speciesId: specId,
-        anatEntityId,
-        anatEntityName,
-        cellTypeId,
-        cellTypeName,
-        value: expScore,
-        isExpressed,
-        hasDataAffy: result.dataTypesWithData.AFFYMETRIX,
-        hasDataEst: result.dataTypesWithData.EST,
-        hasDataInSitu: result.dataTypesWithData.IN_SITU,
-        hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
-        hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
-        ylvl: 0,
-      };
-    }) || [];
+    return {
+      x: gName?.length > 0 ? gName : gId,
+      y: termId,
+      termId,
+      termName,
+      geneId: gId,
+      geneName: gName,
+      speciesId: specId,
+      anatEntityId,
+      anatEntityName,
+      cellTypeId,
+      cellTypeName,
+      value: expScore,
+      isExpressed,
+      hasDataAffy: result.dataTypesWithData.AFFYMETRIX,
+      hasDataEst: result.dataTypesWithData.EST,
+      hasDataInSitu: result.dataTypesWithData.IN_SITU,
+      hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
+      hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
+      ylvl: 0
+    };
+  }) || [];
 
   return (
     <>

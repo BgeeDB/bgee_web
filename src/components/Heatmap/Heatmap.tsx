@@ -13,8 +13,7 @@ const SHOW_DEBUG_OPTIONS = false;
 // Add constant for localStorage key
 const STORAGE_KEYS = {
   USE_ADAPTIVE_SCALE: 'bgee-heatmap-adaptive-scale',
-  GRAPH_WIDTH: 'bgee-heatmap-graph-width',
-  GRAPH_HEIGHT: 'bgee-heatmap-graph-height',
+  CELL_WIDTH: 'bgee-heatmap-cell-width',
   SHOW_LEGEND: 'bgee-heatmap-show-legend',
   MARGIN_LEFT: 'bgee-heatmap-margin-left',
   X_LABEL_ROTATION: 'bgee-heatmap-x-label-rotation',
@@ -23,8 +22,7 @@ const STORAGE_KEYS = {
   BACKGROUND_COLOR: 'bgee-heatmap-background-color',
   SHOW_DESC_MAX: 'bgee-heatmap-show-desc-max',
   SHOW_MISSING_DATA: 'bgee-heatmap-show-missing-data',
-  SHOW_HOMOLOGS: 'bgee-heatmap-show-homologs',
-  SHOW_SETTINGS: 'bgee-heatmap-show-settings',
+  SHOW_SETTINGS: 'bgee-heatmap-show-settings'
 };
 
 // Add helper function
@@ -44,7 +42,6 @@ const Heatmap = ({
   backgroundColor,
   data,
   getChildData,
-  getHomologsData,
   yTerms,
   termProps,
   yLabelJustify = 'right',
@@ -64,21 +61,58 @@ const Heatmap = ({
   // COMPONENT STATE
   const [hoveredCell, setHoveredCell] = useState(null);
   const [clickedCell, setClickedCell] = useState(null);
-  const [showLegend, setShowLegend] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
-  const [xLabelRotation, setXLabelRotation] = useState(() => getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 0));
-  const [yLabelAlign, setYLabelAlign] = useState(() => getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
-  const [graphWidth, setGraphWidth] = useState(() => getStoredValue(STORAGE_KEYS.GRAPH_WIDTH, width));
-  const [graphHeight, setGraphHeight] = useState(() => getStoredValue(STORAGE_KEYS.GRAPH_HEIGHT, height));
-  const [colorPalette, setColorPalette] = useState(() => getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
-  const [bgColor, setBgColor] = useState(() => getStoredValue(STORAGE_KEYS.BACKGROUND_COLOR, backgroundColor));
-  const [marginLeft, setMarginLeft] = useState(() => getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
-  const [showDescMax, setShowDescMax] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
-  const [showMissingData, setShowMissingData] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
-  const [showHomologs, setShowHomologs] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_HOMOLOGS, false));
-  const [showSettings, setShowSettings] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_SETTINGS, false));
-  const [useAdaptiveScale, setUseAdaptiveScale] = useState(() =>
-    getStoredValue(STORAGE_KEYS.USE_ADAPTIVE_SCALE, false)
-  );
+  const [showLegend, setShowLegend] = useState(() => 
+    getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
+  const [xLabelRotation, setXLabelRotation] = useState(() => 
+    getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 0));
+  const [yLabelAlign, setYLabelAlign] = useState(() => 
+    getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
+  const [graphWidth, setGraphWidth] = useState(width);
+  const [graphHeight, setGraphHeight] = useState(height);
+  // outer width, if graphWidth > maxGraphWidth -> scale SVG down
+  const [maxGraphWidth, setMaxGraphWidth] = useState(800);
+  const [cellWidth, setCellWidth] = useState(() => 
+    getStoredValue(STORAGE_KEYS.CELL_WIDTH, 50));
+  const [colorPalette, setColorPalette] = useState(() => 
+    getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
+  const [bgColor, setBgColor] = useState(() => 
+    getStoredValue(STORAGE_KEYS.BACKGROUND_COLOR, backgroundColor));
+  const [marginLeft, setMarginLeft] = useState(() => 
+    getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
+  const [showDescMax, setShowDescMax] = useState(() => 
+    getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
+  const [showMissingData, setShowMissingData] = useState(() => 
+    getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
+  const [showSettings, setShowSettings] = useState(() => 
+    getStoredValue(STORAGE_KEYS.SHOW_SETTINGS, false));
+  const [useAdaptiveScale, setUseAdaptiveScale] = useState(() => 
+    getStoredValue(STORAGE_KEYS.USE_ADAPTIVE_SCALE, false));
+
+  // Add state to track input values during editing
+  const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
+  const [graphHeightInput, setGraphHeightInput] = useState(graphHeight);
+
+  // Update local input state without updating the actual graphWidth
+  const handleGraphWidthChange = (event) => {
+    setGraphWidthInput(event.target.value);
+  }
+
+  // Update the actual graphWidth and localStorage on blur
+  const handleGraphWidthBlur = (event) => {
+    const { value } = event.target;
+    setMaxGraphWidth(value);
+  }
+
+  // Update local input state without updating the actual graphHeight
+  const handleGraphHeightChange = (event) => {
+    setGraphHeightInput(event.target.value);
+  }
+
+  // Update the actual graphHeight and localStorage on blur
+  const handleGraphHeightBlur = (event) => {
+    const { value } = event.target;
+    setGraphHeight(value);
+  }
 
   // Move visibleTermIds before colorScale
   // Memoize the visible term IDs calculation
@@ -113,14 +147,9 @@ const Heatmap = ({
   }, [data, visibleTermIds, colorPalette, useAdaptiveScale]);
 
   // handle display property changes
-  const updateGraphWidth = ({ target: { value } }) => {
-    setGraphWidth(value);
-    localStorage.setItem(STORAGE_KEYS.GRAPH_WIDTH, JSON.stringify(value));
-  };
-
-  const updateGraphHeight = ({ target: { value } }) => {
-    setGraphHeight(value);
-    localStorage.setItem(STORAGE_KEYS.GRAPH_HEIGHT, JSON.stringify(value));
+  const updateCellWidth = ({ target: { value } }) => {
+    setCellWidth(value);
+    localStorage.setItem(STORAGE_KEYS.CELL_WIDTH, JSON.stringify(value));
   };
 
   const updateShowLegend = () => {
@@ -168,14 +197,7 @@ const Heatmap = ({
     const value = !showMissingData;
     setShowMissingData(value);
     localStorage.setItem(STORAGE_KEYS.SHOW_MISSING_DATA, JSON.stringify(value));
-  };
-
-  const updateShowHomologs = () => {
-    const value = !showHomologs;
-    setShowHomologs(value);
-    localStorage.setItem(STORAGE_KEYS.SHOW_HOMOLOGS, JSON.stringify(value));
-    if (getHomologsData) getHomologsData();
-  };
+  }
 
   const updateShowSettings = () => {
     const value = !showSettings;
@@ -347,6 +369,9 @@ const Heatmap = ({
             showDescMax={showDescMax}
             colorLegendWidth={200}
             colorLegendHeight={COLOR_LEGEND_HEIGHT}
+            maxCellWidth={cellWidth}
+            maxGraphWidth={maxGraphWidth}
+            setGraphWidth={setGraphWidth}
           />
 
           <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />
@@ -438,68 +463,108 @@ const Heatmap = ({
           </p>
         </header>
 
-        <div id="collapsible-settings" className={`is-collapsible ${showSettings ? 'is-active' : ''}`}>
-          {showSettings ? (
-            <div className="card-content">
-              <div className="columns">
-                <div className="column">
-                  <h1>DISPLAY</h1>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>Graph width:</td>
-                        <td>
-                          <input type="text" size={10} value={graphWidth} onChange={updateGraphWidth} />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Graph height:</td>
-                        <td>
-                          <input type="text" size={10} value={graphHeight} onChange={updateGraphHeight} />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Show Legend:</td>
-                        <td>
-                          <input type="checkbox" checked={showLegend} onChange={updateShowLegend} />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Y label width:</td>
-                        <td>
-                          <input type="text" size={10} value={marginLeft} onChange={updateYLabelWidth} />
-                        </td>
-                      </tr>
-                      {SHOW_DEBUG_OPTIONS ? (
-                        <tr>
-                          <td>X label rotation:</td>
-                          <td>
-                            <input type="text" size={10} value={xLabelRotation} onChange={updateXLabelRotation} />
-                          </td>
-                        </tr>
-                      ) : null}
-                      {SHOW_DEBUG_OPTIONS ? (
-                        <tr>
-                          <td>Y label justify:</td>
-                          <td>
-                            <select value={yLabelAlign} onChange={updateYLabelAlign}>
-                              <option value="left">left</option>
-                              <option value="right">right</option>
-                            </select>
-                          </td>
-                        </tr>
-                      ) : null}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="column">
-                  <h1>STYLE</h1>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>color palette:</td>
-                        <td>
-                          <select value={colorPalette} onChange={updateColorPalette}>
+        <div 
+          id="collapsible-settings" 
+          className={`is-collapsible ${showSettings ? "is-active" : ""}`}
+        >
+        {showSettings ? 
+          <div className="card-content">
+            <div className="columns">
+              <div className="column">
+                <h1>DISPLAY</h1>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>Graph width:</td>
+                      <td>
+                        <input 
+                          type="text"
+                          size="10"
+                          value={graphWidthInput}
+                          onChange={handleGraphWidthChange}
+                          onBlur={handleGraphWidthBlur}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Graph height:</td>
+                      <td>
+                        <input 
+                          type="text"
+                          size="10"
+                          value={graphHeightInput}
+                          onChange={handleGraphHeightChange}
+                          onBlur={handleGraphHeightBlur}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Cell width:</td>
+                      <td>
+                        <input 
+                          type="text"
+                          size="10"
+                          value={cellWidth}
+                          onChange={updateCellWidth}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Show Legend:</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={showLegend}
+                          onChange={updateShowLegend}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Y label width:</td>
+                      <td>
+                        <input 
+                          type="text"
+                          size="10"
+                          value={marginLeft}
+                          onChange={updateYLabelWidth}
+                        />
+                      </td>
+                    </tr>
+                    { SHOW_DEBUG_OPTIONS ? (
+                    <tr>
+                      <td>X label rotation:</td>
+                      <td>
+                        <input 
+                          type="text"
+                          size="10"
+                          value={xLabelRotation}
+                          onChange={updateXLabelRotation}
+                        />
+                      </td>
+                    </tr>
+                    ) : null}
+                    { SHOW_DEBUG_OPTIONS ? (
+                    <tr>
+                      <td>Y label justify:</td>
+                      <td>
+                        <select value={yLabelAlign} onChange={updateYLabelAlign}>
+                          <option value="left">left</option>
+                          <option value="right">right</option>
+                        </select>
+                      </td>
+                    </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
+              <div className="column">
+                <h1>STYLE</h1>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>color palette:</td>
+                      <td>
+                        <select value={colorPalette} onChange={updateColorPalette}>
                             <option value="magma">magma</option>
                             <option value="inferno">inferno</option>
                             <option value="plasma">plasma</option>
@@ -525,30 +590,27 @@ const Heatmap = ({
                       </tr>
                     </tbody>
                   </table>
-                </div>
-                <div className="column">
-                  {SHOW_DEBUG_OPTIONS ? (
-                    <div>
-                      <h1>DATA</h1>
-                      <table>
-                        <tbody>
-                          <tr>
-                            <td>Show missing data:</td>
-                            <td>
-                              <input type="checkbox" checked={showMissingData} onChange={updateShowMissingData} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Show homologs:</td>
-                            <td>
-                              <input type="checkbox" checked={showHomologs} onChange={updateShowHomologs} />
-                            </td>
-                          </tr>
-
-                          <tr>
-                            <td>Show max. descendant score as:</td>
-                            <td>
-                              <select value={showDescMax} onChange={updateShowDescMax}>
+              </div>
+              <div className="column">
+                { SHOW_DEBUG_OPTIONS ? (
+                  <div>
+                    <h1>DATA</h1>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>Show missing data:</td>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={showMissingData}
+                              onChange={updateShowMissingData}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Show max. descendant score as:</td>
+                          <td>
+                            <select value={showDescMax} onChange={updateShowDescMax}>
                                 <option value="border">border</option>
                                 <option value="center">center</option>
                                 <option value="split">split cell</option>

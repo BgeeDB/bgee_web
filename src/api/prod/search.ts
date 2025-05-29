@@ -507,14 +507,21 @@ const search = {
         params.append('detailed_rp', detailedRP ? '1' : '0');
 
         // are we using a dataHash?
-        if (form.initSearch) {
-          // -> use initSearch params
-
-          for (const [key, val] of form.initSearch) {
-            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
+        if (form?.initSearch) { // -> use initSearch params
+          // eslint-disable-next-line no-restricted-syntax
+          for (const [key, val] of form?.initSearch) {
+            if (
+              key !== 'data_type' &&
+              key !== 'offset' &&
+              key !== 'limit' &&
+              key !== 'pageType'
+            ) {
               params.append(key, val);
             }
           }
+        }
+        if (form?.selectedGene) {
+          form.selectedGene.forEach((g) => params.append('gene_id', g));
         }
 
         const paramsURLCalled = params.toString();

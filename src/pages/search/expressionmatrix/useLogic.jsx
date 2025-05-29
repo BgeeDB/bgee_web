@@ -1184,17 +1184,14 @@ const useLogic = (isExprCalls) => {
         const simpleParams = resp1.resp.requestParameters;
 
         // Check for gene_list first before processing other parameters
-        if (simpleParams.gene_list) {
+        if (simpleParams.gene_list && simpleParams.species_id) {
           // Join array items with newlines and encode for URL
           const encodedGeneList = simpleParams.gene_list.join('%0A');
           // Redirect to same page with gene_list parameter
-          navigate(
-            {
-              pathname: loc.pathname,
-              search: `?gene_list=${encodedGeneList}`,
-            },
-            { replace: true, preventScrollReset: true }
-          );
+          history.replace({
+            pathname: loc.pathname,
+            search: `?gene_list=${encodedGeneList}`
+          });
           return; // Exit the entire function
         }
 
@@ -1248,15 +1245,7 @@ const useLogic = (isExprCalls) => {
     } catch (error) {
       console.error('[initFromUrlParams] Error:', error);
     } finally {
-      // console.log(`[useLogic.initFromUrlParams] finally.`);
-      // TODO: Problem with search after migration to react-router 7 is here.
-      // In the original code it gets there, but next time it goes to the useEffect below the isInitializingFromUrl is true
-      // Which works, but should not be expected since you just changed the state to false (quite logical, the whole point of state)
-      // With react-router 7 it is properly set to false as expected, but then the search is not triggered.
-      // Commenting this out fix the search. Not sure if there are any side effects though (does not look like it, the whole logic is a mess)
-      // You should really really really consider to rewrite the whole component and logic
-      // And never ever use raw data as a base for a new component. It is the worst piece of code I have ever seen in my entire life.
-      // setIsInitializingFromUrl(false);
+      setIsInitializingFromUrl(false);
     }
   };
 
@@ -1288,10 +1277,10 @@ const useLogic = (isExprCalls) => {
 
     const searchParams = new URLSearchParams(loc.search);
     const geneList = searchParams.get('gene_list');
-
+    const speciesId = searchParams.get('species_id');
     if (geneList) {
       processGeneList(geneList);
-    } else if (!loc.search && !isFirstSearch && !isLoading) {
+    } else if(!loc.search && !isFirstSearch && !isLoading) {
       resetForm(false, true);
     } else if (loc.search?.length > 0 && !isInitializingFromUrl && !isProcessingGeneList) {
       setIsInitializingFromUrl(true);
@@ -1372,7 +1361,7 @@ const useLogic = (isExprCalls) => {
   };
 
   // Add function to process gene list
-  const processGeneList = async (geneListParam) => {
+  const processGeneList = async (geneListParam, speciesId) => {
     if (!geneListParam) return;
 
     setIsProcessingGeneList(true);
@@ -1380,43 +1369,48 @@ const useLogic = (isExprCalls) => {
 
     try {
       // Get search results for all genes
-      const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
+      const searchResults = await Promise.all(
+        geneIds.map(geneId =>
+          api.search.genes.geneSearchResult(geneId)
+        )
+      );
 
       // Process results
-      const validResults = searchResults.filter(
-        (result) => result.code === 200 && result.data.result.totalMatchCount === 1
+      const validResults = searchResults.filter(result =>
+        result.code === 200 &&
+        result.data.result.totalMatchCount === 1
       );
 
-      if (validResults.length === 0) {
-        console.error('No valid gene matches found');
-        return;
-      }
+      // if (validResults.length === 0) {
+      //   console.error('No valid gene matches found');
+      //   return;
+      // }
 
-      // Get first gene's species
-      const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
+      // // Get first gene's species
+      // const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
 
       // Verify all genes are from same species
-      const allSameSpecies = validResults.every(
-        (result) => result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
+      const allSameSpecies = validResults.every(result =>
+        result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
       );
 
-      if (!allSameSpecies) {
-        console.error('Genes must all be from the same species');
-        return;
-      }
+      // if (!allSameSpecies) {
+      //   console.error('Genes must all be from the same species');
+      //   return;
+      // }
 
       // Set species
       const speciesValue = {
         label: getSpeciesLabel(firstSpecies),
-        value: firstSpecies.id,
+        value: firstSpecies.id
       };
 
       // Set genes
-      const genes = validResults.map((result) => {
+      const genes = validResults.map(result => {
         const { gene } = result.data.result.geneMatches[0];
         return {
           label: getGeneLabel(gene),
-          value: gene.geneId,
+          value: gene.geneId
         };
       });
 
@@ -1424,6 +1418,7 @@ const useLogic = (isExprCalls) => {
       setIsInitializingFromUrl(true);
       setSelectedSpeciesFromUrl(speciesValue);
       setSelectedGene(genes);
+
     } catch (error) {
       console.error('Error processing gene list:', error);
     } finally {
