@@ -21,7 +21,7 @@ export async function loader({ params }) {
 export function meta({ data }) {
   data = data.data;
   return getMetadata({
-    title: `${data.experiment.name ? data.experiment.name : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`,
+    title: `${data.experiment.name ? `${data.experiment.id} ${data.experiment.name}` : `${data.experiment.id} ${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`,
     description: `${data.experiment.description ? data.experiment.description : `${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`,
     keywords: `experiment,${data.experiment.id}${data.experiment.name ? `,${data.experiment.name}` : ''}`,
     link: `${config.genericDomain}${PATHS.SEARCH.EXPERIMENT.replace(':id', data?.experiment?.id)}`,
