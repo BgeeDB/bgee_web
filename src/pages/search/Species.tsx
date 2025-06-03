@@ -29,7 +29,7 @@ export function meta({ data }) {
   const metaDescription = `General information and datasets available
       in Bgee for species
       ${data.species.genus}  ${data.species.speciesName}
-      ${data.species.name ? `( ${data.species.name} )` : ''}`;
+      ${data.species.name ? `(${data.species.name})` : ''}`;
   const metaKeywords = `gene expression in
       ${data.species.genus} ${data.species.speciesName},
       ${data.species.name ? `gene expression in ${data.species.name} , ` : ''}
@@ -37,11 +37,13 @@ export function meta({ data }) {
       ${data.species.name ? `${data.species.name} , ` : ''}
       species, taxon`;
   const metaLink = `${config.genericDomain}${PATHS.SEARCH.SPECIES_ITEM.replace(':id', data.species.id)}`;
+  const metaImg = imagePath(`/species/${data.species.id}_light.jpg`);
   return getMetadata({
     title: metaTitle,
     description: metaDescription,
     keywords: metaKeywords,
     link: metaLink,
+    img: metaImg,
     schemaorg: [speciesToLdJSON({ ...data, url: metaLink })],
   });
 }

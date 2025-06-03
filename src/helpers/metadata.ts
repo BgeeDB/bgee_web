@@ -15,6 +15,7 @@ export function getMetadata({
   link = '',
   schemaorg = [],
   img = `${config.genericDomain}/img/logo/bgee13-logo.png`,
+  logo = `${config.genericDomain}/img/logo/bgee13-logo.png`,
 }: {
   title?: string;
   description?: string;
@@ -51,7 +52,7 @@ export function getMetadata({
     },
     {
       property: 'og:logo',
-      content: img,
+      content: logo,
     },
     {
       property: 'og:image',
