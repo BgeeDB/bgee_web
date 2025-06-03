@@ -30,7 +30,7 @@ const ontologies = [
             title: 'Developmental stage ontologies',
             image: {
               src: imagePath('/logo/github-logo.png'),
-              alt: 'Github logo',
+              alt: 'GitHub logo',
             },
             link: 'https://github.com/obophenotype/developmental-stage-ontologies',
             linkType: 'external',
@@ -65,7 +65,7 @@ const ontologies = [
             title: 'Confidence Information Ontology (CIO)',
             image: {
               src: imagePath('/logo/github-logo.png'),
-              alt: 'Github logo',
+              alt: 'GitHub logo',
             },
             link: 'https://github.com/BgeeDB/confidence-information-ontology',
             linkType: 'external',
@@ -85,7 +85,7 @@ const ontologies = [
             title: 'Homology ontology (HOM)',
             image: {
               src: imagePath('/logo/github-logo.png'),
-              alt: 'Github logo',
+              alt: 'GitHub logo',
             },
             link: 'https://github.com/BgeeDB/homology-ontology',
             linkType: 'external',
@@ -138,6 +138,74 @@ const ontologies = [
               {
                 type: 'text',
                 content: '. We also manually modified mapping to terms from external ontologies.',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        children: [
+          {
+            type: 'card',
+            title: 'Cell Ontology (CL)',
+            image: {
+              src: imagePath('/logo/cell-ontology-logo.png'),
+              alt: 'Cell Ontology logo',
+            },
+            link: 'https://obophenotype.github.io/cell-ontology/',
+            linkType: 'external',
+            classNames: 'mb-3',
+          },
+          {
+            type: 'rich_text',
+            classNames: 'has-text-centered',
+            content: [
+              {
+                type: 'text',
+                content: 'The Cell Ontology (CL) is an ',
+              },
+              {
+                type: 'link_external',
+                path: 'https://obofoundry.org/ontology/cl.html',
+                text: 'OBO Foundry ontology',
+              },
+              {
+                type: 'text',
+                content: ' covering the domain of canonical, natural biological cell types.',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        children: [
+          {
+            type: 'card',
+            title: 'scFAIR metadata schema (scFAIR)',
+            image: {
+              src: imagePath('/logo/github-logo.png'),
+              alt: 'GitHub logo',
+            },
+            link: 'https://github.com/dosumis/single-cell-curation/blob/broadening-species-specificity/schema/5.1.0-broad/schema.md',
+            linkType: 'external',
+            classNames: 'mb-3',
+          },
+          {
+            type: 'rich_text',
+            classNames: 'has-text-centered',
+            content: [
+              {
+                type: 'text',
+                content: 'A fork of the CELLxGENE schema adapted to the ',
+              },
+              {
+                type: 'link_external',
+                path: 'https://sc-fair.org/',
+                text: 'scFAIR',
+              },
+              {
+                type: 'text',
+                content: ' project.',
               },
             ],
           },
