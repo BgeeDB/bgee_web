@@ -1,6 +1,6 @@
 # Search Experiments, Annotations, and Processed Expression Values
 
-Instructions on how to search and filter Bgee _experiments_, _raw data annotations_ and _processed expression values_, and information on the generated results table.
+Instructions on how to search and filter Bgee _experiments_, _curated annotations_ and _processed expression values_, and information on the generated results table.
 
 - [Introduction](#introduction 'Quick jump to this section')
 - [Search Form](#search-form 'Quick jump to this section')
@@ -9,16 +9,16 @@ Instructions on how to search and filter Bgee _experiments_, _raw data annotatio
   - [Results Table](#results-table 'Quick jump to this section')
   - [Results Table - Within an Experiment](#result-table---within-an-experiment 'Quick jump to this section')
   - [Description of Results](#description-of-results 'Quick jump to this section')
-- [Raw Data Annotations](#raw-data-annotations 'Quick jump to this section')
+- [Curated Annotations](#curated-annotations 'Quick jump to this section')
   - [Description of Results](#description-of-results-1 'Quick jump to this section')
 - [Processed Expression Values](#processed-expression-values 'Quick jump to this section')
   - [Description of Results](#description-of-results-2 'Quick jump to this section')
 
 ## Introduction
 
-Bgee data can be searched and filtered through the _Experiments_, _Raw data annotations_ and _Processed expression values_ pages. Each page shares a common search form and filtering options and will display a results table that can be exported. The search form, filtering options, and data in the results table are described in detail below.
+Bgee data can be searched and filtered through the _Experiments_, _Curated annotations_ and _Processed expression values_ pages. Each page shares a common search form and filtering options and will display a results table that can be exported. The search form, filtering options, and data in the results table are described in detail below.
 
-To start a search, go to the _Search_ section of Bgee's homepage toolbar and select the _Experiments_, _Raw data annotations_ or _Processed expression values_ subsection. Once on a page, you can easily alternate between data types.
+To start a search, go to the _Search_ section of Bgee's homepage toolbar and select the _Experiments_, _Curated annotations_ or _Processed expression values_ subsection. Once on a page, you can easily alternate between data types.
 
 ## Search Form
 
@@ -49,7 +49,7 @@ The data can be further filtered from the results table.
 
 ### Available filters
 
-Filters can differ depending on the data page (_experiments_, _raw data annotations_, or _processed expression values_) and the data type (bulk RNA-seq, scRNA-seq, affymetrix, ISH, or EST).
+Filters can differ depending on the data page (_experiments_, _curated annotations_, or _processed expression values_) and the data type (bulk RNA-seq, scRNA-seq, affymetrix, ISH, or EST).
 The following filters can always be applied:
 
 - **Species**: You can search using the NCBI taxon ID (e.g. 9606) or the common name of the species (e.g. human). Selection of multiple species is supported.
@@ -62,7 +62,7 @@ The following filters can be applied only on some data pages or data types:
 
 - **Cell type**: Only available for single cell RNA-Seq data type (i.e. table scRNASeq). Selection of multiple terms is supported. You can search using common terms, or the Cell Ontology ID.
 - **Experiments**: Available for all data types except ESTs, as such a concept does not exist for the EST data type. Select the experiment(s) of interest, either by the experiment name or the experiment ID. Multiple experiments can be selected.
-- **Assays**: Available for all data types for _Raw data annotations_ and _Processed expression values_ data. Also available for _Experiments_ data of ESTs. Select the assay of interest. Can either be the assay name or the assay ID. Multiple assays can be selected.
+- **Assays**: Available for all data types for _Curated annotations_ and _Processed expression values_ data. Also available for _Experiments_ data of ESTs. Select the assay of interest. Can either be the assay name or the assay ID. Multiple assays can be selected.
 
 ### Apply filters
 
@@ -98,7 +98,7 @@ Due to the number of potential entries in the result table, we do not support th
 
 The experiments tab allows you to retrieve the experiments in Bgee that match the specific conditions you are interested in (e.g. species, tissue, developmental stage, etc.) and retrieve library-specific expression values.
 
-We will focus this tutorial on the Mus musculus experiment ERP012910. To access the page click on the _Search_ tab in the toolbar then click _Raw data annotated and processed_ which will bring you to the Experiments search page. Type in the experiment of interest (ERP012910) in the right search form entitled "Experiment or assay ID" and click _Submit_. Next, click the ERP012910 link in the Experiment ID column to access the ERP012910 experiment page. The video below details how to reach the experiment page in Bgee 15.0. Additionally, you can access the page directly at https://www.bgee.org/experiment/ERP012910.
+We will focus this tutorial on the Mus musculus experiment ERP012910. To access the page click on the _Search_ tab in the toolbar then click _Curated annotated and processed_ which will bring you to the Experiments search page. Type in the experiment of interest (ERP012910) in the right search form entitled "Experiment or assay ID" and click _Submit_. Next, click the ERP012910 link in the Experiment ID column to access the ERP012910 experiment page. The video below details how to reach the experiment page in Bgee 15.0. Additionally, you can access the page directly at https://www.bgee.org/experiment/ERP012910.
 
 ![](../img/doc/Raw-data-interface/Fig1-Experiment-page-howtogetthere.gif#tutoimgborder)
 
@@ -117,7 +117,7 @@ The four columns contained in the table are:
 - **Experiment ID**: refers to a unique identifier assigned to the specific experiment done in the study. You can click on this link to access further information on an experiment. For EST data, the _Library ID_ is used instead of the _Experiment ID_.
 - **Experiment name**: defines the title used to designate this experiment.
 - **Description**: a more detailed description of how the experiment was done and the aims of the project.
-- **Link to raw data annotations**: this link will allow you to see all libraries included in this experiment (inside Bgee) through our raw data annotations page (for further details on this page, see [Raw data annotations](#raw-data-annotations) section).
+- **Link to curated annotations**: this link will allow you to see all libraries included in this experiment (inside Bgee) through our curated annotations page (for further details on this page, see [Curated annotations](#curated-annotations) section).
 
 ### Experiment general information
 
@@ -135,7 +135,7 @@ The bottom section of the page contains the results table where each row represe
 
 The top of the results page has a filter option that filters all the columns using the value(s) you provide. There is also a _Show X entries_ option where you can change the number of rows displayed in the results table, and you can browse the different tabs of results by clicking the page number or the _Next/Previous_ button on the right.
 
-As with the _Raw data annotations_ or _Processed expression values_ pages, the columns of the results table will depend on the data type selected on top of the filter options. We describe in the _Column description_ a definition of all columns present in at least one data type.
+As with the _Curated annotations_ or _Processed expression values_ pages, the columns of the results table will depend on the data type selected on top of the filter options. We describe in the _Column description_ a definition of all columns present in at least one data type.
 
 ### Description of results
 
@@ -160,9 +160,9 @@ As with the _Raw data annotations_ or _Processed expression values_ pages, the c
 - **Max rank:** When performing a fractional ranking of the genes in the annotated sample, based on their expression level, maximum rank attained in the sample. Used to normalize ranks across samples and compute expression scores in Bgee.
 - **Link to processed expression values:** The "Browse results" link allows you to access the processed expression values for this library. It will include the expression level and expression p-value for each available gene.
 
-## Raw data annotations
+## Curated annotations
 
-The raw data annotations tab allows you to retrieve all libraries in Bgee that match your selected conditions and access their fully annotated raw (unprocessed) data. Similar to the _experiments_ and _processed expression values_ pages, you can fill out the form at the top of the page to specify in which species, tissue, developmental stage, or any other condition you want to see the available data for. You may also just want to select a specific experiment on the top right next to the form and see all available libraries for that experiment.
+The curated annotations tab allows you to retrieve all libraries in Bgee that match your selected conditions and access their fully annotated raw (unprocessed) data. Similar to the _experiments_ and _processed expression values_ pages, you can fill out the form at the top of the page to specify in which species, tissue, developmental stage, or any other condition you want to see the available data for. You may also just want to select a specific experiment on the top right next to the form and see all available libraries for that experiment.
 
 ![](../img/doc/Raw-data-interface/Raw-data-annotation_homepage.png#tutoimgborder)
 

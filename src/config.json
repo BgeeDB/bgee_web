@@ -6,7 +6,7 @@
   "prodDomain": "https://www.bgee.org",
   "permanentVersionedDomain": "https://www.bgee.org/bgee15-2",
   "imageDomain": "/img",
-  "apiDomain": "https://www.bgee.org/api",
+  "apiDomain": "http://bioinfo.unil.ch:8080/api",
   "ftpDomain": "https://www.bgee.org/ftp/current",
   "archivedVersion": [
     {
@@ -39,7 +39,7 @@
   "oboLibraryOboPath": "http://purl.obolibrary.org/obo/",
   "oboLibraryNCBITaxonPath": "http://purl.obolibrary.org/obo/NCBITaxon_",
   "isRawDataOnly": false,
-  "isDevOnly": false,
+  "isDevOnly": true,
   "dataType_RNA_SEQ": 1,
   "dataType_FULL_LENGTH": 2,
   "dataType_AFFYMETRIX": 3,

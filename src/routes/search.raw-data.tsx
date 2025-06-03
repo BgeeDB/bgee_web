@@ -4,10 +4,10 @@ import { DATA_TYPES, EXPERIMENTS, searchRawData } from '~/pages/search/rawdata/u
 
 export function meta() {
   return getMetadata({
-    title: 'Raw data annotated and processed',
-    description: 'Search for Experiments, Raw data annotations and Processed expression values',
+    title: 'Curated annotated and processed',
+    description: 'Search for Experiments, Curated annotations and Processed expression values',
     keywords:
-      'Raw data, annotations, annotated, processed, experiments, raw data annotations, processed expression values',
+      'Curated, curation, annotations, annotated, processed, experiments, curated annotations, processed expression values',
   });
 }
 

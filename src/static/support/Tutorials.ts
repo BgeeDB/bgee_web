@@ -195,7 +195,7 @@ const tutorialValues = [
               {
                 type: 'text',
                 content:
-                  'How to search and filter experiments, raw data annotations, and processed expression values in the Bgee database.',
+                  'How to search and filter experiments, curated annotations, and processed expression values in the Bgee database.',
               },
             ],
           },

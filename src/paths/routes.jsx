@@ -109,11 +109,11 @@ const SEARCH = {
   },
   [PATHS.SEARCH.RAW_DATA_ANNOTATIONS]: {
     // component: () => <RawDataAnnotations />,
-    title: 'Raw data annotated and processed',
+    title: 'Curated annotated and processed',
     // meta: {
-    //   title: 'Raw data annotated and processed',
-    //   description: 'Search for Experiments, Raw data annotations and Processed expression values',
-    //   keywords: 'Raw data, annotations, annotated, processed, experiments, raw data annotations, processed expression values',
+    //   title: 'Curateed annotated and processed',
+    //   description: 'Search for Experiments, Curated annotations and Processed expression values',
+    //   keywords: 'Curation, curated, annotations, annotated, processed, experiments, curated annotations, processed expression values',
     // },
   },
   [PATHS.SEARCH.EXPRESSION_CALLS]: {
@@ -290,11 +290,11 @@ const SUPPORT = {
   },
   [PATHS.SUPPORT.TUTORIAL_RAW_DATA]: {
     // source: TutoRawDataFile,
-    title: 'Tutorial: raw data',
+    title: 'Tutorial: curated data',
     // meta: {
-    //   title: 'Bgee raw data interface tutorial',
-    //   description: 'Bgee Tutorial about the raw data interface',
-    //   keywords: 'Tutorial, raw data, experiments, libraries, processed expression values',
+    //   title: 'Bgee curated data interface tutorial',
+    //   description: 'Bgee Tutorial about the curated data interface',
+    //   keywords: 'Tutorial, curated data, experiments, libraries, processed expression values',
     // },
   },
   [PATHS.SUPPORT.TUTORIAL_ANAT_HOMOLOGY]: {

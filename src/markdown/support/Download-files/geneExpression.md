@@ -36,7 +36,7 @@ For each gene and each sample in Bgee, we produce a p-value based on a null hypo
 
 We capture information about the anatomical localization of samples, their developmental and life stage, sex, and strain or ethnicity. We either manually capture this information using ontologies and controlled vocabularies, or we map existing annotations provided by MODs to these ontologies and vocabularies.
 
-After p-values are generated from the raw data for each gene and sample, they are propagated using anatomical and life stage ontologies. For instance, the p-value obtained for a gene in a sample studying the condition 'midbrain' at 'aged stage', will be propagated to the condition 'brain' at 'adult stage'. All p-values are propagated in a similar way toward the root of the graph of conditions.
+After p-values are generated from the curated data for each gene and sample, they are propagated using anatomical and life stage ontologies. For instance, the p-value obtained for a gene in a sample studying the condition 'midbrain' at 'aged stage', will be propagated to the condition 'brain' at 'adult stage'. All p-values are propagated in a similar way toward the root of the graph of conditions.
 
 After all p-values have been propagated, we apply a Benjamini-Hochberg FDR correction to generate one FDR p-value per gene and condition.
 

@@ -22,7 +22,7 @@ We applied a stringent re-annotation process to the GTEx data to retain only hea
 
 In total, only 50% of samples were kept; these represent a high quality subset of GTEx. All these samples were re-annotated manually to specific Uberon anatomy and aging terms.
 
-The GTEx annotations can be browsed on our raw data interface: [Curated GTEx data in Bgee](/experiment/SRP012682).
+The GTEx annotations can be browsed on our curated data interface: [Curated GTEx data in Bgee](/experiment/SRP012682).
 
 ### Accessing GTEx data in Bgee
 
@@ -30,7 +30,7 @@ All corresponding RNA-seq were reanalyzed in the Bgee pipeline, consistently wit
 
 #### GTEx data on the Bgee website
 
-- Annotations can be browsed on our raw data interface: [Curated GTEx data in Bgee](/experiment/SRP012682). Annotations can be downloaded from [RNA-Seq human experiments/libraries info](https://bgee.org/ftp/current/download/processed_expr_values/rna_seq/Homo_sapiens/Homo_sapiens_RNA-Seq_experiments_libraries.tar.gz). The Experiment ID for GTEx is `SRP012682`.
+- Annotations can be browsed on our curated data interface: [Curated GTEx data in Bgee](/experiment/SRP012682). Annotations can be downloaded from [RNA-Seq human experiments/libraries info](https://bgee.org/ftp/current/download/processed_expr_values/rna_seq/Homo_sapiens/Homo_sapiens_RNA-Seq_experiments_libraries.tar.gz). The Experiment ID for GTEx is `SRP012682`.
 - Processed expression values for GTEx data are available via FTP ([download file](https://bgee.org/ftp/current/download/processed_expr_values/rna_seq/Homo_sapiens/Homo_sapiens_RNA-Seq_read_counts_TPM_SRP012682.tsv.gz)).
 - Gene expression calls from GTEx and other experiments are found in the [human gene expression files](/download/gene-expression-calls?id=9606).
 - Each human gene page includes GTEx data where applicable (search a gene [here](/search/genes)).
@@ -204,7 +204,7 @@ All corresponding scRNA-seq data were reanalyzed in the Bgee pipeline. These dat
 
 #### Fly Cell Atlas on the Bgee website
 
-- Annotations can be browsed on our raw data interface: [Curated Fly Cell Atlas data in Bgee](/experiment/ERP129698). Annotations can be downloaded from [scRNA-seq experiments/libraries info](https://bgee.org/ftp/current/download/processed_expr_values/droplet_based/Drosophila_melanogaster/Drosophila_melanogaster_Droplet-Based_SC_RNA-Seq_experiments_libraries.tar.gz). The Experiment ID for FCA is `ERP129698`.
+- Annotations can be browsed on our curated data interface: [Curated Fly Cell Atlas data in Bgee](/experiment/ERP129698). Annotations can be downloaded from [scRNA-seq experiments/libraries info](https://bgee.org/ftp/current/download/processed_expr_values/droplet_based/Drosophila_melanogaster/Drosophila_melanogaster_Droplet-Based_SC_RNA-Seq_experiments_libraries.tar.gz). The Experiment ID for FCA is `ERP129698`.
 - Annotations and expression data can be downloaded in tsv or H5AD format from the [experiment page](/experiment/ERP129698). They are also available via FTP ([download file](https://bgee.org/ftp/current/download/processed_expr_values/droplet_based/Drosophila_melanogaster/Drosophila_melanogaster_Droplet-Based_SC_RNA-Seq_read_counts_CPM_ERP129698.tsv.gz)).
 - Gene expression calls from FCA and other experiments are found in the [Drosophila melanogaster (fruit fly) expression files](/download/gene-expression-calls?id=7227).
 - Each Drosophila melanogaster (fruit fly) gene page includes FCA data where applicable (search a gene [here](/search/genes)).

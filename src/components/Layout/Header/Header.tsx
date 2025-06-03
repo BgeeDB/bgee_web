@@ -29,7 +29,7 @@ const NAVBAR_LEFT = [
   },
   {
     key: 'page.search.raw-data-experiment',
-    title: 'Raw data',
+    title: 'Curated data',
     type: 'internal',
     path: PATHS.SEARCH.RAW_DATA_ANNOTATIONS,
   },

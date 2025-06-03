@@ -225,7 +225,7 @@ const about = [
                 type: 'link_internal',
               },
               {
-                content: ', allowing you to download the raw data used by Bgee along with their annotations',
+                content: ', allowing you to download the curated data used by Bgee along with their annotations',
                 type: 'text',
               },
             ],

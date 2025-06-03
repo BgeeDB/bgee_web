@@ -604,7 +604,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
                   </ul>
                 </Bulma.Column>
                 <Bulma.Column size={4}>
-                  <p className="is-size-7">Sources of raw data:</p>
+                  <p className="is-size-7">Sources of curated data:</p>
                   <ul className="unordered">
                     {!!data?.gene?.species &&
                       data.gene.species.sourcesOfDataPerDataType.map((d, key) => (

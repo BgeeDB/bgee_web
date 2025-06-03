@@ -98,7 +98,7 @@ The data types supporting a call are reported in the column "Sources". A green b
 - "I" for in situ hybridization
 - "E" for Expressed Sequence Tag (EST)
 
-It is possible to view/retrieve the processed data used to produce each call by following the "see source data" link in the "Link to source data" column. More information is provided in the **documentation to retrieve raw data annotations and processed expression values**.
+It is possible to view/retrieve the processed data used to produce each call by following the "see source data" link in the "Link to source data" column. More information is provided in the **documentation to retrieve curated annotations and processed expression values**.
 
 ![](../img/doc/gene-search/Fig11_retrieve-processed-data.png#tutoimgborder)
 

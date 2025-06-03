@@ -111,7 +111,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to={PATHS.SEARCH.RAW_DATA_ANNOTATIONS} className="nav_a">
-                  Raw data annotations
+                  Curated annotations
                 </Link>
               </li>
               <li>

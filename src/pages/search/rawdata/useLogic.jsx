@@ -26,9 +26,9 @@ export const TAB_PAGE = [
   },
   {
     id: RAW_DATA_ANNOTS,
-    label: 'Raw data annotations',
-    searchLabel: 'Search for Raw data annotations',
-    resultLabel: 'Raw data annotations results',
+    label: 'Curated annotations',
+    searchLabel: 'Search for Curated annotations',
+    resultLabel: 'Curated annotations results',
   },
   {
     id: PROC_EXPR_VALUES,

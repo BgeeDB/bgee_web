@@ -65,7 +65,7 @@ const SIDE_MENU = [
       },
       {
         key: 'page.browse.raw-data-annotations.test',
-        title: 'Raw data annotations',
+        title: 'Curated annotations',
         type: 'fullinternal',
         path: `${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=raw_data_annots`,
       },

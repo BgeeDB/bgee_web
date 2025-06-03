@@ -135,4 +135,4 @@ Below the export current page in TSV button, you can change the number of lines 
 
 - **Species:** Describes the species name in binomial nomenclature (scientific name).
 
-- **See supporting raw data:** Here you can access the datasets and processed expression values used to generate and support the presence/absence calls.
+- **See supporting curated data:** Here you can access the datasets and processed expression values used to generate and support the presence/absence calls.

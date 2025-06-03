@@ -3,9 +3,9 @@ import Markdown from '~/markdown/support/Raw-data-interface/Raw-data-interface.m
 
 export function meta() {
   return getMetadata({
-    title: 'Bgee raw data interface tutorial',
-    description: 'Bgee Tutorial about the raw data interface',
-    keywords: 'Tutorial, raw data, experiments, libraries, processed expression values',
+    title: 'Bgee curated data interface tutorial',
+    description: 'Bgee Tutorial about the curated data interface',
+    keywords: 'Tutorial, curated data, experiments, libraries, processed expression values',
   });
 }
 

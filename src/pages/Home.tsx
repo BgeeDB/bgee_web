@@ -146,7 +146,7 @@ export default function Home({ loaderData }) {
               <a href="#card-gene-expression">Gene expression</a>
               <a href="#card-expression-comparison">Expression comparison</a>
               <a href="#card-expression-enrichment-analysis">Expression enrichment analysis</a>
-              <a href="#card-raw-data-annotations">Raw data annotations</a>
+              <a href="#card-raw-data-annotations">Curated annotations</a>
               <a href="#card-expression-calls">Expression calls</a>
               <a href="#card-data-retrieval">Data retrieval</a>
             </div>
@@ -183,7 +183,7 @@ export default function Home({ loaderData }) {
           <HomeCard
             id="card-raw-data-annotations"
             imgUrl="/home/raw_data_annotations_screenshot.webp"
-            title="Raw data annotations"
+            title="Curated annotations"
             desc="Explore all libraries in Bgee that match your selected conditions and access their fully annotated raw (unprocessed) data."
             linkUrl={PATHS.SEARCH.RAW_DATA_ANNOTATIONS}
             linkText="Explore"
