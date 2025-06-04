@@ -23,6 +23,7 @@ export function getMetadata({
   link?: string;
   schemaorg?: Array<{ [key: string]: any }>;
   img?: string;
+  logo?: string;
 }): MetaDescriptor[] {
   const metadata: MetaDescriptor[] = [
     { title: title },
