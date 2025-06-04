@@ -1,7 +1,8 @@
 [ ] ftp links in public/ ?
 	symlinks in public/ ?
 [ ] topanat examples
-	Maybe because missing on the API server?
+	Maybe because examples are missing on the API server?
+	Getting a recent topanat job works!
 [ ] heatmap +/-
 	Maybe an issue in Harry's side
 [ ] schema.org not detected
