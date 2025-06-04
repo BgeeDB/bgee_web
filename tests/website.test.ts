@@ -38,9 +38,9 @@ test.describe('Search pages', () => {
     await expect(page.getByText('APOC1').first()).toBeVisible();
   });
 
-  test('search raw data', async ({ page }) => {
+  test('search curated data', async ({ page }) => {
     await page.goto('/search/raw-data');
-    await expect(page).toHaveTitle(/Raw data/);
+    await expect(page).toHaveTitle(/Curated annotated and processed/);
     await expect(page.getByText('DRP000415').first()).toBeVisible();
     // expect(await page.locator('text=DRP000415').count()).toBeGreaterThan(0);
   });
