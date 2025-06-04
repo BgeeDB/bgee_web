@@ -1,7 +1,12 @@
-[ ] ftp links
+[ ] ftp links in public/ ?
+	symlinks in public/ ?
 [ ] topanat examples
+	Maybe because missing on the API server?
 [ ] heatmap +/-
+	Maybe an issue in Harry's side
 [ ] schema.org not detected
 	look to be protected with \
 [x] og:image does not switch to the species image on the species page
+[ ] new UNIL logo
+	wait for the unillogo service to provide it
 
