@@ -156,6 +156,7 @@ const SelectMultipleWithAutoComplete = ({
           </label>
         )}
         <Select
+          instanceId={`autocomplete-${label}`}
           inputId={`autocomplete-search-${label}`}
           classNamePrefix="react-select-autoComplete"
           closeMenuOnSelect
