@@ -3,21 +3,28 @@ import ReactDOM from 'react-dom';
 import useNotification from '../hooks/useNotifications';
 import classnames from '../helpers/classnames';
 
+interface Notification {
+  id: string;
+  timeout?: number;
+  className?: string;
+  children: React.ReactNode;
+}
+
+interface NotificationContextType {
+  notifications: Notification[];
+  addNotification: (data: Notification) => void;
+  addNotifications: (arrNotif: Notification[]) => void;
+  cleanNotifications: () => void;
+  closeNotif: (id: string) => void;
+}
+
 // Initialize the context with default values to avoid undefined destructuring
-const NotificationContext = React.createContext({
+const NotificationContext = React.createContext<NotificationContextType>({
   notifications: [],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  addNotification: (data: any) => {
-    // console.debug(`addNotification ${data}`);
-  },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  addNotifications: (arrNotif: any) => {
-    // console.debug(`addNotifications ${arrNotif}`);
-  },
+  addNotification: () => {},
+  addNotifications: () => {},
   cleanNotifications: () => {},
-  closeNotif: (data: any) => {
-    console.debug(`closeNotif ${data}`);
-  },
+  closeNotif: () => {},
 });
 
 const { Provider } = NotificationContext;
@@ -33,7 +40,7 @@ const Notifications = () => {
   if (isBrowser) {
     return ReactDOM.createPortal(
       <>
-        {notifications.map((c: any) => (
+        {notifications.map((c) => (
           <div key={c.id} className={classnames('notification', c.className)}>
             <button className="delete" type="button" onClick={() => closeNotif(c.id)} />
             {c.children}
@@ -46,7 +53,11 @@ const Notifications = () => {
   return <></>;
 };
 
-const NotificationProvider = ({ children }) => {
+interface NotificationProviderProps {
+  children: React.ReactNode;
+}
+
+const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const { notifications, addNotification, addNotifications, cleanNotifications, closeNotif } = useNotification();
   return (
     <Provider

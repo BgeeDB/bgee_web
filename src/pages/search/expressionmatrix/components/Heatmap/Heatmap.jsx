@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { Download } from 'lucide-react';
 
 import Bulma from '../../../../../components/Bulma';
-import { Renderer } from './Renderer';
+import { Renderer } from './Renderer.jsx';
 import { Tooltip } from './Tooltip';
 import { DetailView } from './DetailView';
 import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
@@ -51,26 +51,18 @@ export const Heatmap = ({
   // COMPONENT STATE
   const [hoveredCell, setHoveredCell] = useState(null);
   const [clickedCell, setClickedCell] = useState(null);
-  const [showLegend, setShowLegend] = useState(() => 
-    getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
-  const [xLabelRotation, setXLabelRotation] = useState(() => 
-    getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 325));
-  const [yLabelAlign, setYLabelAlign] = useState(() => 
-    getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
+  const [showLegend, setShowLegend] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
+  const [xLabelRotation, setXLabelRotation] = useState(() => getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 325));
+  const [yLabelAlign, setYLabelAlign] = useState(() => getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
   const [graphWidth, setGraphWidth] = useState(width);
   const [graphHeight, setGraphHeight] = useState(height);
   // outer width, if graphWidth > maxGraphWidth -> scale SVG down
   const [maxGraphWidth, setMaxGraphWidth] = useState(1500);
-  const [colorPalette, setColorPalette] = useState(() => 
-    getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
-  const [bgColor, setBgColor] = useState(() => 
-    getStoredValue(STORAGE_KEYS.BG_COLOR, backgroundColor));
-  const [marginLeft, setMarginLeft] = useState(() => 
-    getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
-  const [showDescMax, setShowDescMax] = useState(() => 
-    getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
-  const [showMissingData, setShowMissingData] = useState(() => 
-    getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
+  const [colorPalette, setColorPalette] = useState(() => getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
+  const [bgColor, setBgColor] = useState(() => getStoredValue(STORAGE_KEYS.BG_COLOR, backgroundColor));
+  const [marginLeft, setMarginLeft] = useState(() => getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
+  const [showDescMax, setShowDescMax] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
+  const [showMissingData, setShowMissingData] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
   const [showHomologs, setShowHomologs] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [useAdaptiveScale, setUseAdaptiveScale] = useState(() =>
@@ -84,26 +76,26 @@ export const Heatmap = ({
   // Update local input state without updating the actual graphWidth
   const handleGraphWidthChange = (event) => {
     setGraphWidthInput(event.target.value);
-  }
+  };
 
   // Update the actual graphWidth and localStorage on blur
   const handleGraphWidthBlur = (event) => {
     const { value } = event.target;
     setMaxGraphWidth(value);
     localStorage.setItem(STORAGE_KEYS.GRAPH_WIDTH, value);
-  }
+  };
 
   // Update local input state without updating the actual graphHeight
   const handleGraphHeightChange = (event) => {
     setGraphHeightInput(event.target.value);
-  }
+  };
 
   // Update the actual graphHeight and localStorage on blur
   const handleGraphHeightBlur = (event) => {
     const { value } = event.target;
     setGraphHeight(value);
     localStorage.setItem(STORAGE_KEYS.GRAPH_HEIGHT, value);
-  }
+  };
 
   const updateShowLegend = () => {
     const value = !showLegend;
@@ -456,97 +448,80 @@ export const Heatmap = ({
             </p>
           </header>
 
-          <div 
-            id="collapsible-settings" 
-            className={`is-collapsible ${showSettings ? "is-active" : ""}`}
-          >
-          {showSettings ? 
-            <div className="card-content">
-              <div className="columns">
-                <div className="column">
-                  <h1>DISPLAY</h1>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>Graph width:</td>
-                        <td>
-                          <input 
-                            type="text"
-                            size="10"
-                            value={graphWidthInput}
-                            onChange={handleGraphWidthChange}
-                            onBlur={handleGraphWidthBlur}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Graph height:</td>
-                        <td>
-                          <input 
-                            type="text"
-                            size="10"
-                            value={graphHeightInput}
-                            onChange={handleGraphHeightChange}
-                            onBlur={handleGraphHeightBlur}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Show Legend:</td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={showLegend}
-                            onChange={updateShowLegend}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Y label width:</td>
-                        <td>
-                          <input 
-                            type="text"
-                            size="10"
-                            value={marginLeft}
-                            onChange={updateYLabelWidth}
-                          />
-                        </td>
-                      </tr>
-                      { SHOW_DEBUG_OPTIONS ? (
-                      <tr>
-                        <td>X label rotation:</td>
-                        <td>
-                          <input 
-                            type="text"
-                            size="10"
-                            value={xLabelRotation}
-                            onChange={updateXLabelRotation}
-                          />
-                        </td>
-                      </tr>
-                      ) : null}
-                      { SHOW_DEBUG_OPTIONS ? (
-                      <tr>
-                        <td>Y label justify:</td>
-                        <td>
-                          <select value={yLabelAlign} onChange={updateYLabelAlign}>
-                            <option value="left">left</option>
-                            <option value="right">right</option>
-                          </select>
-                        </td>
-                      </tr>
-                      ) : null}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="column">
-                  <h1>STYLE</h1>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>color palette:</td>
-                        <td>
-                          <select value={colorPalette} onChange={updateColorPalette}>
+          <div id="collapsible-settings" className={`is-collapsible ${showSettings ? 'is-active' : ''}`}>
+            {showSettings ? (
+              <div className="card-content">
+                <div className="columns">
+                  <div className="column">
+                    <h1>DISPLAY</h1>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>Graph width:</td>
+                          <td>
+                            <input
+                              type="text"
+                              size="10"
+                              value={graphWidthInput}
+                              onChange={handleGraphWidthChange}
+                              onBlur={handleGraphWidthBlur}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Graph height:</td>
+                          <td>
+                            <input
+                              type="text"
+                              size="10"
+                              value={graphHeightInput}
+                              onChange={handleGraphHeightChange}
+                              onBlur={handleGraphHeightBlur}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Show Legend:</td>
+                          <td>
+                            <input type="checkbox" checked={showLegend} onChange={updateShowLegend} />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Y label width:</td>
+                          <td>
+                            <input type="text" size="10" value={marginLeft} onChange={updateYLabelWidth} />
+                          </td>
+                        </tr>
+                        {SHOW_DEBUG_OPTIONS ? (
+                          <tr>
+                            <td>X label rotation:</td>
+                            <td>
+                              <input type="text" size="10" value={xLabelRotation} onChange={updateXLabelRotation} />
+                            </td>
+                          </tr>
+                        ) : null}
+                        {SHOW_DEBUG_OPTIONS ? (
+                          <tr>
+                            <td>Y label justify:</td>
+                            <td>
+                              <select value={yLabelAlign} onChange={updateYLabelAlign}>
+                                <option value="left">left</option>
+                                <option value="right">right</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ) : null}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="column">
+                    <h1>STYLE</h1>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>color palette:</td>
+                          <td>
+                            <select value={colorPalette} onChange={updateColorPalette}>
                               <option value="magma">magma</option>
                               <option value="inferno">inferno</option>
                               <option value="plasma">plasma</option>

@@ -1,5 +1,8 @@
 import { useMemo, forwardRef } from 'react';
+// import { useMemo, forwardRef, useRef, useState, useEffect } from "react";
 import * as d3 from 'd3';
+// import { INITIAL_VALUE, ReactSVGPanZoom, TOOL_NONE, fitSelection, zoomOnViewerCenter, fitToViewer } from 'react-svg-pan-zoom';
+
 import { Tree } from './TreeSvg';
 import { ColorLegendSvg } from './ColorLegendSvg';
 // import { Tooltip } from "../../../Tooltip";
@@ -25,7 +28,7 @@ export const Renderer = forwardRef(
       backgroundColor,
       marginLeft,
       xLabelRotation,
-      // yLabelJustify,
+      yLabelJustify,
       showLegend,
       showMissingData,
       showDescMax,
@@ -33,6 +36,7 @@ export const Renderer = forwardRef(
       colorLegendHeight,
       minCellWidth = 20,
       minCellHeight = 10,
+      maxGraphWidth = 1500,
       setGraphWidth,
     },
     ref
@@ -154,7 +158,7 @@ export const Renderer = forwardRef(
       }
       const idx = i;
       const fillColour = d.isExpressed ? colorScale(d.value) : '#cccccc';
-      const strokeColour = termProps[d.termId].isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
+      const strokeColour = termProps[d.termId]?.isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
@@ -384,75 +388,77 @@ export const Renderer = forwardRef(
       );
     });
 
-    // const yLabels = yLblOrdered.map((term, i) => {
-    //   const y = yScale(term.label);
-    //   if (!y) {
-    //     return null;
-    //   }
-    //   const idx = i;
-    //   // Calculate x position based on yLabelJustify
-    //   const xPos = yLabelJustify === 'left' ? -1 * marginLeft : -5;
-    //   const anchor = yLabelJustify === 'left' ? 'start' : 'end';
-    //   // Calculate y position
-    //   const yPos = y + yScale.bandwidth() / 2;
-    //   // Change display depending on hierarchical level
-    //   let lblTree = '';
-    //   let lblIndicator = '';
-    //   const lblTerm = term.label;
-    //   if (term.depth > 0) {
-    //     if (term.isTopLevelTerm) {
-    //       lblIndicator = '?'; // '(?)';
-    //       if (term.isExpanded)
-    //         lblIndicator = '\u{025B3}'; // '^'
-    //       // else if(term.hasBeenQueried) lblIndicator = '\u{025BD}'; // 'v';
-    //       else lblIndicator = '<'; // 'v';
-    //     }
+    const yLabels = yLblOrdered.map((term, i) => {
+      const y = yScale(term.label);
 
-    //     if (yLabelJustify === 'left') {
-    //       lblTree = `${'-'.repeat(2 * term.depth)}${lblIndicator} ${term.label}`;
-    //     } else {
-    //       let suffix = '';
-    //       for (let lvl = 1; lvl <= term.depth; lvl += 1) {
-    //         if (lvl === term.depth) {
-    //           if (term.isLastChild) {
-    //             suffix = `\u{02500}\u{02518}${suffix}`; // lower-right corner
-    //           } else {
-    //             // postfix = `\u{02500}\u{02525}${postfix}`;
-    //             suffix = `\u{02500}\u{02524}${suffix}`; // t-crossing left
-    //           }
-    //         } else if (term.embeddedInLvls.includes(lvl)) {
-    //           // postfix = `\u{02500}\u{02502}${postfix}`;
-    //           suffix = `\u{000A0}\u{02502}${suffix}`; // vertical line
-    //         } else {
-    //           suffix = `\u{000A0}\u{000A0}${suffix}`; // blank space
-    //         }
-    //       }
-    //       // displayText = `${term.label} ${indicator}${'-'.repeat(2*term.depth)}`;
-    //       lblTree = `${suffix}`;
-    //     }
-    //   }
-    //   // console.log(`[Renderer] yLabel: ${JSON.stringify(term)}`);
+      if (!y) {
+        return null;
+      }
 
-    //   // term.label + '\u{02518}' // '.'.repeat(2*term.depth);
-    //   // term.label + ' '.repeat(2*term.depth);
+      const idx = i;
+      // Calculate x position based on yLabelJustify
+      const xPos = yLabelJustify === 'left' ? -1 * marginLeft : -5;
+      const anchor = yLabelJustify === 'left' ? 'start' : 'end';
+      // Calculate y position
+      const yPos = y + yScale.bandwidth() / 2;
+      // Change display depending on hierarchical level
+      let lblTree = '';
+      let lblIndicator = '';
+      const lblTerm = term.label;
+      if (term.depth > 0) {
+        if (term.isTopLevelTerm) {
+          lblIndicator = '?'; // '(?)';
+          if (term.isExpanded)
+            lblIndicator = '\u{025B3}'; // '^'
+          // else if(term.hasBeenQueried) lblIndicator = '\u{025BD}'; // 'v';
+          else lblIndicator = '<'; // 'v';
+        }
 
-    //   return (
-    //     <text
-    //       key={`heatMapYLabel-${idx}`}
-    //       x={xPos}
-    //       y={yPos}
-    //       textAnchor={anchor}
-    //       dominantBaseline="middle"
-    //       fontSize={15}
-    //       fontFamily="monospace"
-    //       onClick={() => onToggleExpandCollapse(term)}
-    //     >
-    //       <tspan fontFamily="sans-serif">{lblTerm} </tspan>
-    //       <tspan fill="red">{lblIndicator}</tspan>
-    //       {lblTree}
-    //     </text>
-    //   );
-    // });
+        if (yLabelJustify === 'left') {
+          lblTree = `${'-'.repeat(2 * term.depth)}${lblIndicator} ${term.label}`;
+        } else {
+          let suffix = '';
+          for (let lvl = 1; lvl <= term.depth; lvl += 1) {
+            if (lvl === term.depth) {
+              if (term.isLastChild) {
+                suffix = `\u{02500}\u{02518}${suffix}`; // lower-right corner
+              } else {
+                // postfix = `\u{02500}\u{02525}${postfix}`;
+                suffix = `\u{02500}\u{02524}${suffix}`; // t-crossing left
+              }
+            } else if (term.embeddedInLvls.includes(lvl)) {
+              // postfix = `\u{02500}\u{02502}${postfix}`;
+              suffix = `\u{000A0}\u{02502}${suffix}`; // vertical line
+            } else {
+              suffix = `\u{000A0}\u{000A0}${suffix}`; // blank space
+            }
+          }
+          // displayText = `${term.label} ${indicator}${'-'.repeat(2*term.depth)}`;
+          lblTree = `${suffix}`;
+        }
+      }
+      // console.log(`[Renderer] yLabel: ${JSON.stringify(term)}`);
+
+      // term.label + '\u{02518}' // '.'.repeat(2*term.depth);
+      // term.label + ' '.repeat(2*term.depth);
+
+      return (
+        <text
+          key={`heatMapYLabel-${idx}`}
+          x={xPos}
+          y={yPos}
+          textAnchor={anchor}
+          dominantBaseline="middle"
+          fontSize={15}
+          fontFamily="monospace"
+          onClick={() => onToggleExpandCollapse(term)}
+        >
+          <tspan fontFamily="sans-serif">{lblTerm} </tspan>
+          <tspan fill="red">{lblIndicator}</tspan>
+          {lblTree}
+        </text>
+      );
+    });
 
     const domain = colorScale.domain();
     const max = domain[domain.length - 1];
@@ -467,68 +473,127 @@ export const Renderer = forwardRef(
     const colorLegendPosX = 0;
     const colorLegendPosY = height;
 
+    // NOTE: Deactivated for now, uncomment to use ReactSVGPanZoom
+    //----------------------------------------------------------
+    // const Viewer = useRef();
+    // const [tool, setTool] = useState(TOOL_NONE)
+    // const [value, setValue] = useState(INITIAL_VALUE)
+
+    // useEffect(() => {
+    //   Viewer.current?.fitToViewer();
+    // }, []);
+
+    /* Read all the available methods in the documentation */
+    // const zoomOnViewerCenter1 = () => Viewer.current.zoomOnViewerCenter(1.1)
+    // const fitSelection1 = () => Viewer.current.fitSelection(40, 40, 200, 200)
+    // const fitToViewer1 = () => Viewer.current.fitToViewer()
+
+    /* keep attention! handling the state in the following way doesn't fire onZoom and onPam hooks */
+    // const zoomOnViewerCenter2 = () => setValue(zoomOnViewerCenter(value, 1.1))
+    // const fitSelection2 = () => setValue(fitSelection(value, 40, 40, 200, 200))
+    // const fitToViewer2 = () => setValue(fitToViewer(value))
+
+    // const showReactSVGPanZoomControls = false;
+
     return (
-      <svg ref={ref} width={width} height={height + colorLegendHeight} style={{ backgroundColor }}>
-        <defs>
-          <style>{`
-          @font-face {
-            font-family: 'Open Sans';
-            src: url('data:application/font-woff;charset=utf-8;base64,${fonts.openSansWoff}') format('woff');
-            font-weight: normal;
-            font-style: normal;
-          }
-          @font-face {
-            font-family: 'Spectral Regular';
-            src: url('data:application/font-woff;charset=utf-8;base64,${fonts.spectralRegularWoff}') format('woff');
-            font-weight: normal;
-            font-style: normal;
-          }
-        `}</style>
-          <linearGradient id="colorLegendGradient">{colorLegendStops}</linearGradient>
-        </defs>
-        <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
-          {allShapes}
-          {xLabelsTop}
-          {xLabelsBottom}
-          {/* {false && { yLabels }} */}
+      <div style={{ width: '100%', overflow: 'hidden' }}>
+        {/* {showReactSVGPanZoomControls && (
+      <div>
+      <h1>ReactSVGPanZoom</h1>
+      <hr/>
 
-          <g transform={`translate(-${marginLeft - 10}, 5)`}>
-            <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+      <button type="button" className="btn" onClick={() => zoomOnViewerCenter1()}>Zoom on center (mode 1)</button>
+      <button type="button" className="btn" onClick={() => fitSelection1()}>Zoom area 200x200 (mode 1)</button>
+      <button type="button" className="btn" onClick={() => fitToViewer1()}>Fit (mode 1)</button>
+      <hr/>
+
+      <button type="button" className="btn" onClick={() => zoomOnViewerCenter2()}>Zoom on center (mode 2)</button>
+      <button type="button" className="btn" onClick={() => fitSelection2()}>Zoom area 200x200 (mode 2)</button>
+      <button type="button" className="btn" onClick={() => fitToViewer2()}>Fit (mode 2)</button>
+      <hr/>
+      </div>
+      )} */}
+
+        {/* <ReactSVGPanZoom
+        ref={Viewer}
+        width={Math.min(width, maxGraphWidth)} height={height + colorLegendHeight + 100}
+        tool={tool} onChangeTool={setTool}
+        value={value} onChangeValue={setValue}
+        onZoom={e => console.log('zoom')}
+        onPan={e => console.log('pan')}
+        onClick={event => console.log('click', event.x, event.y, event.originalEvent)}
+        background="white"
+      > */}
+
+        <svg
+          ref={ref}
+          width={Math.min(width, maxGraphWidth)}
+          height={height + colorLegendHeight}
+          style={{ backgroundColor }}
+          viewBox={`0 0 ${width} ${height + colorLegendHeight}`}
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <style>{`
+            @font-face {
+              font-family: 'Open Sans';
+              src: url('data:application/font-woff;charset=utf-8;base64,${fonts.openSansWoff}') format('woff');
+              font-weight: normal;
+              font-style: normal;
+            }
+            @font-face {
+              font-family: 'Spectral Regular';
+              src: url('data:application/font-woff;charset=utf-8;base64,${fonts.spectralRegularWoff}') format('woff');
+              font-weight: normal;
+              font-style: normal;
+            }
+          `}</style>
+            <linearGradient id="colorLegendGradient">{colorLegendStops}</linearGradient>
+          </defs>
+          <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
+            {allShapes}
+            {xLabelsTop}
+            {xLabelsBottom}
+
+            <g transform={`translate(-${marginLeft - 10}, 5)`}>
+              <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+            </g>
+
+            <g transform={`translate(-${marginLeft - 50}, 0)`}>
+              {showLegend ? (
+                <g>
+                  <ColorLegendSvg
+                    posX={colorLegendPosX}
+                    posY={colorLegendPosY - 50}
+                    width={colorLegendWidth}
+                    height={colorLegendHeight}
+                    colorScale={colorScale}
+                    interactionData={hoveredCell}
+                  />
+                </g>
+              ) : null}
+
+              {showLegend ? (
+                <g>
+                  <text
+                    id="txtSecondaryLegend"
+                    x={colorLegendPosX + colorLegendWidth + 25}
+                    y={colorLegendPosY + colorLegendBoundsHeight}
+                    dominantBaseline="middle"
+                    fontSize={15}
+                    fontFamily="sans"
+                  >
+                    {showDescMax === 'border' ? 'Border color: max. expression score' : null}
+                    {showDescMax === 'center' ? 'Central dot: max. expression score' : null}
+                    {showDescMax === 'split' ? 'Right part of cell: max. expression score' : null}
+                  </text>
+                </g>
+              ) : null}
+            </g>
           </g>
-
-          <g transform={`translate(-${marginLeft - 50}, 0)`}>
-            {showLegend ? (
-              <g>
-                <ColorLegendSvg
-                  posX={colorLegendPosX}
-                  posY={colorLegendPosY - 50}
-                  width={colorLegendWidth}
-                  height={colorLegendHeight}
-                  colorScale={colorScale}
-                  interactionData={hoveredCell}
-                />
-              </g>
-            ) : null}
-
-            {showLegend ? (
-              <g>
-                <text
-                  id="txtSecondaryLegend"
-                  x={colorLegendPosX + colorLegendWidth + 25}
-                  y={colorLegendPosY + colorLegendBoundsHeight}
-                  dominantBaseline="middle"
-                  fontSize={15}
-                  fontFamily="sans"
-                >
-                  {showDescMax === 'border' ? 'Border color: max. expression score' : null}
-                  {showDescMax === 'center' ? 'Central dot: max. expression score' : null}
-                  {showDescMax === 'split' ? 'Right part of cell: max. expression score' : null}
-                </text>
-              </g>
-            ) : null}
-          </g>
-        </g>
-      </svg>
+        </svg>
+        {/* </ReactSVGPanZoom> */}
+      </div>
     );
   }
 );

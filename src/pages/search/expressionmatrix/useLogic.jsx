@@ -1190,7 +1190,7 @@ const useLogic = (isExprCalls) => {
           // Redirect to same page with gene_list parameter
           history.replace({
             pathname: loc.pathname,
-            search: `?gene_list=${encodedGeneList}`
+            search: `?gene_list=${encodedGeneList}`,
           });
           return; // Exit the entire function
         }
@@ -1245,7 +1245,7 @@ const useLogic = (isExprCalls) => {
     } catch (error) {
       console.error('[initFromUrlParams] Error:', error);
     } finally {
-      setIsInitializingFromUrl(false);
+      // setIsInitializingFromUrl(false);
     }
   };
 
@@ -1269,7 +1269,7 @@ const useLogic = (isExprCalls) => {
       triggerInitialSearch();
       setIsInitializingFromUrl(false); // Reset flag after triggering search
     }
-  }, [selectedGene, selectedSpecies, isInitializingFromUrl]);
+  }, [selectedGene, selectedSpecies]);
 
   // URL change handler
   useEffect(() => {
@@ -1280,10 +1280,9 @@ const useLogic = (isExprCalls) => {
     const speciesId = searchParams.get('species_id');
     if (geneList) {
       processGeneList(geneList);
-    } else if(!loc.search && !isFirstSearch && !isLoading) {
+    } else if (!loc.search && !isFirstSearch && !isLoading) {
       resetForm(false, true);
     } else if (loc.search?.length > 0 && !isInitializingFromUrl && !isProcessingGeneList) {
-      setIsInitializingFromUrl(true);
       initFromUrlParams();
     }
   }, [loc.search]);
@@ -1369,16 +1368,11 @@ const useLogic = (isExprCalls) => {
 
     try {
       // Get search results for all genes
-      const searchResults = await Promise.all(
-        geneIds.map(geneId =>
-          api.search.genes.geneSearchResult(geneId)
-        )
-      );
+      const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
 
       // Process results
-      const validResults = searchResults.filter(result =>
-        result.code === 200 &&
-        result.data.result.totalMatchCount === 1
+      const validResults = searchResults.filter(
+        (result) => result.code === 200 && result.data.result.totalMatchCount === 1
       );
 
       // if (validResults.length === 0) {
@@ -1390,8 +1384,8 @@ const useLogic = (isExprCalls) => {
       // const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
 
       // Verify all genes are from same species
-      const allSameSpecies = validResults.every(result =>
-        result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
+      const allSameSpecies = validResults.every(
+        (result) => result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
       );
 
       // if (!allSameSpecies) {
@@ -1402,15 +1396,15 @@ const useLogic = (isExprCalls) => {
       // Set species
       const speciesValue = {
         label: getSpeciesLabel(firstSpecies),
-        value: firstSpecies.id
+        value: firstSpecies.id,
       };
 
       // Set genes
-      const genes = validResults.map(result => {
+      const genes = validResults.map((result) => {
         const { gene } = result.data.result.geneMatches[0];
         return {
           label: getGeneLabel(gene),
-          value: gene.geneId
+          value: gene.geneId,
         };
       });
 
@@ -1418,7 +1412,6 @@ const useLogic = (isExprCalls) => {
       setIsInitializingFromUrl(true);
       setSelectedSpeciesFromUrl(speciesValue);
       setSelectedGene(genes);
-
     } catch (error) {
       console.error('Error processing gene list:', error);
     } finally {
