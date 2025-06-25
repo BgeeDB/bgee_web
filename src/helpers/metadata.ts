@@ -82,7 +82,7 @@ export function getMetadata({
   // Add Schema.org structured data if provided
   for (const key in schemaorg) {
     metadata.push({
-      'script:ld+json': JSON.stringify(schemaorg[key]),
+      'script:ld+json': schemaorg[key],
     });
   }
   return metadata;

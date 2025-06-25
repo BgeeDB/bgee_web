@@ -27,6 +27,8 @@ npm i
 >
 > This will automatically setup git pre-commit hooks to run formatter, linter and type checker on every commit and make sure the commited code is in good shape.
 
+> [!TIP]
+>
 > Alternatively, install dependencies without running the script to install `playwright` for tests:
 >
 > ```sh
@@ -259,18 +261,6 @@ $size-3: 1.5rem (= 21px)
 ```
 
 ## ☑️ To do
-
-### Done
-
-- [x] **Enable SSR** for most pages requiring it using `react-router` 7: gene, species, gene-list, experiments, home, gene expression calls.
-  - [x] In `raw-data` we moved the search function out of `useLogic` to use it from the `loader` to have some basic SSR for the experiments list. The loader passes its result to `useLogic` when a `speciesId` is detected alone to preload experiments links.
-  - [x] Migrate from `react-markdown` to [`mdx`](https://mdxjs.com/) to render markdown (use same plugins and style)
-  - [x] Migrate from `ion-icons` to [`lucide-react`](https://lucide.dev/): ion-icons were not compatible with SSR, triggering hydration issues, plus how the icons were imported was a nightmare (5MB 1300+ svg files on GitHub, in `public` folder)
-- [x] **Migrate to TypeScript**: most main pages converted, lots of components too, tried to use proper types as much as possible
-- [x] **CI/CD**: updated `eslint` rules, added basic tests of the website pages with [playwright](https://playwright.dev/), added automatic formatting and linting on commit with `husky` and `lint-staged`, added a GitHub action to run all tests automatically on push and PR.
-- [x] Commented out 13 unused bulma components, search for `TODO: REMOVE`. Removed the accordeon component that was using an unmaintained package and was not used anywhere.
-
-### Future
 
 - [ ] **Fix script** `scripts/archiveCreation.js`
 - [ ] **Update the project docs** in the `docs` folder? Or delete it, a well maintained README.md is better.
