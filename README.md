@@ -159,8 +159,8 @@ docker run -p 3000:3000 bgee-web
 
 When creating a new route the file resolving this route can contain special exported functions used for SSR:
 
-- **`loader`** function to preload data on the server (the served page will contain the html depending on the data from the loader, so really useful for SEO and load speed)
-- **`meta`** function to define the page metadata (can use the data from `loader`)
+- **`loader()`**: data returned by this function **will be used to prerender the page on the server (SSR)**. The served page will contain the html depending on the data from the loader, so really useful for SEO and load speed.
+- **`meta()`** function to define the page metadata (can use the data returned by `loader()`)
 
 > [!IMPORTANT]
 >
