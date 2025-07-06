@@ -426,14 +426,6 @@ const useLogic = (isExprCalls) => {
       );
     }
 
-    // Sexes
-    if (requestDetails?.requestedSpeciesSexes?.length > 0) {
-      setSpeciesSexes(requestDetails?.requestedSpeciesSexes);
-    }
-    if (requestParameters?.sex?.length > 0 && requestParameters?.sex[0] !== 'all') {
-      setSelectedSexes(requestParameters?.sex);
-    }
-
     // Genes - only set if not preserving existing genes
     if (!preserveGenes && requestDetails?.requestedGenes?.length > 0) {
       const initGenes = requestDetails?.requestedGenes.map((g) => ({
@@ -446,7 +438,7 @@ const useLogic = (isExprCalls) => {
     // Tissues (anatEntities)
     const cellTypesAndTissues = requestDetails?.requestedAnatEntitesAndCellTypes || [];
     if (requestParameters?.anat_entity_id?.length > 0) {
-      const initTissues = [];
+      const initTissues = selectedTissue;
       // HD: add top-level anatomical terms
 
       requestParameters?.anat_entity_id.forEach((tissueId) => {
@@ -463,7 +455,7 @@ const useLogic = (isExprCalls) => {
 
     // Cell types
     if (requestParameters?.cell_type_id?.length > 0) {
-      const initCelleTypes = [];
+      const initCelleTypes = selectedCellTypes;
       requestParameters?.cell_type_id.forEach((cellTypeId) => {
         const foundCellType = cellTypesAndTissues.find((t) => t.id === cellTypeId);
         if (foundCellType) {
@@ -1182,6 +1174,7 @@ const useLogic = (isExprCalls) => {
         // console.log(`[useLogic.initFromUrlParams] simple RP resp:\n${JSON.stringify(resp1, null, 2)}`);
 
         const simpleParams = resp1.resp.requestParameters;
+        // console.log(`[useLogic.initFromUrlParams] simpleParams:\n${JSON.stringify(simpleParams)}`);
 
         // Check for gene_list first before processing other parameters
         if (simpleParams.gene_list && simpleParams.species_id) {
@@ -1221,7 +1214,19 @@ const useLogic = (isExprCalls) => {
         if (resp2.resp.code === 200) {
           // console.log(`[useLogic.initFromUrlParams] detailed RP resp:\n${JSON.stringify(resp2, null, 2)}`);
           const { requestDetails } = resp2.resp.data;
-          const { requestedSpecies, requestedGenes } = requestDetails;
+          const { requestedSpecies, requestedGenes, requestedAnatEntitesAndCellTypes } = requestDetails;
+          console.log(
+            `[useLogic.initFromUrlParams] requestedAnatEntitesAndCellTypes:\n${JSON.stringify(requestedAnatEntitesAndCellTypes)}`
+          );
+          const { anat_entity_id: anatEntityId, cell_type_id: cellTypeId } = resp2.resp.requestParameters;
+          // Find the requestedAnatEntitesAndCellTypes that matches the anatEntityId
+          const requestedAnatEntities =
+            requestedAnatEntitesAndCellTypes?.filter((term) => anatEntityId?.includes(term.id)) || [];
+
+          const requestedCellTypes =
+            requestedAnatEntitesAndCellTypes?.filter((term) => cellTypeId?.includes(term.id)) || [];
+          console.log(`[useLogic.initFromUrlParams] requestedAnatEntities:\n${JSON.stringify(requestedAnatEntities)}`);
+          console.log(`[useLogic.initFromUrlParams] requestedCellTypes:\n${JSON.stringify(requestedCellTypes)}`);
 
           // Use wrapper for species initialization
           if (requestedSpecies) {
@@ -1249,27 +1254,28 @@ const useLogic = (isExprCalls) => {
     }
   };
 
-  // Add useEffect to trigger search when initialization is complete
-  useEffect(() => {
-    console.log(
-      '[useEffect] Triggering search from URL params',
-      isInitializingFromUrl,
-      selectedGene,
-      selectedSpecies,
-      EMPTY_SPECIES_VALUE
-    );
-    if (isInitializingFromUrl && selectedGene.length > 0 && selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
-      // TODO: problem is that it never gets there.
-      console.log('[useEffect] Triggering search from URL params2', isInitializingFromUrl);
-      // console.log('[useEffect] States ready for search:', {
-      //   selectedGene,
-      //   selectedSpecies,
-      //   isInitializingFromUrl
-      // });
-      triggerInitialSearch();
-      setIsInitializingFromUrl(false); // Reset flag after triggering search
-    }
-  }, [selectedGene, selectedSpecies]);
+  // NOTE: DELETE: This useEffect causes additional API requests not needed.
+  // // Add useEffect to trigger search when initialization is complete
+  // useEffect(() => {
+  //   console.log(
+  //     '[useEffect] Triggering search from URL params',
+  //     isInitializingFromUrl,
+  //     selectedGene,
+  //     selectedSpecies,
+  //     EMPTY_SPECIES_VALUE
+  //   );
+  //   if (isInitializingFromUrl && selectedGene.length > 0 && selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
+  //     // TODO: problem is that it never gets there.
+  //     console.log('[useEffect] Triggering search from URL params2', isInitializingFromUrl);
+  //     // console.log('[useEffect] States ready for search:', {
+  //     //   selectedGene,
+  //     //   selectedSpecies,
+  //     //   isInitializingFromUrl
+  //     // });
+  //     triggerInitialSearch();
+  //     setIsInitializingFromUrl(false); // Reset flag after triggering search
+  //   }
+  // }, [selectedGene, selectedSpecies]);
 
   // URL change handler
   useEffect(() => {
@@ -1281,8 +1287,10 @@ const useLogic = (isExprCalls) => {
     if (geneList) {
       processGeneList(geneList);
     } else if (!loc.search && !isFirstSearch && !isLoading) {
+      console.log(`[useLogic.js] reset form...`);
       resetForm(false, true);
     } else if (loc.search?.length > 0 && !isInitializingFromUrl && !isProcessingGeneList) {
+      console.log(`[useLogic.js] init from url params...`);
       initFromUrlParams();
     }
   }, [loc.search]);
