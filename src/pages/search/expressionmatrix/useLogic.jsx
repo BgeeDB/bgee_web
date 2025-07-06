@@ -278,14 +278,8 @@ const useLogic = (isExprCalls) => {
       }
     });
 
-    // console.log(`[useLogic.triggerInitialSearch] parents:\n${JSON.stringify(parents)}`);
-    // console.log(`[useLogic.triggerInitialSearch] children:\n${JSON.stringify(children)}`);
-    // console.log(`[useLogic.triggerInitialSearch] termProps:\n${JSON.stringify(termProps)}`);
-
     // identify root terms
     const roots = Object.keys(parents).filter((id) => parents[id].length === 0);
-    // console.log(`root terms:\n${JSON.stringify(roots)}`);
-    // console.log(`root terms:\n${JSON.stringify(roots.map(id => ({'id': id, 'label': termProps[id]})))}`);
 
     function createNestedStructure(termId, depth = 0) {
       // console.log(`[createNestedStructure] ${termId} - ${depth}`);
@@ -320,10 +314,7 @@ const useLogic = (isExprCalls) => {
     }
 
     // Create the nested structure for each root term
-    // console.log(`[useLogic.prepTermHierarchy] termProps:\n${JSON.stringify(termProps)}`);
-    // console.log(`[useLogic.prepTermHierarchy] roots:\n${JSON.stringify(roots)}`);
     const anatTerms = roots.map((root) => createNestedStructure(root));
-    // console.log(`[useLogic.triggerInitialSearch] anatTerms (top-level):\n${JSON.stringify(anatTerms, null, 2)}`);
 
     return { anatTerms, termProps };
   };
@@ -613,6 +604,7 @@ const useLogic = (isExprCalls) => {
   // TODO: factor out repetitive code (between this function and triggerSearch, triggerInitialSearchComplementary)
   const triggerInitialSearch = async (initParams) => {
     const params = initParams || getSearchParams();
+    const doComplementarySearch = params.selectedTissue.length === 0 && params.selectedCellTypes.length === 0;
 
     // console.log(`[useLogic.triggerInitialSearch] selected gene:\n${JSON.stringify(params.selectedGene)}`);
     // console.log(`[useLogic.triggerInitialSearch] selected species:\n${JSON.stringify(params.selectedSpecies)}`);
@@ -624,13 +616,13 @@ const useLogic = (isExprCalls) => {
       // console.log(`[useLogic.triggerInitialSearch] submitting API requests...`);
       const [result1, result2] = await Promise.all([
         api.search.geneExpressionMatrix.initialSearch(params),
-        api.search.geneExpressionMatrix.initialSearchComplementary(params),
+        doComplementarySearch ? api.search.geneExpressionMatrix.initialSearchComplementary(params) : null,
       ]);
 
       const { resp: resp1, paramsURLCalled: paramsURLCalled1 } = result1;
-      const { resp: resp2 } = result2;
+      const { resp: resp2 } = doComplementarySearch ? result2 : { resp: null };
 
-      if (resp1.code === 200 && resp2.code === 200) {
+      if (resp1.code === 200) {
         // console.log(JSON.stringify(resp1));
         // console.log(JSON.stringify(resp2));
 
@@ -642,13 +634,15 @@ const useLogic = (isExprCalls) => {
           ROOT_TERM_ANAT_ENTITY,
           anatTerms,
           termProps,
-          resp2.data.expressionData.expressionCalls
+          resp2?.data?.expressionData?.expressionCalls || []
         );
         Object.assign(termProps, newTermProps);
         setAnatomicalTermsProps(termProps);
 
         const { data } = resp1;
-        data.expressionData.expressionCalls.push(...resp2.data.expressionData.expressionCalls);
+        if (resp2?.code === 200) {
+          data.expressionData.expressionCalls.push(...resp2.data.expressionData.expressionCalls);
+        }
 
         // After First search we update the filters via detailed_rp
         if (isFirstSearch) {
@@ -1215,9 +1209,6 @@ const useLogic = (isExprCalls) => {
           // console.log(`[useLogic.initFromUrlParams] detailed RP resp:\n${JSON.stringify(resp2, null, 2)}`);
           const { requestDetails } = resp2.resp.data;
           const { requestedSpecies, requestedGenes, requestedAnatEntitesAndCellTypes } = requestDetails;
-          console.log(
-            `[useLogic.initFromUrlParams] requestedAnatEntitesAndCellTypes:\n${JSON.stringify(requestedAnatEntitesAndCellTypes)}`
-          );
           const { anat_entity_id: anatEntityId, cell_type_id: cellTypeId } = resp2.resp.requestParameters;
           // Find the requestedAnatEntitesAndCellTypes that matches the anatEntityId
           const requestedAnatEntities =
@@ -1225,8 +1216,6 @@ const useLogic = (isExprCalls) => {
 
           const requestedCellTypes =
             requestedAnatEntitesAndCellTypes?.filter((term) => cellTypeId?.includes(term.id)) || [];
-          console.log(`[useLogic.initFromUrlParams] requestedAnatEntities:\n${JSON.stringify(requestedAnatEntities)}`);
-          console.log(`[useLogic.initFromUrlParams] requestedCellTypes:\n${JSON.stringify(requestedCellTypes)}`);
 
           // Use wrapper for species initialization
           if (requestedSpecies) {
@@ -1383,23 +1372,10 @@ const useLogic = (isExprCalls) => {
         (result) => result.code === 200 && result.data.result.totalMatchCount === 1
       );
 
-      // if (validResults.length === 0) {
-      //   console.error('No valid gene matches found');
-      //   return;
-      // }
-
-      // // Get first gene's species
-      // const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
-
       // Verify all genes are from same species
       const allSameSpecies = validResults.every(
         (result) => result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
       );
-
-      // if (!allSameSpecies) {
-      //   console.error('Genes must all be from the same species');
-      //   return;
-      // }
 
       // Set species
       const speciesValue = {
