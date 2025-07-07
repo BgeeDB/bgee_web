@@ -1208,14 +1208,15 @@ const useLogic = (isExprCalls) => {
         if (resp2.resp.code === 200) {
           // console.log(`[useLogic.initFromUrlParams] detailed RP resp:\n${JSON.stringify(resp2, null, 2)}`);
           const { requestDetails } = resp2.resp.data;
-          const { requestedSpecies, requestedGenes, requestedAnatEntitesAndCellTypes } = requestDetails;
-          const { anat_entity_id: anatEntityId, cell_type_id: cellTypeId } = resp2.resp.requestParameters;
+          //const { requestedSpecies, requestedGenes, requestedAnatEntitesAndCellTypes } = requestDetails;
+          const { requestedSpecies, requestedGenes } = requestDetails;
+          // const { anat_entity_id: anatEntityId, cell_type_id: cellTypeId } = resp2.resp.requestParameters;
           // Find the requestedAnatEntitesAndCellTypes that matches the anatEntityId
-          const requestedAnatEntities =
-            requestedAnatEntitesAndCellTypes?.filter((term) => anatEntityId?.includes(term.id)) || [];
+          // const requestedAnatEntities =
+          //   requestedAnatEntitesAndCellTypes?.filter((term) => anatEntityId?.includes(term.id)) || [];
 
-          const requestedCellTypes =
-            requestedAnatEntitesAndCellTypes?.filter((term) => cellTypeId?.includes(term.id)) || [];
+          // const requestedCellTypes =
+          //   requestedAnatEntitesAndCellTypes?.filter((term) => cellTypeId?.includes(term.id)) || [];
 
           // Use wrapper for species initialization
           if (requestedSpecies) {
@@ -1271,7 +1272,6 @@ const useLogic = (isExprCalls) => {
 
     const searchParams = new URLSearchParams(loc.search);
     const geneList = searchParams.get('gene_list');
-    const speciesId = searchParams.get('species_id');
     if (geneList) {
       processGeneList(geneList);
     } else if (!loc.search && !isFirstSearch && !isLoading) {
@@ -1356,7 +1356,7 @@ const useLogic = (isExprCalls) => {
   };
 
   // Add function to process gene list
-  const processGeneList = async (geneListParam, speciesId) => {
+  const processGeneList = async (geneListParam) => {
     if (!geneListParam) return;
 
     setIsProcessingGeneList(true);
@@ -1369,11 +1369,6 @@ const useLogic = (isExprCalls) => {
       // Process results
       const validResults = searchResults.filter(
         (result) => result.code === 200 && result.data.result.totalMatchCount === 1
-      );
-
-      // Verify all genes are from same species
-      const allSameSpecies = validResults.every(
-        (result) => result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
       );
 
       // Set species

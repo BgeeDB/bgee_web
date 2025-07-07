@@ -276,7 +276,6 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   };
 
   useEffect(() => {
-    const params = getSearchParams();
     triggerInitialSearch();
   }, [geneId, speciesId, dataTypeExpr]);
 

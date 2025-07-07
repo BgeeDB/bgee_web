@@ -25,7 +25,6 @@ export const Renderer = forwardRef(
       backgroundColor,
       marginLeft,
       xLabelRotation,
-      yLabelJustify,
       showLegend,
       showMissingData,
       showDescMax,
@@ -186,42 +185,6 @@ export const Renderer = forwardRef(
       const w1 = cellWidth * (2 / 3);
       const w2 = cellWidth - w1;
       const x1 = x + w1;
-
-      // return (
-      //   <g id={`heatmapCell-${idx}`}>
-      //     <rect
-      //       key={`valueSelf-${idx}`}
-      //       x={x}
-      //       y={y}
-      //       width={w1}
-      //       height={cellHeight}
-      //       opacity={1}
-      //       fill={fillColour}
-      //       strokeWidth={4}
-      //       onMouseEnter={(e) => {
-      //         setHoveredCell(cellData);
-      //       }}
-      //       onMouseLeave={() => setHoveredCell(null)}
-      //       cursor="pointer"
-      //     />
-
-      //     <rect
-      //       key={`valueDesc-${idx}`}
-      //       x={x1}
-      //       y={y}
-      //       width={w2}
-      //       height={cellHeight}
-      //       opacity={1}
-      //       fill={strokeColour}
-      //       strokeWidth={4}
-      //       onMouseEnter={(e) => {
-      //         setHoveredCell(cellData);
-      //       }}
-      //       onMouseLeave={() => setHoveredCell(null)}
-      //       cursor="pointer"
-      //     />
-      //   </g>
-      // );
 
       switch (showDescMax) {
         case 'border':
@@ -413,78 +376,6 @@ export const Renderer = forwardRef(
           // transform="`rotate(-10) translate(${xCoord}, ${yCoord})`"
         >
           {name}
-        </text>
-      );
-    });
-
-    const yLabels = yLblOrdered.map((term, i) => {
-      const y = yScale(term.label);
-
-      if (!y) {
-        return null;
-      }
-
-      const idx = i;
-      // Calculate x position based on yLabelJustify
-      const xPos = yLabelJustify === 'left' ? -1 * marginLeft : -5;
-      const anchor = yLabelJustify === 'left' ? 'start' : 'end';
-      // Calculate y position
-      const yPos = y + yScale.bandwidth() / 2;
-      // Change display depending on hierarchical level
-      let lblTree = '';
-      let lblIndicator = '';
-      const lblTerm = term.label;
-      if (term.depth > 0) {
-        if (term.isTopLevelTerm) {
-          lblIndicator = '?'; // '(?)';
-          if (term.isExpanded)
-            lblIndicator = '\u{025B3}'; // '^'
-          // else if(term.hasBeenQueried) lblIndicator = '\u{025BD}'; // 'v';
-          else lblIndicator = '<'; // 'v';
-        }
-
-        if (yLabelJustify === 'left') {
-          lblTree = `${'-'.repeat(2 * term.depth)}${lblIndicator} ${term.label}`;
-        } else {
-          let suffix = '';
-          for (let lvl = 1; lvl <= term.depth; lvl += 1) {
-            if (lvl === term.depth) {
-              if (term.isLastChild) {
-                suffix = `\u{02500}\u{02518}${suffix}`; // lower-right corner
-              } else {
-                // postfix = `\u{02500}\u{02525}${postfix}`;
-                suffix = `\u{02500}\u{02524}${suffix}`; // t-crossing left
-              }
-            } else if (term.embeddedInLvls.includes(lvl)) {
-              // postfix = `\u{02500}\u{02502}${postfix}`;
-              suffix = `\u{000A0}\u{02502}${suffix}`; // vertical line
-            } else {
-              suffix = `\u{000A0}\u{000A0}${suffix}`; // blank space
-            }
-          }
-          // displayText = `${term.label} ${indicator}${'-'.repeat(2*term.depth)}`;
-          lblTree = `${suffix}`;
-        }
-      }
-      // console.log(`[Renderer] yLabel: ${JSON.stringify(term)}`);
-
-      // term.label + '\u{02518}' // '.'.repeat(2*term.depth);
-      // term.label + ' '.repeat(2*term.depth);
-
-      return (
-        <text
-          key={`heatMapYLabel-${idx}`}
-          x={xPos}
-          y={yPos}
-          textAnchor={anchor}
-          dominantBaseline="middle"
-          fontSize={15}
-          fontFamily="monospace"
-          onClick={() => onToggleExpandCollapse(term)}
-        >
-          <tspan fontFamily="sans-serif">{lblTerm} </tspan>
-          <tspan fill="red">{lblIndicator}</tspan>
-          {lblTree}
         </text>
       );
     });
