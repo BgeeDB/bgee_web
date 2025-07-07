@@ -70,34 +70,21 @@ export const ColorLegendSvg = ({ posX, posY, height, colorScale, width, interact
   return (
     <g>
       <g>
-        <text
-          x={posX}
-          y={posY - 10}
-          fontSize={10}
-          textAnchor="left"
-          fontWeight="bold"
-        >
+        <text x={posX} y={posY - 10} fontSize={10} textAnchor="left" fontWeight="bold">
           Expression score
         </text>
         <g transform={`translate(${posX + 95}, ${posY - 15})`}>
           <g>
-            <circle
-              r={8}
-              fill="black"
-              stroke="black"
-              strokeWidth={1}
-            />
-            <text
-              x={0}
-              y={3}
-              fontSize={10}
-              textAnchor="middle"
-              fill="white"
-            >
+            <circle r={8} fill="black" stroke="black" strokeWidth={1} />
+            <text x={0} y={3} fontSize={10} textAnchor="middle" fill="white">
               ?
             </text>
             <title>
-              Expression scores of expression calls is based on the rank of a gene in a condition according to its expression levels (non-parametric statistics), normalized using the minimum and maximum Rank of the species. Values of Expression scores are between 0 and 100. Low score means that the gene is lowly expressed in the condition compared to other genes. Scores are normalized and comparable across genes, conditions and species.
+              Expression scores of expression calls is based on the rank of a gene in a condition according to its
+              expression levels (non-parametric statistics), normalized using the minimum and maximum Rank of the
+              species. Values of Expression scores are between 0 and 100. Low score means that the gene is lowly
+              expressed in the condition compared to other genes. Scores are normalized and comparable across genes,
+              conditions and species.
             </title>
           </g>
         </g>

@@ -509,7 +509,7 @@ const search = {
         // are we using a dataHash?
         if (form?.initSearch) {
           // -> use initSearch params
-           
+
           for (const [key, val] of form.initSearch) {
             if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               params.append(key, val);
