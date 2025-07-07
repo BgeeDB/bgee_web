@@ -507,15 +507,11 @@ const search = {
         params.append('detailed_rp', detailedRP ? '1' : '0');
 
         // are we using a dataHash?
-        if (form?.initSearch) { // -> use initSearch params
-          // eslint-disable-next-line no-restricted-syntax
-          for (const [key, val] of form?.initSearch) {
-            if (
-              key !== 'data_type' &&
-              key !== 'offset' &&
-              key !== 'limit' &&
-              key !== 'pageType'
-            ) {
+        if (form?.initSearch) {
+          // -> use initSearch params
+           
+          for (const [key, val] of form.initSearch) {
+            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               params.append(key, val);
             }
           }
@@ -579,19 +575,12 @@ const search = {
           } else {
             params.append('anat_entity_id', 'SUMMARY');
           }
-          // if (form.hasTissueSubStructure) {
-          //   params.append('anat_entity_descendant', '1');
-          // }
-
-          // NOTE: not using cell types here bc we need to request top level terms first
-          // if (form.selectedCellTypes?.length > 0) {
-          //   form.selectedCellTypes.forEach((ct) =>
-          //     params.append('cell_type_id', ct)
-          //   );
-          // } else {
-          // params.append('cell_type_id', 'GO:0005575');
-          params.append('cell_type_id', 'SUMMARY');
-          // }
+          // Use user-selected cell types if available, otherwise use SUMMARY
+          if (form.selectedCellTypes?.length > 0) {
+            form.selectedCellTypes.forEach((ct) => params.append('cell_type_id', ct));
+          } else {
+            params.append('cell_type_id', 'SUMMARY');
+          }
           params.append('cond_param2', 'anat_entity');
 
           // if (form.hasCellTypeSubStructure) {
