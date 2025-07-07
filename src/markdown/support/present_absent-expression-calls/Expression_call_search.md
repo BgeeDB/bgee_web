@@ -35,18 +35,15 @@ The following filter options are available through the search form:
   You can search using the gene symbol (for instance, _HBB_) or by the gene identifier (for instance, _ENSG00000244734_).
 
 - **Tissue**: Tissue(s) of interest. You can search using the common name or the ontology ID.
-
   - Checking the _including substructures_ box will include all substructures (child terms) of the tissue(s) you selected.
     For instance, if you select the term "brain", and this box is checked, all substructures of the brain
     will also be included in the search.
 
 - **Cell Type**: Cell type(s) of interest, either the common name or the ontology ID.
-
   - Checking the _including substructures_ box will include all substructures (child terms) of the cell type(s) you selected.
 
 - **Developmental and Life Stage**: Developmental/life stage(s) of interest. Only a simplified tree view of the ontology is displayed.
   Multiple terms can be selected by reopening the field after clicking on a term.
-
   - Checking the _including child terms_ box will include all child terms of the developmental and life stage(s) you selected.
 
 - **Strain and Ethnicity**: Strain(s) of interest, or in humans the ethnicity of interest. Bgee uses the
@@ -58,7 +55,6 @@ The following filter options are available through the search form:
   at least one of the selected data types.
 
 - **Condition Parameter**: Select the condition parameters to consider for generating expression calls.
-
   - For example, selecting only "Anatomical localization" will integrate all strain/ethnicity, developmental and life stage, and sex information, into one singular call per gene and anatomical localization.
   - Removing a condition parameter, for example "Strain/Ethnicity", will integrate all strain/ethnicity data for a particular anatomical localization, developmental and life stage, and sex, into one singular call per gene.
 
