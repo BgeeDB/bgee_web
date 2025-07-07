@@ -1243,28 +1243,27 @@ const useLogic = (isExprCalls) => {
     }
   };
 
-  // NOTE: DELETE: This useEffect causes additional API requests not needed.
-  // // Add useEffect to trigger search when initialization is complete
-  // useEffect(() => {
-  //   console.log(
-  //     '[useEffect] Triggering search from URL params',
-  //     isInitializingFromUrl,
-  //     selectedGene,
-  //     selectedSpecies,
-  //     EMPTY_SPECIES_VALUE
-  //   );
-  //   if (isInitializingFromUrl && selectedGene.length > 0 && selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
-  //     // TODO: problem is that it never gets there.
-  //     console.log('[useEffect] Triggering search from URL params2', isInitializingFromUrl);
-  //     // console.log('[useEffect] States ready for search:', {
-  //     //   selectedGene,
-  //     //   selectedSpecies,
-  //     //   isInitializingFromUrl
-  //     // });
-  //     triggerInitialSearch();
-  //     setIsInitializingFromUrl(false); // Reset flag after triggering search
-  //   }
-  // }, [selectedGene, selectedSpecies]);
+  // Add useEffect to trigger search when initialization is complete
+  useEffect(() => {
+    console.log(
+      '[useEffect] Triggering search from URL params',
+      isFirstSearch,
+      isInitializingFromUrl,
+      selectedGene,
+      selectedSpecies,
+      EMPTY_SPECIES_VALUE
+    );
+    if (
+      isFirstSearch &&
+      isInitializingFromUrl &&
+      selectedGene.length > 0 &&
+      selectedSpecies.value !== EMPTY_SPECIES_VALUE.value
+    ) {
+      // console.log('[useEffect] Triggering search from URL params2', isInitializingFromUrl);
+      triggerInitialSearch();
+      setIsInitializingFromUrl(false); // Reset flag after triggering search
+    }
+  }, [selectedGene, selectedSpecies]);
 
   // URL change handler
   useEffect(() => {
