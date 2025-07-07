@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { Download } from 'lucide-react';
 
 import Bulma from '../../../../../components/Bulma';
-import { Renderer } from './Renderer';
+import { Renderer } from './Renderer.jsx';
 import { Tooltip } from './Tooltip';
 import { DetailView } from './DetailView';
 import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
@@ -54,8 +54,10 @@ export const Heatmap = ({
   const [showLegend, setShowLegend] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
   const [xLabelRotation, setXLabelRotation] = useState(() => getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 325));
   const [yLabelAlign, setYLabelAlign] = useState(() => getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
-  const [graphWidth, setGraphWidth] = useState(() => getStoredValue(STORAGE_KEYS.GRAPH_WIDTH, width));
-  const [graphHeight, setGraphHeight] = useState(() => getStoredValue(STORAGE_KEYS.GRAPH_HEIGHT, height));
+  const [graphWidth, setGraphWidth] = useState(width);
+  const [graphHeight, setGraphHeight] = useState(height);
+  // outer width, if graphWidth > maxGraphWidth -> scale SVG down
+  const [maxGraphWidth, setMaxGraphWidth] = useState(1500);
   const [colorPalette, setColorPalette] = useState(() => getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
   const [bgColor, setBgColor] = useState(() => getStoredValue(STORAGE_KEYS.BG_COLOR, backgroundColor));
   const [marginLeft, setMarginLeft] = useState(() => getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
@@ -67,17 +69,34 @@ export const Heatmap = ({
     getStoredValue(STORAGE_KEYS.USE_ADAPTIVE_SCALE, false)
   );
 
-  // handle display property changes
-  const updateGraphWidth = (event) => {
+  // Add state to track input values during editing
+  const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
+  const [graphHeightInput, setGraphHeightInput] = useState(graphHeight);
+
+  // Update local input state without updating the actual graphWidth
+  const handleGraphWidthChange = (event) => {
+    setGraphWidthInput(event.target.value);
+  };
+
+  // Update the actual graphWidth and localStorage on blur
+  const handleGraphWidthBlur = (event) => {
     const { value } = event.target;
-    setGraphWidth(value);
+    setMaxGraphWidth(value);
     localStorage.setItem(STORAGE_KEYS.GRAPH_WIDTH, value);
   };
-  const updateGraphHeight = (event) => {
+
+  // Update local input state without updating the actual graphHeight
+  const handleGraphHeightChange = (event) => {
+    setGraphHeightInput(event.target.value);
+  };
+
+  // Update the actual graphHeight and localStorage on blur
+  const handleGraphHeightBlur = (event) => {
     const { value } = event.target;
     setGraphHeight(value);
     localStorage.setItem(STORAGE_KEYS.GRAPH_HEIGHT, value);
   };
+
   const updateShowLegend = () => {
     const value = !showLegend;
     setShowLegend(value);
@@ -310,6 +329,12 @@ export const Heatmap = ({
     }
   }, [isLoading]);
 
+  // Update useEffect to sync input values when graphWidth/graphHeight change
+  useEffect(() => {
+    setGraphWidthInput(maxGraphWidth);
+    setGraphHeightInput(graphHeight);
+  }, [graphWidth, graphHeight]);
+
   return (
     <div className="heatmap-container" style={{ backgroundColor: bgColor }}>
       <div className="columns is-gapless">
@@ -335,6 +360,7 @@ export const Heatmap = ({
             showDescMax={showDescMax}
             colorLegendWidth={200}
             colorLegendHeight={COLOR_LEGEND_HEIGHT}
+            maxGraphWidth={maxGraphWidth}
             setGraphWidth={setGraphWidth}
           />
 
@@ -433,13 +459,25 @@ export const Heatmap = ({
                         <tr>
                           <td>Graph width:</td>
                           <td>
-                            <input type="text" size="10" value={graphWidth} onChange={updateGraphWidth} />
+                            <input
+                              type="text"
+                              size="10"
+                              value={graphWidthInput}
+                              onChange={handleGraphWidthChange}
+                              onBlur={handleGraphWidthBlur}
+                            />
                           </td>
                         </tr>
                         <tr>
                           <td>Graph height:</td>
                           <td>
-                            <input type="text" size="10" value={graphHeight} onChange={updateGraphHeight} />
+                            <input
+                              type="text"
+                              size="10"
+                              value={graphHeightInput}
+                              onChange={handleGraphHeightChange}
+                              onBlur={handleGraphHeightBlur}
+                            />
                           </td>
                         </tr>
                         <tr>

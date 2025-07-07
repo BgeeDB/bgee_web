@@ -240,7 +240,12 @@ const GeneDetails = ({
           <GeneExpressionGraph geneId={geneId} speciesId={species.id} />
           <GeneExpressionTable geneId={geneId} speciesId={species.id} />
           <GeneExpressionTable geneId={geneId} speciesId={species.id} notExpressed />
-          <GeneHomologs homologs={homologs} geneId={geneId} isLoading={isLoading} />
+          <GeneHomologs
+            homologs={homologs}
+            geneId={geneId}
+            speciesId={species.id}
+            isLoading={isLoading}
+          />
           {xRefs && <GeneXRefs data={xRefs} isLoading={isLoading} />}
         </div>
       </div>

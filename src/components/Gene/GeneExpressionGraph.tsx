@@ -71,7 +71,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
       isFirstSearch: true,
       initSearch,
       pageType: EXPR_CALLS,
-      dataType: dataTypeExpr?.toString().split(','),
+      dataType: dataTypeExpr?.toString().split(',') || ALL_DATA_TYPES,
       dataQuality: 'SILVER',
       selectedExpOrAssay: [],
       selectedSpecies: speciesId,
@@ -276,18 +276,12 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   };
 
   useEffect(() => {
+    const params = getSearchParams();
     triggerInitialSearch();
-  }, [geneId, speciesId]);
-
-  useEffect(() => {
-    triggerInitialSearch();
-  }, [dataType]);
+  }, [geneId, speciesId, dataTypeExpr]);
 
   // Perform API data request for subordinate terms
   const triggerSearchChildren = async (parentId: string, selectedTissueId: string) => {
-    // DEBUG: remove console log in prod
-    console.log(`[GeneExpressionGraph] triggerSearchChildren:\n"${parentId}"`);
-
     const params = getSearchParams();
     params.isFirstSearch = false;
     // Set parent anatomical term as selected tissue
@@ -514,7 +508,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
       const isExpressed = result.expressionState === 'expressed';
 
       return {
-        x: gName,
+        x: gName?.length > 0 ? gName : gId,
         y: termId,
         termId,
         termName,

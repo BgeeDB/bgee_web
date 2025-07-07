@@ -25,14 +25,16 @@ export const Renderer = forwardRef(
       backgroundColor,
       marginLeft,
       xLabelRotation,
-      // yLabelJustify,
+      yLabelJustify,
       showLegend,
       showMissingData,
       showDescMax,
       colorLegendWidth,
       colorLegendHeight,
+      maxCellWidth,
       minCellWidth = 20,
       minCellHeight = 10,
+      maxGraphWidth = 1000,
       setGraphWidth,
     },
     ref
@@ -115,19 +117,16 @@ export const Renderer = forwardRef(
     const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 
     const xScale = useMemo(() => {
+      const cellWidth = Math.max(maxCellWidth, minCellWidth);
       // Calculate required width based on minimum cell width, including 4px margin
-      const requiredWidth = allXGroups.length * (minCellWidth + 4);
+      const requiredWidth = allXGroups.length * (cellWidth + 4);
       if (requiredWidth > boundsWidth) {
         // Update graph width if needed
         setGraphWidth(requiredWidth + MARGIN.right + marginLeft);
       }
 
-      return d3
-        .scaleBand()
-        .range([0, Math.max(boundsWidth, requiredWidth)])
-        .domain(allXGroups)
-        .padding(0.01);
-    }, [dataShow, width, minCellWidth, allXGroups, boundsWidth, marginLeft, setGraphWidth]);
+      return d3.scaleBand().range([0, requiredWidth]).domain(allXGroups).padding(0.01);
+    }, [dataShow, width, maxCellWidth, minCellWidth, allXGroups, boundsWidth, marginLeft, setGraphWidth]);
 
     const yScale = useMemo(() => {
       // Calculate required height based on minimum cell height, including 4px margin
@@ -418,74 +417,77 @@ export const Renderer = forwardRef(
       );
     });
 
-    // const yLabels = yLblOrdered.map((term, i) => {
-    //   const y = yScale(term.label);
-    //   if (!y) {
-    //     return null;
-    //   }
-    //   const idx = i;
-    //   // Calculate x position based on yLabelJustify
-    //   const xPos = yLabelJustify === 'left' ? -1 * marginLeft : -5;
-    //   const anchor = yLabelJustify === 'left' ? 'start' : 'end';
-    //   // Calculate y position
-    //   const yPos = y + yScale.bandwidth() / 2;
-    //   // Change display depending on hierarchical level
-    //   let lblTree = '';
-    //   let lblIndicator = '';
-    //   const lblTerm = term.label;
-    //   if (term.depth > 0) {
-    //     if (term.isTopLevelTerm) {
-    //       lblIndicator = '?'; // '(?)';
-    //       if (term.isExpanded)
-    //         lblIndicator = '\u{025B3}'; // '^'
-    //       // else if(term.hasBeenQueried) lblIndicator = '\u{025BD}'; // 'v';
-    //       else lblIndicator = '<'; // 'v';
-    //     }
-    //     if (yLabelJustify === 'left') {
-    //       lblTree = `${'-'.repeat(2 * term.depth)}${lblIndicator} ${term.label}`;
-    //     } else {
-    //       let suffix = '';
-    //       for (let lvl = 1; lvl <= term.depth; lvl += 1) {
-    //         if (lvl === term.depth) {
-    //           if (term.isLastChild) {
-    //             suffix = `\u{02500}\u{02518}${suffix}`; // lower-right corner
-    //           } else {
-    //             // postfix = `\u{02500}\u{02525}${postfix}`;
-    //             suffix = `\u{02500}\u{02524}${suffix}`; // t-crossing left
-    //           }
-    //         } else if (term.embeddedInLvls.includes(lvl)) {
-    //           // postfix = `\u{02500}\u{02502}${postfix}`;
-    //           suffix = `\u{000A0}\u{02502}${suffix}`; // vertical line
-    //         } else {
-    //           suffix = `\u{000A0}\u{000A0}${suffix}`; // blank space
-    //         }
-    //       }
-    //       // displayText = `${term.label} ${indicator}${'-'.repeat(2*term.depth)}`;
-    //       lblTree = `${suffix}`;
-    //     }
-    //   }
-    //   // console.log(`[Renderer] yLabel: ${JSON.stringify(term)}`);
+    const yLabels = yLblOrdered.map((term, i) => {
+      const y = yScale(term.label);
 
-    //   // term.label + '\u{02518}' // '.'.repeat(2*term.depth);
-    //   // term.label + ' '.repeat(2*term.depth);
+      if (!y) {
+        return null;
+      }
 
-    //   return (
-    //     <text
-    //       key={`heatMapYLabel-${idx}`}
-    //       x={xPos}
-    //       y={yPos}
-    //       textAnchor={anchor}
-    //       dominantBaseline="middle"
-    //       fontSize={15}
-    //       fontFamily="monospace"
-    //       onClick={() => onToggleExpandCollapse(term)}
-    //     >
-    //       <tspan fontFamily="sans-serif">{lblTerm} </tspan>
-    //       <tspan fill="red">{lblIndicator}</tspan>
-    //       {lblTree}
-    //     </text>
-    //   );
-    // });
+      const idx = i;
+      // Calculate x position based on yLabelJustify
+      const xPos = yLabelJustify === 'left' ? -1 * marginLeft : -5;
+      const anchor = yLabelJustify === 'left' ? 'start' : 'end';
+      // Calculate y position
+      const yPos = y + yScale.bandwidth() / 2;
+      // Change display depending on hierarchical level
+      let lblTree = '';
+      let lblIndicator = '';
+      const lblTerm = term.label;
+      if (term.depth > 0) {
+        if (term.isTopLevelTerm) {
+          lblIndicator = '?'; // '(?)';
+          if (term.isExpanded)
+            lblIndicator = '\u{025B3}'; // '^'
+          // else if(term.hasBeenQueried) lblIndicator = '\u{025BD}'; // 'v';
+          else lblIndicator = '<'; // 'v';
+        }
+
+        if (yLabelJustify === 'left') {
+          lblTree = `${'-'.repeat(2 * term.depth)}${lblIndicator} ${term.label}`;
+        } else {
+          let suffix = '';
+          for (let lvl = 1; lvl <= term.depth; lvl += 1) {
+            if (lvl === term.depth) {
+              if (term.isLastChild) {
+                suffix = `\u{02500}\u{02518}${suffix}`; // lower-right corner
+              } else {
+                // postfix = `\u{02500}\u{02525}${postfix}`;
+                suffix = `\u{02500}\u{02524}${suffix}`; // t-crossing left
+              }
+            } else if (term.embeddedInLvls.includes(lvl)) {
+              // postfix = `\u{02500}\u{02502}${postfix}`;
+              suffix = `\u{000A0}\u{02502}${suffix}`; // vertical line
+            } else {
+              suffix = `\u{000A0}\u{000A0}${suffix}`; // blank space
+            }
+          }
+          // displayText = `${term.label} ${indicator}${'-'.repeat(2*term.depth)}`;
+          lblTree = `${suffix}`;
+        }
+      }
+      // console.log(`[Renderer] yLabel: ${JSON.stringify(term)}`);
+
+      // term.label + '\u{02518}' // '.'.repeat(2*term.depth);
+      // term.label + ' '.repeat(2*term.depth);
+
+      return (
+        <text
+          key={`heatMapYLabel-${idx}`}
+          x={xPos}
+          y={yPos}
+          textAnchor={anchor}
+          dominantBaseline="middle"
+          fontSize={15}
+          fontFamily="monospace"
+          onClick={() => onToggleExpandCollapse(term)}
+        >
+          <tspan fontFamily="sans-serif">{lblTerm} </tspan>
+          <tspan fill="red">{lblIndicator}</tspan>
+          {lblTree}
+        </text>
+      );
+    });
 
     // const [min = 0, max = 0] = d3.extent(data.map((d) => d.value)); // extent can return [undefined, undefined], default to [0,0] to fix types
     const domain = colorScale.domain();
@@ -502,7 +504,14 @@ export const Renderer = forwardRef(
     const colorLegendPosY = height;
 
     return (
-      <svg ref={ref} width={width} height={height + colorLegendHeight} style={{ backgroundColor }}>
+      <svg
+        ref={ref}
+        width={Math.min(width, maxGraphWidth)}
+        height={height + colorLegendHeight}
+        style={{ backgroundColor }}
+        viewBox={`0 0 ${width} ${height + colorLegendHeight}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
         <defs>
           <style>{`
           @font-face {
@@ -524,7 +533,6 @@ export const Renderer = forwardRef(
           {allShapes}
           {xLabelsTop}
           {xLabelsBottom}
-          {/* {false && { yLabels }} */}
 
           <g transform={`translate(-${marginLeft - 10}, 5)`}>
             <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
