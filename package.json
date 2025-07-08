@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
+    "build": "react-router build && sh scripts/fix_symlinks.sh",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "stop": "/usr/bin/kill -TERM -- -$(ps aux | grep 'npm start' | grep -v grep | awk '{print $2}')",
