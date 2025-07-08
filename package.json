@@ -1,12 +1,14 @@
 {
   "name": "bgee",
-  "version": "15.2.3",
+  "version": "15.2.4",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
+    "stop": "/usr/bin/kill -TERM -- -$(ps aux | grep 'npm start' | grep -v grep | awk '{print $2}')",
+    "restart": "npm run stop && npm run start",
     "typecheck": "react-router typegen && tsc",
     "fmt": "prettier --write . && eslint . --fix",
     "lint": "prettier --check . && eslint .",
