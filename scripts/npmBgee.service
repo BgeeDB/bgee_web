@@ -1,0 +1,27 @@
+[Unit]
+Description=npm start for Bgee
+#StartLimitIntervalSec=500
+#StartLimitBurst=5
+After=network.target
+
+[Service]
+#Type=forking
+#RemainAfterExit=yes
+Restart=on-failure
+#Restart=always
+#TimeoutSec=5min
+#IgnoreSIGPIPE=no
+#KillMode=process
+#GuessMainPID=no
+#SuccessExitStatus=5 6
+ExecStart=/bin/bash -c 'cd /usr/local/bgee_web.git/ && /usr/local/bgee_web.git/node_modules/.bin/react-router-serve /usr/local/bgee_web.git/build/server/index.js'
+#ExecStop=cd /usr/local/bgee_web.git/ && npm stop
+User=bgee
+Group=bgee
+#Environment=PATH=/usr/bin:/usr/local/bin
+#Environment=NODE_ENV=production
+#WorkingDirectory=/opt/myservice-location
+
+[Install]
+WantedBy=multi-user.target
+
