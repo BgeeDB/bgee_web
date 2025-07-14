@@ -232,7 +232,7 @@ const Heatmap = ({
     const { count: numVisibleTerms, maxLabelLength } = countVisibleTerms(yTerms);
     // console.log(`[Heatmap] ${numVisibleTerms} visible terms`);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
-    const flexHeight = Math.max(numVisibleTerms * 30 + COLOR_LEGEND_HEIGHT, 250);
+    const flexHeight = Math.max(numVisibleTerms * 15 + COLOR_LEGEND_HEIGHT, 250);
     const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
     const flexWidth = Math.max(flexMarginLeft + 50, graphWidth);
     setGraphHeight(flexHeight);

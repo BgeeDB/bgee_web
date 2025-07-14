@@ -127,7 +127,6 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           </div>
           <DetailRow label="expressed" value={String(data.isExpressed)} />
           <DetailRow label="expression score" value={String(data.value)} />
-          <DetailRow label="max. expression" value={String(data.maxExpScore)} />
           <br />
           <a
             href={`/search/raw-data?pageType=proc_expr_values&gene_id=${data.geneId}&species_id=${data.speciesId}&cell_type_id=${data.cellTypeId}&cell_type_descendant=true&stage_descendant=true&anat_entity_descendant=true&anat_entity_id=${data.anatEntityId}`}
