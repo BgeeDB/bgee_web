@@ -90,6 +90,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           var _mtm = window._mtm = window._mtm || [];
           _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
           var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+          g.integrity='sha384-c84c02a9be5900a7b0364317a1b0b26b455d1cdd35e954199d51c89d61d6ca745f72c8bf90b57868308110b8c57a5e44';
+          g.crossorigin='anonymous';
           g.async=true; g.src='https://matomo.sib.swiss/js/container_F5WPJc2X.js'; s.parentNode.insertBefore(g,s);
         `}
         </script>
