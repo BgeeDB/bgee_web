@@ -254,7 +254,7 @@ const publications = [
               {
                 type: 'link_external',
                 text: 'LLM-based SPARQL Query Generation from Natural Language over Federated Knowledge Graphs',
-                path: 'https://doi.org/10.48550/arXiv.2410.06062',
+                path: 'https://ceur-ws.org/Vol-3953/355.pdf',
               },
               {
                 type: 'break_line',
@@ -265,7 +265,8 @@ const publications = [
               },
               {
                 type: 'text',
-                content: 'arXiv, 2024.',
+                content:
+                  'ISWC 2024 Special Session on Harmonising Generative AI and Semantic Web Technologies (HGAIS 2024), 23rd International Semantic Web Conference, 2024, 3953:355',
               },
             ],
           },
