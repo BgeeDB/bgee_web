@@ -52,16 +52,12 @@ const NAVBAR_RIGHT = [
     href: 'https://www.unil.ch/central/en/home.html',
     src: assets.unilLogo,
     alt: 'UNIL',
-    height: '35',
-    width: '100',
     className: 'no-responsive',
   },
   {
     href: 'https://www.sib.swiss/',
     src: assets.sibLogo,
     alt: 'SIB',
-    height: '35',
-    width: '46',
     className: 'no-responsive',
   },
 ];
