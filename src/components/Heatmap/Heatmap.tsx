@@ -230,7 +230,7 @@ const Heatmap = ({
     }
 
     const { count: numVisibleTerms, maxLabelLength } = countVisibleTerms(yTerms);
-    // console.log(`[Heatmap] ${numVisibleTerms} visible terms`);
+    console.log(`[Heatmap] ${numVisibleTerms} visible terms`);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
     const cellHeight = 15;
     const maxMarginLeft = 730;
@@ -242,17 +242,17 @@ const Heatmap = ({
     flexMarginLeft = Math.min(flexMarginLeft, maxMarginLeft);
     const flexWidth = Math.max(flexMarginLeft + 50, graphWidth);
 
-    // console.log('[Heatmap] flexHeight:', flexHeight);
+    console.log('[Heatmap] flexHeight:', flexHeight);
     // console.log('[Heatmap] flexWidth:', flexWidth);
     // console.log('[Heatmap] maxGraphWidth:', maxGraphWidth);
 
-    // if (svgRef.current) {
-    //   const rect = svgRef.current.getBoundingClientRect();
-    //   console.log('[Heatmap] Rendered SVG size:', rect.width, rect.height);
+    if (svgRef.current) {
+      const rect = svgRef.current.getBoundingClientRect();
+      console.log('[Heatmap] Rendered SVG size:', rect.width, rect.height);
 
-    //   const viewbox = svgRef.current.viewBox.baseVal;
-    //   console.log('[Heatmap] SVG user space:', viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-    // }
+      const viewbox = svgRef.current.viewBox.baseVal;
+      console.log('[Heatmap] SVG user space:', viewbox.x, viewbox.y, viewbox.width, viewbox.height);
+    }
 
     setGraphHeight(flexHeight);
     setGraphWidth(flexWidth);

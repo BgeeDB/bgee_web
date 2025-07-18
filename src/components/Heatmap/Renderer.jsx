@@ -6,7 +6,7 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
 
-const MARGIN = { top: 20, right: 10, bottom: 50, left: 200 };
+const MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
 const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
 
 export const Renderer = forwardRef(
@@ -45,6 +45,9 @@ export const Renderer = forwardRef(
     const mainHeatmapHeight = height - colorLegendHeight;
     const boundsHeight = mainHeatmapHeight - MARGIN.top - MARGIN.bottom;
     const colorLegendBoundsHeight = colorLegendHeight - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
+
+    console.log('[Renderer] mainHeatmapHeight:', mainHeatmapHeight);
+    console.log('[Renderer] boundsHeight:', boundsHeight);
 
     // show only selected and top-level data points
     // const dataShow = data.filter((d) => (
@@ -399,6 +402,7 @@ export const Renderer = forwardRef(
       const xCoord = x + xScale.bandwidth() / 2;
       // TODO: fix bottom label position (too low)
       const yCoord = height - colorLegendHeight - MARGIN.top - MARGIN.bottom + 10;
+      // const yCoord = height - colorLegendHeight;
       // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
 
       if (!x) {
@@ -535,15 +539,18 @@ export const Renderer = forwardRef(
           <linearGradient id="colorLegendGradient">{colorLegendStops}</linearGradient>
         </defs>
         <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
-          {allShapes}
-          {xLabelsTop}
-          {xLabelsBottom}
-
-          <g transform={`translate(-${marginLeft - 10}, 5)`}>
-            <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+          <g>
+            <g>{allShapes}</g>
+            <g>
+              {xLabelsTop}
+              {xLabelsBottom}
+            </g>
+            <g transform={`translate(-${marginLeft - 10}, 5)`}>
+              <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+            </g>
           </g>
 
-          <g transform={`translate(-${marginLeft - 50}, 0)`}>
+          <g transform={`translate(-${marginLeft - 50}, ${colorLegendHeight})`}>
             {showLegend ? (
               <g>
                 <ColorLegendSvg
