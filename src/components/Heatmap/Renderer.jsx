@@ -36,6 +36,7 @@ export const Renderer = forwardRef(
       minCellHeight = 10,
       maxGraphWidth = 800,
       setGraphWidth,
+      scaleSvg = false,
     },
     ref
   ) => {
@@ -519,7 +520,7 @@ export const Renderer = forwardRef(
         height={height}
         style={{ backgroundColor }}
         viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio={scaleSvg ? 'xMidYMid meet' : 'none'}
       >
         <defs>
           <style>{`
