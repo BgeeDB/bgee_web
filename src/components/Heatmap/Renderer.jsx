@@ -15,6 +15,7 @@ export const Renderer = forwardRef(
       width,
       height,
       data,
+      xTerms,
       drilldown,
       termProps,
       hoveredCell,
@@ -46,9 +47,6 @@ export const Renderer = forwardRef(
     const mainHeatmapHeight = height - colorLegendHeight;
     const boundsHeight = mainHeatmapHeight - MARGIN.top - MARGIN.bottom;
     const colorLegendBoundsHeight = colorLegendHeight - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
-
-    console.log('[Renderer] mainHeatmapHeight:', mainHeatmapHeight);
-    console.log('[Renderer] boundsHeight:', boundsHeight);
 
     // show only selected and top-level data points
     // const dataShow = data.filter((d) => (
@@ -117,8 +115,18 @@ export const Renderer = forwardRef(
     const yTermsOrderedCopy = JSON.parse(JSON.stringify(yTermsOrdered));
     const yLblOrdered = yTermsOrderedCopy;
 
-    // const allYGroups = useMemo(() => [...new Set(dataShow.map((d) => d.y))], [dataShow]);
-    const allXGroups = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
+    // const allXGroups = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
+    // use specified xTerms parameter to get the xLabels
+    const allXGroups = useMemo(
+      () =>
+        xTerms.map((d) => {
+          if (d.label.includes(' - ')) {
+            return d.label.split(' - ')[1];
+          }
+          return d.label;
+        }),
+      [xTerms]
+    );
     // const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.label))], [yLblOrdered]);
     const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 

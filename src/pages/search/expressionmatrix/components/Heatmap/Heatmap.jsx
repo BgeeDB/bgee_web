@@ -42,6 +42,7 @@ export const Heatmap = ({
   backgroundColor,
   data,
   getHomologsData,
+  xTerms,
   yTerms,
   termProps,
   yLabelJustify = 'right',
@@ -345,6 +346,7 @@ export const Heatmap = ({
             height={graphHeight - COLOR_LEGEND_HEIGHT}
             backgroundColor={bgColor}
             data={displayData}
+            xTerms={xTerms}
             drilldown={yTerms}
             termProps={termProps}
             hoveredCell={hoveredCell}

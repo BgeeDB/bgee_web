@@ -18,6 +18,7 @@ export const Renderer = forwardRef(
       width,
       height,
       data,
+      xTerms,
       drilldown,
       termProps,
       hoveredCell,
@@ -106,7 +107,16 @@ export const Renderer = forwardRef(
     }
 
     // sort x-axis labels alphabetically
-    const xLabels = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
+    // const xLabels = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
+    // console.log(`[Renderer] xTerms:\n${JSON.stringify(xTerms, null, 2)}`);
+    // use specified xTerms parameter to get the xLabels
+    const xLabels = xTerms.map((d) => {
+      if (d.label.includes(' - ')) {
+        return d.label.split(' - ')[1];
+      }
+      return d.label;
+    });
+    // console.log(`[Renderer] xLabels:\n${JSON.stringify(xLabels, null, 2)}`);
     const xLabelsOrdered = xLabels.sort((a, b) => a.localeCompare(b));
 
     // sort y-axis labels hierarchically

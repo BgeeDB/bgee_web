@@ -27,7 +27,6 @@ export function meta() {
 const GeneExpressionMatrix = ({ isExprCalls = true }) => {
   const {
     searchResult,
-    genes,
     anatomicalTerms,
     anatomicalTermsProps,
     maxExpScore,
@@ -276,7 +275,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
               results={results}
               // columnDescriptions={columnsDesc}
               // searchParams={getSearchParams}
-              genes={genes}
+              genes={selectedGene}
               anatomicalTerms={anatomicalTerms}
               anatomicalTermsProps={anatomicalTermsProps}
               maxExpScore={maxExpScore}
