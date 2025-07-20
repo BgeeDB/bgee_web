@@ -505,11 +505,12 @@ const search = {
         params.append('display_rp', '1');
         // request detailed response parameters
         params.append('detailed_rp', detailedRP ? '1' : '0');
+        params.append('limit', '10000');
 
         // are we using a dataHash?
         if (form?.initSearch) {
           // -> use initSearch params
-           
+
           for (const [key, val] of form.initSearch) {
             if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               params.append(key, val);
