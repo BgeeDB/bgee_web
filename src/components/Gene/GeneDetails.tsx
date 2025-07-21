@@ -162,7 +162,7 @@ const GeneDetails = ({
               </Bulma.Columns>
             </div>
           </div>
-          <GeneExpressionGraph geneId={geneId} speciesId={species.id} />
+          <GeneExpressionGraph geneId={geneId} geneName={name} speciesId={species.id} />
           <GeneExpressionTable geneId={geneId} speciesId={species.id} exprData={exprData} />
           <GeneExpressionTable geneId={geneId} speciesId={species.id} exprData={notExprData} notExpressed />
           <GeneHomologs homologs={homologs} geneId={geneId} speciesId={species.id} isLoading={false} />

@@ -149,8 +149,6 @@ export const ALL_CALL_TYPE = [
   { id: NOT_EXPRESSED, label: 'Absent' },
 ];
 
-const BASE_LIMIT = '10000';
-
 const useLogic = (isExprCalls) => {
   const navigate = useNavigate();
   // Init from URL
@@ -672,6 +670,7 @@ const useLogic = (isExprCalls) => {
         searchParams.delete('display_type');
         searchParams.delete('page');
         searchParams.delete('action');
+        searchParams.delete('limit');
         searchParams.delete('get_results');
         searchParams.delete('get_column_definition');
         searchParams.delete('get_filters');
@@ -770,7 +769,6 @@ const useLogic = (isExprCalls) => {
     params.hasCellTypeSubStructure = 0;
     params.hasTissueSubStructure = 0;
     params.hasDevStageSubStructure = 0;
-    params.limit = BASE_LIMIT;
 
     setIsLoading(true);
     return api.search.geneExpressionMatrix
@@ -903,7 +901,6 @@ const useLogic = (isExprCalls) => {
     // params.hasCellTypeSubStructure = 0;
     params.hasTissueSubStructure = 1; // we want children of parent term!
     // params.hasDevStageSubStructure = 0;
-    params.limit = BASE_LIMIT;
     params.conditionalParam2 = ['anat_entity']; // HD: restrict to anatomical terms
     // HD: discard top-level terms from search results
     // NOTE: use only when we want to get children of "multicellular organism"

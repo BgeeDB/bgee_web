@@ -42,6 +42,7 @@ const Heatmap = ({
   backgroundColor,
   data,
   getChildData,
+  xTerms,
   yTerms,
   termProps,
   yLabelJustify = 'right',
@@ -53,6 +54,7 @@ const Heatmap = ({
   data: any[];
   getChildData: (parentId: string, selectedTissueId: string) => any;
   getHomologsData?: () => void;
+  xTerms: any[];
   yTerms: any[];
   termProps: any;
   yLabelJustify?: string;
@@ -81,7 +83,7 @@ const Heatmap = ({
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
-  const [graphHeightInput, setGraphHeightInput] = useState(graphHeight);
+  const [graphHeightInput, setGraphHeightInput] = useState(height);
 
   // Update local input state without updating the actual graphWidth
   const handleGraphWidthChange = (event) => {
@@ -232,12 +234,32 @@ const Heatmap = ({
     const { count: numVisibleTerms, maxLabelLength } = countVisibleTerms(yTerms);
     // console.log(`[Heatmap] ${numVisibleTerms} visible terms`);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
-    const flexHeight = Math.max(numVisibleTerms * 15 + COLOR_LEGEND_HEIGHT, 250);
-    const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
+    const cellHeight = 15;
+    const maxMarginLeft = 730;
+    // Calculate main heatmap height (without legend)
+    const mainHeatmapHeight = Math.max(numVisibleTerms * cellHeight, 250);
+    // Total height includes main heatmap + legend
+    const flexHeight = mainHeatmapHeight + COLOR_LEGEND_HEIGHT;
+    let flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
+    flexMarginLeft = Math.min(flexMarginLeft, maxMarginLeft);
     const flexWidth = Math.max(flexMarginLeft + 50, graphWidth);
+
+    // console.log('[Heatmap] flexHeight:', flexHeight);
+    // console.log('[Heatmap] flexWidth:', flexWidth);
+    // console.log('[Heatmap] maxGraphWidth:', maxGraphWidth);
+
+    // if (svgRef.current) {
+    //   const rect = svgRef.current.getBoundingClientRect();
+    //   console.log('[Heatmap] Rendered SVG size:', rect.width, rect.height);
+
+    //   const viewbox = svgRef.current.viewBox.baseVal;
+    //   console.log('[Heatmap] SVG user space:', viewbox.x, viewbox.y, viewbox.width, viewbox.height);
+    // }
+
     setGraphHeight(flexHeight);
     setGraphWidth(flexWidth);
     setMarginLeft(flexMarginLeft);
+    setGraphHeightInput(flexHeight);
   }, [yTerms]);
 
   // sort entries by y coordinate
@@ -339,10 +361,11 @@ const Heatmap = ({
             ref={svgRef}
             // @ts-expect-error Type not assignable to type
             width={graphWidth}
-            height={graphHeight - COLOR_LEGEND_HEIGHT}
+            height={graphHeight}
             backgroundColor={bgColor}
             data={displayData}
             getChildData={getChildData}
+            xTerms={xTerms}
             yTerms={yTerms}
             drilldown={yTerms}
             termProps={termProps}
@@ -365,7 +388,7 @@ const Heatmap = ({
             setGraphWidth={setGraphWidth}
           />
 
-          <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />
+          <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight} />
         </div>
 
         {clickedCell && (

@@ -57,7 +57,7 @@ const GeneExpressionMatrixResults = ({
       {results?.length > 0 && (
         <Heatmap
           data={heatmapData}
-          xTerns={genes}
+          xTerms={genes}
           yTerms={anatomicalTerms}
           // setYTerms={setAnatomicalTerms}
           termProps={anatomicalTermsProps}

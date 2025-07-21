@@ -35,7 +35,7 @@ export const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
 export const BASE_LIMIT = '10000';
 export const EXPR_CALLS = 'expr_calls';
 
-const GeneExpressionGraph = ({ geneId, speciesId }) => {
+const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
   // Init from URL
   const loc = useLocation();
   const initSearch = new URLSearchParams(loc.search);
@@ -43,6 +43,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [searchResult, setSearchResult]: any = useState();
+  const [geneTerms, setGeneTerms]: any = useState([{ label: `${geneId} - ${geneName}`, value: geneId }]);
   const [anatomicalTerms, setAnatomicalTerms]: [any[], any] = useState([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState({});
   const [dataType, setDataTypes] = useState(ALL_DATA_TYPES);
@@ -601,6 +602,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }) => {
           <Heatmap
             data={heatmapData}
             getChildData={triggerSearchChildren}
+            xTerms={geneTerms}
             yTerms={anatomicalTerms}
             termProps={anatomicalTermsProps}
             onToggleExpandCollapse={onToggleExpandCollapse}

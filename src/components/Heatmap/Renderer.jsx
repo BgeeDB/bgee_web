@@ -6,7 +6,7 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
 
-const MARGIN = { top: 50, right: 10, bottom: 50, left: 200 };
+const MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
 const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
 
 export const Renderer = forwardRef(
@@ -15,6 +15,7 @@ export const Renderer = forwardRef(
       width,
       height,
       data,
+      xTerms,
       drilldown,
       termProps,
       hoveredCell,
@@ -33,14 +34,17 @@ export const Renderer = forwardRef(
       maxCellWidth,
       minCellWidth = 20,
       minCellHeight = 10,
-      maxGraphWidth = 1000,
+      maxGraphWidth = 800,
       setGraphWidth,
+      scaleSvg = false,
     },
     ref
   ) => {
     // The bounds (=area inside the axis) is calculated by substracting the margins
     const boundsWidth = width - MARGIN.right - marginLeft;
-    const boundsHeight = height - MARGIN.top - MARGIN.bottom;
+    // Separate main heatmap height from total height (which includes legend)
+    const mainHeatmapHeight = height - colorLegendHeight;
+    const boundsHeight = mainHeatmapHeight - MARGIN.top - MARGIN.bottom;
     const colorLegendBoundsHeight = colorLegendHeight - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
 
     // show only selected and top-level data points
@@ -110,8 +114,18 @@ export const Renderer = forwardRef(
     const yTermsOrderedCopy = JSON.parse(JSON.stringify(yTermsOrdered));
     const yLblOrdered = yTermsOrderedCopy;
 
-    // const allYGroups = useMemo(() => [...new Set(dataShow.map((d) => d.y))], [dataShow]);
-    const allXGroups = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
+    // const allXGroups = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
+    // use specified xTerms parameter to get the xLabels
+    const allXGroups = useMemo(
+      () =>
+        xTerms.map((d) => {
+          if (d.label.includes(' - ')) {
+            return d.label.split(' - ')[1];
+          }
+          return d.label;
+        }),
+      [xTerms]
+    );
     // const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.label))], [yLblOrdered]);
     const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 
@@ -120,6 +134,8 @@ export const Renderer = forwardRef(
       // Calculate required width based on minimum cell width, including 4px margin
       const requiredWidth = allXGroups.length * (cellWidth + 4);
       if (requiredWidth > boundsWidth) {
+        console.log('[Renderer] requiredWidth:', requiredWidth);
+        console.log('[Renderer] boundsWidth:', boundsWidth);
         // Update graph width if needed
         setGraphWidth(requiredWidth + MARGIN.right + marginLeft);
       }
@@ -356,7 +372,9 @@ export const Renderer = forwardRef(
     const xLabelsBottom = allXGroups.map((name, i) => {
       const x = xScale(name);
       const xCoord = x + xScale.bandwidth() / 2;
-      const yCoord = boundsHeight + 10;
+      // TODO: fix bottom label position (too low)
+      const yCoord = height - colorLegendHeight - MARGIN.top - MARGIN.bottom + 10;
+      // const yCoord = height - colorLegendHeight;
       // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
 
       if (!x) {
@@ -392,16 +410,16 @@ export const Renderer = forwardRef(
       <stop key={`colorLegendStop-${idx}`} stopColor={colorScale((max * idx) / 100)} offset={`${idx}%`} />
     ));
     const colorLegendPosX = 0;
-    const colorLegendPosY = height;
+    const colorLegendPosY = mainHeatmapHeight;
 
     return (
       <svg
         ref={ref}
         width={Math.min(width, maxGraphWidth)}
-        height={height + colorLegendHeight}
+        height={height}
         style={{ backgroundColor }}
-        viewBox={`0 0 ${width} ${height + colorLegendHeight}`}
-        preserveAspectRatio="xMidYMid meet"
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio={scaleSvg ? 'xMidYMid meet' : 'none'}
       >
         <defs>
           <style>{`
@@ -421,15 +439,18 @@ export const Renderer = forwardRef(
           <linearGradient id="colorLegendGradient">{colorLegendStops}</linearGradient>
         </defs>
         <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
-          {allShapes}
-          {xLabelsTop}
-          {xLabelsBottom}
-
-          <g transform={`translate(-${marginLeft - 10}, 5)`}>
-            <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+          <g>
+            <g>{allShapes}</g>
+            <g>
+              {xLabelsTop}
+              {xLabelsBottom}
+            </g>
+            <g transform={`translate(-${marginLeft - 10}, 5)`}>
+              <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+            </g>
           </g>
 
-          <g transform={`translate(-${marginLeft - 50}, 0)`}>
+          <g transform={`translate(-${marginLeft - 50}, ${colorLegendHeight})`}>
             {showLegend ? (
               <g>
                 <ColorLegendSvg
