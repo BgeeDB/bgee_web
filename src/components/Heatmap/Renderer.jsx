@@ -144,6 +144,7 @@ export const Renderer = forwardRef(
     }, [dataShow, width, maxCellWidth, minCellWidth, allXGroups, boundsWidth, marginLeft, setGraphWidth]);
 
     const yScale = useMemo(() => {
+      console.log('[Renderer] allYGroups:', allYGroups);
       // Calculate required height based on minimum cell height, including 4px margin
       const requiredHeight = allYGroups.length * (minCellHeight + 4);
       const actualHeight = Math.max(boundsHeight, requiredHeight);
@@ -165,6 +166,7 @@ export const Renderer = forwardRef(
       const fillColour = d.isExpressed ? colorScale(d.value) : '#cccccc';
       if (!termProps[d.termId]) {
         // console.log(`[Renderer] termProps[${d.termId}] not found`);
+        // console.log(`[Renderer] termProps: ${JSON.stringify(termProps)}`);
       }
       const strokeColour = termProps[d.termId].isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
       const cellData = {
@@ -179,9 +181,9 @@ export const Renderer = forwardRef(
         cellTypeName: d.cellTypeName,
         cellTypeUrlOls: `http://purl.obolibrary.org/obo/${d.cellTypeId.replace(':', '_')}`,
         xLabel: `${d.geneId} - ${d.geneName}`,
-        yLabel: `${d.termId} - ${d.termName}`,
+        yLabel: `${d.termName}`,
         xPos: x + xScale.bandwidth() + marginLeft,
-        yPos: y + xScale.bandwidth() / 2 + MARGIN.bottom,
+        yPos: y + yScale.bandwidth() / 2 + MARGIN.bottom,
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
         // maxExpScore: d.maxExp.toFixed(2),

@@ -984,7 +984,7 @@ const useLogic = (isExprCalls) => {
             if (!(anatEntityId === selectedTissueId) || isSingleCell) {
               newChildTerms.add(
                 JSON.stringify({
-                  id: `${anatEntityId}-${cellTypeId}`,
+                  id: `${parentId}--${anatEntityId}-${cellTypeId}`,
                   // label: cellTypeId !== '' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
                   label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
                   anatEntityId,
@@ -1067,7 +1067,14 @@ const useLogic = (isExprCalls) => {
 
           // add additional data to previous ones
           const exprData = searchResult;
-          if (resp) exprData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
+          if (resp) {
+            // Prefix anatEntity.id with termId for each expression call
+            resp.data.expressionData.expressionCalls.forEach((exprCall) => {
+              exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
+            });
+            // add new expression calls to previous ones
+            exprData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
+          }
           setSearchResult(exprData);
 
           // Finally, we set the values we are interested in

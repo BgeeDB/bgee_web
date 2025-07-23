@@ -43,7 +43,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [searchResult, setSearchResult]: any = useState();
-  const [geneTerms, setGeneTerms]: any = useState([{ label: `${geneId} - ${geneName}`, value: geneId }]);
+  const geneTerms: any = [{ label: `${geneId} - ${geneName}`, value: geneId }];
   const [anatomicalTerms, setAnatomicalTerms]: [any[], any] = useState([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState({});
   const [dataType, setDataTypes] = useState(ALL_DATA_TYPES);
@@ -344,7 +344,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
           if (!(anatEntityId === selectedTissueId) || isSingleCell) {
             newChildTerms.add(
               JSON.stringify({
-                id: `${anatEntityId}-${cellTypeId}`,
+                id: `${parentId}--${anatEntityId}-${cellTypeId}`,
                 // label: cellTypeId !== '' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
                 label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
                 anatEntityId,
@@ -435,7 +435,14 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
 
         // add additional data to previous ones
         const exprData = searchResult;
-        if (resp) exprData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
+        if (resp) {
+          // Prefix anatEntity.id with termId for each expression call
+          resp.data.expressionData.expressionCalls.forEach((exprCall) => {
+            exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
+          });
+          // add new expression calls to previous ones
+          exprData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
+        }
         setSearchResult(exprData);
 
         // Finally, we set the values we are interested in
@@ -500,9 +507,9 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
     searchResult?.expressionData?.expressionCalls?.map((result) => {
       const { geneId: gId, name: gName } = result.gene;
       const specId = result.gene.species.id;
-      const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;
+      const { id: anatEntityId, name: anatEntityName, dataId: anatEntityDataId } = result.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = result.condition.cellType;
-      const termId = `${anatEntityId}-${cellTypeId}`;
+      const termId = anatEntityDataId ? `${anatEntityDataId}-${cellTypeId}` : `${anatEntityId}-${cellTypeId}`;
       const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
       const expScore = result.expressionScore.expressionScore;
       const isExpressed = result.expressionState === 'expressed';
