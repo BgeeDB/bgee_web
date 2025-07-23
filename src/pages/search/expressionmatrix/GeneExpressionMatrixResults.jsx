@@ -16,9 +16,9 @@ const GeneExpressionMatrixResults = ({
   const heatmapData = results.map((result) => {
     const { geneId, name: geneName } = result.gene;
     const speciesId = result.gene.species.id;
-    const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;
+    const { id: anatEntityId, name: anatEntityName, dataId: anatEntityDataId } = result.condition.anatEntity;
     const { id: cellTypeId, name: cellTypeName } = result.condition.cellType;
-    const termId = `${anatEntityId}-${cellTypeId}`;
+    const termId = anatEntityDataId ? `${anatEntityDataId}-${cellTypeId}` : `${anatEntityId}-${cellTypeId}`;
     const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
     const expScore = result.expressionScore.expressionScore;
     const maxExp =

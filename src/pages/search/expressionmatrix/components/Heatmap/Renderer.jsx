@@ -181,7 +181,7 @@ export const Renderer = forwardRef(
         cellTypeName: d.cellTypeName,
         cellTypeUrlOls: `http://purl.obolibrary.org/obo/${d.cellTypeId.replace(':', '_')}`,
         xLabel: `${d.geneId} - ${d.geneName}`,
-        yLabel: `${d.termId} - ${d.termName}`,
+        yLabel: `${d.termName}`,
         xPos: x + xScale.bandwidth() + marginLeft,
         yPos: y + xScale.bandwidth() / 2 + MARGIN.bottom,
         value: Math.round(d.value * 100) / 100,
