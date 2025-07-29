@@ -141,6 +141,33 @@ Run:
 docker run -p 3000:3000 bgee-web
 ```
 
+## 🧶 Multithreaded deployment
+
+With [`pm2`](https://www.npmjs.com/package/pm2), build, then deploy with a load balancer on http://localhost:3000/
+
+```sh
+npm run build
+npm run cluster
+```
+
+Check logs:
+
+```sh
+npm run logs
+```
+
+Stop all processes:
+
+```sh
+npm run stop:all
+```
+
+Run stresstest (after starting the cluster in development):
+
+```sh
+npm run stresstest
+```
+
 ## 💡 FAQ
 
 ### 📄 Add a new page
