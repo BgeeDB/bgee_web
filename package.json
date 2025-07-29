@@ -81,7 +81,7 @@
     "printWidth": 120
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,md,mdx,html}": [
+    "*.{js,jsx,ts,tsx,json,css,md,mdx,html,yml}": [
       "prettier --write",
       "eslint --fix"
     ]
