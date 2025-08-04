@@ -14,7 +14,7 @@ export function getMetadata({
   keywords = 'bgee, gene expression, evolution, ontology, anatomy, development, evo-devo database, anatomical ontology, developmental ontology, gene expression evolution',
   link = '',
   schemaorg = [],
-  img = `${config.genericDomain}/img/logo/bgee13-logo.png`,
+  img = `${config.genericDomain}/img/logo/bgee_ogp_logo.png`,
   logo = `${config.genericDomain}/img/logo/bgee13-logo.png`,
 }: {
   title?: string;
