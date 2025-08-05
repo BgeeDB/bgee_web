@@ -36,6 +36,7 @@ const Species = ({ selectedSpecies, onChangeSpecies, getSpeciesLabel }) => {
         <span className="boldTitle">Species</span>
       </label>
       <Select
+        instanceId="species-select"
         inputId="specied-id-select"
         options={speciesOptions}
         className="form-control"

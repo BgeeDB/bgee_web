@@ -1,0 +1,67 @@
+@import '../../styles/mixinScrollBar.scss';
+
+.content {
+  margin-bottom: 0 !important;
+}
+
+.result {
+  display: flex;
+  align-content: space-around;
+  flex-direction: column;
+}
+
+label.labelSelect[for] {
+  margin-left: 0;
+}
+label.labelSelect.isBold[for] {
+  font-weight: bold;
+  color: black;
+}
+
+.render {
+  display: flex;
+}
+
+.span-x {
+  display: flex !important;
+  margin-left: 4px;
+  color: red;
+  cursor: pointer;
+}
+
+.react-select-autoComplete__value-container {
+  max-height: 4.4rem;
+  overflow-y: auto !important;
+  @include scrollbars(0.3rem, #ed2e24);
+}
+
+.react-select-autoComplete__placeholder {
+  color: #bbbbbb !important;
+}
+
+.react-select-autoComplete__option {
+  cursor: pointer !important;
+}
+
+.react-select-autoComplete__option--is-selected {
+  background-color: white !important;
+  background-color: rgba(237, 46, 36, 0.1) !important;
+}
+.react-select-autoComplete__option--is-focused,
+.react-select-autoComplete__option:active {
+  background-color: rgba(237, 46, 36, 0.15) !important;
+  input {
+    accent-color: rgba(237, 46, 36, 1);
+  }
+}
+
+.react-select-autoComplete__control--menu-is-open,
+.react-select-autoComplete__control--is-focused {
+  border-color: #dc3d35 !important;
+  box-shadow: 0 0 0 1px #f7544c !important;
+}
+
+.checkboxLabel {
+  margin-left: 6px;
+  color: #626262 !important;
+}

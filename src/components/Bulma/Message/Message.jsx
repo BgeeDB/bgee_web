@@ -1,0 +1,25 @@
+// import Element from '../Element/Element';
+// import classnames from '../../../helpers/classnames';
+// import MessageBody from './MessageBody';
+// import MessageHeader from './MessageHeader';
+
+// // TODO: REMOVE, never used
+
+// const Message = ({ children, className, color, size, renderAs = 'article', ...props }) => (
+//   <Element
+//     {...props}
+//     renderAs={renderAs}
+//     className={classnames('message', className, {
+//       [`is-${color}`]: color,
+//       [`is-${size}`]: size,
+//     })}
+//   >
+//     {children}
+//   </Element>
+// );
+
+// Message.Body = MessageBody;
+
+// Message.Header = MessageHeader;
+
+// export default Message;

@@ -1,0 +1,23 @@
+[Unit]
+# See https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#[Unit]%20Section%20Options
+Description=npm start for Bgee
+After=network.target
+
+[Service]
+# See https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html
+Type=exec
+Restart=on-failure
+#Restart=always
+ExecStart=/bin/bash -c 'cd /usr/local/bgee_web.git/ && npm run cluster'
+#ExecStop=/bin/bash -c 'cd /usr/local/bgee_web.git/ && npm run stop:all'
+User=bgee
+Group=bgee
+StandardOutput=file:/var/log/apache2/npm-access.log
+StandardError=file:/var/log/apache2/npm-error.log
+#Environment=PATH=/usr/bin:/usr/local/bin
+#Environment=NODE_ENV=production
+#WorkingDirectory=/usr/local/bgee_web.git
+
+[Install]
+WantedBy=multi-user.target
+

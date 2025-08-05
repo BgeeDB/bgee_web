@@ -1,0 +1,40 @@
+// import { useState } from 'react';
+// import './tagInput.scss';
+
+// // TODO: REMOVE, never used
+
+// const TagInput = () => {
+//   const [tags, setTags] = useState([]);
+
+//   const handleKeyDown = (e) => {
+//     if (e.key !== 'Enter') return;
+//     const value = e.target.value;
+//     if (!value.trim()) return;
+//     setTags([...tags, value]);
+//     e.target.value = '';
+//   };
+
+//   const removeTag = (index) => {
+//     setTags(tags.filter((el, i) => i !== index));
+//   };
+
+//   return (
+//     <div className="div-container">
+//       <div>
+//         <input onKeyDown={handleKeyDown} type="text" className="input mb-2" placeholder="Experiment or assay ID" />
+//       </div>
+//       <div className="conteneur-result">
+//         {tags.map((tag, index) => (
+//           <div className="tag-item" key={index}>
+//             <span className="text">{tag}</span>
+//             <span className="close" onClick={() => removeTag(index)}>
+//               X
+//             </span>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default TagInput;

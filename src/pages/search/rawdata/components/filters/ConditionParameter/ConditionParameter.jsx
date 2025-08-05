@@ -44,15 +44,8 @@ const ConditionParameter = ({ conditionalParam2, setConditionalParam2, selectedS
           const isSelected = conditionalParam2.includes(c.id);
           const ethnLabel = selectedSpecies === 9606 && c.label === 'Strain' ? 'Ethnicity' : c.label;
           return (
-            <label
-              className="checkbox ml-2 is-size-7 is-flex is-align-items-center"
-              key={c.id}
-            >
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => toggle(c.id)}
-              />
+            <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.id}>
+              <input type="checkbox" checked={isSelected} onChange={() => toggle(c.id)} />
               <b className="mx-1">{ethnLabel}</b>
             </label>
           );

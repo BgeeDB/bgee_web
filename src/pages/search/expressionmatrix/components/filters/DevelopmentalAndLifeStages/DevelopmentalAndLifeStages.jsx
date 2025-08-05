@@ -1,7 +1,5 @@
-/* eslint-disable jsx-a11y/anchor-has-content */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import useLogic from './useLogic';
-import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAtuComplete/SelectMultipleWithAutoComplete';
+import SelectMultipleWithAutoComplete from '../../../../../../components/SelectMultipleWithAutoComplete/SelectMultipleWithAutoComplete';
 import HelpIcon from '../../../../../../components/HelpIcon';
 // import { COND_PARAM2_DEVSTAGE_KEY } from '../../../../rawdata/useLogic';
 import { COND_PARAM2_DEVSTAGE_KEY } from '../../../useLogic';
@@ -18,8 +16,7 @@ const DevelopmentalAndLifeStages = ({
 
   const onSelect = (nextValue) => {
     setSelectedOptions(nextValue);
-    if(nextValue.length > 0)
-      addConditionalParam(COND_PARAM2_DEVSTAGE_KEY);
+    if (nextValue.length > 0) addConditionalParam(COND_PARAM2_DEVSTAGE_KEY);
   };
 
   return (
@@ -46,8 +43,8 @@ const DevelopmentalAndLifeStages = ({
           }}
           content={
             <>
-              Retrieve data in the child terms of the selected terms, for
-              instance to retrieve data for all specific ages in adult.
+              Retrieve data in the child terms of the selected terms, for instance to retrieve data for all specific
+              ages in adult.
             </>
           }
         />

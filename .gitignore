@@ -1,15 +1,14 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
+/.react-router/
 
 # production
 /build
+
+# testing
+/coverage
+playwright-report/
+test-results/
 
 # archives
 /archives/1*
@@ -26,11 +25,8 @@
 .settings/
 # Eclipse CodeMix
 .jsbeautifyrc
-.vscode/
 
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -56,5 +52,5 @@ yarn-error.log*
 .idea
 src/styles/global.css
 
-# YARN
-.yarn
+/.pnp
+.pnp.js

@@ -1,9 +1,0 @@
-/* eslint-disable import/prefer-default-export */
-export const COLUMN_TYPES = {
-  STRING: 'STRING',
-  NUMERIC: 'NUMERIC',
-  INTERNAL_LINK: 'INTERNAL_LINK',
-  ANAT_ENTITY: 'ANAT_ENTITY',
-  DEV_STAGE: 'DEV_STAGE',
-  LINK_TO_PROC_EXPR_VALUES: 'LINK_TO_PROC_EXPR_VALUES',
-};

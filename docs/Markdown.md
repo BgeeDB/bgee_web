@@ -3,15 +3,14 @@ Please take a look at their documentation.
 
 Here is how to integrate the feature.
 
-````typescript jsx
+```typescript jsx
 
 import ReactMarkdown from 'react-markdown';
 
 <ReactMarkdown
   children={ROUTES[pathname].source}
 />
-````
-
+```
 
 ## Custom plugins
 

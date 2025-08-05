@@ -42,15 +42,8 @@ const ConditionParameter = ({ conditionalParam2, setConditionalParam2 }) => {
         {COND_PARAM2.map((c) => {
           const isSelected = conditionalParam2.includes(c.id);
           return (
-            <label
-              className="checkbox ml-2 is-size-7 is-flex is-align-items-center"
-              key={c.id}
-            >
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => toggle(c.id)}
-              />
+            <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.id}>
+              <input type="checkbox" checked={isSelected} onChange={() => toggle(c.id)} />
               <b className="mx-1">{c.label}</b>
             </label>
           );
