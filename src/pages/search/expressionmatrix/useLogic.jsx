@@ -1249,14 +1249,16 @@ const useLogic = (isExprCalls) => {
 
   // Add useEffect to trigger search when initialization is complete
   useEffect(() => {
-    console.log(
-      '[useEffect] Triggering search from URL params',
-      isFirstSearch,
-      isInitializingFromUrl,
-      selectedGene,
-      selectedSpecies,
-      EMPTY_SPECIES_VALUE
-    );
+    if (config.isDevOnly) {
+      console.log(
+        '[useEffect] Triggering search from URL params',
+        isFirstSearch,
+        isInitializingFromUrl,
+        selectedGene,
+        selectedSpecies,
+        EMPTY_SPECIES_VALUE
+      );
+    }
     if (
       isFirstSearch &&
       isInitializingFromUrl &&
@@ -1271,7 +1273,9 @@ const useLogic = (isExprCalls) => {
 
   // URL change handler
   useEffect(() => {
-    console.log(`[useLogic.js] loc.search CHANGED:`, loc.search);
+    if (config.isDevOnly) {
+      console.log(`[useLogic.js] loc.search CHANGED:`, loc.search);
+    }
 
     const searchParams = new URLSearchParams(loc.search);
     const geneList = searchParams.get('gene_list');
@@ -1282,7 +1286,9 @@ const useLogic = (isExprCalls) => {
       console.log(`[useLogic.js] reset form...`);
       resetForm(false, true);
     } else if (loc.search?.length > 0 && !isInitializingFromUrl && !isProcessingGeneList) {
-      console.log(`[useLogic.js] init from url params...`);
+      if (config.isDevOnly) {
+        console.log(`[useLogic.js] init from url params...`);
+      }
       initFromUrlParams();
     }
   }, [loc.search]);
