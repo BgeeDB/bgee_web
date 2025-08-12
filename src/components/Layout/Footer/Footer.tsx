@@ -81,7 +81,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to={PATHS.SEARCH.EXPRESSION_MATRIX} className="nav_a">
-                  Gene expression matrix (beta)
+                  Expression graph (beta)
                 </Link>
               </li>
             </ul>

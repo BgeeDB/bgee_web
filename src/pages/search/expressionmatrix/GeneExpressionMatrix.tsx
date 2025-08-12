@@ -20,7 +20,7 @@ import './rawDataAnnotations.scss';
 
 export function meta() {
   return getMetadata({
-    title: 'Gene expression matrix (beta)',
+    title: 'Expression graph (beta)',
   });
 }
 

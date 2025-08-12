@@ -127,7 +127,7 @@ const SEARCH = {
   },
   [PATHS.SEARCH.EXPRESSION_MATRIX]: {
     // component: () => <GeneExpressionMatrix isExprCalls />,
-    title: 'Gene expression matrix (beta)',
+    title: 'Expression graph (beta)',
   },
   [PATHS.SEARCH.EXPERIMENT]: {
     // component: Experiment,
