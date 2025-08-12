@@ -39,7 +39,6 @@
   "oboLibraryOboPath": "http://purl.obolibrary.org/obo/",
   "oboLibraryNCBITaxonPath": "http://purl.obolibrary.org/obo/NCBITaxon_",
   "isRawDataOnly": false,
-  "isDevOnly": false,
   "dataType_RNA_SEQ": 1,
   "dataType_FULL_LENGTH": 2,
   "dataType_AFFYMETRIX": 3,
