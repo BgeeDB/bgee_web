@@ -121,7 +121,7 @@ const SIDE_MENU = [
         key: 'page.resources.sparql.test',
         title: 'SPARQL endpoint',
         path: `/sparql${URL_ROOT}/`,
-        type: 'external',
+        type: 'internal',
       },
     ],
   },

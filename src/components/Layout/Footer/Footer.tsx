@@ -133,9 +133,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href={PATHS.SEARCH.SPARQL} target="_blank" rel="noopener noreferrer" className="nav_a">
+                <Link to={PATHS.SEARCH.SPARQL} className="nav_a">
                   SPARQL endpoint
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

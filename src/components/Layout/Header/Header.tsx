@@ -36,7 +36,7 @@ const NAVBAR_LEFT = [
   {
     key: 'page.search.sparql',
     title: 'SPARQL',
-    type: 'external',
+    type: 'internal',
     path: PATHS.SEARCH.SPARQL,
   },
   {
