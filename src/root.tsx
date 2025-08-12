@@ -51,30 +51,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const _mtm = ((window as any)._mtm = (window as any)._mtm || []);
       _mtm.push({ 'mtm.startTime': new Date().getTime(), event: 'mtm.Start' });
-      // Only load script if not already loaded
-      if (!document.querySelector('script[src*="matomo.sib.swiss"]')) {
-        const d = document;
-        const g = d.createElement('script');
-        const s = d.getElementsByTagName('script')[0];
-        g.integrity =
-          'sha384-c84c02a9be5900a7b0364317a1b0b26b455d1cdd35e954199d51c89d61d6ca745f72c8bf90b57868308110b8c57a5e44';
-        g.crossOrigin = 'anonymous';
-        g.async = true;
-        g.src = 'https://matomo.sib.swiss/js/container_F5WPJc2X.js';
-        if (s && s.parentNode) s.parentNode.insertBefore(g, s);
-      } else {
-        console.log('Matomo script already loaded');
-      }
+      const d = document,
+        g = d.createElement('script'),
+        s = d.getElementsByTagName('script')[0];
+      g.async = true;
+      g.src = 'https://matomo.sib.swiss/js/container_F5WPJc2X.js';
+      if (s && s.parentNode) s.parentNode.insertBefore(g, s);
     }
   }, []);
 
   // Track page views on route changes for SPA navigation
   React.useEffect(() => {
-    (window as any)._mtm.push({
-      event: 'mtm.PageView',
-      url: window.location.href,
-      title: document.title,
-    });
+    if (typeof window !== 'undefined' && (window as any)._mtm) {
+      (window as any)._mtm.push({ event: 'mtm.PageView' });
+    }
   }, [loc.pathname]);
 
   return (
