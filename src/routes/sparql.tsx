@@ -21,12 +21,20 @@ export default function Page() {
     setIsMounted(true);
   }, []);
 
+  // \@ts-expect-error Property 'sparql-editor' does not exist on type 'JSX.IntrinsicElements'
   return (
     <>
-      {isMounted && (
-        // @ts-expect-error Property 'sparql-editor' does not exist on type 'JSX.IntrinsicElements'
-        <sparql-editor endpoint="https://www.bgee.org/sparql/"></sparql-editor>
-      )}
+      {isMounted &&
+        `<sparql-editor endpoint="https://www.bgee.org/sparql/"></sparql-editor>
+        <div class="center" style="overflow:hidden">
+            <div style="width:55%; float:left">
+                <ul>
+                  <li>Tutorial and documentation: <a href="https://purl.org/sib-rdf/bgee-tutorial">Querying the Bgee knowledge graph</a></li>
+                  <li>Ontology [data schema]: <a href="https://purl.org/genex/documentation">GenEx semantic model specification</a></li>
+                  <li>Support: <a href="https://github.com/BgeeDB/bgee_pipeline/issues%22>open an issue here</a></li>
+                </ul>
+            </div>
+        </div>`}
     </>
   );
 }
