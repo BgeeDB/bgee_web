@@ -135,8 +135,8 @@ export const Renderer = forwardRef(
       // Calculate required width based on minimum cell width, including 4px margin
       const requiredWidth = allXGroups.length * (cellWidth + 4);
       if (requiredWidth > boundsWidth) {
-        console.log('[Renderer] requiredWidth:', requiredWidth);
-        console.log('[Renderer] boundsWidth:', boundsWidth);
+        // console.log('[Renderer] requiredWidth:', requiredWidth);
+        // console.log('[Renderer] boundsWidth:', boundsWidth);
         // Update graph width if needed
         setGraphWidth(requiredWidth + MARGIN.right + marginLeft);
       }
@@ -145,7 +145,7 @@ export const Renderer = forwardRef(
     }, [dataShow, width, maxCellWidth, minCellWidth, allXGroups, boundsWidth, marginLeft, setGraphWidth]);
 
     const yScale = useMemo(() => {
-      console.log('[Renderer] allYGroups:', allYGroups);
+      // console.log('[Renderer] allYGroups:', allYGroups);
       // Calculate required height based on minimum cell height, including 4px margin
       const requiredHeight = allYGroups.length * (minCellHeight + 4);
       const actualHeight = Math.max(boundsHeight, requiredHeight);
