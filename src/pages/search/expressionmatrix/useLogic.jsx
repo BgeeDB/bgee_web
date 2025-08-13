@@ -1179,10 +1179,13 @@ const useLogic = (isExprCalls) => {
           // Join array items with newlines and encode for URL
           const encodedGeneList = simpleParams.gene_list.join('%0A');
           // Redirect to same page with gene_list parameter
-          history.replace({
-            pathname: loc.pathname,
-            search: `?gene_list=${encodedGeneList}`,
-          });
+          navigate(
+            {
+              pathname: loc.pathname,
+              search: `?gene_list=${encodedGeneList}`,
+            },
+            { replace: true, preventScrollReset: true }
+          );
           return; // Exit the entire function
         }
 
@@ -1250,14 +1253,14 @@ const useLogic = (isExprCalls) => {
 
   // Add useEffect to trigger search when initialization is complete
   useEffect(() => {
-    console.log(
-      '[useEffect] Triggering search from URL params',
-      isFirstSearch,
-      isInitializingFromUrl,
-      selectedGene,
-      selectedSpecies,
-      EMPTY_SPECIES_VALUE
-    );
+    // console.log(
+    //   '[useEffect] Triggering search from URL params',
+    //   isFirstSearch,
+    //   isInitializingFromUrl,
+    //   selectedGene,
+    //   selectedSpecies,
+    //   EMPTY_SPECIES_VALUE
+    // );
     if (
       isFirstSearch &&
       isInitializingFromUrl &&
@@ -1272,7 +1275,7 @@ const useLogic = (isExprCalls) => {
 
   // URL change handler
   useEffect(() => {
-    console.log(`[useLogic.js] loc.search CHANGED:`, loc.search);
+    //  console.log(`[useLogic.js] loc.search CHANGED:`, loc.search);
 
     const searchParams = new URLSearchParams(loc.search);
     const geneList = searchParams.get('gene_list');
@@ -1282,7 +1285,7 @@ const useLogic = (isExprCalls) => {
       console.log(`[useLogic.js] reset form...`);
       resetForm(false, true);
     } else if (loc.search?.length > 0 && !isInitializingFromUrl && !isProcessingGeneList) {
-      console.log(`[useLogic.js] init from url params...`);
+      // console.log(`[useLogic.js] init from url params...`);
       initFromUrlParams();
     }
   }, [loc.search]);
@@ -1376,6 +1379,7 @@ const useLogic = (isExprCalls) => {
       );
 
       // Set species
+      const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
       const speciesValue = {
         label: getSpeciesLabel(firstSpecies),
         value: firstSpecies.id,

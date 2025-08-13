@@ -43,7 +43,12 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [searchResult, setSearchResult]: any = useState();
-  const geneTerms: any = [{ label: `${geneId} - ${geneName}`, value: geneId }];
+  const geneTerms: any = [
+    {
+      label: geneName ? `${geneId} - ${geneName}` : geneId,
+      value: geneId,
+    },
+  ];
   const [anatomicalTerms, setAnatomicalTerms]: [any[], any] = useState([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState({});
   const [dataType, setDataTypes] = useState(ALL_DATA_TYPES);
