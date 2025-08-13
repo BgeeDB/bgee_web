@@ -1172,7 +1172,7 @@ const useLogic = (isExprCalls) => {
         // console.log(`[useLogic.initFromUrlParams] simple RP resp:\n${JSON.stringify(resp1, null, 2)}`);
 
         const simpleParams = resp1.resp.requestParameters;
-        console.log(`[useLogic.initFromUrlParams] simpleParams:\n${JSON.stringify(simpleParams)}`);
+        // console.log(`[useLogic.initFromUrlParams] simpleParams:\n${JSON.stringify(simpleParams)}`);
 
         // Check for gene_list first before processing other parameters
         if (simpleParams.gene_list && simpleParams.species_id) {
@@ -1379,6 +1379,7 @@ const useLogic = (isExprCalls) => {
       );
 
       // Verify all genes are from same species
+      const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
       const allSameSpecies = validResults.every(
         (result) => result.data.result.geneMatches[0].gene.species.id === firstSpecies.id
       );
