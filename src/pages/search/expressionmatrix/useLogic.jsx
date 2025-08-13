@@ -1172,17 +1172,20 @@ const useLogic = (isExprCalls) => {
         // console.log(`[useLogic.initFromUrlParams] simple RP resp:\n${JSON.stringify(resp1, null, 2)}`);
 
         const simpleParams = resp1.resp.requestParameters;
-        // console.log(`[useLogic.initFromUrlParams] simpleParams:\n${JSON.stringify(simpleParams)}`);
+        console.log(`[useLogic.initFromUrlParams] simpleParams:\n${JSON.stringify(simpleParams)}`);
 
         // Check for gene_list first before processing other parameters
         if (simpleParams.gene_list && simpleParams.species_id) {
           // Join array items with newlines and encode for URL
           const encodedGeneList = simpleParams.gene_list.join('%0A');
           // Redirect to same page with gene_list parameter
-          history.replace({
-            pathname: loc.pathname,
-            search: `?gene_list=${encodedGeneList}`,
-          });
+          navigate(
+            {
+              pathname: loc.pathname,
+              search: `?gene_list=${encodedGeneList}`,
+            },
+            { replace: true, preventScrollReset: true }
+          );
           return; // Exit the entire function
         }
 
