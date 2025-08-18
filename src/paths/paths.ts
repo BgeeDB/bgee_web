@@ -44,6 +44,7 @@ const PATHS = {
     TUTORIAL_GENE_PAGE: `${URL_ROOT}/support/tutorial-gene-page`,
     TUTORIAL_TOPANAT: `${URL_ROOT}/support/tutorial-TopAnat`,
     TUTORIAL_EXPRESSION_CALLS: `${URL_ROOT}/support/tutorial-expression-calls`,
+    TUTORIAL_EXPRESSION_GRAPH: `${URL_ROOT}/support/tutorial-expression-graph`,
     TUTORIAL_SPARQL: `${URL_ROOT}/support/tutorial-query-bgee-knowledge-graph-sparql`,
     TUTORIAL_CURATION: `${URL_ROOT}/support/tutorial-data-curation`,
     TUTORIAL_EXPRESSION_COMPARISON: `${URL_ROOT}/support/tutorial-expression-comparison`,
