@@ -7,7 +7,7 @@
     "build": "react-router build && sh scripts/fix_symlinks.sh",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "cluster": "pm2 start 'npx react-router-serve ./build/server/index.js' --name bgee-web -i 42",
+    "cluster": "pm2 start 'npx react-router-serve ./build/server/index.js' --name bgee-web -i 62",
     "stop": "pm2 stop bgee-web",
     "stop:all": "pm2 stop all",
     "restart": "pm2 restart bgee-web",
