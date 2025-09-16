@@ -23,6 +23,12 @@ export default function Page() {
 
   return (
     <>
+      <div className="content has-text-centered">
+        <h1 className="title is-3">Bgee SPARQL editor</h1>
+      </div>
+      <div style={{ textAlign: 'center', overflow: 'hidden', marginTop: '1rem', fontWeight: 'bold' }}>
+        Bgee SPARQL endpoint: <code>https://www.bgee.org/sparql/</code>
+      </div>
       {isMounted && (
         // @ts-expect-error Property 'sparql-editor' does not exist on type 'JSX.IntrinsicElements'
         <sparql-editor endpoint="https://www.bgee.org/sparql/"></sparql-editor>

@@ -134,7 +134,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to={PATHS.SEARCH.SPARQL} className="nav_a">
-                  SPARQL endpoint
+                  SPARQL editor
                 </Link>
               </li>
             </ul>
