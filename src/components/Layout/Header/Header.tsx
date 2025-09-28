@@ -49,7 +49,7 @@ const NAVBAR_LEFT = [
 
 const NAVBAR_RIGHT = [
   {
-    href: 'https://www.unil.ch/central/en/home.html',
+    href: 'https://www.unil.ch/unil/en/home.html',
     src: assets.unilLogo,
     alt: 'UNIL',
     className: 'no-responsive',

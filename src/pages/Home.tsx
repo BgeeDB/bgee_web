@@ -213,7 +213,7 @@ export default function Home({ loaderData }) {
                     R packages
                   </Link>
                   <Link to={PATHS.SEARCH.SPARQL} className="home-card-link">
-                    SPARQL endpoint
+                    SPARQL editor
                   </Link>
                 </div>
               </Bulma.Card.Body>

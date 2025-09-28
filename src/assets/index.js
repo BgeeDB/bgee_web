@@ -11,7 +11,7 @@ const assets = {
   twitterLogo: imagePath('/logo/x-logo.png'),
   rLogo: imagePath('/logo/r-logo.png'),
   sibLogo: imagePath('/logo/logo-sib-emblem-new.svg'),
-  unilLogo: imagePath('/logo/unil-logo-noir.png'),
+  unilLogo: imagePath('/logo/unil-logo.svg'),
   heroImg: imagePath('/home/bgee-hero-illustration-species-organs.webp'),
   dnaIcon: imagePath('/home/ic-dna.svg'),
 };
