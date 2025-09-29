@@ -1,6 +1,6 @@
 # Gene Expression Graph
 
-This tutorial explains how to use the gene expression graph which is used in the [gene expression comparison](https://www.bgee.org/search/expression-matrix 'Expression comparison graph') and on the [gene page](https://www.bgee.org/gene/ENSG00000244734 'Example gene page').
+This tutorial explains how to use the gene expression graph, which is used in the [gene expression comparison](/search/expression-matrix 'Expression comparison graph') and on the [gene page](/gene/ENSG00000244734 'Example gene page').
 
 The use in the gene page (single-gene) is different from that in the expression comparison (multi-gene), so we will first explain the common features and later explain the specific features of both of the former pages.
 
@@ -37,7 +37,7 @@ Expand a condition term to reveal expression data for child terms:
 ### Export options
 
 - Download graph as SVG or PNG file
-- Downloas underlying data in tabular format as TSV file
+- Download underlying data in tabular format as TSV file
 
 Note the download buttons below the graph:
 
@@ -53,36 +53,36 @@ There are several display and style settings that can be expanded by clicking on
 - **Graph height**: Determines the total graph height.
 - **Show legend**: Shows / hides the color legend.
 - **Y label width**: Determines the width of the y labels.
-- **Color palette**: Lets the user choose between different color palettes (derived from the ['viridis' R package](https://cran.r-project.org/web/packages/viridis/index.html))
+- **Color palette**: Lets the user choose between different color palettes (derived from the ['viridis' R package](https://cran.r-project.org/web/packages/viridis/))
 - **Adaptive color scale**: When selected, the color scale is limited to the max expression value displayed in the graph, otherwise the scale is [0,100].
-- **Backgound color**: Select a different background color (default is 'white').
+- **Background color**: Select a different background color (default is 'white').
 
 ## Technical details
 
 The displayed top-level anatomical entities contain a curated list of 20 UBERON terms:
 
-- [body wall](http://purl.obolibrary.org/obo/UBERON_0000309 'UBERON_0000309')
-- [central nervous system](http://purl.obolibrary.org/obo/UBERON_0001017 'UBERON:0001017')
-- [circulatory system](http://purl.obolibrary.org/obo/UBERON_0001009 'UBERON:0001009')
-- [connective tissue](http://purl.obolibrary.org/obo/UBERON_0002384 'UBERON:0002384')
-- [digestive system](http://purl.obolibrary.org/obo/UBERON_0001007 'UBERON:0001007')
-- [endocrine system](http://purl.obolibrary.org/obo/UBERON_0000949 'UBERON:0000949')
-- [exocrine system](http://purl.obolibrary.org/obo/UBERON_0002330 'UBERON:0002330')
-- [glandular system](http://purl.obolibrary.org/obo/UBERON_0015204 'UBERON:0015204')
-- [hemolymphoid system](http://purl.obolibrary.org/obo/UBERON_0002193 'UBERON:0002193')
-- [immune system](http://purl.obolibrary.org/obo/UBERON_0002405 'UBERON:0002405')
-- [integumental system](http://purl.obolibrary.org/obo/UBERON_0002416 'UBERON:0002416')
-- [ligament](http://purl.obolibrary.org/obo/UBERON_0000211 'UBERON:0000211')
-- [multicellular organism](http://purl.obolibrary.org/obo/UBERON_0000468 'UBERON_0000468') (While this term is technically a parent term of the other ones, some data sets are derived from whole body samples and are therefore annotated as 'multicellular organism'.)
-- [musculature](http://purl.obolibrary.org/obo/UBERON_0001015 'UBERON:0001015')
-- [peripheral nervous system](http://purl.obolibrary.org/obo/UBERON_0000010 'UBERON:0000010')
-- [renal system](http://purl.obolibrary.org/obo/UBERON_0001008 'UBERON:0001008')
-- [reproductive system](http://purl.obolibrary.org/obo/UBERON_0000990 'UBERON:0000990')
-- [respiratory system](http://purl.obolibrary.org/obo/UBERON_0001004 'UBERON:0001004')
-- [sensory system](http://purl.obolibrary.org/obo/UBERON_0001032 'UBERON:0001032')
-- [skeletal system](http://purl.obolibrary.org/obo/UBERON_0001434 'UBERON:0001434')
+- [body wall](https://purl.obolibrary.org/obo/UBERON_0000309 'UBERON_0000309')
+- [central nervous system](https://purl.obolibrary.org/obo/UBERON_0001017 'UBERON:0001017')
+- [circulatory system](https://purl.obolibrary.org/obo/UBERON_0001009 'UBERON:0001009')
+- [connective tissue](https://purl.obolibrary.org/obo/UBERON_0002384 'UBERON:0002384')
+- [digestive system](https://purl.obolibrary.org/obo/UBERON_0001007 'UBERON:0001007')
+- [endocrine system](https://purl.obolibrary.org/obo/UBERON_0000949 'UBERON:0000949')
+- [exocrine system](https://purl.obolibrary.org/obo/UBERON_0002330 'UBERON:0002330')
+- [glandular system](https://purl.obolibrary.org/obo/UBERON_0015204 'UBERON:0015204')
+- [hemolymphoid system](https://purl.obolibrary.org/obo/UBERON_0002193 'UBERON:0002193')
+- [immune system](https://purl.obolibrary.org/obo/UBERON_0002405 'UBERON:0002405')
+- [integumental system](https://purl.obolibrary.org/obo/UBERON_0002416 'UBERON:0002416')
+- [ligament](https://purl.obolibrary.org/obo/UBERON_0000211 'UBERON:0000211')
+- [multicellular organism](https://purl.obolibrary.org/obo/UBERON_0000468 'UBERON_0000468') (While this term is technically a parent term of the other ones, some data sets are derived from whole body samples and are therefore annotated as 'multicellular organism'.)
+- [musculature](https://purl.obolibrary.org/obo/UBERON_0001015 'UBERON:0001015')
+- [peripheral nervous system](https://purl.obolibrary.org/obo/UBERON_0000010 'UBERON:0000010')
+- [renal system](https://purl.obolibrary.org/obo/UBERON_0001008 'UBERON:0001008')
+- [reproductive system](https://purl.obolibrary.org/obo/UBERON_0000990 'UBERON:0000990')
+- [respiratory system](https://purl.obolibrary.org/obo/UBERON_0001004 'UBERON:0001004')
+- [sensory system](https://purl.obolibrary.org/obo/UBERON_0001032 'UBERON:0001032')
+- [skeletal system](https://purl.obolibrary.org/obo/UBERON_0001434 'UBERON:0001434')
 
-The root term of the top-level terms is [anatomical entity](http://purl.obolibrary.org/obo/UBERON_0001062 'UBERON_0001062').
+The root term of the top-level terms is [anatomical entity](https://purl.obolibrary.org/obo/UBERON_0001062 'UBERON_0001062').
 
 Any data points that are not linked to any of the top-level terms are displayed as children of 'anatomical entity'.
 
