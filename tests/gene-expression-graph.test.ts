@@ -12,25 +12,34 @@ test.describe('Gene Expression Graph Component', () => {
 
   test('should display the gene expression graph section', async ({ page }) => {
     // Check that the expression graph section is visible
-    await expect(page.getByText('Gene expression graph')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Expression graph' })).toBeVisible();
 
-    // Check that data type selection is present
-    await expect(page.getByText('Data type')).toBeVisible();
+    // The first .gene-expr-fields-wrapper on the page is the Expression graph section
+    // (Expression table section comes later)
+    const dataTypeWrapper = page.locator('.gene-expr-fields-wrapper').first();
 
     // Check that data type checkboxes are available
-    await expect(page.getByText('bulk RNA-Seq')).toBeVisible();
-    await expect(page.getByText('Affymetrix data')).toBeVisible();
-    await expect(page.getByText('In situ hybridization')).toBeVisible();
-    await expect(page.getByText('EST')).toBeVisible();
+    await expect(dataTypeWrapper.getByText('RNA Seq', { exact: true })).toBeVisible();
+    await expect(dataTypeWrapper.getByText('Affymetrix', { exact: true })).toBeVisible();
+    await expect(dataTypeWrapper.getByText('In Situ', { exact: true })).toBeVisible();
+    await expect(dataTypeWrapper.getByText('EST', { exact: true })).toBeVisible();
+    await expect(dataTypeWrapper.getByText('scRNA-Seq', { exact: true })).toBeVisible();
   });
 
   test('should allow selecting different data types', async ({ page }) => {
     // Wait for the data type checkboxes to be available
     await page.waitForTimeout(2000);
 
-    // Find and interact with data type checkboxes
-    const rnaSeqCheckbox = page.locator('input[type="checkbox"][value="RNA_SEQ"]').first();
-    const affymetrixCheckbox = page.locator('input[type="checkbox"][value="AFFYMETRIX"]').first();
+    // The first .gene-expr-fields-wrapper is the Expression graph section
+    const dataTypeWrapper = page.locator('.gene-expr-fields-wrapper').first();
+    const rnaSeqCheckbox = dataTypeWrapper
+      .getByText('RNA Seq', { exact: true })
+      .locator('..')
+      .locator('input[type="checkbox"]');
+    const affymetrixCheckbox = dataTypeWrapper
+      .getByText('Affymetrix', { exact: true })
+      .locator('..')
+      .locator('input[type="checkbox"]');
 
     // Check initial state - all should be selected by default
     await expect(rnaSeqCheckbox).toBeChecked();
@@ -40,8 +49,8 @@ test.describe('Gene Expression Graph Component', () => {
     await rnaSeqCheckbox.uncheck();
     await expect(rnaSeqCheckbox).not.toBeChecked();
 
-    // Check that Update button is enabled
-    const updateButton = page.getByRole('button', { name: 'Update' });
+    // Check that Update button is enabled (first Update button is for Expression graph)
+    const updateButton = page.getByRole('button', { name: 'Update' }).first();
     await expect(updateButton).toBeEnabled();
   });
 
@@ -50,52 +59,53 @@ test.describe('Gene Expression Graph Component', () => {
     await page.waitForTimeout(3000);
 
     // Uncheck a data type
-    const rnaSeqCheckbox = page.locator('input[type="checkbox"][value="RNA_SEQ"]').first();
+    const dataTypeWrapper = page.locator('.gene-expr-fields-wrapper').first();
+    const rnaSeqCheckbox = dataTypeWrapper
+      .getByText('RNA Seq', { exact: true })
+      .locator('..')
+      .locator('input[type="checkbox"]');
     await rnaSeqCheckbox.uncheck();
 
-    // Click Update button
-    await page.getByRole('button', { name: 'Update' }).click();
+    // Click Update button (first one is for Expression graph)
+    await page.getByRole('button', { name: 'Update' }).first().click();
 
     // Wait for the graph to update
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // Check that the graph is still visible (or shows no data message)
-    const graphContainer = page.locator('.gene-expr-fields-wrapper').locator('..');
-    await expect(graphContainer).toBeVisible();
+    // Check that the expression graph heading is still visible
+    await expect(page.getByRole('heading', { name: 'Expression graph' })).toBeVisible();
   });
 
   test('should display select all and unselect all buttons', async ({ page }) => {
     // Wait for buttons to be visible
     await page.waitForTimeout(2000);
 
-    // Check that Select All button is present
-    await expect(page.getByRole('button', { name: 'Select All' })).toBeVisible();
+    // Check that Select All button is present (first one is for Expression graph)
+    await expect(page.getByRole('button', { name: 'Select All' }).first()).toBeVisible();
 
-    // Check that Unselect All button is present
-    await expect(page.getByRole('button', { name: 'Unselect All' })).toBeVisible();
+    // Check that Unselect All button is present (first one is for Expression graph)
+    await expect(page.getByRole('button', { name: 'Unselect All' }).first()).toBeVisible();
   });
 
   test('should handle select all functionality', async ({ page }) => {
     // Wait for checkboxes to be available
     await page.waitForTimeout(2000);
 
-    // First uncheck all data types
-    const unselectAllButton = page.getByRole('button', { name: 'Unselect All' });
+    // First uncheck all data types (first Unselect All button is for Expression graph)
+    const unselectAllButton = page.getByRole('button', { name: 'Unselect All' }).first();
     await unselectAllButton.click();
 
-    // Verify all checkboxes are unchecked
-    const allCheckboxes = page.locator(
-      'input[type="checkbox"][value^="RNA_SEQ"], input[type="checkbox"][value^="AFFYMETRIX"], input[type="checkbox"][value^="IN_SITU"], input[type="checkbox"][value^="EST"]'
-    );
+    // Verify all checkboxes are unchecked - find all checkboxes in the first data type wrapper
+    const allCheckboxes = page.locator('.gene-expr-fields-wrapper').first().locator('input[type="checkbox"]');
     const count = await allCheckboxes.count();
 
     for (let i = 0; i < count; i++) {
       await expect(allCheckboxes.nth(i)).not.toBeChecked();
     }
 
-    // Click Select All
-    const selectAllButton = page.getByRole('button', { name: 'Select All' });
+    // Click Select All (first Select All button is for Expression graph)
+    const selectAllButton = page.getByRole('button', { name: 'Select All' }).first();
     await selectAllButton.click();
 
     // Verify all checkboxes are checked
@@ -108,14 +118,12 @@ test.describe('Gene Expression Graph Component', () => {
     // Wait for checkboxes to be available
     await page.waitForTimeout(2000);
 
-    // Click Unselect All
-    const unselectAllButton = page.getByRole('button', { name: 'Unselect All' });
+    // Click Unselect All (first one is for Expression graph)
+    const unselectAllButton = page.getByRole('button', { name: 'Unselect All' }).first();
     await unselectAllButton.click();
 
-    // Verify all checkboxes are unchecked
-    const allCheckboxes = page.locator(
-      'input[type="checkbox"][value^="RNA_SEQ"], input[type="checkbox"][value^="AFFYMETRIX"], input[type="checkbox"][value^="IN_SITU"], input[type="checkbox"][value^="EST"]'
-    );
+    // Verify all checkboxes are unchecked - find all checkboxes in the first data type wrapper
+    const allCheckboxes = page.locator('.gene-expr-fields-wrapper').first().locator('input[type="checkbox"]');
     const count = await allCheckboxes.count();
 
     for (let i = 0; i < count; i++) {
@@ -131,7 +139,7 @@ test.describe('Gene Expression Graph Component', () => {
     const heatmap = page.locator('svg, canvas, [class*="heatmap"]').first();
 
     // Try to find the heatmap container
-    const graphSection = page.locator('text=Gene expression graph').locator('..');
+    const graphSection = page.getByRole('heading', { name: 'Expression graph' });
     await expect(graphSection).toBeVisible();
 
     // Check for either heatmap or "No data found" message
@@ -147,31 +155,51 @@ test.describe('Gene Expression Graph Component', () => {
     // Navigate to a gene page and immediately check for loading state
     await page.goto('/gene/ENSG00000130208');
 
-    // Check for loading indicator in the graph section
+    // Check for loading indicator or graph section
     const loadingIndicator = page.locator('.progress.is-primary, [class*="loading"], [class*="spinner"]').first();
+    const graphSection = page.getByRole('heading', { name: 'Expression graph' });
 
-    // Loading might be very brief, so we'll just check that the graph section exists
-    const graphSection = page.locator('text=Gene expression graph').locator('..');
-    await expect(graphSection).toBeVisible();
+    // Either loading indicator or graph section should be visible
+    const hasLoading = await loadingIndicator.isVisible();
+    const hasGraph = await graphSection.isVisible();
+    expect(hasLoading || hasGraph).toBeTruthy();
   });
 
   test('should maintain data type selection in URL', async ({ page }) => {
     // Wait for initial load
     await page.waitForTimeout(2000);
 
+    // Get initial URL
+    const initialUrl = page.url();
+
     // Uncheck RNA-Seq data type
-    const rnaSeqCheckbox = page.locator('input[type="checkbox"][value="RNA_SEQ"]').first();
+    const dataTypeWrapper = page.locator('.gene-expr-fields-wrapper').first();
+    const rnaSeqCheckbox = dataTypeWrapper
+      .getByText('RNA Seq', { exact: true })
+      .locator('..')
+      .locator('input[type="checkbox"]');
     await rnaSeqCheckbox.uncheck();
 
-    // Click Update button
-    await page.getByRole('button', { name: 'Update' }).click();
+    // Click Update button (first one is for Expression graph)
+    await page.getByRole('button', { name: 'Update' }).first().click();
 
-    // Wait for URL to update
-    await page.waitForLoadState('networkidle');
+    // Wait for URL to actually change (client-side navigation)
+    await page.waitForFunction((oldUrl) => window.location.href !== oldUrl, initialUrl, { timeout: 5000 });
 
-    // Check that URL contains the data type parameter
+    // Check that URL contains the data_type parameter
     const url = page.url();
     expect(url).toContain('data_type');
+
+    // Parse the URL to check data_type parameter values
+    const urlObj = new URL(url);
+    const dataTypeParam = urlObj.searchParams.get('data_type');
+    expect(dataTypeParam).toBeTruthy();
+
+    // Should contain the remaining data types (all except RNA_SEQ)
+    const dataTypes = dataTypeParam!.split(',');
+    expect(dataTypes).toContain('AFFYMETRIX');
+    expect(dataTypes).toContain('SC_RNA_SEQ');
+    expect(dataTypes).not.toContain('RNA_SEQ'); // RNA_SEQ (without SC_ prefix) should not be present
   });
 
   test('should handle gene with no expression data', async ({ page }) => {
@@ -193,16 +221,23 @@ test.describe('Gene Expression Graph Component', () => {
     // Wait for the graph to load
     await page.waitForTimeout(5000);
 
-    // Look for anatomical terms in the graph
-    // These might be in the heatmap or as expandable tree nodes
-    const anatomicalTerms = page.locator(
-      '[class*="anatomical"], [class*="tissue"], text=/brain/, text=/liver/, text=/heart/'
-    );
+    // Look for anatomical terms in the graph - these could be in various forms
+    // Try to find elements with class containing "anatomical" or "tissue"
+    const anatomicalByClass = page.locator('[class*="anatomical"], [class*="tissue"]');
+    const hasAnatomicalClass = (await anatomicalByClass.count()) > 0;
 
-    // Check if any anatomical terms are visible
-    const termCount = await anatomicalTerms.count();
-    if (termCount > 0) {
-      await expect(anatomicalTerms.first()).toBeVisible();
+    // Or look for common anatomical term text
+    const brainTerm = page.getByText(/brain/i);
+    const hasBrainTerm = (await brainTerm.count()) > 0;
+
+    // At least one type of anatomical term should be present, or just verify the graph section is visible
+    if (hasAnatomicalClass) {
+      await expect(anatomicalByClass.first()).toBeVisible();
+    } else if (hasBrainTerm) {
+      await expect(brainTerm.first()).toBeVisible();
+    } else {
+      // If no specific anatomical terms found, just verify the Expression graph heading is visible
+      await expect(page.getByRole('heading', { name: 'Expression graph' })).toBeVisible();
     }
   });
 
@@ -232,16 +267,20 @@ test.describe('Gene Expression Graph Component', () => {
     // Get initial state
     const initialUrl = page.url();
 
-    // Uncheck all data types except one
-    const unselectAllButton = page.getByRole('button', { name: 'Unselect All' });
+    // Uncheck all data types except one (first Unselect All is for Expression graph)
+    const unselectAllButton = page.getByRole('button', { name: 'Unselect All' }).first();
     await unselectAllButton.click();
 
     // Select only RNA-Seq
-    const rnaSeqCheckbox = page.locator('input[type="checkbox"][value="RNA_SEQ"]').first();
+    const dataTypeWrapper = page.locator('.gene-expr-fields-wrapper').first();
+    const rnaSeqCheckbox = dataTypeWrapper
+      .getByText('RNA Seq', { exact: true })
+      .locator('..')
+      .locator('input[type="checkbox"]');
     await rnaSeqCheckbox.check();
 
-    // Click Update
-    await page.getByRole('button', { name: 'Update' }).click();
+    // Click Update (first one is for Expression graph)
+    await page.getByRole('button', { name: 'Update' }).first().click();
 
     // Wait for update
     await page.waitForLoadState('networkidle');
