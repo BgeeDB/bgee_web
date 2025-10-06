@@ -50,7 +50,7 @@ export async function loader({ params, request }) {
       xRefs,
       // exprData,
       // notExprData,
-      requestUrl: request.url,
+      requestUrl: request.url.replace(/^https?:\/\/.+?\//, 'https://www.bgee.org/'),
     };
   } catch (error: any) {
     // console.error('Error loading gene data:', error);
