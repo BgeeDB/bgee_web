@@ -2,6 +2,7 @@ import api from '~/api';
 import GeneDetails from '~/components/Gene/GeneDetails';
 import { geneHomologsToLdJSON, geneToLdJSON } from '~/helpers/schemaDotOrg';
 import { getMetadata } from '~/helpers/metadata';
+import config from '../config.json';
 
 export async function loader({ params, request }) {
   try {
@@ -50,7 +51,7 @@ export async function loader({ params, request }) {
       xRefs,
       // exprData,
       // notExprData,
-      requestUrl: request.url.replace(/^https?:\/\/.+?\//, 'https://www.bgee.org/'),
+      requestUrl: request.url.replace(/^https?:\/\/.+?\//, `${config.genericDomain}/`),
     };
   } catch (error: any) {
     // console.error('Error loading gene data:', error);
