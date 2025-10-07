@@ -395,7 +395,6 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
   useEffect(() => {
     if (selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
       getSexesAndDevStageForSpecies();
-      resetForm(true);
     }
   }, [selectedSpecies]);
 
