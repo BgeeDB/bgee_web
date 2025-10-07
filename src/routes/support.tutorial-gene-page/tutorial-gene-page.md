@@ -86,7 +86,7 @@ Expression calls can be re-grouped by any of the following condition parameters,
 
 ![](../img/doc/gene-search/Fig09_Expression-headers-gene-page.png#tutoimgborder)
 
-It is also possible to filter by data types/techniques (Affymetrix, EST, RNA-Seq, etc.) used to produce the expression calls. By default, all are selected.
+It is also possible to filter by data types/techniques (e.g. RNA-Seq) used to produce the expression calls. By default, all are selected.
 
 ![](../img/doc/gene-search/Fig10_Expression-Data-types.png#tutoimgborder)
 
@@ -94,9 +94,7 @@ The data types supporting a call are reported in the column "Sources". A green b
 
 - "R" stands for bulk RNA-Seq
 - "SC" for single-cell RNA-Seq
-- "A" for Affymetrix
 - "I" for in situ hybridization
-- "E" for Expressed Sequence Tag (EST)
 
 It is possible to view/retrieve the processed data used to produce each call by following the "see source data" link in the "Link to source data" column. More information is provided in the **documentation to retrieve curated annotations and processed expression values**.
 

@@ -19,9 +19,7 @@ const ApiReducer = {
     pValueThreshold: rp.p_value_thr || '',
     rnaSeq: Boolean(rp.data_type.find((f) => f === 'RNA_SEQ')),
     full: Boolean(rp.data_type.find((f) => f === ID_FULL_LENGTH)),
-    affymetrix: Boolean(rp.data_type.find((f) => f === 'AFFYMETRIX')),
     inSitu: Boolean(rp.data_type.find((f) => f === 'IN_SITU')),
-    est: Boolean(rp.data_type.find((f) => f === 'EST')),
   }),
   topAnatRequestParameters: (res, rp) => (prev) => {
     const curr = JSON.parse(JSON.stringify(prev));

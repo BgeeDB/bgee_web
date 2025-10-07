@@ -41,9 +41,7 @@
   "isRawDataOnly": false,
   "dataType_RNA_SEQ": 1,
   "dataType_FULL_LENGTH": 2,
-  "dataType_AFFYMETRIX": 3,
   "dataType_IN_SITU": 4,
-  "dataType_EST": 5,
   "globalMessageInfo": "",
   "dataTypeLabels": {
     "FULL_LENGTH": "scRNA-Seq"
