@@ -92,6 +92,7 @@ const ExpandCell = ({ onClick }) => (
   </a>
 );
 
+/* NOTE speciesId is not used any more for gene page link, so replaced by '' */
 const GenesCell = ({ genes }) => (
   <div style={{}}>
     <GeneItemNb itemTab={genes} />
@@ -101,10 +102,7 @@ const GenesCell = ({ genes }) => (
           <Link
             className="internal-link"
             content={item.geneId}
-            to={PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', item.geneId).replace(
-              ':speciesId',
-              item.species.id
-            )}
+            to={PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', item.geneId).replace('/:speciesId', '')}
           >
             <span style={{ fontSize: 12 }}>{item.geneId}</span>
           </Link>
@@ -500,7 +498,7 @@ const ExpComp = () => {
       </div>
       {geneInfo && geneInfo.undeterminedGeneIds.length > 0 && (
         <p>
-          Unknown gene IDs:{' '}
+          <strong>Unknown gene IDs</strong>:{' '}
           {geneInfo.undeterminedGeneIds.map((g, key) => (
             <React.Fragment key={`UG-${key}`}>{`'${g}'${
               key + 1 !== geneInfo.undeterminedGeneIds.length ? ', ' : ''
