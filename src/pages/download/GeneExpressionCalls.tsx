@@ -295,11 +295,13 @@ const GeneExpressionCalls = ({ loaderData }) => {
           </div>
         </Bulma.Card.Body>
       </Bulma.Card>
-      <Bulma.Columns className="mt-4">
-        <Bulma.C size={12}>
-          <CreativeCommons />
-        </Bulma.C>
-      </Bulma.Columns>
+      <Bulma.Section>
+        <Bulma.Columns>
+          <Bulma.C size={12} className="has-text-centered">
+            <CreativeCommons />
+          </Bulma.C>
+        </Bulma.Columns>
+      </Bulma.Section>
     </>
   );
 };
