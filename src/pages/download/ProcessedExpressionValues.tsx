@@ -100,25 +100,23 @@ const ProcessedExpressionValues = ({ loaderData }) => {
         </LinkExternal>
         .
       </p>
-      <div>
-        <Bulma.Card className="form search-input mx-auto my-3">
-          <Bulma.Card.Body>
-            <div className="content">
-              <div className="field">
-                <label className="label" htmlFor="search-species">
-                  Search species
-                </label>
-                <ExpressionSearch
-                  search={search}
-                  setSearch={setSearch}
-                  elements={expressionPageHelper.autocompleteSpecies(filteredSpecies, kwList, search)}
-                  onRender={expressionPageHelper.autocompleteSpeciesRender(setSearch, navigate, location)}
-                />
-              </div>
+      <Bulma.Card className="form search-input mx-auto my-3">
+        <Bulma.Card.Body>
+          <div className="content">
+            <div className="field">
+              <label className="label" htmlFor="search-species">
+                Search species
+              </label>
+              <ExpressionSearch
+                search={search}
+                setSearch={setSearch}
+                elements={expressionPageHelper.autocompleteSpecies(filteredSpecies, kwList, search)}
+                onRender={expressionPageHelper.autocompleteSpeciesRender(setSearch, navigate, location)}
+              />
             </div>
-          </Bulma.Card.Body>
-        </Bulma.Card>
-      </div>
+          </div>
+        </Bulma.Card.Body>
+      </Bulma.Card>
       <Bulma.Card className="mt-4">
         <Bulma.Card.Header>
           <Bulma.Card.Header.Title className="is-size-4 has-text-primary">
