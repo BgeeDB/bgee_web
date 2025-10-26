@@ -36,47 +36,71 @@ const getStoredValue = (key, defaultValue) => {
   }
 };
 
+export interface HeatmapProps {
+  width: number;
+  height?: number;
+  backgroundColor: string;
+  data: any[];
+  xTerms: any[];
+  yTerms: any[];
+  termProps: any;
+  onToggleExpandCollapse: (id: string) => void;
+  yLabelJustify?: string;
+
+  // Optional feature flags
+  getChildData?: (parentId: string, selectedTissueId: string) => any;
+  getHomologsData?: () => void;
+  isLoading?: boolean;
+
+  // Configurable defaults for different use cases
+  defaultXLabelRotation?: number;
+  defaultMaxGraphWidth?: number;
+  defaultCellHeight?: number;
+  maxCellWidth?: number;
+  showResetButton?: boolean;
+  rendererMargins?: { top: number; right: number; bottom: number; left: number };
+}
+
 const Heatmap = ({
   width,
   height = 800,
   backgroundColor,
   data,
   getChildData,
+  getHomologsData,
   xTerms,
   yTerms,
   termProps,
   yLabelJustify = 'right',
   onToggleExpandCollapse,
-}: {
-  width: number;
-  height?: number;
-  backgroundColor: string;
-  data: any[];
-  getChildData: (parentId: string, selectedTissueId: string) => any;
-  getHomologsData?: () => void;
-  xTerms: any[];
-  yTerms: any[];
-  termProps: any;
-  yLabelJustify?: string;
-  onToggleExpandCollapse: (id: string) => void;
-}) => {
+  isLoading = false,
+  defaultXLabelRotation = 0,
+  defaultMaxGraphWidth = 800,
+  defaultCellHeight = 15,
+  maxCellWidth = 50,
+  showResetButton = false,
+  rendererMargins,
+}: HeatmapProps) => {
   // COMPONENT STATE
   const [hoveredCell, setHoveredCell] = useState(null);
   const [clickedCell, setClickedCell] = useState(null);
   const [showLegend, setShowLegend] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
-  const [xLabelRotation, setXLabelRotation] = useState(() => getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 0));
+  const [xLabelRotation, setXLabelRotation] = useState(() =>
+    getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, defaultXLabelRotation)
+  );
   const [yLabelAlign, setYLabelAlign] = useState(() => getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
   const [graphWidth, setGraphWidth] = useState(width);
   const [graphHeight, setGraphHeight] = useState(height);
   // outer width, if graphWidth > maxGraphWidth -> scale SVG down
-  const [maxGraphWidth, setMaxGraphWidth] = useState(800);
-  const [cellWidth, setCellWidth] = useState(() => getStoredValue(STORAGE_KEYS.CELL_WIDTH, 50));
+  const [maxGraphWidth, setMaxGraphWidth] = useState(defaultMaxGraphWidth);
+  const [cellWidth, setCellWidth] = useState(() => getStoredValue(STORAGE_KEYS.CELL_WIDTH, maxCellWidth));
   const [colorPalette, setColorPalette] = useState(() => getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
   const [bgColor, setBgColor] = useState(() => getStoredValue(STORAGE_KEYS.BACKGROUND_COLOR, backgroundColor));
   const [marginLeft, setMarginLeft] = useState(() => getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
   const [showDescMax, setShowDescMax] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
   const [showMissingData, setShowMissingData] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
   const [showSettings, setShowSettings] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_SETTINGS, false));
+  const [showHomologs, setShowHomologs] = useState(false);
   const [useAdaptiveScale, setUseAdaptiveScale] = useState(() =>
     getStoredValue(STORAGE_KEYS.USE_ADAPTIVE_SCALE, false)
   );
@@ -205,6 +229,36 @@ const Heatmap = ({
     localStorage.setItem(STORAGE_KEYS.USE_ADAPTIVE_SCALE, JSON.stringify(value));
   };
 
+  // Add handler for homologs toggle (only if getHomologsData is provided)
+  const updateShowHomologs = () => {
+    if (getHomologsData) {
+      setShowHomologs(!showHomologs);
+      getHomologsData();
+    }
+  };
+
+  // Reset to defaults function
+  const resetToDefaults = () => {
+    // Reset all settings to their default values
+    setGraphWidth(width);
+    setGraphHeight(height);
+    setShowLegend(true);
+    setMarginLeft(200);
+    setXLabelRotation(defaultXLabelRotation);
+    setYLabelAlign(yLabelJustify);
+    setColorPalette('viridis');
+    setBgColor(backgroundColor);
+    setShowDescMax('none');
+    setShowMissingData(true);
+    setUseAdaptiveScale(false);
+    setCellWidth(maxCellWidth);
+
+    // Clear all stored settings
+    Object.values(STORAGE_KEYS).forEach((key) => {
+      localStorage.removeItem(key);
+    });
+  };
+
   // DEBUG: remove console log in prod
   // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
   // console.log(`[Heatmap] data:\n${JSON.stringify(data)}`);
@@ -234,10 +288,9 @@ const Heatmap = ({
     const { count: numVisibleTerms, maxLabelLength } = countVisibleTerms(yTerms);
     // console.log(`[Heatmap] ${numVisibleTerms} visible terms`);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
-    const cellHeight = 15;
     const maxMarginLeft = 730;
     // Calculate main heatmap height (without legend)
-    const mainHeatmapHeight = Math.max(numVisibleTerms * cellHeight, 250);
+    const mainHeatmapHeight = Math.max(numVisibleTerms * defaultCellHeight, 250);
     // Total height includes main heatmap + legend
     const flexHeight = mainHeatmapHeight + COLOR_LEGEND_HEIGHT;
     let flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
@@ -260,7 +313,14 @@ const Heatmap = ({
     setGraphWidth(flexWidth);
     setMarginLeft(flexMarginLeft);
     setGraphHeightInput(flexHeight);
-  }, [yTerms]);
+  }, [yTerms, defaultCellHeight]);
+
+  // Reset clickedCell when isLoading changes to true
+  useEffect(() => {
+    if (isLoading) {
+      setClickedCell(null);
+    }
+  }, [isLoading]);
 
   // sort entries by y coordinate
   const displayData = data.sort((a, b) => a.y.localeCompare(b.y));
@@ -384,8 +444,11 @@ const Heatmap = ({
             colorLegendWidth={200}
             colorLegendHeight={COLOR_LEGEND_HEIGHT}
             maxCellWidth={cellWidth}
+            minCellWidth={20}
+            minCellHeight={10}
             maxGraphWidth={maxGraphWidth}
             setGraphWidth={setGraphWidth}
+            rendererMargins={rendererMargins}
           />
 
           <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight} />
@@ -416,46 +479,49 @@ const Heatmap = ({
         }}
       >
         <header className="card-header">
-          <div className="card-header-title">
-            <span className="mr-2">Download</span>
-            <Bulma.Button
-              className="download-btn is-small mr-2"
-              onClick={downloadPng}
-              renderAs="a"
-              target="_blank"
-              rel="noreferrer"
-            >
-              PNG
-              <span className="icon is-small ml-1">
-                <Download size={15} />
-              </span>
-            </Bulma.Button>
+          <div className="card-header-title is-flex is-align-items-center">
+            <span>Download</span>
+            <span style={{ marginLeft: '10px' }} />
+            <div className="is-flex">
+              <Bulma.Button
+                className="download-btn is-small mr-2"
+                onClick={downloadPng}
+                renderAs="a"
+                target="_blank"
+                rel="noreferrer"
+              >
+                PNG
+                <span className="icon is-small ml-1">
+                  <Download size={15} />
+                </span>
+              </Bulma.Button>
 
-            <Bulma.Button
-              className="download-btn is-small mr-2"
-              onClick={downloadSvg}
-              renderAs="a"
-              target="_blank"
-              rel="noreferrer"
-            >
-              SVG
-              <span className="icon is-small ml-1">
-                <Download size={15} />
-              </span>
-            </Bulma.Button>
+              <Bulma.Button
+                className="download-btn is-small mr-2"
+                onClick={downloadSvg}
+                renderAs="a"
+                target="_blank"
+                rel="noreferrer"
+              >
+                SVG
+                <span className="icon is-small ml-1">
+                  <Download size={15} />
+                </span>
+              </Bulma.Button>
 
-            <Bulma.Button
-              className="download-btn is-small mr-2"
-              onClick={downloadTsv}
-              renderAs="a"
-              target="_blank"
-              rel="noreferrer"
-            >
-              TSV
-              <span className="icon is-small ml-1">
-                <Download size={15} />
-              </span>
-            </Bulma.Button>
+              <Bulma.Button
+                className="download-btn is-small mr-2"
+                onClick={downloadTsv}
+                renderAs="a"
+                target="_blank"
+                rel="noreferrer"
+              >
+                TSV
+                <span className="icon is-small ml-1">
+                  <Download size={15} />
+                </span>
+              </Bulma.Button>
+            </div>
           </div>
         </header>
       </div>
@@ -595,6 +661,14 @@ const Heatmap = ({
                               <input type="checkbox" checked={showMissingData} onChange={updateShowMissingData} />
                             </td>
                           </tr>
+                          {getHomologsData && (
+                            <tr>
+                              <td>Show homologs:</td>
+                              <td>
+                                <input type="checkbox" checked={showHomologs} onChange={updateShowHomologs} />
+                              </td>
+                            </tr>
+                          )}
                           <tr>
                             <td>Show max. descendant score as:</td>
                             <td>
@@ -612,6 +686,15 @@ const Heatmap = ({
                   ) : null}
                 </div>
               </div>
+              {showResetButton && (
+                <div className="columns">
+                  <div className="column">
+                    <Bulma.Button className="is-warning is-light is-outlined" onClick={resetToDefaults}>
+                      Reset to defaults
+                    </Bulma.Button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : null}
         </div>

@@ -1,4 +1,4 @@
-import { Heatmap } from './components/Heatmap/Heatmap';
+import Heatmap from '../../../components/Heatmap/Heatmap';
 
 const GeneExpressionMatrixResults = ({
   results = [],
@@ -59,14 +59,18 @@ const GeneExpressionMatrixResults = ({
           data={heatmapData}
           xTerms={genes}
           yTerms={anatomicalTerms}
-          // setYTerms={setAnatomicalTerms}
           termProps={anatomicalTermsProps}
-          // setTermProps={setAnatomicalTermsProps}
           onToggleExpandCollapse={onToggleExpandCollapse}
           width={800}
           height={800}
           backgroundColor="white"
           isLoading={isLoading}
+          // Configure for expression matrix use case
+          defaultXLabelRotation={325}
+          defaultMaxGraphWidth={1500}
+          defaultCellHeight={30}
+          showResetButton={true}
+          rendererMargins={{ top: 60, right: 60, bottom: 50, left: 200 }}
         />
       )}
       {isFirstSearch && (

@@ -6,7 +6,7 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
 
-const MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
+const DEFAULT_MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
 const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
 
 export const Renderer = forwardRef(
@@ -37,9 +37,12 @@ export const Renderer = forwardRef(
       maxGraphWidth = 800,
       setGraphWidth,
       scaleSvg = false,
+      rendererMargins,
     },
     ref
   ) => {
+    // Use provided margins or fall back to default
+    const MARGIN = rendererMargins || DEFAULT_MARGIN;
     // The bounds (=area inside the axis) is calculated by substracting the margins
     const boundsWidth = width - MARGIN.right - marginLeft;
     // Separate main heatmap height from total height (which includes legend)
@@ -168,7 +171,7 @@ export const Renderer = forwardRef(
         // console.log(`[Renderer] termProps[${d.termId}] not found`);
         // console.log(`[Renderer] termProps: ${JSON.stringify(termProps)}`);
       }
-      const strokeColour = termProps[d.termId].isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
+      const strokeColour = termProps[d.termId]?.isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
@@ -186,7 +189,7 @@ export const Renderer = forwardRef(
         yPos: y + yScale.bandwidth() / 2 + MARGIN.bottom,
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
-        // maxExpScore: d.maxExp.toFixed(2),
+        maxExpScore: d.maxExp?.toFixed(2),
         hasDataAffy: d.hasDataAffy,
         hasDataEst: d.hasDataEst,
         hasDataInSitu: d.hasDataInSitu,
@@ -452,7 +455,7 @@ export const Renderer = forwardRef(
             </g>
           </g>
 
-          <g transform={`translate(-${marginLeft - 50}, ${colorLegendHeight})`}>
+          <g transform={`translate(-${marginLeft - 50}, 0)`}>
             {showLegend ? (
               <g>
                 <ColorLegendSvg
