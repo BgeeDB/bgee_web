@@ -46,6 +46,8 @@ Experiment metadata:
 
 ## Annotation Process
 
+Annotation Guidelines can be found on the Bgee [expression-annotations-documents](https://github.com/BgeeDB/expression-annotations-documents/wiki/Annotation-Guidelines) repository.
+
 ### Ontologies Used
 
 The following ontologies are used for the associated use cases listed below.
