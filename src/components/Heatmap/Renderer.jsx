@@ -378,10 +378,8 @@ export const Renderer = forwardRef(
     const xLabelsBottom = allXGroups.map((name, i) => {
       const x = xScale(name);
       const xCoord = x + xScale.bandwidth() / 2;
-      // TODO: fix bottom label position (too low)
-      const yCoord = height - colorLegendHeight;
-      // const yCoord = height - colorLegendHeight;
-      // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
+      const actualHeatmapHeight = yScale.range()[1] || 0;
+      const yCoord = actualHeatmapHeight + 10;
 
       if (!x) {
         return null;
@@ -454,6 +452,7 @@ export const Renderer = forwardRef(
           <g>
             <g>{allShapes}</g>
             <g>{xLabelsTop}</g>
+            <g>{xLabelsBottom}</g>
             <g transform={`translate(-${marginLeft - 10}, 5)`}>
               <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
             </g>
