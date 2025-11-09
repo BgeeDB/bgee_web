@@ -207,161 +207,6 @@ const useLogic = (isExprCalls) => {
   // filters
   const [filters, setFilters] = useState({});
 
-  // HD: howto keep state about anatomical hierarchy?
-  const [anatomicalTerms, setAnatomicalTerms] = useState([]);
-  const [anatomicalTermsProps, setAnatomicalTermsProps] = useState({});
-
-  // flatten anatomical terms' props
-  useEffect(() => {
-    const newAnatTermsProps = {};
-
-    function traverse(term) {
-      newAnatTermsProps[term.id] = {
-        label: term.label,
-        isTopLevelTerm: term.isTopLevelTerm,
-        isExpanded: term.isExpanded,
-        isPopulated: term.isExpanded,
-        hasBeenQueried: term.hasBeenQueried,
-      };
-      term.children.forEach(traverse);
-    }
-
-    anatomicalTerms.forEach((item) => traverse(item));
-    setAnatomicalTermsProps(newAnatTermsProps);
-  }, [anatomicalTerms]);
-
-  // prepare term hierarchy from gene expression call data
-  const prepTermHierarchy = (expressionCalls) => {
-    const termProps = {
-      'UBERON:0001062-GO:0005575': {
-        label: 'anatomical entity',
-        anatEntityId: 'UBERON:0001062',
-        anatEntityLabel: 'anatomical entity',
-        cellTypeId: 'GO:0005575',
-        cellTypeLabel: 'cellular component',
-        isTopLevelTerm: true,
-        isExpanded: true,
-        isPopulated: false,
-        hasBeenQueried: true,
-        isSingleCell: false,
-      },
-    };
-    const parents = { [ROOT_TERM_ANAT_ENTITY]: [] };
-    const children = { [ROOT_TERM_ANAT_ENTITY]: [] };
-    // console.log(`[useLogic.triggerInitialSearch] prepTermHierarchy()`);
-    expressionCalls.forEach((exprCall) => {
-      const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
-      const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
-      const termIsSingleCell = cellTypeId !== 'GO:0005575';
-      const termId = `${anatEntityId}-${cellTypeId}`;
-      const termLabel = termIsSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
-      if (!(termId in termProps)) {
-        termProps[termId] = {
-          label: termLabel,
-          anatEntityId,
-          anatEntityLabel: anatEntityName,
-          cellTypeId,
-          cellTypeLabel: cellTypeName,
-          isTopLevelTerm: true,
-          isExpanded: true,
-          isPopulated: false,
-          hasBeenQueried: true,
-          isSingleCell: termIsSingleCell,
-        };
-
-        if (termId !== ROOT_TERM_ANAT_ENTITY) {
-          parents[termId] = [ROOT_TERM_ANAT_ENTITY];
-          children[ROOT_TERM_ANAT_ENTITY].push(termId);
-        }
-      }
-    });
-
-    // identify root terms
-    const roots = Object.keys(parents).filter((id) => parents[id].length === 0);
-
-    function createNestedStructure(termId, depth = 0) {
-      // console.log(`[createNestedStructure] ${termId} - ${depth}`);
-      // Get the term's properties
-      const term = termProps[termId];
-      if (!term) {
-        console.error(`[useLogic.prepTermHierarchy] term not found: ${termId}`);
-      }
-      // Initialize the nested structure
-      const nestedTerm = {
-        id: termId,
-        label: term.isSingleCell ? `${term.label} : ${term.cellTypeLabel}` : term.label,
-        anatEntityId: term.anatEntityId,
-        anatEntityLabel: term.anatEntityLabel,
-        cellTypeId: term.cellTypeId,
-        cellTypeLabel: term.cellTypeLabel,
-        depth,
-        isTopLevelTerm: true,
-        isExpanded: depth === 0,
-        isPopulated: true,
-        hasBeenQueried: depth === 0,
-        isSingleCell: term.isSingleCell,
-        children: [],
-      };
-
-      // If the term has children, recursively create their nested structure
-      if (children[termId]) {
-        nestedTerm.children = children[termId].map((childId) => createNestedStructure(childId, depth + 1));
-      }
-
-      return nestedTerm;
-    }
-
-    // Create the nested structure for each root term
-    const anatTerms = roots.map((root) => createNestedStructure(root));
-
-    return { anatTerms, termProps };
-  };
-
-  // add lower level ontology terms to existing hierarchy based on exression call data
-  const addLowLevelTerms = (parentId, nestedStructure, terms, expressionCalls) => {
-    // Make a copy of termProps to avoid reassigning the parameter directly
-    const newTerms = {};
-
-    // Helper function to recursively find the term by id and add children
-    const addChildren = (term) => {
-      // Check if the current term's id matches the parentId
-      if (term.id === parentId) {
-        // Loop through each expressionCall and add children to the term
-        expressionCalls.forEach((call) => {
-          const { anatEntity, cellType } = call.condition;
-          if (!(anatEntity.id in terms) && !(anatEntity.id in newTerms)) {
-            const newChild = {
-              id: `${anatEntity.id}-${cellType.id}`,
-              label: anatEntity.name,
-              anatEntityId: anatEntity.id,
-              anatEntityLabel: anatEntity.name,
-              cellTypeId: cellType.id,
-              cellTypeLabel: cellType.name,
-              depth: term.depth + 1,
-              isTopLevelTerm: false,
-              children: [],
-            };
-            term.children.push(newChild);
-            // Add the new term to termProps
-            newTerms[anatEntity.id] = {
-              label: anatEntity.name,
-              isTopLevel: false,
-            };
-          }
-        });
-      } else {
-        // If not the matching term, recurse into its children
-        term.children.forEach((child) => addChildren(child));
-      }
-    };
-
-    // Start the recursive search from each root term in the nested structure
-    nestedStructure.forEach((root) => addChildren(root, root.depth));
-
-    // Return the updated termProps
-    return newTerms;
-  };
-
   const updateSelectedSpecies = (newSpecies, preserveGenes = false) => {
     setSelectedSpecies(newSpecies);
     if (newSpecies.value !== EMPTY_SPECIES_VALUE.value) {
@@ -624,22 +469,14 @@ const useLogic = (isExprCalls) => {
         // console.log(JSON.stringify(resp1));
         // console.log(JSON.stringify(resp2));
 
-        const { anatTerms, termProps } = prepTermHierarchy(resp1.data.expressionData.expressionCalls);
-        // console.log(`[useLogic.triggerInitialSearch] anatTerms:\n${JSON.stringify(anatTerms)}`);
-        setAnatomicalTerms(anatTerms);
-        // console.log(`[useLogic.triggerInitialSearch] termProps:\n${JSON.stringify(termProps)}`);
-        const newTermProps = addLowLevelTerms(
-          ROOT_TERM_ANAT_ENTITY,
-          anatTerms,
-          termProps,
-          resp2?.data?.expressionData?.expressionCalls || []
-        );
-        Object.assign(termProps, newTermProps);
-        setAnatomicalTermsProps(termProps);
-
         const { data } = resp1;
+        // Mark orphan terms from complementary search and combine with initial calls
         if (resp2?.code === 200) {
-          data.expressionData.expressionCalls.push(...resp2.data.expressionData.expressionCalls);
+          const orphanCalls = resp2.data.expressionData.expressionCalls.map((call) => ({
+            ...call,
+            isOrphan: true,
+          }));
+          data.expressionData.expressionCalls.push(...orphanCalls);
         }
 
         // After First search we update the filters via detailed_rp
@@ -882,217 +719,43 @@ const useLogic = (isExprCalls) => {
   };
 
   // HD: perform API data request for subordinate terms
+  // Returns only the expression calls, letting GeneExpressionHeatmap handle hierarchy management
   const triggerSearchChildren = async (parentId, selectedTissueId) => {
-    // DEBUG: remove console log in prod
-    // console.log(`[useLogic] triggerSearchChildren:\n${parentId}`);
-
     const params = getSearchParams();
 
     // Set parent anatomical term as selected tissue
     params.selectedTissue = [selectedTissueId];
-    // Fix other condition params to top-level terms (overrides form fields!)
-    // params.selectedCellTypes = ['SUMMARY']; // top-level terms
+    // Fix other condition params to top-level terms
     if (params.selectedCellTypes?.length === 0) {
       params.selectedCellTypes = ['GO:0005575']; // "cellular_component"
     }
-    // params.selectedDevStages = ['UBERON:0000104']; // "life cycle"
-    // params.selectedSexes = ['any'];
-    // params.selectedStrain = ['wild-type'];
-    // params.hasCellTypeSubStructure = 0;
     params.hasTissueSubStructure = 1; // we want children of parent term!
-    // params.hasDevStageSubStructure = 0;
     params.conditionalParam2 = ['anat_entity']; // HD: restrict to anatomical terms
+
     // HD: discard top-level terms from search results
-    // NOTE: use only when we want to get children of "multicellular organism"
     if (parentId === 'UBERON:0000468-GO:0005575') {
       params.discardAnatEntityAndChildrenId = 'SUMMARY';
     }
 
-    setIsLoading(true);
-    // DEBUG: remove console log in prod
-    // console.log(`[useLogic] triggerSearchChildren - triggered!`);
-    return (
-      api.search.geneExpressionMatrix
-        .search(params, false)
-        .then(({ resp, paramsURLCalled }) => {
-          // DEBUG: remove in prod
-          // console.log(`[useLogic] triggerSearchChildren - response:\n${JSON.stringify(resp)}`);
-          if (resp.code === 200) {
-            // DEBUG: remove console log in prod
-            // console.log(`[useLogic] triggerSearchChildren - resp.data:\n${JSON.stringify(resp.data)}`);
-            // console.log(`[useLogic] triggerSearchChildren - params:\n${JSON.stringify(params)}`)
+    try {
+      const result = await api.search.geneExpressionMatrix.search(params, false);
+      const { resp } = result;
 
-            // TODO: make sure, URL reflects current query state
-            // "Mirroring" management in URL's parameter (with & without hash)
-            const searchParams = new URLSearchParams(paramsURLCalled);
-            // If there is a hash we put it in the URL
-            // And as all next data are "coded" in the Hash...
-            // We can clear the URL from those (aka storableParams)
-            const newHash = resp?.requestParameters?.data;
-            if (newHash) {
-              // We delete the potential old hash
-              searchParams.delete('data');
+      if (resp.code === 200) {
+        // Prefix anatEntity.id with termId for each expression call
+        resp.data.expressionData.expressionCalls.forEach((exprCall) => {
+          exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
+        });
 
-              resp?.requestParameters?.storableParameters?.forEach((key) => {
-                if (key !== 'data_type') {
-                  searchParams.delete(key);
-                }
-              });
+        // Return only the expression calls - GeneExpressionHeatmap will handle hierarchy updates
+        return resp.data.expressionData.expressionCalls;
+      }
 
-              // Adding Hash (in "data" key)
-              searchParams.append('data', newHash);
-            }
-
-            // We can always clean those "tech" parameters from the URL
-            searchParams.delete('display_type');
-            searchParams.delete('page');
-            searchParams.delete('action');
-            searchParams.delete('get_results');
-            searchParams.delete('get_column_definition');
-            searchParams.delete('get_filters');
-            searchParams.delete('display_rp');
-            searchParams.delete('detailed_rp');
-            searchParams.delete('offset');
-            searchParams.delete('get_result_count');
-            searchParams.delete('filters_for_all');
-
-            // The following code clean the url of any default value
-            if (searchParams.get('pageType') === 'experiments') {
-              searchParams.delete('pageType');
-            }
-            if (searchParams.get('sex') === 'all') {
-              searchParams.delete('sex');
-            }
-            if (searchParams.get('cell_type_descendant') === 'true') {
-              searchParams.delete('cell_type_descendant');
-            }
-            if (searchParams.get('stage_descendant') === 'true') {
-              searchParams.delete('stage_descendant');
-            }
-            if (searchParams.get('anat_entity_descendant') === 'true') {
-              searchParams.delete('anat_entity_descendant');
-            }
-          }
-
-          // update anatomical terms
-          const newChildTerms = new Set();
-          resp?.data.expressionData.expressionCalls.forEach((exprCall) => {
-            const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
-            const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
-            const isSingleCell = cellTypeId !== 'GO:0005575';
-            // if (!(anatEntityId === selectedTissueId && cellTypeId === 'GO:0005575')) {
-            if (!(anatEntityId === selectedTissueId) || isSingleCell) {
-              newChildTerms.add(
-                JSON.stringify({
-                  id: `${parentId}--${anatEntityId}-${cellTypeId}`,
-                  // label: cellTypeId !== '' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
-                  label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
-                  anatEntityId,
-                  anatEntityLabel: anatEntityName,
-                  cellTypeId,
-                  cellTypeLabel: cellTypeName,
-                  isTopLevelTerm: false,
-                  isExpanded: false,
-                  isPopulated: false,
-                  hasBeenQueried: false,
-                  isSingleCell,
-                })
-              );
-            }
-          });
-          // DEBUG: remove console log in prod
-          // console.log(`[useLogic] triggerSearchChildren newChildTerms:\n${JSON.stringify([...newChildTerms])}`);
-          function addChildren(hierarchy, termId, children) {
-            // Helper function to recursively traverse the array
-            function traverse(node) {
-              if (!node || !Array.isArray(node)) return []; // break condition
-
-              // Add property to each element in the current level
-              return node.map((item) => {
-                const newItem = { ...item };
-                if (item.id === termId) {
-                  // add children
-                  // console.log(`[Heatmap useLogic] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
-                  children.forEach((childStr) => {
-                    const child = JSON.parse(childStr);
-                    if (child.id !== newItem.id)
-                      newItem.children.push({
-                        id: child.id,
-                        label: child.label,
-                        anatEntityId: child.anatEntityId,
-                        anatEntityLabel: child.anatEntityLabel,
-                        cellTypeId: child.cellTypeId,
-                        cellTypeLabel: child.cellTypeLabel,
-                        depth: newItem.depth + 1,
-                        isTopLevelTerm: false,
-                        isExpanded: false,
-                        isPopulated: false,
-                        hasBeenQueried: false,
-                        isSingleCell: child.isSingleCell,
-                        children: [],
-                      });
-                  });
-                  newItem.isExpanded = true;
-                  newItem.hasBeenQueried = true;
-                }
-                newItem.children = traverse(newItem.children); // Recursively traverse children
-                return newItem;
-              });
-            }
-            // Start traversal from the root
-            return traverse(hierarchy);
-          }
-          if (newChildTerms.size > 0) {
-            const newAnatTerms = addChildren(anatomicalTerms, parentId, [...newChildTerms]);
-            // DEBUG: remove console log in prod
-            // console.log(`[useLogic] triggerSearchChildren anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
-            // console.log(`[useLogic] triggerSearchChildren newAnatTerms:\n${JSON.stringify(newAnatTerms)}`);
-            // console.log(`[useLogic] CALL setAnatomicalTerms`);
-            setAnatomicalTerms(newAnatTerms);
-            // add term props for new terms
-            const newAnatTermsProps = { ...anatomicalTermsProps };
-            newChildTerms.forEach((child) => {
-              if (!(child.id in newAnatTermsProps)) {
-                newAnatTermsProps[child.id] = {
-                  isTopLevel: child.isTopLevelTerm,
-                  isExpanded: child.isExpanded,
-                  isPopulated: child.isPopulated,
-                  hasBeenQueried: child.hasBeenQueried,
-                  isSingleCell: child.isSingleCell,
-                };
-              }
-            });
-            setAnatomicalTermsProps(newAnatTermsProps);
-          }
-
-          // add additional data to previous ones
-          const exprData = searchResult;
-          if (resp) {
-            // Prefix anatEntity.id with termId for each expression call
-            resp.data.expressionData.expressionCalls.forEach((exprCall) => {
-              exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
-            });
-            // add new expression calls to previous ones
-            exprData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
-          }
-          setSearchResult(exprData);
-
-          // Finally, we set the values we are interested in
-          setIsLoading(false);
-        })
-        /* .catch(() => {
-        // DEBUG: remove console log in prod
-        console.log(`[useLogic] triggerSearchChildren - Whoops! Something went wrong...`);
-        // We remove all the parameters that we may have sent
-        navigate(`${URL_ROOT}${loc.pathname}`, {replace: true});
-        setIsLoading(false);
-      }) */
-        .finally(() => {
-          // The next searches will not be considered as the first
-          // --> Filters will now be used for the next requests
-          setIsFirstSearch(false);
-        })
-    );
+      return [];
+    } catch (error) {
+      console.error(`[useLogic.triggerSearchChildren] ERROR:\n${JSON.stringify(error)}`);
+      return [];
+    }
   };
 
   const getSexesAndDevStageForSpecies = () => {
@@ -1310,58 +973,6 @@ const useLogic = (isExprCalls) => {
     }
   };
 
-  // Expand or collapse a term
-  const onToggleExpandCollapse = (term) => {
-    // console.log(`[useLogic] onToggleExpandCollapse:\n${JSON.stringify(term)}`);
-
-    function updateExpandedStateHierarchically(terms) {
-      const newTermProps = { ...anatomicalTermsProps };
-
-      // Helper function to recursively traverse the array
-      function traverse(node) {
-        if (!node || !Array.isArray(node)) return []; // break condition
-
-        // Add property to each element in the current level
-        return node.map((item) => {
-          const newItem = JSON.parse(JSON.stringify(item));
-          if (item.id === term.id) {
-            // get data for descendants
-            if (!item.hasBeenQueried) {
-              // console.log(`[useLogic] onToggleExpandCollapse - get child data for:\n${term.id}`);
-              triggerSearchChildren(term.id, term.anatEntityId);
-              newItem.hasBeenQueried = true;
-              newItem.isExpanded = true;
-              newTermProps[term.id].hasBeenQueried = true;
-              newTermProps[term.id].isExpanded = true;
-            } else {
-              // console.log(`[useLogic] flipping item.isExpanded from ${item.isExpanded} to ${!item.isExpanded}.`);
-              newItem.isExpanded = !item.isExpanded;
-              newItem.isPopulated = item.isPopulated;
-              // Update term props
-              newTermProps[term.id].isExpanded = !item.isExpanded;
-            }
-          }
-          newItem.children = traverse(newItem.children);
-          return newItem;
-        });
-      }
-
-      // Start traversal from the root
-      const newDrilldown = traverse(terms);
-      return { newDrilldown, newTermProps };
-    }
-
-    const { newDrilldown, newTermProps } = updateExpandedStateHierarchically(anatomicalTerms);
-
-    // Update anatomical terms state
-    // console.log(`[useLogic] CALL setAnatomicalTermsProps...`);
-    setAnatomicalTermsProps(newTermProps);
-    // console.log(`[useLogic] CALL setAnatomicalTerms...`);
-    setAnatomicalTerms(newDrilldown);
-
-    // console.log(`[useLogic] DONE onToggleExpandCollapse.`);
-  };
-
   // Add function to process gene list
   const processGeneList = async (geneListParam) => {
     if (!geneListParam) return;
@@ -1407,8 +1018,6 @@ const useLogic = (isExprCalls) => {
 
   return {
     searchResult,
-    anatomicalTerms,
-    anatomicalTermsProps,
     maxExpScore,
     dataType,
     show,
@@ -1433,8 +1042,6 @@ const useLogic = (isExprCalls) => {
     conditionalParam2,
     callTypes,
     condObserved,
-    setAnatomicalTerms,
-    setAnatomicalTermsProps,
     setCondObserved,
     setCallTypes,
     setConditionalParam2,
@@ -1460,9 +1067,9 @@ const useLogic = (isExprCalls) => {
     onSubmit,
     resetForm,
     triggerSearch,
+    triggerSearchChildren,
     addConditionalParam,
     getSearchParams,
-    onToggleExpandCollapse,
     processGeneList,
   };
 };

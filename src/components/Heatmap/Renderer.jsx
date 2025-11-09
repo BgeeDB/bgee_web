@@ -34,6 +34,7 @@ export const Renderer = forwardRef(
       maxCellWidth,
       minCellWidth = 20,
       minCellHeight = 10,
+      defaultCellHeight = 15, // eslint-disable-line @typescript-eslint/no-unused-vars
       maxGraphWidth = 800,
       setGraphWidth,
       scaleSvg = false,
@@ -122,10 +123,10 @@ export const Renderer = forwardRef(
     const allXGroups = useMemo(
       () =>
         xTerms.map((d) => {
-          if (d.label.includes(' - ')) {
+          if (d.label?.includes(' - ')) {
             return d.label.split(' - ')[1];
           }
-          return d.label;
+          return d.label || 'Unknown';
         }),
       [xTerms]
     );
@@ -415,7 +416,13 @@ export const Renderer = forwardRef(
       <stop key={`colorLegendStop-${idx}`} stopColor={colorScale((max * idx) / 100)} offset={`${idx}%`} />
     ));
     const colorLegendPosX = 0;
-    const colorLegendPosY = mainHeatmapHeight;
+    // Position legend after the main heatmap
+    // Calculate the actual heatmap content height (yScale range height)
+    const actualHeatmapHeight = yScale.range()[1] || 0;
+    // Add space for top x-axis labels (which are positioned at y=-10 with rotation)
+    const topLabelsSpace = xLabelRotation !== 0 ? 20 : 0;
+    // Position legend just below the heatmap with a small gap
+    const colorLegendPosY = actualHeatmapHeight + topLabelsSpace + 40;
 
     return (
       <svg
@@ -460,7 +467,7 @@ export const Renderer = forwardRef(
               <g>
                 <ColorLegendSvg
                   posX={colorLegendPosX}
-                  posY={colorLegendPosY - 50}
+                  posY={colorLegendPosY}
                   width={colorLegendWidth}
                   height={colorLegendHeight}
                   colorScale={colorScale}

@@ -87,9 +87,11 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
       selectedStrain: [],
       selectedDevStages: [],
       selectedSexes: ['all'],
-      // hasCellTypeSubStructure: 0,
-      // hasDevStageSubStructure: 0,
       hasTissueSubStructure: 0,
+      callTypes: ['EXPRESSED', 'NOT_EXPRESSED'],
+      conditionalParam2: ['anat_entity', 'dev_stage', 'sex', 'strain'],
+      isExprCalls: true,
+      condObserved: false,
     };
 
     return params;
@@ -233,6 +235,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
 
   const triggerInitialSearch = async () => {
     const params = getSearchParams();
+    const doComplementarySearch = params.selectedTissue.length === 0 && params.selectedCellTypes.length === 0;
 
     // console.log(`[GeneExpressionGraph.triggerInitialSearch] selected gene:\n${JSON.stringify(params.selectedGene)}`);
     // console.log(`[GeneExpressionGraph.triggerInitialSearch] selected species:\n${JSON.stringify(params.selectedSpecies)}`);
@@ -244,13 +247,13 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
       // console.log(`[GeneExpressionGraph.triggerInitialSearch] submitting API requests...`);
       const [result1, result2] = await Promise.all([
         api.search.geneExpressionMatrix.initialSearch(params),
-        api.search.geneExpressionMatrix.initialSearchComplementary(params),
+        doComplementarySearch ? api.search.geneExpressionMatrix.initialSearchComplementary(params) : null,
       ]);
 
       const { resp: resp1 } = result1;
-      const { resp: resp2 } = result2;
+      const { resp: resp2 } = doComplementarySearch ? result2 : { resp: null };
 
-      if (resp1.code === 200 && resp2.code === 200) {
+      if (resp1.code === 200) {
         // console.log(JSON.stringify(resp1));
         // console.log(JSON.stringify(resp2));
 
@@ -258,17 +261,23 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
         // console.log(`[GeneExpressionGraph.triggerInitialSearch] anatTerms:\n${JSON.stringify(anatTerms)}`);
         setAnatomicalTerms(anatTerms);
         // console.log(`[GeneExpressionGraph.triggerInitialSearch] termProps:\n${JSON.stringify(termProps)}`);
-        const newTermProps = addLowLevelTerms(
-          ROOT_TERM_ANAT_ENTITY,
-          anatTerms,
-          termProps,
-          resp2.data.expressionData.expressionCalls
-        );
-        Object.assign(termProps, newTermProps);
+        // Add orphan terms from complementary search if available
+        if (resp2?.code === 200) {
+          const newTermProps = addLowLevelTerms(
+            ROOT_TERM_ANAT_ENTITY,
+            anatTerms,
+            termProps,
+            resp2.data.expressionData.expressionCalls
+          );
+          Object.assign(termProps, newTermProps);
+        }
         setAnatomicalTermsProps(termProps);
 
         const { data } = resp1;
-        data.expressionData.expressionCalls.push(...resp2.data.expressionData.expressionCalls);
+        // Add orphan calls to the data
+        if (resp2?.code === 200) {
+          data.expressionData.expressionCalls.push(...resp2.data.expressionData.expressionCalls);
+        }
 
         setIsLoading(false);
         setSearchResult(data);
@@ -292,6 +301,9 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
     // Set parent anatomical term as selected tissue
     params.selectedTissue = [selectedTissueId];
     // Fix other condition params to top-level terms (overrides form fields!)
+    if (params.selectedCellTypes?.length === 0) {
+      params.selectedCellTypes = ['GO:0005575']; // "cellular_component"
+    }
     params.hasTissueSubStructure = 1; // we want children of parent term!
     params.limit = BASE_LIMIT;
     params.conditionalParam2 = ['anat_entity']; // restrict to anatomical terms
@@ -621,6 +633,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
             width={800}
             height={800}
             backgroundColor="white"
+            rendererMargins={{ top: 20, right: 60, bottom: 35, left: 200 }}
           />
         )}
         {!isLoading && searchResult && heatmapData.length === 0 && (

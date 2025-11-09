@@ -27,9 +27,6 @@ export function meta() {
 const GeneExpressionMatrix = ({ isExprCalls = true }) => {
   const {
     searchResult,
-    anatomicalTerms,
-    anatomicalTermsProps,
-    maxExpScore,
     dataType,
     show,
     selectedSpecies,
@@ -57,7 +54,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
     resetForm,
     addConditionalParam,
     getSearchParams,
-    onToggleExpandCollapse,
+    triggerSearchChildren,
     // devStages,
     // hasDevStageSubStructure,
     // selectedDevStages,
@@ -276,12 +273,9 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
               // columnDescriptions={columnsDesc}
               // searchParams={getSearchParams}
               genes={selectedGene}
-              anatomicalTerms={anatomicalTerms}
-              anatomicalTermsProps={anatomicalTermsProps}
-              maxExpScore={maxExpScore}
-              onToggleExpandCollapse={onToggleExpandCollapse}
               isLoading={isLoading}
               isFirstSearch={isFirstSearch}
+              onFetchChildren={triggerSearchChildren}
             />
           </div>
           <UserFeedback />
