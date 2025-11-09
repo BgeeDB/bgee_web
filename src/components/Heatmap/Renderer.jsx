@@ -379,7 +379,7 @@ export const Renderer = forwardRef(
       const x = xScale(name);
       const xCoord = x + xScale.bandwidth() / 2;
       // TODO: fix bottom label position (too low)
-      const yCoord = height - colorLegendHeight - MARGIN.top - MARGIN.bottom + 10;
+      const yCoord = height - colorLegendHeight;
       // const yCoord = height - colorLegendHeight;
       // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
 
@@ -453,10 +453,7 @@ export const Renderer = forwardRef(
         <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
           <g>
             <g>{allShapes}</g>
-            <g>
-              {xLabelsTop}
-              {xLabelsBottom}
-            </g>
+            <g>{xLabelsTop}</g>
             <g transform={`translate(-${marginLeft - 10}, 5)`}>
               <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
             </g>
