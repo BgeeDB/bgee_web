@@ -1,16 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router';
 import { Star } from 'lucide-react';
 
 import Bulma from '../../../../components/Bulma';
 import api from '../../../../api';
 
 const UserFeedback = () => {
+  const location = useLocation();
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [email, setEmail] = useState('');
-  const [sourceUrl] = useState(typeof window !== 'undefined' ? window.location.href : '');
+  const [sourceUrl, setSourceUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // null | 'success' | 'error'
+
+  // Update sourceUrl whenever the URL changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSourceUrl(window.location.href);
+    }
+  }, [location.pathname, location.search]);
 
   const handleSubmitFeedback = async () => {
     if (!rating && !feedback.trim()) return;

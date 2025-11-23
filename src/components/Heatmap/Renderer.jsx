@@ -6,7 +6,7 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
 
-const MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
+const DEFAULT_MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
 const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
 
 export const Renderer = forwardRef(
@@ -34,12 +34,16 @@ export const Renderer = forwardRef(
       maxCellWidth,
       minCellWidth = 20,
       minCellHeight = 10,
+      defaultCellHeight = 15, // eslint-disable-line @typescript-eslint/no-unused-vars
       maxGraphWidth = 800,
       setGraphWidth,
       scaleSvg = false,
+      rendererMargins,
     },
     ref
   ) => {
+    // Use provided margins or fall back to default
+    const MARGIN = rendererMargins || DEFAULT_MARGIN;
     // The bounds (=area inside the axis) is calculated by substracting the margins
     const boundsWidth = width - MARGIN.right - marginLeft;
     // Separate main heatmap height from total height (which includes legend)
@@ -119,10 +123,10 @@ export const Renderer = forwardRef(
     const allXGroups = useMemo(
       () =>
         xTerms.map((d) => {
-          if (d.label.includes(' - ')) {
+          if (d.label?.includes(' - ')) {
             return d.label.split(' - ')[1];
           }
-          return d.label;
+          return d.label || 'Unknown';
         }),
       [xTerms]
     );
@@ -168,7 +172,7 @@ export const Renderer = forwardRef(
         // console.log(`[Renderer] termProps[${d.termId}] not found`);
         // console.log(`[Renderer] termProps: ${JSON.stringify(termProps)}`);
       }
-      const strokeColour = termProps[d.termId].isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
+      const strokeColour = termProps[d.termId]?.isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
@@ -186,7 +190,7 @@ export const Renderer = forwardRef(
         yPos: y + yScale.bandwidth() / 2 + MARGIN.bottom,
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
-        // maxExpScore: d.maxExp.toFixed(2),
+        maxExpScore: d.maxExp?.toFixed(2),
         hasDataAffy: d.hasDataAffy,
         hasDataEst: d.hasDataEst,
         hasDataInSitu: d.hasDataInSitu,
@@ -374,10 +378,8 @@ export const Renderer = forwardRef(
     const xLabelsBottom = allXGroups.map((name, i) => {
       const x = xScale(name);
       const xCoord = x + xScale.bandwidth() / 2;
-      // TODO: fix bottom label position (too low)
-      const yCoord = height - colorLegendHeight - MARGIN.top - MARGIN.bottom + 10;
-      // const yCoord = height - colorLegendHeight;
-      // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
+      const actualHeatmapHeight = yScale.range()[1] || 0;
+      const yCoord = actualHeatmapHeight + 10;
 
       if (!x) {
         return null;
@@ -412,7 +414,13 @@ export const Renderer = forwardRef(
       <stop key={`colorLegendStop-${idx}`} stopColor={colorScale((max * idx) / 100)} offset={`${idx}%`} />
     ));
     const colorLegendPosX = 0;
-    const colorLegendPosY = mainHeatmapHeight;
+    // Position legend after the main heatmap
+    // Calculate the actual heatmap content height (yScale range height)
+    const actualHeatmapHeight = yScale.range()[1] || 0;
+    // Add space for top x-axis labels (which are positioned at y=-10 with rotation)
+    const topLabelsSpace = xLabelRotation !== 0 ? 20 : 0;
+    // Position legend just below the heatmap with a small gap
+    const colorLegendPosY = actualHeatmapHeight + topLabelsSpace + 40;
 
     return (
       <svg
@@ -443,21 +451,19 @@ export const Renderer = forwardRef(
         <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
           <g>
             <g>{allShapes}</g>
-            <g>
-              {xLabelsTop}
-              {xLabelsBottom}
-            </g>
+            <g>{xLabelsTop}</g>
+            <g>{xLabelsBottom}</g>
             <g transform={`translate(-${marginLeft - 10}, 5)`}>
               <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
             </g>
           </g>
 
-          <g transform={`translate(-${marginLeft - 50}, ${colorLegendHeight})`}>
+          <g transform={`translate(-${marginLeft - 50}, 0)`}>
             {showLegend ? (
               <g>
                 <ColorLegendSvg
                   posX={colorLegendPosX}
-                  posY={colorLegendPosY - 50}
+                  posY={colorLegendPosY}
                   width={colorLegendWidth}
                   height={colorLegendHeight}
                   colorScale={colorScale}
