@@ -67,11 +67,6 @@ export interface GeneExpressionHeatmapProps {
 const GeneExpressionHeatmap = ({
   expressionCalls,
   genes,
-  species = null,
-  tissues = null,
-  cellTypes = null,
-  dataTypes,
-  dataQuality = null,
   onFetchChildren,
   onToggleExpandCollapse,
   width = 800,
