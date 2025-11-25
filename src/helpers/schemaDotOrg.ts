@@ -18,6 +18,28 @@ import obolibraryLinkFromID, { obolibraryNCBITaxonLinkFromID } from './obolibrar
 //   })
 // });
 
+export const topanatToLdJSON = (url: string, version: string) => ({
+  '@context': 'http://schema.org',
+  '@type': 'WebApplication',
+  name: 'TopAnat - Gene Expression Enrichment',
+  url: url,
+  description:
+    'GO-like enrichment of anatomical terms, mapped to genes by expression patterns. It is possible to run TopAnat using our BgeeDB R package. This is the same as this web-service, but with more flexibility in the choice of parameters and developmental stages, and is based on the topGO package.',
+  applicationCategory: 'HealthApplication',
+  genre: 'Gene expression analysis',
+  offers: {
+    '@type': 'Offer',
+    price: 0,
+  },
+  browserRequirements: 'Requires JavaScript. Requires HTML5.',
+  softwareVersion: version,
+  softwareHelp: {
+    '@type': 'CreativeWork',
+    url: 'https://www.bgee.org/support/tutorial-TopAnat',
+  },
+  operatingSystem: 'All',
+});
+
 export const geneToLdJSON = ({ name, geneId, description, synonyms, species, xRefs, url }) => ({
   '@context': 'https://schema.org/',
   '@type': 'Gene',
