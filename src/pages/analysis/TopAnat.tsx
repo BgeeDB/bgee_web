@@ -15,6 +15,7 @@ import { getAxiosAddNotif } from '../../api/prod/constant';
 import random from '../../helpers/random';
 import ApiReducer from '../../helpers/ApiReducer';
 import { TOP_ANAT_DEFAULT_RP } from '../../helpers/constants/topAnat';
+import { topanatToLdJSON } from '~/helpers/schemaDotOrg';
 import config from '../../config.json';
 import { getMetadata } from '~/helpers/metadata';
 
@@ -27,6 +28,7 @@ export function meta() {
     title: 'TopAnat: Expression enrichment analysis',
     description: 'GO-like enrichment of anatomical terms, mapped to genes by expression patterns',
     keywords: 'Enrichment, Gene expression, Anatomical terms',
+    schemaorg: [topanatToLdJSON(config.prodDomain + PATHS.ANALYSIS.TOP_ANAT, config.fullversion)],
   });
 }
 
