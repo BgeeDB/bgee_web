@@ -30,7 +30,7 @@ const team = [
     children: [
       {
         type: 'only_image',
-        src: imagePath('/team/Bgee-team-202506.png'),
+        src: imagePath('/team/Bgee-team-202506.webp'),
         alt: 'The current Bgee team',
       },
       {
