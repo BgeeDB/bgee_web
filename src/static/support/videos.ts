@@ -30,7 +30,7 @@ const videos = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/videos/Bgee-YouTube-Channel.png'),
+        src: imagePath('/videos/Bgee-YouTube-Channel.webp'),
         path: 'https://www.youtube.com/@bgeedatabase',
         alt: 'Bgee YouTube channel',
         classNames: 'youtube-preview-image',
@@ -57,7 +57,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/playlist?list=PLbJBK0jNmCGLGR9-h8gmD7mCvN2RRHmZV',
-        src: imagePath('/videos/All-about-Bgee.png'),
+        src: imagePath('/videos/All-about-Bgee.webp'),
         alt: 'All About Bgee',
         classNames: 'youtube-preview-image',
       },
@@ -77,7 +77,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/watch?v=7yPFKwOpF2Q&list=PLbJBK0jNmCGJc3_20tO0P9t86bnaojhgJ',
-        src: imagePath('/videos/Bgee-Course-2025.png'),
+        src: imagePath('/videos/Bgee-Course-2025.webp'),
         alt: 'Bgee Course 2025: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
@@ -97,7 +97,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/watch?v=k1gPNuNNFwk&list=PLbJBK0jNmCGLgWPLKe6stnNkFnwjpo6q9',
-        src: imagePath('/videos/Bgee-Course-2024.png'),
+        src: imagePath('/videos/Bgee-Course-2024.webp'),
         alt: 'Bgee Course 2024: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
@@ -117,7 +117,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/watch?v=vjrTq0fGCTk&list=PLbJBK0jNmCGKFCDZUnNoQra3T0E-VDhVu',
-        src: imagePath('/videos/Bgee-Course-2023.png'),
+        src: imagePath('/videos/Bgee-Course-2023.webp'),
         alt: 'Bgee Course 2023: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
@@ -137,7 +137,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/watch?v=Tmu2x-PH0G4&list=PLbJBK0jNmCGLLVvMbPokgKlCzGU5D4jZQ',
-        src: imagePath('/videos/Bgee-Course-2022.png'),
+        src: imagePath('/videos/Bgee-Course-2022.webp'),
         alt: 'Bgee Course 2022: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
@@ -157,7 +157,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/watch?v=hbpEJO2IzxA&list=PLbJBK0jNmCGL_MZehmKl4_Z1Wiz_mA_jq',
-        src: imagePath('/videos/Bgee-Course-2020.png'),
+        src: imagePath('/videos/Bgee-Course-2020.webp'),
         alt: 'Bgee Course 2020: Gene Expression Made Useful Easily: Tools and Database of Bgee',
         classNames: 'youtube-preview-image',
       },
@@ -177,7 +177,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/watch?v=EHNTlOy14t4&list=PLbJBK0jNmCGIS7lYN9qed8r8bceT8fF87&index=3',
-        src: imagePath('/videos/Bgee-Comparative-Genomics.png'),
+        src: imagePath('/videos/Bgee-Comparative-Genomics.webp'),
         alt: 'Bgee Comparative Genomics',
         classNames: 'youtube-preview-image',
       },
@@ -197,7 +197,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/playlist?list=PLbJBK0jNmCGIKZuCsZ6daNEwbV0nCS6C0',
-        src: imagePath('/videos/Accessing-Bgee-with-Semantic-Queries.png'),
+        src: imagePath('/videos/Accessing-Bgee-with-Semantic-Queries.webp'),
         alt: 'Accessing Bgee with Semantic Queries',
         classNames: 'youtube-preview-image',
       },
@@ -217,7 +217,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/watch?v=9q2q7_DJHRw&list=PLbJBK0jNmCGLGRt7FBSkNcVaJFKyu1G75',
-        src: imagePath('/videos/Bgee-scFAIR.png'),
+        src: imagePath('/videos/Bgee-scFAIR.webp'),
         alt: 'Bgee and scFAIR',
         classNames: 'youtube-preview-image',
       },
@@ -237,7 +237,7 @@ const videos = [
       {
         type: 'link_image',
         path: 'https://www.youtube.com/watch?v=ZQyK7IVHbFA&list=PLbJBK0jNmCGJth12mY77thJaJo2xLkbZq',
-        src: imagePath('/videos/Bgee-at-ISMB.png'),
+        src: imagePath('/videos/Bgee-at-ISMB.webp'),
         alt: 'Bgee at ISMB',
         classNames: 'youtube-preview-image',
       },
