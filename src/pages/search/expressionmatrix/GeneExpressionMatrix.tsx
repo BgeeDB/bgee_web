@@ -24,10 +24,9 @@ export function meta() {
   });
 }
 
-const GeneExpressionMatrix = ({ isExprCalls = true }) => {
+const GeneExpressionMatrix = () => {
   const {
     searchResult,
-    dataType,
     show,
     selectedSpecies,
     selectedCellTypes,
@@ -67,7 +66,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
     // setSelectedStrain,
     // setSelectedDevStages,
     // setDevStageSubStructure,
-  }: any = useLogic(isExprCalls);
+  }: any = useLogic();
 
   // DEBUG: remove console log in prod
   // console.log(`[GeneExpressionMatrix] anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
@@ -75,9 +74,8 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
   // TODO: remove this useless state, wth is it even doing?
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setPageIsBrowseResult] = useState(false);
-  const defaultResults = searchResult?.results?.[dataType] || [];
   const resultExprsCall = searchResult?.expressionData?.expressionCalls || [];
-  const results = isExprCalls ? resultExprsCall : defaultResults;
+  const results = resultExprsCall;
   // const defaultColumDesc = searchResult?.columnDescriptions?.[dataType] || [];
   // const columnDescExprsCall = searchResult?.columnDescriptions || [];
   // const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
@@ -123,7 +121,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
                           AutoCompleteByType={AutoCompleteByType}
                         />
                       </div>
-                      {((isExprCalls && selectedGene.length > 0) || !isExprCalls) && (
+                      {selectedGene.length > 0 && (
                         <>
                           <div className="my-2 maxWidth50">
                             <Tissues

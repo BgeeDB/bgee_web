@@ -149,7 +149,7 @@ export const ALL_CALL_TYPE = [
   { id: NOT_EXPRESSED, label: 'Absent' },
 ];
 
-const useLogic = (isExprCalls) => {
+const useLogic = () => {
   const navigate = useNavigate();
   // Init from URL
   const loc = useLocation();
@@ -352,7 +352,7 @@ const useLogic = (isExprCalls) => {
     if (requestParameters?.stage_descendant === 'false') setDevStageSubStructure(false);
 
     // Filters
-    const filtersToCheck = (isExprCalls ? data?.filters : data?.filters?.[nextDataType]) || {};
+    const filtersToCheck = data?.filters || {};
     const searchParams = new URLSearchParams(requestParameters);
     const initFilters = {};
     Object.entries(filtersToCheck).forEach(([, f]) => {
@@ -378,33 +378,31 @@ const useLogic = (isExprCalls) => {
       setFilters({ [nextDataType]: initFilters });
     }
 
-    if (isExprCalls) {
-      // Call types
-      if (requestParameters?.expr_type?.length > 0) {
-        setCallTypes(requestParameters?.expr_type);
-      }
+    // Call types
+    if (requestParameters?.expr_type?.length > 0) {
+      setCallTypes(requestParameters?.expr_type);
+    }
 
-      // data_type expres calls
-      if (requestParameters?.data_type?.length > 0) {
-        setDataTypesExpCalls(requestParameters?.data_type);
-      }
+    // data_type expres calls
+    if (requestParameters?.data_type?.length > 0) {
+      setDataTypesExpCalls(requestParameters?.data_type);
+    }
 
-      // Data quality
-      if (requestParameters?.data_qual?.length > 0) {
-        setDataQuality(requestParameters?.data_qual);
-      }
+    // Data quality
+    if (requestParameters?.data_qual?.length > 0) {
+      setDataQuality(requestParameters?.data_qual);
+    }
 
-      // Conditional parameter 2
-      if (requestParameters?.cond_param2?.length > 0) {
-        setConditionalParam2(requestParameters?.cond_param2);
-      }
+    // Conditional parameter 2
+    if (requestParameters?.cond_param2?.length > 0) {
+      setConditionalParam2(requestParameters?.cond_param2);
+    }
 
-      // Conditions observed
-      if (requestParameters?.cond_observed === 'true') {
-        setCondObserved(true);
-      } else {
-        setCondObserved(false);
-      }
+    // Conditions observed
+    if (requestParameters?.cond_observed === 'true') {
+      setCondObserved(true);
+    } else {
+      setCondObserved(false);
     }
   };
 
@@ -436,7 +434,6 @@ const useLogic = (isExprCalls) => {
       dataQuality,
       callTypes,
       conditionalParam2,
-      isExprCalls,
       condObserved,
     };
 
