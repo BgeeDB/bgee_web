@@ -247,7 +247,7 @@ export default function Home({ loaderData }) {
                 to="https://globalbiodata.org/scientific-activities/global-core-biodata-resources"
               >
                 <img
-                  src={imagePath(`/logo/GCBR-Logo.png`)}
+                  src={imagePath(`/logo/GCBR-Logo.webp`)}
                   alt="Global Core Biodata Resource Logo"
                   width="165"
                   height="70"

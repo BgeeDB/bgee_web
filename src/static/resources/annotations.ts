@@ -30,7 +30,7 @@ const annotations = [
             type: 'card',
             title: 'Anatomical similarity annotations',
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'Github logo',
             },
             link: 'https://github.com/BgeeDB/anatomical-similarity-annotations',
@@ -51,7 +51,7 @@ const annotations = [
             type: 'card',
             title: 'RNA-Seq annotations',
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'Github logo',
             },
             link: 'https://github.com/BgeeDB/bgee_pipeline/tree/master/source_files/RNA_Seq',
@@ -72,7 +72,7 @@ const annotations = [
             type: 'card',
             title: `${FULL_LENGTH_LABEL} annotations`,
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'Github logo',
             },
             link: 'https://github.com/BgeeDB/bgee_pipeline/tree/master/source_files/scRNA_Seq',
@@ -92,7 +92,7 @@ const annotations = [
             type: 'card',
             title: 'Affymetrix annotations',
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'Github logo',
             },
             link: 'https://github.com/BgeeDB/bgee_pipeline/tree/master/source_files/Affymetrix',
@@ -113,7 +113,7 @@ const annotations = [
             type: 'card',
             title: 'ESTs annotations',
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'Github logo',
             },
             link: 'https://github.com/BgeeDB/bgee_pipeline/tree/master/source_files/ESTs',

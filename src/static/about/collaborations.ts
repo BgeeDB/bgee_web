@@ -238,7 +238,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/logo/sib-emblem.png'),
+        src: imagePath('/logo/sib-emblem.webp'),
         path: 'https://www.sib.swiss/use-of-ai-to-increase-the-impact-of-sib-resources',
         alt: 'SIB AI',
       },

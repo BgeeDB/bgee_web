@@ -230,7 +230,7 @@ const Footer = () => {
           <a href="https://www.sib.swiss/" target="_blank" rel="noopener noreferrer" className="dflex">
             <Bulma.Image
               className="no-responsive"
-              src={imagePath('/logo/sib-emblem.png')}
+              src={imagePath('/logo/sib-emblem.webp')}
               alt="SIB logo"
               height={15}
               width={20}
