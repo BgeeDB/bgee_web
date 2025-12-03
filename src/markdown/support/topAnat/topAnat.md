@@ -26,22 +26,22 @@ On top of the page from left to right you have
 
 The main section is the **_Gene list_**. This is where identifiers of your genes of interest must be entered. Be careful to provide gene identifiers (e.g. ENSG00000244734) and not gene names (e.g. HBB).
 
-![](../img/doc/topAnat/topAnat_geneList.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_geneList.webp#tutoimgborder)
 
 The **_Advanced Options_** section is closed by default.
 
-![](../img/doc/topAnat/topAnat_advancedOptionsTitle.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_advancedOptionsTitle.webp#tutoimgborder)
 
 To open that section, click on the corresponding dark grey banner. It contains options allowing you to tune both Bgee data used to process the enrichment analysis and the parameters of the algorithm itself. Read the [Advanced options](#advanced-options) section for more details.
-![](../img/doc/topAnat/topAnat_advancedOptions.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_advancedOptions.webp#tutoimgborder)
 
 Below the Advanced Options section, the **_Email_** field allows you to receive an email once the analysis is complete. The **_Job description_** field allows you to give a title to your analysis.
 
-![](../img/doc/topAnat/topAnat_emailAndTitle.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_emailAndTitle.webp#tutoimgborder)
 
 At the bottom of the page the **_Submit your Job_** button allows you to submit an analysis. It is greyed out by default and becomes clickable once genes have been entered.
 
-![](../img/doc/topAnat/topAnat_greyedSubmit.png#tutoimgborder) ![](../img/doc/topAnat/topAnat_submit.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_greyedSubmit.webp#tutoimgborder) ![](../img/doc/topAnat/topAnat_submit.webp#tutoimgborder)
 
 ## Quick start
 
@@ -55,30 +55,30 @@ Once you enter your list of genes the web interface is updated.
 
 On top of your gene list, you can now see a sentence describing the number of genes you entered and the corresponding species. You can also see a picture of the species.
 
-![](../img/doc/topAnat/topAnat_geneListSpecies.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_geneListSpecies.webp#tutoimgborder)
 
 Additionally, two new subsections appeared: **_Background_** and **_Analysis options_**.
 
 The **_Background_** subsection allows the user to select the universe of the analysis, which is described in the [Properly choose your background](#how-to-properly-choose-your-background) section of this documentation. In our example, we keep the default background which corresponds to all genes from the species.
 
-![](../img/doc/topAnat/topAnat_backgroundDefault.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_backgroundDefault.webp#tutoimgborder)
 
 The **_Analysis options_** subsection allows the user to limit the analysis to expression data coming from a subset of the datatypes integrated in Bgee. In this example, we want to use as much data as possible and then do not modify the default behavior which is to select expression data coming from all available datatypes. To remove one datatype from your TopAnat analysis uncheck the corresponding datatype checkbox.
 
-![](../img/doc/topAnat/topAnat_analysisOptions.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_analysisOptions.webp#tutoimgborder)
 
 Now add your email address to receive an email once the processing of the analysis is over and enter the title `Pigmentation genes in rabbit` to easily find the analysis when using the **_Recent jobs_** button. This title will also be used to name the email you will receive.
 
-![](../img/doc/topAnat/topAnat_emailAndTitleFilled.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_emailAndTitleFilled.webp#tutoimgborder)
 
 You are now ready to run TopAnat. Click on the **_Submit your job_** button and wait for your analysis to be processed on our server.
 
-![](../img/doc/topAnat/topAnat_submit.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_submit.webp#tutoimgborder)
 
 A TopAnat analysis can take up to 1 hour to finish processing. To leave the page without losing the results you have 2 options:
 
 - enter your email address: you will then receive an email containing a link to the results of your analysis
-  ![](../img/doc/topAnat/topAnat_emailReceived.png#tutoimgborder)
+  ![](../img/doc/topAnat/topAnat_emailReceived.webp#tutoimgborder)
 
 - wait to see the page shown below and then bookmark the permanent URL of this page by clicking on **_Copy permanent link_** in the footer of the page
   ![](../img/doc/topAnat/topAnat_bookmark.png#tutoimgborder)
@@ -93,7 +93,7 @@ The header of this results section consists of a blue banner containing a senten
 
 Then, on top of the result table, you have the title of your analysis written in red.
 
-![](../img/doc/topAnat/topAnat_resultTitle.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_resultTitle.webp#tutoimgborder)
 
 Below the title on the left side, there is a light red button that allows you to download an archive containing the results of your analysis, as well as all the data to reproduce them. The following files are included in the download:
 
@@ -142,7 +142,7 @@ In this naive example, your topAnat _Gene list_ will be the list of differential
 
 It is possible to provide a custom gene universe as a list of gene IDs. To do so, click on the **_Custom data_** button.
 
-![](../img/doc/topAnat/topAnat_backgroundButtonHuman.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_backgroundButtonHuman.webp#tutoimgborder)
 
 As for your _Gene list_ you have to enter one gene per line without space, quotes, or any delimiter. All gene IDs present in the foreground must be present in the background.
 
@@ -156,19 +156,19 @@ There are 2 types of advanced options. The first is related to the filtering of 
 
 By default, all developmental and life stages are considered for the enrichment analysis.
 
-![](../img/doc/topAnat/topAnat_stagesSelection.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_stagesSelection.webp#tutoimgborder)
 
 It is possible to remove a development stage by clicking on **_Custom stages_** and then unchecking the development stage(s) you are not interested in between _embryo_ and _post-embryonic_ stages.
 
-![](../img/doc/topAnat/topAnat_customStages.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_customStages.webp#tutoimgborder)
 
 For each expression call, Bgee assigns a level of confidence to the call: silver or gold. The **_Data quality_** option allows to specify whether the analysis should be based on data of any quality level (default) or data of high quality (Gold level) only. To limit to only high-quality calls, click on the **_Gold confidence_** button.
 
-![](../img/doc/topAnat/topAnat_dataQuality.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_dataQuality.webp#tutoimgborder)
 
 ### Algorithm parameters
 
-![](../img/doc/topAnat/topAnat_algorithmParameters.png#tutoimgborder)
+![](../img/doc/topAnat/topAnat_algorithmParameters.webp#tutoimgborder)
 
 #### Decorrelation type
 

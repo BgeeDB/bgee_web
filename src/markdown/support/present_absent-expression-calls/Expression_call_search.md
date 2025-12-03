@@ -25,7 +25,7 @@ The search for expression present/absent calls form allows you to narrow the exp
 To start your search, click _Show Form_. After selecting your species and gene(s) of interest, the full form will become available.
 You must first select a species to be able to select some genes.
 
-![](../img/doc/present_absent-expression-calls/expression-form.png#tutoimgborder)
+![](../img/doc/present_absent-expression-calls/expression-form.webp#tutoimgborder)
 
 The following filter options are available through the search form:
 
@@ -74,7 +74,7 @@ Filters allow you to select actual values present in your results. For instance,
 to retrieve calls in "brain" including all its substructures, then the filter "Anat. entity and cell type" will display all the brain tissues
 actually retrieved in the resulting calls.
 
-![](../img/doc/present_absent-expression-calls/results-filtering.png#tutoimgborder)
+![](../img/doc/present_absent-expression-calls/results-filtering.webp#tutoimgborder)
 
 The following filters can be applied:
 
@@ -85,7 +85,7 @@ The following filters can be applied:
 
 Click **_apply filters_** to apply the filters you selected. Click the _trash icon_ to remove the selected filters.
 
-![](../img/doc/present_absent-expression-calls/results-apply-clean.png#tutoimgborder)
+![](../img/doc/present_absent-expression-calls/results-apply-clean.webp#tutoimgborder)
 
 ### Export results
 

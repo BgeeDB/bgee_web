@@ -68,31 +68,31 @@ The following filters can be applied only on some data pages or data types:
 
 Once you select the filters you are interested in you can apply them by clicking on the _Apply filters_ button.
 
-![](../img/doc/Raw-data-interface/postfilter-apply-filters.png#tutoimgborder)
+![](../img/doc/Raw-data-interface/postfilter-apply-filters.webp#tutoimgborder)
 
 ### Number of filtered results
 
 Once filters are applied the number of filtered results can be seen in red on the top right of the filtering section.
 
-![](../img/doc/Raw-data-interface/postfilter-number-filtered-results.png#tutoimgborder)
+![](../img/doc/Raw-data-interface/postfilter-number-filtered-results.webp#tutoimgborder)
 
 ### Remove filters
 
 To remove a filter you can click on the cross on the right side of the filter name.
 
-![](../img/doc/Raw-data-interface/postfilter-delete-one-filter.png#tutoimgborder)
+![](../img/doc/Raw-data-interface/postfilter-delete-one-filter.webp#tutoimgborder)
 
 Then click on the _Apply filters_ button.
 
 It is also possible to remove all filters at once by clicking on the red trash icon to the right of the _Apply filters_ button.
 
-![](../img/doc/Raw-data-interface/postfilter-delete-filters.png#tutoimgborder)
+![](../img/doc/Raw-data-interface/postfilter-delete-filters.webp#tutoimgborder)
 
 ### Export of filtered results
 
 Due to the number of potential entries in the result table, we do not support the export of all results at once. The _Export current page in TSV_ button will only export the results shown on the current page. However, it is possible to increase the number of entries displayed on the current page by selecting up to 1000 entries using the _Show X entries_ dropdown. You can export the entries of the current result table by clicking on the button _Export current page in TSV_.
 
-![](../img/doc/Raw-data-interface/postfilter-update-number-result-entries.png#tutoimgborder)
+![](../img/doc/Raw-data-interface/postfilter-update-number-result-entries.webp#tutoimgborder)
 
 ## Experiments
 
@@ -125,7 +125,7 @@ The top section of the experiment page contains general information about the ex
 
 You may also be interested in the _Download all assays_ button which allows the user to retrieve the processed expression values for all tested genes in all the libraries for that experiment.
 
-![](../img/doc/Raw-data-interface/Fig2-General-info-headers.png#tutoimgborder)
+![](../img/doc/Raw-data-interface/Fig2-General-info-headers.webp#tutoimgborder)
 
 ### Result table - within an experiment
 
@@ -164,7 +164,7 @@ As with the _Curated annotations_ or _Processed expression values_ pages, the co
 
 The curated annotations tab allows you to retrieve all libraries in Bgee that match your selected conditions and access their fully annotated raw (unprocessed) data. Similar to the _experiments_ and _processed expression values_ pages, you can fill out the form at the top of the page to specify in which species, tissue, developmental stage, or any other condition you want to see the available data for. You may also just want to select a specific experiment on the top right next to the form and see all available libraries for that experiment.
 
-![](../img/doc/Raw-data-interface/Raw-data-annotation_homepage.png#tutoimgborder)
+![](../img/doc/Raw-data-interface/Raw-data-annotation_homepage.webp#tutoimgborder)
 
 ### Results table
 

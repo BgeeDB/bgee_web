@@ -24,15 +24,15 @@ The expression graph displays the expression of one or multiple genes in differe
 
 Hover over heatmap cells to reveal a tooltip showing the corresponding value:
 
-![](../img/doc/expression-graph/Fig02_expression-graph-tooltip.png)
+![](../img/doc/expression-graph/Fig02_expression-graph-tooltip.webp)
 
 Click on heatmap cell to display detail view. From there you can access links to the ontology terms (anatomy, cell type) and source datasets:
 
-![](../img/doc/expression-graph/Fig03_expression-graph-detail-view.png)
+![](../img/doc/expression-graph/Fig03_expression-graph-detail-view.webp)
 
 Expand a condition term to reveal expression data for child terms:
 
-![](../img/doc/expression-graph/Fig04_expression-graph-drilldown.png)
+![](../img/doc/expression-graph/Fig04_expression-graph-drilldown.webp)
 
 ### Export options
 
@@ -41,13 +41,13 @@ Expand a condition term to reveal expression data for child terms:
 
 Note the download buttons below the graph:
 
-![](../img/doc/expression-graph/Fig05_expression-graph-download.png)
+![](../img/doc/expression-graph/Fig05_expression-graph-download.webp)
 
 ### Settings
 
 There are several display and style settings that can be expanded by clicking on the "Settings" button below the graph:
 
-![](../img/doc/expression-graph/Fig06_expression-graph-settings.png)
+![](../img/doc/expression-graph/Fig06_expression-graph-settings.webp)
 
 - **Graph width**: Determines the total graph width.
 - **Graph height**: Determines the total graph height.

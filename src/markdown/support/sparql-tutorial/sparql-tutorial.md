@@ -54,7 +54,7 @@ SELECT ?species {
 
 All species are defined as a `up:Taxon` where `up:` is the prefix for `http://purl.uniprot.org/core/` (the UniProtKB core ontology). See below a graphical representation of the [Q01](#q01) query:
 
-![](../img/doc/sparql-tutorial/q01.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q01.webp#tutoimgborder)
 
 A species in Bgee may have the following attributes (i.e., properties):
 
@@ -84,7 +84,7 @@ SELECT ?species ?sci_name ?common_name {
 
 #### Q02 graphical representation:
 
-![](../img/doc/sparql-tutorial/q02.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q02.webp#tutoimgborder)
 
 ## Querying gene expression profile
 
@@ -117,7 +117,7 @@ SELECT DISTINCT ?anat ?anatName {
 
 #### Q03 graphical representation:
 
-![](../img/doc/sparql-tutorial/q03.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q03.webp#tutoimgborder)
 
 Other vocabulary terms:
 
@@ -158,7 +158,7 @@ SELECT DISTINCT ?anat ?anatName {
 
 #### Q04 graphical representation:
 
-![](../img/doc/sparql-tutorial/q04.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q04.webp#tutoimgborder)
 
 > **NOTE**: [orth:organism](https://biosoda.github.io/genex/#http://purl.org/net/orth#organism) (a relation to assign an organism to a gene) chained with [obo:RO_0002162](https://biosoda.github.io/genex/#http://purl.obolibrary.org/obo/RO_0002162) (a relation to assign a taxon to an organism) indicates from which taxon a gene belongs.
 
@@ -209,7 +209,7 @@ Other vocabulary terms:
 
 #### Q05 graphical representation:
 
-![](../img/doc/sparql-tutorial/q05.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q05.webp#tutoimgborder)
 
 These query triple patterns are more accurate because we can now precisely define the other expression conditions available instead of only an anatomical entity.
 
@@ -217,7 +217,7 @@ These query triple patterns are more accurate because we can now precisely defin
 
 When defining the condition to assess a gene expression, the [genex:hasAnatomicalEntity](https://biosoda.github.io/genex/#hasAnatomicalEntity) property is used to state cell types too since a cell type is also considered as an anatomical entity. For example, to define that a gene is expressed in the lung, the graph below is built where we can interpret that the gene is expressed in a cellular component located in the lung, in other words, in the lung. Therefore, when the cell type is unspecified, we assert with `genex:hasAnatomicalEntity` property the value [obo:GO_0005575 (cellular_component)](http://purl.obolibrary.org/obo/GO_0005575), this [Gene Ontology](https://geneontology.org/) term is the root of all cell types.
 
-![](../img/doc/sparql-tutorial/cell-type.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/cell-type.webp#tutoimgborder)
 
 Below, we show a question and its corresponding SPARQL query [Q06](#q06) along with its [graph representation](#q06-graphical-representation) where other gene expression conditions are specified, more precisely, the developmental stage.
 
@@ -255,7 +255,7 @@ SELECT DISTINCT ?anat ?anatName ?stage {
 
 #### Q06 graphical representation:
 
-![](../img/doc/sparql-tutorial/q06.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q06.webp#tutoimgborder)
 
 Moreover, if there is not a specific strain to declare, the strain must be defined as "wild-type" since "wild-type" represents any strain. This is because Bgee only considers wild-type experiments. As a result, we ensure the gene is expressed independently of the strain type. If we do not state that is a "wild-type" strain, expressed genes that are exclusive to a specific strain will be considered too. Similarly, for sex, if stated as 'any', it means that the gene is expressed in any sex type.
 
@@ -334,7 +334,7 @@ FILTER (?anat != obo:GO_0005575)
 
 #### Q08 graphical representation:
 
-![](../img/doc/sparql-tutorial/q08.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q08.webp#tutoimgborder)
 
 > **NOTE:** In the query [Q08](#q08), we filter out the anatomical entity `obo:GO_0005575` that is "cellular_component" with the expression `FILTER(?anat != obo:GO_0005575)` because it is not informative. In other words, "cellular_component" means any cell type.
 
@@ -383,7 +383,7 @@ FILTER (?anat != ?cellType)
 
 #### Q09 graphical representation:
 
-![](../img/doc/sparql-tutorial/q09.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q09.webp#tutoimgborder)
 
 > **NOTE:** Currently, the data accessible via the SPARQL endpoint do not specify _sex_ and _strain_ types. Therefore, to optimize [Q09](#q09) query, we can omit triple patterns related to sex and strain. [Q10](#q10) is the optimized SPARQL query that retrieves exactly the same results as [Q09](#q09).
 
@@ -528,7 +528,7 @@ FILTER (?anat != obo:GO_0005575)
 
 #### Q08-a graphical representation:
 
-![](../img/doc/sparql-tutorial/q08-a.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q08-a.webp#tutoimgborder)
 
 The [Q08-a](#q08-a) query can be further simplified by removing the statements about species because an Ensembl gene identifier is always associated with a unique species, hence, by stating `ensembl:ENSG00000130208`, we are already referring to a human gene. This simplified version is shown in [Q08-b](#q08-b) query.
 
@@ -637,7 +637,7 @@ FILTER (?anat != obo:GO_0005575)
 
 #### Q12-a graphical representation:
 
-![](../img/doc/sparql-tutorial/q12-a.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q12-a.webp#tutoimgborder)
 
 ## Querying with UniProtKB cross-references
 
@@ -671,7 +671,7 @@ SELECT DISTINCT ?anat ?anatName {
 
 #### Q13 graphical representation:
 
-![](../img/doc/sparql-tutorial/q13.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q13.webp#tutoimgborder)
 
 ## Querying gene metadata
 
@@ -717,7 +717,7 @@ SELECT DISTINCT ?symbol ?description ?id
 
 #### Q14 graphical representation:
 
-![](../img/doc/sparql-tutorial/q14.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q14.webp#tutoimgborder)
 
 ## Querying Genes with Absence of Expression
 
@@ -751,7 +751,7 @@ SELECT DISTINCT ?anat ?anatName {
 
 #### Q15 graphical representation:
 
-![](../img/doc/sparql-tutorial/q15.png#tutoimgborder)
+![](../img/doc/sparql-tutorial/q15.webp#tutoimgborder)
 
 ## Programmatic access to the latest version of the Bgee SPARQL endpoint
 
