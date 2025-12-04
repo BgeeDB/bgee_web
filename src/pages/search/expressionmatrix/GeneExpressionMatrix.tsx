@@ -212,11 +212,38 @@ const GeneExpressionMatrix = () => {
     }
   }, [selectedSpecies.value, multiSpeciesGenes, setSelectedGene]); // Sync when species changes
 
+  // Handler for Reinitialize button - clears multiSpeciesGenes and resets form
+  const handleReinitialize = useCallback(() => {
+    setMultiSpeciesGenes([]);
+    resetForm(false);
+  }, [resetForm]);
+
   const resultExprsCall = searchResult?.expressionData?.expressionCalls || [];
   const results = resultExprsCall;
   // const defaultColumDesc = searchResult?.columnDescriptions?.[dataType] || [];
   // const columnDescExprsCall = searchResult?.columnDescriptions || [];
   // const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
+
+  // Extract unique genes from search results - only show genes that have been searched
+  const searchedGenes = useMemo(() => {
+    if (results.length === 0) return [];
+
+    // Get unique genes from expression calls
+    const geneMap = new Map<string, { label: string; value: string }>();
+    results.forEach((result) => {
+      const geneId = result.gene.geneId;
+      const geneName = result.gene.name;
+      if (!geneMap.has(geneId)) {
+        // Try to find matching gene from multiSpeciesGenes for label
+        const multiSpeciesGene = multiSpeciesGenes.find((g) => g.geneId === geneId);
+        geneMap.set(geneId, {
+          label: multiSpeciesGene?.geneLabel || (geneName ? `${geneId} - ${geneName}` : geneId),
+          value: geneId,
+        });
+      }
+    });
+    return Array.from(geneMap.values());
+  }, [results, multiSpeciesGenes]);
 
   const detailedData = TAB_PAGE_EXPR_CALL;
 
@@ -350,7 +377,7 @@ const GeneExpressionMatrix = () => {
                       <Button
                         className="button is-success is-light is-outlined"
                         type="submit"
-                        onClick={onSubmit}
+                        onClick={() => onSubmit(multiSpeciesGenes)}
                         disabled={isLoading}
                       >
                         Submit
@@ -358,7 +385,7 @@ const GeneExpressionMatrix = () => {
                       <Button
                         type="button"
                         className="reinit is-warning is-light is-outlined"
-                        onClick={() => resetForm(false)}
+                        onClick={handleReinitialize}
                       >
                         Reinitialize
                       </Button>
@@ -424,10 +451,12 @@ const GeneExpressionMatrix = () => {
               results={results}
               // columnDescriptions={columnsDesc}
               // searchParams={getSearchParams}
-              genes={multiSpeciesGenes.map((g) => ({ label: g.geneLabel, value: g.geneId }))}
+              genes={searchedGenes}
               isLoading={isLoading}
               isFirstSearch={isFirstSearch}
-              onFetchChildren={triggerSearchChildren}
+              onFetchChildren={(parentId, selectedTissueId) =>
+                triggerSearchChildren(parentId, selectedTissueId, multiSpeciesGenes)
+              }
             />
           </div>
           <UserFeedback />

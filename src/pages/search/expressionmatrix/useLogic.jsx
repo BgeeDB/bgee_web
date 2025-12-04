@@ -226,8 +226,8 @@ const useLogic = () => {
     }
   }, [selectedSpecies]);
 
-  const onSubmit = () => {
-    triggerInitialSearch();
+  const onSubmit = (multiSpeciesGenes = null) => {
+    triggerInitialSearch(null, multiSpeciesGenes);
   };
 
   const addConditionalParam = (id) => {
@@ -442,39 +442,103 @@ const useLogic = () => {
 
   // API QUERY 1: Get gene expression data for top-level anatomical terms
   // TODO: factor out repetitive code (between this function and triggerSearch, triggerInitialSearchComplementary)
-  const triggerInitialSearch = async (initParams) => {
-    const params = initParams || getSearchParams();
-    const doComplementarySearch = params.selectedTissue.length === 0 && params.selectedCellTypes.length === 0;
+  const triggerInitialSearch = async (initParams, multiSpeciesGenes = null) => {
+    const baseParams = initParams || getSearchParams();
+    const doComplementarySearch = baseParams.selectedTissue.length === 0 && baseParams.selectedCellTypes.length === 0;
 
-    // console.log(`[useLogic.triggerInitialSearch] selected gene:\n${JSON.stringify(params.selectedGene)}`);
-    // console.log(`[useLogic.triggerInitialSearch] selected species:\n${JSON.stringify(params.selectedSpecies)}`);
-    // console.log(`[useLogic.triggerInitialSearch] params:\n${JSON.stringify(params)}`);
+    // console.log(`[useLogic.triggerInitialSearch] selected gene:\n${JSON.stringify(baseParams.selectedGene)}`);
+    // console.log(`[useLogic.triggerInitialSearch] selected species:\n${JSON.stringify(baseParams.selectedSpecies)}`);
+    // console.log(`[useLogic.triggerInitialSearch] params:\n${JSON.stringify(baseParams)}`);
 
     setIsLoading(true);
 
     try {
+      // Group genes by species if multiSpeciesGenes is provided
+      let speciesGroups = [];
+      if (multiSpeciesGenes && multiSpeciesGenes.length > 0) {
+        // Group genes by species
+        const grouped = multiSpeciesGenes.reduce((acc, gene) => {
+          if (!acc[gene.speciesId]) {
+            acc[gene.speciesId] = {
+              speciesId: gene.speciesId,
+              speciesLabel: gene.speciesLabel,
+              genes: [],
+            };
+          }
+          acc[gene.speciesId].genes.push(gene.geneId);
+          return acc;
+        }, {});
+        speciesGroups = Object.values(grouped);
+        console.log(`[useLogic.triggerInitialSearch] speciesGroups:\n${JSON.stringify(speciesGroups)}`);
+      } else {
+        // Fallback to single species (original behavior)
+        speciesGroups = [
+          {
+            speciesId: baseParams.selectedSpecies,
+            speciesLabel: selectedSpecies.label || '',
+            genes: baseParams.selectedGene,
+          },
+        ];
+      }
+
+      // Make API calls for each species group
+      const searchPromises = speciesGroups.map((group) => {
+        const params = { ...baseParams };
+        params.selectedSpecies = group.speciesId;
+        params.selectedGene = group.genes;
+        return api.search.geneExpressionMatrix.initialSearch(params);
+      });
+
+      const complementaryPromises = doComplementarySearch
+        ? speciesGroups.map((group) => {
+            const params = { ...baseParams };
+            params.selectedSpecies = group.speciesId;
+            params.selectedGene = group.genes;
+            return api.search.geneExpressionMatrix.initialSearchComplementary(params);
+          })
+        : [];
+
       // console.log(`[useLogic.triggerInitialSearch] submitting API requests...`);
-      const [result1, result2] = await Promise.all([
-        api.search.geneExpressionMatrix.initialSearch(params),
-        doComplementarySearch ? api.search.geneExpressionMatrix.initialSearchComplementary(params) : null,
-      ]);
+      const allResults = await Promise.all([...searchPromises, ...complementaryPromises]);
 
-      const { resp: resp1, paramsURLCalled: paramsURLCalled1 } = result1;
-      const { resp: resp2 } = doComplementarySearch ? result2 : { resp: null };
+      // Separate initial and complementary results
+      const initialResults = allResults.slice(0, speciesGroups.length);
+      const complementaryResults = allResults.slice(speciesGroups.length);
 
-      if (resp1.code === 200) {
-        // console.log(JSON.stringify(resp1));
-        // console.log(JSON.stringify(resp2));
+      // Combine results from all species
+      let combinedData = null;
+      let paramsURLCalled1 = null;
 
-        const { data } = resp1;
-        // Mark orphan terms from complementary search and combine with initial calls
-        if (resp2?.code === 200) {
-          const orphanCalls = resp2.data.expressionData.expressionCalls.map((call) => ({
-            ...call,
-            isOrphan: true,
-          }));
-          data.expressionData.expressionCalls.push(...orphanCalls);
+      initialResults.forEach((result) => {
+        const { resp, paramsURLCalled } = result;
+        if (resp.code === 200) {
+          if (!combinedData) {
+            // Initialize with first result
+            combinedData = { ...resp.data };
+            paramsURLCalled1 = paramsURLCalled;
+          } else {
+            // Merge expression calls from subsequent species
+            combinedData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
+          }
         }
+      });
+
+      // Add complementary search results (orphan terms)
+      if (doComplementarySearch) {
+        complementaryResults.forEach((result) => {
+          const { resp } = result;
+          if (resp?.code === 200) {
+            const orphanCalls = resp.data.expressionData.expressionCalls.map((call) => ({
+              ...call,
+              isOrphan: true,
+            }));
+            combinedData.expressionData.expressionCalls.push(...orphanCalls);
+          }
+        });
+      }
+
+      if (combinedData) {
+        const resp1 = { code: 200, data: combinedData, requestParameters: initialResults[0]?.resp?.requestParameters };
 
         // After First search we update the filters via detailed_rp
         if (isFirstSearch) {
@@ -547,7 +611,7 @@ const useLogic = () => {
         }
 
         setIsLoading(false);
-        setSearchResult(data);
+        setSearchResult(combinedData);
       }
     } catch (error) {
       console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
@@ -717,38 +781,74 @@ const useLogic = () => {
 
   // HD: perform API data request for subordinate terms
   // Returns only the expression calls, letting GeneExpressionHeatmap handle hierarchy management
-  const triggerSearchChildren = async (parentId, selectedTissueId) => {
-    const params = getSearchParams();
+  const triggerSearchChildren = async (parentId, selectedTissueId, multiSpeciesGenes = null) => {
+    const baseParams = getSearchParams();
 
     // Set parent anatomical term as selected tissue
-    params.selectedTissue = [selectedTissueId];
+    baseParams.selectedTissue = [selectedTissueId];
     // Fix other condition params to top-level terms
-    if (params.selectedCellTypes?.length === 0) {
-      params.selectedCellTypes = ['GO:0005575']; // "cellular_component"
+    if (baseParams.selectedCellTypes?.length === 0) {
+      baseParams.selectedCellTypes = ['GO:0005575']; // "cellular_component"
     }
-    params.hasTissueSubStructure = 1; // we want children of parent term!
-    params.conditionalParam2 = ['anat_entity']; // HD: restrict to anatomical terms
+    baseParams.hasTissueSubStructure = 1; // we want children of parent term!
+    baseParams.conditionalParam2 = ['anat_entity']; // HD: restrict to anatomical terms
 
     // HD: discard top-level terms from search results
     if (parentId === 'UBERON:0000468-GO:0005575') {
-      params.discardAnatEntityAndChildrenId = 'SUMMARY';
+      baseParams.discardAnatEntityAndChildrenId = 'SUMMARY';
     }
 
     try {
-      const result = await api.search.geneExpressionMatrix.search(params, false);
-      const { resp } = result;
-
-      if (resp.code === 200) {
-        // Prefix anatEntity.id with termId for each expression call
-        resp.data.expressionData.expressionCalls.forEach((exprCall) => {
-          exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
-        });
-
-        // Return only the expression calls - GeneExpressionHeatmap will handle hierarchy updates
-        return resp.data.expressionData.expressionCalls;
+      // Group genes by species if multiSpeciesGenes is provided
+      let speciesGroups = [];
+      if (multiSpeciesGenes && multiSpeciesGenes.length > 0) {
+        // Group genes by species
+        const grouped = multiSpeciesGenes.reduce((acc, gene) => {
+          if (!acc[gene.speciesId]) {
+            acc[gene.speciesId] = {
+              speciesId: gene.speciesId,
+              genes: [],
+            };
+          }
+          acc[gene.speciesId].genes.push(gene.geneId);
+          return acc;
+        }, {});
+        speciesGroups = Object.values(grouped);
+      } else {
+        // Fallback to single species (original behavior)
+        speciesGroups = [
+          {
+            speciesId: baseParams.selectedSpecies,
+            genes: baseParams.selectedGene,
+          },
+        ];
       }
 
-      return [];
+      // Make API calls for each species group
+      const searchPromises = speciesGroups.map((group) => {
+        const params = { ...baseParams };
+        params.selectedSpecies = group.speciesId;
+        params.selectedGene = group.genes;
+        return api.search.geneExpressionMatrix.search(params, false);
+      });
+
+      const allResults = await Promise.all(searchPromises);
+
+      // Combine results from all species
+      const allExpressionCalls = [];
+      allResults.forEach((result) => {
+        const { resp } = result;
+        if (resp.code === 200) {
+          // Prefix anatEntity.id with termId for each expression call
+          resp.data.expressionData.expressionCalls.forEach((exprCall) => {
+            exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
+          });
+          allExpressionCalls.push(...resp.data.expressionData.expressionCalls);
+        }
+      });
+
+      // Return combined expression calls - GeneExpressionHeatmap will handle hierarchy updates
+      return allExpressionCalls;
     } catch (error) {
       console.error(`[useLogic.triggerSearchChildren] ERROR:\n${JSON.stringify(error)}`);
       return [];
