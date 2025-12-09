@@ -35,7 +35,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/gget-logo.png'),
+        src: imagePath('/collab/gget-logo.webp'),
         path: 'https://github.com/pachterlab/gget',
         alt: 'gget',
       },
@@ -76,7 +76,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/oma-logo.png'),
+        src: imagePath('/collab/oma-logo.webp'),
         path: 'https://omabrowser.org/',
         alt: 'OMA',
       },
@@ -130,7 +130,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/Salmobase.png'),
+        src: imagePath('/collab/Salmobase.webp'),
         path: 'https://salmobase.org/',
         alt: 'Salmobase',
       },
@@ -175,7 +175,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/sc-fair-logo.png'),
+        src: imagePath('/collab/sc-fair-logo.webp'),
         path: 'https://sc-fair.org/',
         alt: 'scFAIR',
       },
@@ -303,7 +303,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/biosoda-logo.png'),
+        src: imagePath('/collab/biosoda-logo.webp'),
         path: 'https://www.zhaw.ch/en/research/research-database/project-detailview/projektid/1493/',
         alt: 'Bio-SODA',
       },
@@ -399,7 +399,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/INODE-Logo.png'),
+        src: imagePath('/collab/INODE-Logo.webp'),
         path: 'https://www.inode-project.eu/',
         alt: 'INODE',
         style: {
@@ -447,7 +447,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/ONCOMX-logo.png'),
+        src: imagePath('/collab/ONCOMX-logo.webp'),
         path: 'https://www.oncomx.org/',
         alt: 'OncoMX',
       },
