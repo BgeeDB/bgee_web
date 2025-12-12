@@ -824,15 +824,16 @@ const useLogic = () => {
         ];
       }
 
-      // Make API calls for each species group
-      const searchPromises = speciesGroups.map((group) => {
+      // Make API calls sequentially for each species group
+      // This prevents parallel calls from canceling each other (they share the same cancellation token)
+      const allResults = [];
+      for (const group of speciesGroups) {
         const params = { ...baseParams };
         params.selectedSpecies = group.speciesId;
         params.selectedGene = group.genes;
-        return api.search.geneExpressionMatrix.search(params, false);
-      });
-
-      const allResults = await Promise.all(searchPromises);
+        const result = await api.search.geneExpressionMatrix.search(params, false);
+        allResults.push(result);
+      }
 
       // Combine results from all species
       const allExpressionCalls = [];

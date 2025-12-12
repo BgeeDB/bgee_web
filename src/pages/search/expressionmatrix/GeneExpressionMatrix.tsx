@@ -21,6 +21,7 @@ import './rawDataAnnotations.scss';
 import Bulma from '~/components/Bulma';
 import api from '~/api';
 import { getGeneLabel } from '~/helpers/gene';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export function meta() {
   return getMetadata({
@@ -78,6 +79,9 @@ const GeneExpressionMatrix = () => {
   // TODO: remove this useless state, wth is it even doing?
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setPageIsBrowseResult] = useState(false);
+
+  // State for collapsed/expanded selected genes list
+  const [isGenesListExpanded, setIsGenesListExpanded] = useState(true);
 
   // Track genes with species information across all species
   interface GeneWithSpecies {
@@ -293,12 +297,28 @@ const GeneExpressionMatrix = () => {
                       <Bulma.Card className="mt-4">
                         <Bulma.Card.Body>
                           <div className="content">
-                            <label className="has-text-weight-semibold">Selected Genes</label>
-                            <SelectedGenesList
-                              selectedGenes={multiSpeciesGenes}
-                              removeGene={removeGene}
-                              addOrthologs={addOrthologs}
-                            />
+                            <div className="is-flex is-align-items-center is-justify-content-space-between mb-2">
+                              <label className="has-text-weight-semibold">
+                                Selected Genes ({multiSpeciesGenes.length})
+                              </label>
+                              <button
+                                type="button"
+                                className="button is-small is-text"
+                                onClick={() => setIsGenesListExpanded(!isGenesListExpanded)}
+                                aria-label={isGenesListExpanded ? 'Collapse list' : 'Expand list'}
+                              >
+                                <span className="icon">
+                                  {isGenesListExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                </span>
+                              </button>
+                            </div>
+                            {isGenesListExpanded && (
+                              <SelectedGenesList
+                                selectedGenes={multiSpeciesGenes}
+                                removeGene={removeGene}
+                                addOrthologs={addOrthologs}
+                              />
+                            )}
                           </div>
                         </Bulma.Card.Body>
                       </Bulma.Card>
