@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import Button from '../../../../components/Bulma/Button/Button';
 
 interface GeneEntry {
@@ -49,14 +50,32 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
               <tr key={`${gene.speciesId}-${gene.geneId}-${index}`}>
                 <td>
                   <div>
-                    <strong>{gene.speciesLabel}</strong>
+                    <strong>
+                      <Link
+                        className="internal-link"
+                        to={`/species/${gene.speciesId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {gene.speciesLabel}
+                      </Link>
+                    </strong>
                     <br />
                     <small className="has-text-grey">{gene.speciesId}</small>
                   </div>
                 </td>
                 <td>
                   <div>
-                    <strong>{gene.geneLabel}</strong>
+                    <strong>
+                      <Link
+                        className="internal-link"
+                        to={`/gene/${gene.geneId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {gene.geneLabel}
+                      </Link>
+                    </strong>
                     <br />
                     <small className="has-text-grey">{gene.geneId}</small>
                   </div>
