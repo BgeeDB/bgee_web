@@ -141,21 +141,48 @@ const GeneExpressionMatrix = () => {
   );
 
   // Add orthologs for a gene
-  const addOrthologs = useCallback(async (geneId: string, speciesId: string) => {
+  const addOrthologs = useCallback(async (geneId: string, speciesId: string, taxonId?: string) => {
     try {
       const result = await api.search.genes.homologs(geneId, speciesId);
       const orthologs: GeneWithSpecies[] = [];
 
-      result.data.orthologsByTaxon.forEach((entry: any) => {
-        entry.genes.forEach((gene: any) => {
-          orthologs.push({
-            speciesId: gene.species.id,
-            speciesLabel: `${gene.species.genus} ${gene.species.speciesName}`,
-            geneId: gene.geneId,
-            geneLabel: getGeneLabel(gene),
+      if (taxonId) {
+        // Find the selected taxon and include it plus all more specific taxa (descendants)
+        const selectedTaxonIndex = result.data.orthologsByTaxon.findIndex(
+          (entry: any) => entry.taxon.id === taxonId || entry.taxon.id.toString() === taxonId.toString()
+        );
+
+        if (selectedTaxonIndex !== -1) {
+          // The array is ordered from most specific (highest level) to most general (lowest level)
+          // When a user selects a taxon, we want to include:
+          // - The selected taxon
+          // - All more specific taxa (which come BEFORE the selected taxon in the array)
+          // So we include from index 0 up to and including the selected taxon index
+          for (let i = 0; i <= selectedTaxonIndex; i++) {
+            const entry = result.data.orthologsByTaxon[i];
+            entry.genes.forEach((gene: any) => {
+              orthologs.push({
+                speciesId: gene.species.id,
+                speciesLabel: `${gene.species.genus} ${gene.species.speciesName}`,
+                geneId: gene.geneId,
+                geneLabel: getGeneLabel(gene),
+              });
+            });
+          }
+        }
+      } else {
+        // If no taxon selected, include all orthologs (original behavior)
+        result.data.orthologsByTaxon.forEach((entry: any) => {
+          entry.genes.forEach((gene: any) => {
+            orthologs.push({
+              speciesId: gene.species.id,
+              speciesLabel: `${gene.species.genus} ${gene.species.speciesName}`,
+              geneId: gene.geneId,
+              geneLabel: getGeneLabel(gene),
+            });
           });
         });
-      });
+      }
 
       // Add orthologs that don't already exist
       setMultiSpeciesGenes((prev) => {
