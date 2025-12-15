@@ -31,16 +31,8 @@ const CATEGORIES = [
     title: 'RNA-Seq data sources',
   },
   {
-    key: 'AFFYMETRIX',
-    title: 'Affymetrix data sources',
-  },
-  {
     key: 'IN_SITU',
     title: 'In situ data sources',
-  },
-  {
-    key: 'EST',
-    title: 'EST data sources',
   },
   {
     key: 'ONTOLOGY',

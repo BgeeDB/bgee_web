@@ -58,8 +58,6 @@ export const TAB_PAGE_EXPR_CALL = {
 };
 
 // building dataTypes depending on config.json
-export const AFFYMETRIX = 'AFFYMETRIX';
-export const EST = 'EST';
 export const IN_SITU = 'IN_SITU';
 export const RNA_SEQ = 'RNA_SEQ';
 export const { ID_FULL_LENGTH } = config.dataTypeIds;
@@ -82,27 +80,11 @@ const dataTypeConf = [
     },
   },
   {
-    position: config.dataType_AFFYMETRIX,
-    type: {
-      id: AFFYMETRIX,
-      label: 'Affymetrix data',
-      sourceLetter: 'A',
-    },
-  },
-  {
     position: config.dataType_IN_SITU,
     type: {
       id: IN_SITU,
       label: 'In situ hybridization',
       sourceLetter: 'I',
-    },
-  },
-  {
-    position: config.dataType_EST,
-    type: {
-      id: EST,
-      label: 'EST',
-      sourceLetter: 'E',
     },
   },
 ];
@@ -409,8 +391,6 @@ const useLogic = (isExprCalls) => {
       setFilters({
         [ID_FULL_LENGTH]: initFilters,
         [RNA_SEQ]: initFilters,
-        [AFFYMETRIX]: initFilters,
-        [EST]: initFilters,
         [IN_SITU]: initFilters,
       });
     } else {

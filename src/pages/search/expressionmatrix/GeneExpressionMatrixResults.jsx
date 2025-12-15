@@ -27,34 +27,30 @@ const GeneExpressionMatrixResults = ({
         const maxExp = geneId in maxExpScore && termId in maxExpScore[geneId] ? maxExpScore[geneId][termId] : 0;
         const isExpressed = result.expressionState === 'expressed';
 
-        const row = {
-          x: geneName?.length > 0 ? geneName : geneId,
-          y: termId,
-          termId,
-          termName,
-          geneId,
-          geneName,
-          speciesId,
-          anatEntityId,
-          anatEntityName,
-          cellTypeId,
-          cellTypeName,
-          // termIsTopLevel: anatomicalTerms.filter(item => item.id === result.condition.anatEntity.id)?.isTopLevelTerm,
-          value: expScore,
-          // TODO: use actual number from API response
-          maxExp,
-          isExpressed,
-          hasDataAffy: result.dataTypesWithData.AFFYMETRIX,
-          hasDataEst: result.dataTypesWithData.EST,
-          hasDataInSitu: result.dataTypesWithData.IN_SITU,
-          hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
-          hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
-          ylvl: 0,
-        };
-        return row;
-      }),
-    [results, maxExpScore]
-  );
+    const row = {
+      x: geneName?.length > 0 ? geneName : geneId,
+      y: termId,
+      termId,
+      termName,
+      geneId,
+      geneName,
+      speciesId,
+      anatEntityId,
+      anatEntityName,
+      cellTypeId,
+      cellTypeName,
+      // termIsTopLevel: anatomicalTerms.filter(item => item.id === result.condition.anatEntity.id)?.isTopLevelTerm,
+      value: expScore,
+      // TODO: use actual number from API response
+      maxExp,
+      isExpressed,
+      hasDataInSitu: result.dataTypesWithData.IN_SITU,
+      hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
+      hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
+      ylvl: 0,
+    };
+    return row;
+  });
 
   return (
     <>

@@ -29,14 +29,6 @@ const logApiError = (context, error, extra = {}) => {
 
 const DATA_TYPES = [
   {
-    key: 'AFFYMETRIX',
-    text: 'Affymetrix',
-  },
-  {
-    key: 'EST',
-    text: 'EST',
-  },
-  {
     key: 'IN_SITU',
     text: 'In Situ',
   },
@@ -602,8 +594,6 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
         cellTypeName,
         value: expScore,
         isExpressed,
-        hasDataAffy: result.dataTypesWithData.AFFYMETRIX,
-        hasDataEst: result.dataTypesWithData.EST,
         hasDataInSitu: result.dataTypesWithData.IN_SITU,
         hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
         hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,

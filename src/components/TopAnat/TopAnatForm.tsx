@@ -226,24 +226,6 @@ const TopAnatForm = ({
                       type="checkbox"
                       className="mr-2"
                       disabled={formDisabled}
-                      onChange={checkBoxHandler('affymetrix')}
-                      checked={formData.affymetrix}
-                    />
-                    <span
-                      className={classnames({
-                        'not-default': !formData.affymetrix,
-                      })}
-                    >
-                      Affymetrix data
-                    </span>
-                  </label>
-                </div>
-                <div className="control">
-                  <label className="checkbox">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      disabled={formDisabled}
                       onChange={checkBoxHandler('inSitu')}
                       checked={formData.inSitu}
                     />
@@ -254,18 +236,6 @@ const TopAnatForm = ({
                     >
                       In situ hybridization
                     </span>
-                  </label>
-                </div>
-                <div className="control">
-                  <label className="checkbox">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      disabled={formDisabled}
-                      onChange={checkBoxHandler('est')}
-                      checked={formData.est}
-                    />
-                    <span className={classnames({ 'not-default': !formData.est })}>EST</span>
                   </label>
                 </div>
               </div>

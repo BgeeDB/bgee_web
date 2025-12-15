@@ -49,7 +49,7 @@ The data can be further filtered from the results table.
 
 ### Available filters
 
-Filters can differ depending on the data page (_experiments_, _curated annotations_, or _processed expression values_) and the data type (bulk RNA-seq, scRNA-seq, affymetrix, ISH, or EST).
+Filters can differ depending on the data page (_experiments_, _curated annotations_, or _processed expression values_) and the data type (bulk RNA-seq, scRNA-seq, or ISH).
 The following filters can always be applied:
 
 - **Species**: You can search using the NCBI taxon ID (e.g. 9606) or the common name of the species (e.g. human). Selection of multiple species is supported.
@@ -61,8 +61,8 @@ The following filters can always be applied:
 The following filters can be applied only on some data pages or data types:
 
 - **Cell type**: Only available for single cell RNA-Seq data type (i.e. table scRNASeq). Selection of multiple terms is supported. You can search using common terms, or the Cell Ontology ID.
-- **Experiments**: Available for all data types except ESTs, as such a concept does not exist for the EST data type. Select the experiment(s) of interest, either by the experiment name or the experiment ID. Multiple experiments can be selected.
-- **Assays**: Available for all data types for _Curated annotations_ and _Processed expression values_ data. Also available for _Experiments_ data of ESTs. Select the assay of interest. Can either be the assay name or the assay ID. Multiple assays can be selected.
+- **Experiments**: Available for all data types. Select the experiment(s) of interest, either by the experiment name or the experiment ID. Multiple experiments can be selected.
+- **Assays**: Available for all data types for _Curated annotations_ and _Processed expression values_ data. Select the assay of interest. Can either be the assay name or the assay ID. Multiple assays can be selected.
 
 ### Apply filters
 
@@ -114,7 +114,7 @@ The result table at the bottom of the page, which gets populated after searching
 
 The four columns contained in the table are:
 
-- **Experiment ID**: refers to a unique identifier assigned to the specific experiment done in the study. You can click on this link to access further information on an experiment. For EST data, the _Library ID_ is used instead of the _Experiment ID_.
+- **Experiment ID**: refers to a unique identifier assigned to the specific experiment done in the study. You can click on this link to access further information on an experiment.
 - **Experiment name**: defines the title used to designate this experiment.
 - **Description**: a more detailed description of how the experiment was done and the aims of the project.
 - **Link to curated annotations**: this link will allow you to see all libraries included in this experiment (inside Bgee) through our curated annotations page (for further details on this page, see [Curated annotations](#curated-annotations) section).
@@ -197,7 +197,6 @@ As with the _Experiments_ or _Processed expression values_ page, the columns of 
 - **Cell type ID**: ID of the cell type of the sample. Clicking the link will give you more information on that cell type by bringing you to the Ontology origin where you can see parent and child terms or cell type function.
 - **Cell type name**: Common name of the cell type of the sample such as "embryonic cell".
 - **Fractionation**: Denotes where the transcripts are extracted from. There are two possible values, the cell or the nuclei.
-- **Chip ID**: Identifier of the Affymetrix chip.
 - **Evidence ID**: Specific identifier of one results from an in situ hybridization experiment.
 
 ## Processed expression values
@@ -215,15 +214,11 @@ The columns of the results table will depend on the data type selected. We descr
 - **Experiment ID**: refers to a unique identifier assigned to the specific experiment done in the study. You can click on this link to access further information on an experiment.
 - **Library ID**: Unique library identifier for the sequenced or analyzed sample.
 - **Library name**: defines the title used to designate this experiment.
-- **Chip ID**: Identifier of the Affymetrix chip.
 - **Evidence ID**: Specific identifier of one results from an in situ hybridization experiment.
-- **Probeset ID**: Identifier of the Affymetrix probeset.
-- **EST ID**: Identifier of the Expressed Sequence Tag.
 - **Gene ID**: Identifier of the gene. Clicking on the identifier opens the [Bgee gene page](/support/tutorial-gene-page).
 - **Gene name**: name of the gene.
 - **Expression level**: the quantitative expression level of the call.
 - **Expression level unit**: The unit of the quantitative expression level for RNA-Seq. Can be transcript per million (tpm) for bulk RNA-Seq or full-length single cell RNA-Seq or count per million (cpm) for target based single cell RNA-Seq.
-- **Signal intensity**: Log transformation of normalized Affymetrix probeset signal intensities.
 - **Read count**: number of reads mapped to this gene.
 - **UMI count**: number of Unique Molecular Identifier (UMI) mapped to this gene from the Bgee target-based RNA-Seq pipeline.
 - **Expression p-value**: p-value of the expression call. The lower the p-value the higher we trust the gene to be significantly expressed. For each data type, we identify whether the gene expression level is significantly above the background transcriptional and experimental noise. For instance, for RNA-Seq data, the expression level of selected intergenic regions is used to estimate the background noise in each library, leading to obtain one p-value for the significance of expression for each gene in the library. More specifically for single-cell RNA-Seq data, data are pseudo-bulked per library and cell type to obtain more signal, no statistical present/absent calls are produced per **cell**, but per **cell population** (gene count matrices per cell can still be retrieved, in H5AD format, see the [experiment search](/search/raw-data) to retrieve such data).

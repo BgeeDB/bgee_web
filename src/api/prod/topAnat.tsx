@@ -63,9 +63,7 @@ const topAnat = {
       params.append('bg_list', form.genesBg);
       if (form.rnaSeq) params.append('data_type', 'RNA_SEQ');
       if (form.full) params.append('data_type', ID_FULL_LENGTH);
-      if (form.affymetrix) params.append('data_type', 'AFFYMETRIX');
       if (form.inSitu) params.append('data_type', 'IN_SITU');
-      if (form.est) params.append('data_type', 'EST');
       if (form.stages === 'all') {
         params.append('stage_id', '');
       } else {
