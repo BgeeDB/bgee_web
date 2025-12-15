@@ -50,7 +50,6 @@ const PATHS = {
     TUTORIAL_EXPRESSION_COMPARISON: `${URL_ROOT}/support/tutorial-expression-comparison`,
     TUTORIAL_RAW_DATA: `${URL_ROOT}/support/tutorial-raw-data`,
     TUTORIAL_ANAT_HOMOLOGY: `${URL_ROOT}/support/tutorial-anatomical-homology`,
-    TUTORIAL_AFFY_EXPR_VAL: `${URL_ROOT}/support/tutorial-processed-expression-values-download-affymetrix`,
     TUTORIAL_RNASEQ_EXPR_VAL: `${URL_ROOT}/support/tutorial-processed-expression-values-download-RNA-seq`,
     TUTORIAL_SCRNASEQ_FL_EXPR_VAL: `${URL_ROOT}/support/tutorial-processed-expression-values-download-scRNA-seq-full-length`,
     TUTORIAL_SCRNASEQ_TB_EXPR_VAL: `${URL_ROOT}/support/tutorial-processed-expression-values-download-scRNA-seq-droplet-based`,

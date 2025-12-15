@@ -13,9 +13,7 @@ import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 import PATHS from '../../paths/paths';
 import { FULL_LENGTH_LABEL, SOURCE_LETTER_FULL_LENGTH } from '../../api/prod/constant';
 import {
-  AFFYMETRIX,
   ALL_DATA_TYPES,
-  EST,
   ID_FULL_LENGTH,
   IN_SITU,
   RNA_SEQ,
@@ -26,14 +24,6 @@ import { URL_ROOT } from '~/helpers/constants';
 // import schemaDotOrg from '../../helpers/schemaDotOrg';
 
 const DATA_TYPES = [
-  {
-    key: 'AFFYMETRIX',
-    text: 'Affymetrix',
-  },
-  {
-    key: 'EST',
-    text: 'EST',
-  },
   {
     key: 'IN_SITU',
     text: 'In Situ',
@@ -377,12 +367,6 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
           });
           cell.dataTypesWithData.forEach((dataTypeString) => {
             switch (dataTypeString) {
-              case 'Affymetrix':
-                source[AFFYMETRIX] = true;
-                break;
-              case 'EST':
-                source[EST] = true;
-                break;
               case 'in situ hybridization':
                 source[IN_SITU] = true;
                 break;
@@ -515,18 +499,6 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
               <>
                 <p className="has-text-weight-semibold is-underlined mt-0">Sources</p>
                 <Bulma.Columns vCentered className="my-0">
-                  <Bulma.C>
-                    <span>
-                      <b>A</b>
-                      <span className="is-size-7"> Affimetrix</span>
-                    </span>
-                  </Bulma.C>
-                  <Bulma.C>
-                    <span>
-                      <b>E</b>
-                      <span className="is-size-7"> EST</span>
-                    </span>
-                  </Bulma.C>
                   <Bulma.C>
                     <span>
                       <b>I</b>

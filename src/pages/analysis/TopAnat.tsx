@@ -101,10 +101,8 @@ const TopAnat = () => {
               fdrThreshold: res.requestParameters.fdr_thr || '',
               pValueThreshold: res.requestParameters.p_value_thr || '',
               rnaSeq: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'RNA_SEQ')),
-              affymetrix: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'AFFYMETRIX')),
               inSitu: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'IN_SITU')),
               full: Boolean(res?.requestParameters?.data_type?.find((f) => f === ID_FULL_LENGTH)),
-              est: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'EST')),
             }));
             requestParameters.set({
               TOP_ANAT_DEFAULT_RP,

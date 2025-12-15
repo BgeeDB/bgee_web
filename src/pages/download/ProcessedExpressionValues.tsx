@@ -32,8 +32,6 @@ export async function loader() {
     const files = {};
     speciesList.forEach((s) => {
       files[s.id.toString()] = {
-        affymetrixData: s.downloadFiles.find((d) => d.category === 'affy_data'),
-        affymetrixAnnot: s.downloadFiles.find((d) => d.category === 'affy_annot'),
         rnaSeqData: s.downloadFiles.find((d) => d.category === 'rnaseq_data'),
         rnaSeqAnnot: s.downloadFiles.find((d) => d.category === 'rnaseq_annot'),
         fullLengthAnnot: s.downloadFiles.find((d) => d.category === 'full_length_annot'),
@@ -60,7 +58,7 @@ export function meta({ data }) {
     title: 'Bgee Processed expression values download page',
     description:
       'Download TSV files containing sample annotations, experiment information, and processed expression values',
-    keywords: `dataset, data download, gene expression, RNA-Seq, Affymetrix, ${FULL_LENGTH_LABEL}, scRNA-Seq, expression data annotations, ${data.allSpeciesName}`,
+    keywords: `dataset, data download, gene expression, RNA-Seq, ${FULL_LENGTH_LABEL}, scRNA-Seq, expression data annotations, ${data.allSpeciesName}`,
   });
 }
 
@@ -85,9 +83,9 @@ const ProcessedExpressionValues = ({ loaderData }) => {
       <p className="is-size-5">
         This page provides annotations and experiment information (e.g., annotations to anatomy and development, quality
         scores used in QCs, chip or library information), and processed expression values (e.g., read counts, TPM and
-        FPKM values, log values of Affymetrix probeset normalized signal intensities). Click on a species to browse
-        files available for download. It is possible to download these data directly into R using our{' '}
-        <LinkExternal to="https://bioconductor.org/packages/BgeeDB/">R package</LinkExternal>. See also{' '}
+        FPKM values). Click on a species to browse files available for download. It is possible to download these data
+        directly into R using our <LinkExternal to="https://bioconductor.org/packages/BgeeDB/">R package</LinkExternal>.
+        See also{' '}
         <Link to={PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS} className="internal-link">
           gene expression calls
         </Link>
@@ -237,78 +235,7 @@ const ProcessedExpressionValues = ({ loaderData }) => {
                           )}
                         </div>
                         <div className="mt-4">
-                          <p className="mb-2 is-size-5 has-text-weight-semibold">
-                            Affymetrix data
-                            <Link
-                              className="is-size-6 internal-link ml-2 grey has-text-weight-normal"
-                              to={`${PATHS.SUPPORT.TUTORIAL_AFFY_EXPR_VAL}`}
-                            >
-                              See documentation
-                            </Link>
-                          </p>
-                          {files[species.id.toString()]?.affymetrixAnnot ||
-                          files[species.id.toString()]?.affymetrixData ? (
-                            <>
-                              <div className="buttons-wrapper">
-                                {files[species.id.toString()]?.affymetrixAnnot && (
-                                  <GaEvent
-                                    category="Processed Expression Values"
-                                    action="download_affymetrix_annotation-file"
-                                    label={files[species.id.toString()]?.affymetrixAnnot.path}
-                                  >
-                                    <a href={files[species.id.toString()]?.affymetrixAnnot.path}>
-                                      <button className="button is-light is-multiline">
-                                        <Download size={15} />
-                                        <span className="is-size-6 ml-2">
-                                          Download experiments/chips info
-                                          {` (${readableFileSize(files[species.id.toString()]?.affymetrixAnnot.size)})`}
-                                        </span>
-                                      </button>
-                                    </a>
-                                  </GaEvent>
-                                )}
-                                {files[species.id.toString()]?.affymetrixData && (
-                                  <GaEvent
-                                    category="Processed Expression Values"
-                                    action="download_affymetrix_data-file"
-                                    label={files[species.id.toString()]?.affymetrixData.path}
-                                  >
-                                    <a href={files[species.id.toString()]?.affymetrixData.path}>
-                                      <button className="button is-light is-multiline">
-                                        <Download size={15} />
-                                        <span className="is-size-6 ml-2">
-                                          Download signal intensities
-                                          {` (${readableFileSize(files[species.id.toString()]?.affymetrixData.size)})`}
-                                        </span>
-                                      </button>
-                                    </a>
-                                  </GaEvent>
-                                )}
-                              </div>
-                              <p className="is-size-6 has-text-grey">
-                                Files can also be retrieved per experiment, see{' '}
-                                <a
-                                  className="internal-link grey"
-                                  href={`${config.ftpDomain}/download/processed_expr_values/affymetrix/${species.speciesFullNameWithoutSpace}/`}
-                                >
-                                  Affymetrix data directory
-                                </a>
-                              </p>
-                            </>
-                          ) : (
-                            <p className="is-size-6 has-text-grey mb-2">No data</p>
-                          )}
-                        </div>
-                        <div className="mt-4">
-                          <p className="mb-2 is-size-5 has-text-weight-semibold">
-                            {DROPLET_BASED_LABEL} data
-                            {/* <Link
-                              className="is-size-6 internal-link ml-2 grey has-text-weight-normal"
-                              to={`${PATHS.SUPPORT.TUTORIAL_AFFY_EXPR_VAL}`}
-                            >
-                              See documentation
-                            </Link> */}
-                          </p>
+                          <p className="mb-2 is-size-5 has-text-weight-semibold">{DROPLET_BASED_LABEL} data</p>
                           {files[species.id.toString()]?.dropletBasedAnnot ||
                           files[species.id.toString()]?.dropletBasedData ||
                           files[species.id.toString()]?.dropletBasedH5ad ? (

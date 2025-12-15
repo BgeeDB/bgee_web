@@ -18,7 +18,7 @@ Bgee provides presence/absence of expression calls that can be retrieved in down
 
 Only wild-type healthy gene expression data is included in Bgee (i.e. no treatment, no disease, no gene knock-out, etc.). Bgee collects data from different experiments and data types, and provides a summary from all these data as unique calls of presence and absence of expression, per gene and condition. For each call, an FDR-corrected p-value and expression score are provided, which allows you to compare levels of expression.
 
-Present/absent expression calls are very similar to the data that can be reported using _in situ_ hybridization methods; Bgee applies dedicated statistical analyses to generate such calls from EST, Affymetrix, bulk RNA-Seq, and single-cell RNA-Seq, and also collects _in situ_ hybridization calls from model organism databases. This offers the possibility to aggregate and compare these present/absent expression calls between different experiments, different data types, and different species.
+Present/absent expression calls are very similar to the data that can be reported using _in situ_ hybridization methods; Bgee applies dedicated statistical analyses to generate such calls from bulk RNA-Seq and single-cell RNA-Seq, and also collects _in situ_ hybridization calls from model organism databases. This offers the possibility to aggregate and compare these present/absent expression calls between different experiments, different data types, and different species.
 
 ## Generation of expression calls
 
@@ -28,8 +28,6 @@ For each gene and each sample in Bgee, we produce a p-value based on a null hypo
 
 - **bulk RNA-Seq data**: we use our own method to estimate for each RNA-Seq library independently the TPM threshold to consider a gene as actively transcribed, inferred by the amount of reads mapped to intergenic regions of the genome. For this, we first define a stringent set of reference intergenic regions based on available bulk RNA-Seq libraries for each species. We then call genes expressed if their level of expression is significantly higher than the background noise. For each gene in the library, we compute a Z-score in terms of standard deviations from the mean of reference intergenic regions. Then we calculate a p-value based on a null hypothesis of expression at a similar level to reference intergenic, estimated as a Normal distribution.
 - **single-cell RNA-Seq data**: the method used is the same as for bulk RNA-Seq data for each cell/library.
-- **Affymetrix data**: when raw CEL files are available, we use the gcRMA algorithm to normalize the signal taking into account probe sequences, and use a subset of weakly expressed probesets for estimating the background signal of expression. We then apply a Wilcoxon test to compare the normalized signal of the probesets with the background signal, as implemented in the 'mas5calls' function of the Bioconductor package 'affy', and we use the resulting p-value. When only the MAS5 files are available for an analysis, we use the flags provided by the MAS5 software with the following mapping to a p-value: 0.01 for 'present' detection flags, 0.05 for 'marginal' detection flags, 0.1 for 'absent' detection flags.
-- **EST data**: based on the number of ESTs mapped to a gene in a library, we produce a p-value based on the null hypothesis that the EST count is not different from 0, with the formula: 2^(-(est_count + 1)).
 - **_in situ_ hybridization data**: we retrieve _in situ_ hybridization data from Model Organism Databases part of the Alliance of Genome Resources. We map call qualities provided by these resources to p-values: 0.0004 for 'present high quality' calls; 0.01 for "present low quality"; 0.1 for "absent low quality"; 0.5 for "absent high quality".
 
 ### Second step: FDR corrected p-values per gene and condition
@@ -45,7 +43,7 @@ After all p-values have been propagated, we apply a Benjamini-Hochberg FDR corre
 - **Present gold quality** expression calls: when the FDR-corrected p-value for a gene in a condition is less than or equal to 0.01.
 - **Present silver quality** expression calls: when the FDR-corrected p-value for a gene in a condition is less than or equal to 0.05, and greater than 0.01.
 - **Absent gold quality** expression calls:
-  - when the call is supported by at least one p-values generated from data types trusted for absent calls (bulk RNA-Seq, Affymetrix, _in situ_ hybridization)
+  - when the call is supported by at least one p-values generated from data types trusted for absent calls (bulk RNA-Seq, _in situ_ hybridization)
   - and the FDR-corrected p-value for a gene in a condition is greater than 0.1, taking into account all requested data types
   - and the FDR-corrected p-value taking into account only data types trusted for absent calls is greater than 0.1
   - and there is no FDR-corrected p-value less than or equal to 0.05 in any child condition for that gene, considering the data types trusted for absent calls.
@@ -91,7 +89,7 @@ Advanced file additional information:
 
 - expression status generated from each data type are provided (present, absent, no data).
 - number of present high quality and present low quality calls from each data type.
-- number of absent high quality and absent low quality calls from _in situ_, Affymetrix, and RNA-Seq.
+- number of absent high quality and absent low quality calls from _in situ_ and RNA-Seq.
 - data type for which calls are observed. Each call is observed in at least one data type.
 
 ## Download file details
@@ -118,24 +116,6 @@ Below is a complete description of which data you can expect to find in each dow
 | 14     | [Including observed data](#including-observed-data-column-14 'See Including observed data column description')                                                                                                                                        | No                         | Yes                          | No                             | Yes                              | yes                            |
 | 15     | [Self observation count](#self-observation-count-column-15 'See Self observation count column description')                                                                                                                                           | No                         | Yes                          | No                             | Yes                              | 1                              |
 | 16     | [Descendant observation count](#descendant-observation-count-column-16 'See Descendant observation count column description')                                                                                                                         | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 17     | [Affymetrix expression](#affymetrix-expression-column-17 'See Affymetrix expression column description')                                                                                                                                              | No                         | Yes                          | No                             | Yes                              | no data                        |
-| 18     | [Affymetrix call quality](#affymetrix-call-quality-column-18 'See Affymetrix call quality column description')                                                                                                                                        | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 19     | [Affymetrix FDR](#affymetrix-fdr-column-19 'See Affymetrix FDR column description')                                                                                                                                                                   | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 20     | [Affymetrix expression score](#affymetrix-expression-score-column-20 'See Affymetrix expression score column description')                                                                                                                            | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 21     | [Affymetrix expression rank](#affymetrix-expression-rank-column-21 'See Affymetrix expression rank column description')                                                                                                                               | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 22     | [Affymetrix weight for expression rank and score](#affymetrix-weight-for-expression-rank-and-score-column-22 'See Affymetrix weight for expression rank and score column description')                                                                | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 23     | [Including Affymetrix observed data](#including-affymetrix-observed-data-column-23 'See Including Affymetrix observed data column description')                                                                                                       | No                         | Yes                          | No                             | Yes                              | no                             |
-| 24     | [Self observation count Affymetrix](#self-observation-count-affymetrix-column-24 'See Self observation count Affymetrix column description')                                                                                                          | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 25     | [Descendant observation count Affymetrix](#descendant-observation-count-affymetrix-column-25 'See Descendant observation count Affymetrix column description')                                                                                        | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 26     | [EST expression](#est-expression-column-26 'See EST expression column description')                                                                                                                                                                   | No                         | Yes                          | No                             | Yes                              | no data                        |
-| 27     | [EST call quality](#est-call-quality-column-27 'See EST call quality column description')                                                                                                                                                             | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 28     | [EST FDR](#est-fdr-column-28 'See EST FDR column description')                                                                                                                                                                                        | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 29     | [EST expression score](#est-expression-score-column-29 'See EST expression score column description')                                                                                                                                                 | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 30     | [EST expression rank](#est-expression-rank-column-30 'See EST expression rank column description')                                                                                                                                                    | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 31     | [EST weight for expression rank and score](#est-weight-for-expression-rank-and-score-column-31 'See EST weight for expression rank and score column description')                                                                                     | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 32     | [Including EST observed data](#including-est-observed-data-column-32 'See Including EST observed data column description')                                                                                                                            | No                         | Yes                          | No                             | Yes                              | no                             |
-| 33     | [Self observation count EST](#self-observation-count-est-column-33 'See Self observation count EST column description')                                                                                                                               | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 34     | [Descendant observation count EST](#descendant-observation-count-est-column-34 'See Descendant observation count EST column description')                                                                                                             | No                         | Yes                          | No                             | Yes                              | 0                              |
 | 35     | [in situ hybridization expression](#in-situ-hybridization-expression-column-35 'See in situ hybridization expression column description')                                                                                                             | No                         | Yes                          | No                             | Yes                              | present                        |
 | 36     | [in situ hybridization call quality](#in-situ-hybridization-call-quality-column-36 'See in situ hybridization call quality column description')                                                                                                       | No                         | Yes                          | No                             | Yes                              | gold quality                   |
 | 37     | [in situ hybridization FDR](#in-situ-hybridization-fdr-column-37 'See in situ hybridization FDR column description')                                                                                                                                  | No                         | Yes                          | No                             | Yes                              | 0.0004                         |
@@ -235,90 +215,6 @@ Number of observations coming from experimental data for this combination of con
 ##### <a name="descendant-observation-count-column-16"></a>Descendant observation count (column 16)
 
 Number of observations coming from experimental data for the combination of condition parameters (anatomical or all conditions) descendant of the current one.
-
-##### <a name="affymetrix-expression-column-17"></a>Affymetrix expression (column 17)
-
-Call generated from Affymetrix data for the selected combination of condition parameters (anatomical or all conditions). Permitted values: present, absent, no data.
-
-##### <a name="affymetrix-call-quality-column-18"></a>Affymetrix call quality (column 18)
-
-Quality associated with the call from Affymetrix data. Permitted values: gold quality, silver quality, NA.
-
-##### <a name="affymetrix-fdr-column-19"></a>Affymetrix FDR (column 19)
-
-FDR-corrected p-value of the call calculated using p-values coming from Affymetrix data.
-
-##### <a name="affymetrix-expression-score-column-20"></a>Affymetrix expression score (column 20)
-
-Score of expression to the call from Affymetrix data. The score uses the minimum and maximum `Expression Rank` (column 13) of the species to normalize the expression to a value between 0 and 100.
-
-Low score means that the gene is lowly expressed in the condition.
-
-##### <a name="affymetrix-expression-rank-column-21"></a>Affymetrix expression rank (column 21)
-
-Rank score associated with the call from Affymetrix data. Rank scores of expression calls are normalized across genes, conditions and species.
-
-A low score means that the gene is highly expressed in the condition.
-
-##### <a name="affymetrix-weight-for-expression-rank-and-score-column-22"></a>Affymetrix weight for expression rank and score (column 22)
-
-The weight given to Affymetrix expression ranks and scores when computing the weighted mean over several data types.
-
-##### <a name="including-affymetrix-observed-data-column-23"></a>Including Affymetrix observed data (column 23)
-
-Information about the calls actually coming from experimental Affymetrix data for this combination of condition parameters (anatomical or all conditions).
-
-Permitted value: `yes` or `no`.
-
-##### <a name="self-observation-count-affymetrix-column-24"></a>Self observation count Affymetrix (column 24)
-
-Number of observations coming from experimental Affymetrix data for this combination of condition parameters (anatomical or all conditions).
-
-##### <a name="descendant-observation-count-affymetrix-column-25"></a>Descendant observation count Affymetrix (column 25)
-
-Number of observations coming from experimental Affymetrix data for the combination of condition parameters (anatomical or all conditions) descendant of the current one.
-
-##### <a name="est-expression-column-26"></a>EST expression (column 26)
-
-Call generated from EST data for the selected combination of condition parameters (anatomical or all conditions). Permitted values: present, absent, no data.
-
-##### <a name="est-call-quality-column-27"></a>EST call quality (column 27)
-
-Quality associated with the call from EST data. Permitted values: gold quality, silver quality, NA.
-
-##### <a name="est-fdr-column-28"></a>EST FDR (column 28)
-
-FDR-corrected p-value of the call calculated using p-values coming from EST data.
-
-##### <a name="est-expression-score-column-29"></a>EST expression score (column 29)
-
-Score of expression to the call from EST data. The score uses the minimum and maximum `Expression Rank` (column 13) of the species to normalize the expression to a value between 0 and 100.
-
-Low score means that the gene is lowly expressed in the condition.
-
-##### <a name="est-expression-rank-column-30"></a>EST expression rank (column 30)
-
-Rank score associated with the call from EST data. Rank scores of expression calls are normalized across genes, conditions, and species.
-
-A low score means that the gene is highly expressed in the condition.
-
-##### <a name="est-weight-for-expression-rank-and-score-column-31"></a>EST weight for expression rank and score (column 31)
-
-The weight given to EST expression ranks and scores when computing the weighted mean over several data types.
-
-##### <a name="including-est-observed-data-column-32"></a>Including EST observed data (column 32)
-
-Information about the calls actually coming from experimental EST data for this combination of condition parameters (anatomical or all conditions).
-
-Permitted value: `yes` or `no`.
-
-##### <a name="self-observation-count-est-column-33"></a>Self observation count EST (column 33)
-
-Number of observations coming from experimental EST data for this combination of condition parameters (anatomical or all conditions).
-
-##### <a name="descendant-observation-count-est-column-34"></a>Descendant observation count EST (column 34)
-
-Number of observations coming from experimental EST data for the combination of condition parameters (anatomical or all conditions) descendant of the current one.
 
 ##### <a name="in-situ-hybridization-expression-column-35"></a>in situ hybridization expression (column 35)
 

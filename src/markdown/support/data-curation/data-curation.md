@@ -40,9 +40,7 @@ Sample metadata:
 Experiment metadata:
 
 - scRNA-seq and bulk RNA-seq: library ID, experiment ID, sequencing technology, sequencing platform, sequenced transcript part (3', 5' or full length)
-- affymetrix: experiment ID, chip ID
 - in situ hybridization: experiment ID, evidence ID
-- EST: library ID
 
 ## Annotation Process
 

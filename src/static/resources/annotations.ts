@@ -7,8 +7,7 @@ export function meta() {
   return getMetadata({
     title: 'Annotation resources',
     description: 'Access annotations of expression data and of anatomical similarities produced by Bgee.',
-    keywords:
-      'Anatomical similarity annotations, RNA-Seq annotations, Affymetrix annotations, EST annotations, GTEx annotations, scRNA-Seq annotations',
+    keywords: 'Anatomical similarity annotations, RNA-Seq annotations, GTEx annotations, scRNA-Seq annotations',
   });
 }
 
@@ -83,47 +82,6 @@ const annotations = [
             type: 'text',
             classNames: 'has-text-centered',
             content: `Annotations of ${FULL_LENGTH_LABEL} experiments, libraries and platforms used to generate the last version of Bgee.`,
-          },
-        ],
-      },
-      {
-        children: [
-          {
-            type: 'card',
-            title: 'Affymetrix annotations',
-            image: {
-              src: imagePath('/logo/github-logo.png'),
-              alt: 'Github logo',
-            },
-            link: 'https://github.com/BgeeDB/bgee_pipeline/tree/master/source_files/Affymetrix',
-            linkType: 'external',
-            classNames: 'mb-3',
-          },
-          {
-            type: 'text',
-            classNames: 'has-text-centered',
-            content:
-              'Annotations of Affymetrix experiments, chips, chip types used to generate the last version of Bgee.',
-          },
-        ],
-      },
-      {
-        children: [
-          {
-            type: 'card',
-            title: 'ESTs annotations',
-            image: {
-              src: imagePath('/logo/github-logo.png'),
-              alt: 'Github logo',
-            },
-            link: 'https://github.com/BgeeDB/bgee_pipeline/tree/master/source_files/ESTs',
-            linkType: 'external',
-            classNames: 'mb-3',
-          },
-          {
-            type: 'text',
-            classNames: 'has-text-centered',
-            content: 'ESTs annotations used to generate the last version of Bgee.',
           },
         ],
       },

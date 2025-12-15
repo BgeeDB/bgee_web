@@ -609,27 +609,7 @@ export const speciesToLdJSON = ({
     ],
   };
 
-  let file = downloadFiles.find((d) => d.category === 'affy_annot');
-  if (file) {
-    json.subjectOf[1].hasPart.push({
-      ...fileDownloadProps(file),
-      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} Affymetrix experiments chips`,
-      keywords: ['Affymetrix'],
-      description: 'Affymetrix experiments/chips annotations and metadata.',
-      url: `${url}#proc-values-affymetrix`,
-    });
-  }
-  file = downloadFiles.find((d) => d.category === 'affy_data');
-  if (file) {
-    json.subjectOf[1].hasPart.push({
-      ...fileDownloadProps(file),
-      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} Affymetrix probesets`,
-      description: `${genus} ${speciesName}${name ? ` (${name})` : ''} Affymetrix probesets, data (signal intensities).`,
-      url: `${url}#proc-values-affymetrix`,
-    });
-  }
-
-  file = downloadFiles.find((d) => d.category === 'rnaseq_annot');
+  let file = downloadFiles.find((d) => d.category === 'rnaseq_annot');
   if (file) {
     json.subjectOf[1].hasPart.push({
       ...fileDownloadProps(file),

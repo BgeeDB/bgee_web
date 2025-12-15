@@ -34,7 +34,6 @@ import PATHS from './paths';
 // import TutoExpCompFile from '../markdown/support/expression-comparison/expression-comparison.md';
 // import TutoRawDataFile from '../markdown/support/Raw-data-interface/Raw-data-interface.md';
 // import TutoAnatHomologyFile from '../markdown/support/anatomical-homology/anatomical-homology.md';
-// import TutoAffyExprVal from '../markdown/support/Download-files/affyProcExprValues.md';
 // import TutoRNASeqExprVal from '../markdown/support/Download-files/rnaSeqProcExprValues.md';
 // import TutoscRNAseqFLExprVal from '../markdown/support/Download-files/scRNASeqFLProcExprValues.md';
 // import TutoscRNAseqTBExprVal from '../markdown/support/Download-files/scRNASeqTBProcExprValues.md';
@@ -169,7 +168,7 @@ const RESOURCES = {
     //   description:
     //     'Access annotations of expression data and of anatomical similarities produced by Bgee.',
     //   keywords:
-    //     'Anatomical similarity annotations, RNA-Seq annotations, Affymetrix annotations, EST annotations, GTEx annotations, scRNA-Seq annotations',
+    //     'Anatomical similarity annotations, RNA-Seq annotations, GTEx annotations, scRNA-Seq annotations',
     // },
   },
   [PATHS.RESOURCES.ONTOLOGIES]: {
@@ -304,15 +303,6 @@ const SUPPORT = {
     //   title: 'Bgee anatomical homology tutorial',
     //   description: 'Bgee Tutorial about anatomical homology',
     //   keywords: 'Tutorial, anatomical homology, tool, analysis, search',
-    // },
-  },
-  [PATHS.SUPPORT.TUTORIAL_AFFY_EXPR_VAL]: {
-    // source: TutoAffyExprVal,
-    title: 'Tutorial: Affymetrix download file documentation',
-    // meta: {
-    //   title: 'Bgee Affymetrix download file documentation: annotations and processed expression values tutorial',
-    //   description: 'Bgee Tutorial about Affymetrix download file documentation: annotations and processed expression values',
-    //   keywords: 'Tutorial, Affymetrix, Download file, Processed expression values',
     // },
   },
   [PATHS.SUPPORT.TUTORIAL_RNASEQ_EXPR_VAL]: {

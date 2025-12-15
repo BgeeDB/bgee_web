@@ -42,8 +42,6 @@ const GeneExpressionMatrixResults = ({
       // TODO: use actual number from API response
       maxExp,
       isExpressed,
-      hasDataAffy: result.dataTypesWithData.AFFYMETRIX,
-      hasDataEst: result.dataTypesWithData.EST,
       hasDataInSitu: result.dataTypesWithData.IN_SITU,
       hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
       hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,

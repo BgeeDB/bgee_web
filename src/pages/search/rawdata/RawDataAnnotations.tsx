@@ -7,9 +7,7 @@ import RawDataAnnotationResults from './RawDataAnnotationResults';
 import DevelopmentalAndLifeStages from './components/filters/DevelopmentalAndLifeStages/DevelopmentalAndLifeStages';
 import Species from './components/filters/Species/Species';
 import useLogic, {
-  AFFYMETRIX,
   DATA_TYPES,
-  EST,
   EXPERIMENTS,
   PROC_EXPR_VALUES,
   RAW_DATA_ANNOTS,
@@ -138,26 +136,16 @@ const RawDataAnnotations = ({ isExprCalls = false, initSearchResult = {} }) => {
   const resultCountLabel = useMemo(() => {
     switch (pageType) {
       case EXPERIMENTS:
-        return `${formatLargeNumber(localCount.experimentCount)} ${dataType === EST ? 'libraries' : 'experiments'}`;
+        return `${formatLargeNumber(localCount.experimentCount)} experiments`;
       case RAW_DATA_ANNOTS: {
-        if (dataType === EST) {
-          return `${formatLargeNumber(localCount.assayCount)} libraries`;
-        }
         return `${formatLargeNumber(localCount.experimentCount)} experiments / ${formatLargeNumber(
           localCount.assayCount
-        )} ${dataType === AFFYMETRIX ? 'chips' : 'assays'}`;
+        )} assays`;
       }
       case PROC_EXPR_VALUES: {
-        if (dataType === EST) {
-          return `${formatLargeNumber(localCount.assayCount)} libraries / ${formatLargeNumber(
-            localCount.callCount
-          )} gene expression values`;
-        }
         return `${formatLargeNumber(localCount.experimentCount)} experiments / ${formatLargeNumber(
           localCount.assayCount
-        )} ${dataType === AFFYMETRIX ? 'chips' : 'assays'} / ${formatLargeNumber(
-          localCount.callCount
-        )} gene expression values`;
+        )} assays / ${formatLargeNumber(localCount.callCount)} gene expression values`;
       }
       default:
         return '';

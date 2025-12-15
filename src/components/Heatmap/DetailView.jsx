@@ -99,15 +99,6 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
                   SC
                 </span>
               )}
-              {data.hasDataAffy ? (
-                <span title="Affymetrix data: presence" className="tag tag-source present">
-                  A
-                </span>
-              ) : (
-                <span title="Affymetrix data: absence" className="tag tag-source absent">
-                  A
-                </span>
-              )}
               {data.hasDataInSitu ? (
                 <span title="In situ hybridization: presence" className="tag tag-source present">
                   I
@@ -115,15 +106,6 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
               ) : (
                 <span title="In situ hybridization: absence" className="tag tag-source absent">
                   I
-                </span>
-              )}
-              {data.hasDataEst ? (
-                <span title="EST: presence" className="tag tag-source present">
-                  E
-                </span>
-              ) : (
-                <span title="EST: absence" className="tag tag-source absent">
-                  E
                 </span>
               )}
             </div>

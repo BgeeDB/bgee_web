@@ -70,7 +70,7 @@ const about = [
           {
             type: 'text',
             content:
-              'Bgee data are produced from multiple data types (bulk RNA-Seq, scRNA-Seq, Affymetrix, in situ hybridization, EST data), and multiple data sets, that are all integrated consistently to provide a single answer to the question: "where is this gene expressed?"',
+              'Bgee data are produced from multiple data types (bulk RNA-Seq, scRNA-Seq, in situ hybridization), and multiple data sets, that are all integrated consistently to provide a single answer to the question: "where is this gene expressed?"',
           },
           {
             type: 'text',
@@ -167,7 +167,7 @@ const about = [
               },
               {
                 content:
-                  ', allowing to download the Affymetrix and RNA-Seq data and metadata used in Bgee, and to perform TopAnat analyses.',
+                  ', allowing to download the RNA-Seq data and metadata used in Bgee, and to perform TopAnat analyses.',
                 type: 'text',
               },
             ],

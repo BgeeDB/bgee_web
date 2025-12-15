@@ -55,7 +55,6 @@ const Species = () => {
     const src: any = {
       anatOnlyXpr: {},
       fullXpr: {},
-      affymetrix: {},
       rnaSeq: {},
       fullLength: {},
       dropletBased: {},
@@ -80,11 +79,6 @@ const Species = () => {
         (d) => d.category === 'expr_advanced' && d.conditionParameters.length > 1
       );
       if (search) src.fullXpr.advanced = search;
-
-      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'affy_annot');
-      if (search) src.affymetrix.annot = search;
-      search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'affy_data');
-      if (search) src.affymetrix.data = search;
 
       search = data.downloadFilesGroups.downloadFiles.find((d) => d.category === 'rnaseq_annot');
       if (search) src.rnaSeq.annot = search;
@@ -300,35 +294,6 @@ const Species = () => {
             </Link>
             .
           </p>
-          <div className="mt-2">
-            <p className="is-size-5 has-text-primary has-text-weight-semibold" id="proc-values-affymetrix">
-              Affymetrix
-            </p>
-            {files.affymetrix.annot || files.affymetrix.data ? (
-              <ul className="unordered">
-                {files.affymetrix.annot && (
-                  <li>
-                    Experiments/chips annotations and meta data:{' '}
-                    <a className="internal-link" href={files.affymetrix.annot.path}>
-                      <code>{files.affymetrix.annot.name}</code>
-                    </a>
-                    {` (${readableFileSize(files.affymetrix.annot.size)})`}
-                  </li>
-                )}
-                {files.affymetrix.data && (
-                  <li>
-                    Data (signal intensities):{' '}
-                    <a className="internal-link" href={files.affymetrix.data.path}>
-                      <code>{files.affymetrix.data.name}</code>
-                    </a>
-                    {` (${readableFileSize(files.affymetrix.data.size)})`}
-                  </li>
-                )}
-              </ul>
-            ) : (
-              <p className="mt-2 mb-4">No data</p>
-            )}
-          </div>
           <div className="mt-2">
             <p className="is-size-5 has-text-primary has-text-weight-semibold" id="proc-values-rna-seq">
               RNA-Seq

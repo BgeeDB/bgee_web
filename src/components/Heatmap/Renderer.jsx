@@ -187,8 +187,6 @@ export const Renderer = forwardRef(
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
         // maxExpScore: d.maxExp.toFixed(2),
-        hasDataAffy: d.hasDataAffy,
-        hasDataEst: d.hasDataEst,
         hasDataInSitu: d.hasDataInSitu,
         hasDataRnaSeq: d.hasDataRnaSeq,
         hasDataScRnaSeq: d.hasDataScRnaSeq,

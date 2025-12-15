@@ -70,9 +70,7 @@ const useTopAnat = (flowState: string, setFlowState) => {
             .then((r) => {
               propsForm.handleChange('genesBg', () => '')();
               propsForm.handleChange('rnaSeq', () => true)();
-              propsForm.handleChange('affymetrix', () => true)();
               propsForm.handleChange('inSitu', () => true)();
-              propsForm.handleChange('est', () => true)();
               setRP((prev) => ({
                 ...(prev || {}),
                 fg: {

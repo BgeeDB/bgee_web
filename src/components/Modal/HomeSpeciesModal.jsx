@@ -38,7 +38,7 @@ const HomeSpeciesModal = ({ species, hide }) => {
           }}
           to={`${PATHS.DOWNLOAD.PROCESSED_EXPRESSION_VALUES}?id=${species.id}`}
         >
-          RNA-Seq and Affymetrix data
+          RNA-Seq data
         </Link>
         <Link to={`${PATHS.DOWNLOAD.GENE_EXPRESSION_CALLS}?id=${species.id}`} className="button-species">
           Gene expression calls
