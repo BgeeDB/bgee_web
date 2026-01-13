@@ -253,6 +253,22 @@ export default function Home({ loaderData }) {
                   height="70"
                 />
               </LinkExternal>
+              <LinkExternal
+                className="ext-as-int-link"
+                to="https://elixir-europe.org/platforms/data/core-data-resources"
+              >
+                <img
+                  src={imagePath(`/logo/ELIXIR-core-data-resources-logo.webp`)}
+                  alt="ELIXIR Core Data Resources"
+                  width="96"
+                  height="70"
+                />
+              </LinkExternal>
+            </div>
+            <div className="resource-logos">
+              <LinkExternal className="ext-as-int-link" to="https://sc-fair.org/">
+                <img src={imagePath(`/logo/sc-fair-logo.webp`)} alt="scFAIR" width="62" height="70" />
+              </LinkExternal>
               <LinkExternal className="ext-as-int-link" to="https://elixir-europe.org/platforms/interoperability/rirs">
                 <img
                   src={imagePath(`/logo/ELIXIR-rir-logo.png`)}
@@ -270,10 +286,29 @@ export default function Home({ loaderData }) {
               >
                 Global Core Biodata Resource
               </LinkExternal>
+              , an&nbsp;
+              <LinkExternal
+                className="ext-as-int-link"
+                to="https://elixir-europe.org/platforms/data/core-data-resources"
+              >
+                ELIXIR Core Data Resources
+              </LinkExternal>
               and an&nbsp;
               <LinkExternal className="ext-as-int-link" to="https://elixir-europe.org/platforms/interoperability/rirs">
                 ELIXIR Recommended Interoperability Resource
               </LinkExternal>
+              .
+            </div>
+            <div className="resource-links">
+              Bgee is part of the&nbsp;
+              <LinkExternal
+                className="ext-as-int-link"
+                to="https://elixir-europe.org/platforms/data/core-data-resources"
+              >
+                scFAIR
+              </LinkExternal>
+              initiative to standardize single-cell genomics data and promote findable, accessible, interoperable, and
+              reusable single-cell data.
             </div>
           </Bulma.C>
           <Bulma.C size={6}>
