@@ -293,7 +293,7 @@ export default function Home({ loaderData }) {
               >
                 ELIXIR Core Data Resources
               </LinkExternal>
-              and an&nbsp;
+              &nbsp;and an&nbsp;
               <LinkExternal className="ext-as-int-link" to="https://elixir-europe.org/platforms/interoperability/rirs">
                 ELIXIR Recommended Interoperability Resource
               </LinkExternal>
@@ -307,8 +307,8 @@ export default function Home({ loaderData }) {
               >
                 scFAIR
               </LinkExternal>
-              initiative to standardize single-cell genomics data and promote findable, accessible, interoperable, and
-              reusable single-cell data.
+              &nbsp;initiative to standardize single-cell genomics data and promote findable, accessible, interoperable,
+              and reusable single-cell data.
             </div>
           </Bulma.C>
           <Bulma.C size={6}>

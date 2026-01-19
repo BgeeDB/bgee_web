@@ -1546,13 +1546,15 @@ h1.title.in-md {
     .resource-logos {
       width: 100%;
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       margin: 0 0 10px 0;
+      padding-left: 100px;
+      padding-right: 100px;
     }
     .resource-links {
       text-align: center;
       a.external-link {
-        padding-right: 5px;
+        padding-right: 0;
       }
     }
   }
