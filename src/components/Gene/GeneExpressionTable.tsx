@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
+import { Download } from 'lucide-react';
+import config from '../../config.json';
 
 import Bulma from '../Bulma';
 import api from '../../api';
@@ -13,9 +15,7 @@ import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 import PATHS from '../../paths/paths';
 import { FULL_LENGTH_LABEL, SOURCE_LETTER_FULL_LENGTH } from '../../api/prod/constant';
 import {
-  AFFYMETRIX,
   ALL_DATA_TYPES,
-  EST,
   ID_FULL_LENGTH,
   IN_SITU,
   RNA_SEQ,
@@ -26,14 +26,6 @@ import { URL_ROOT } from '~/helpers/constants';
 // import schemaDotOrg from '../../helpers/schemaDotOrg';
 
 const DATA_TYPES = [
-  {
-    key: 'AFFYMETRIX',
-    text: 'Affymetrix',
-  },
-  {
-    key: 'EST',
-    text: 'EST',
-  },
   {
     key: 'IN_SITU',
     text: 'In Situ',
@@ -193,6 +185,55 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
     return oldQuery === (hashExpr || 'anat') && JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
   }, [cFields, hashExpr, dataType, dataTypeExpr]);
 
+  const tsvHeader = () => {
+    /* Dynamic list of headers */
+    let tsv = 'data:text/tab-separated-values;charset=utf-8,';
+    CUSTOM_FIELDS.forEach((c) => {
+      if (cFields[c.key]) {
+        /* if selected */
+        if (c.text === 'Anat. entity and cell types') {
+          tsv += 'Anat. entity and cell types ID';
+          tsv += '%09';
+          tsv += 'Anat. entity and cell types name';
+          tsv += '%09';
+        } else if (c.text === 'Dev. stage') {
+          tsv += 'Dev. stage ID';
+          tsv += '%09';
+          tsv += 'Dev. stage name';
+          tsv += '%09';
+        } else {
+          tsv += `${c.text}`;
+          tsv += '%09';
+        }
+      }
+    });
+    tsv += 'Expression score%09FDR%09Link to source data%09Sources%0D%0A';
+
+    finalTSV(tsv);
+    return tsv;
+  };
+
+  const addToTSV = (tsv, field) => {
+    if (field) {
+      tsv += `${field}`;
+      tsv += '%09';
+    }
+    finalTSV(tsv);
+    return tsv;
+  };
+
+  const addNewLine = (tsv) => {
+    tsv = tsv.replace(/%09$/, '');
+    tsv += '%0D%0A';
+    finalTSV(tsv);
+    return tsv;
+  };
+
+  let TSV;
+  const finalTSV = (tsv) => {
+    TSV = tsv;
+  };
+
   const customHeader = React.useCallback(
     (searchElement, pageSizeElement) => (
       <>
@@ -296,6 +337,20 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
           >
             Update
           </Bulma.Button>
+          <Bulma.Button
+            className="ml-2 py-0"
+            href={TSV}
+            disabled={!TSV}
+            renderAs="a"
+            download={`Bgee-${geneId}-${speciesId}-${notExpressed ? 'absence-of-expression' : 'presence-of-expression'}.tsv`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            TSV
+            <span className="icon is-small ml-1">
+              <Download size={15} />
+            </span>
+          </Bulma.Button>
         </div>
         <Bulma.Columns vCentered className="mt-0">
           <Bulma.C size={8}>
@@ -309,12 +364,20 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
     ),
     [isLoading, cFields, dataType]
   );
+  let tsv = tsvHeader();
+  if (tsv) {
+    /* NOTE just here to avoid warning: tsv is unused! */
+  }
   const onRenderCell = React.useCallback(
     ({ cell, key }, defaultRender) => {
       switch (key) {
         case 'anatEntity':
+          tsv = addToTSV(TSV, cell.condition.anatEntity.id);
+          tsv = addToTSV(TSV, cell.condition.anatEntity.name);
           return <AnatEntityCell cell={cell} />;
         case 'devStage':
+          tsv = addToTSV(TSV, cell.condition.devStage.id);
+          tsv = addToTSV(TSV, cell.condition.devStage.name);
           return (
             <>
               <span className="is-size-7">
@@ -326,6 +389,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
             </>
           );
         case 'expScore':
+          tsv = addToTSV(TSV, cell.expressionScore.expressionScore);
           return (
             <span
               key={key}
@@ -341,6 +405,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
             </span>
           );
         case 'fdr':
+          tsv = addToTSV(TSV, cell.fdr);
           return defaultRender(cell.fdr, key);
         case 'proc_expr_values': {
           let searchParams = `pageType=${PROC_EXPR_VALUES}&gene_id=${geneId}&species_id=${speciesId}&cell_type_descendant=true&stage_descendant=true&anat_entity_descendant=true&only_propagated=true`;
@@ -363,42 +428,47 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
               searchParams += `&cell_type_id=${cell?.condition?.cellType?.id}`;
             }
           }
+          tsv = addToTSV(TSV, `${config.prodDomain}${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?${searchParams}`);
           return <Link to={`${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?${searchParams}`}>See source data</Link>;
         }
         case 'strain':
+          tsv = addToTSV(TSV, cell.condition.strain);
           return defaultRender(cell.condition.strain, key);
         case 'sex':
+          tsv = addToTSV(TSV, cell.condition.sex);
           return defaultRender(cell.condition.sex, key);
         case 'sources': {
           const col = columns ? columns.find((c) => c.key === key) : [];
           const source = {};
+          let source_list = '';
           ALL_DATA_TYPES.forEach((dt) => {
             source[dt.id] = false;
           });
           cell.dataTypesWithData.forEach((dataTypeString) => {
             switch (dataTypeString) {
-              case 'Affymetrix':
-                source[AFFYMETRIX] = true;
-                break;
-              case 'EST':
-                source[EST] = true;
-                break;
               case 'in situ hybridization':
                 source[IN_SITU] = true;
+                source_list += dataTypeString + ', ';
                 break;
               case 'RNA-Seq':
                 source[RNA_SEQ] = true;
+                source_list += dataTypeString + ', ';
                 break;
               case 'single-cell RNA-Seq':
                 source[ID_FULL_LENGTH] = true;
+                source_list += dataTypeString + ', ';
                 break;
               case 'full length single cell RNA-Seq': // @Don't change Full-length
                 source[ID_FULL_LENGTH] = true;
+                source_list += dataTypeString + ', ';
                 break;
               default:
                 break;
             }
           });
+          /* FIXME are they always sorted the same? */
+          tsv = addToTSV(TSV, source_list.replace(/, $/, ''));
+          tsv = addNewLine(TSV);
           return (
             <div className="tags tags-source" style={col?.style}>
               <TagSource source={source} />
@@ -515,18 +585,6 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
               <>
                 <p className="has-text-weight-semibold is-underlined mt-0">Sources</p>
                 <Bulma.Columns vCentered className="my-0">
-                  <Bulma.C>
-                    <span>
-                      <b>A</b>
-                      <span className="is-size-7"> Affimetrix</span>
-                    </span>
-                  </Bulma.C>
-                  <Bulma.C>
-                    <span>
-                      <b>E</b>
-                      <span className="is-size-7"> EST</span>
-                    </span>
-                  </Bulma.C>
                   <Bulma.C>
                     <span>
                       <b>I</b>
