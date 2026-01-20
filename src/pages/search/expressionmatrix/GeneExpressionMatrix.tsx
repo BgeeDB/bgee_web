@@ -278,7 +278,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
               onFetchChildren={triggerSearchChildren}
             />
           </div>
-          <UserFeedback />
+          {/* <UserFeedback /> */}
         </div>
       </div>
     </>
