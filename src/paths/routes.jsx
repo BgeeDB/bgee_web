@@ -381,6 +381,15 @@ const ABOUT = {
     //   keywords: 'About, license, CC0',
     // },
   },
+  [PATHS.ABOUT.CONTACT]: {
+    // component: NewsPage,
+    title: 'Bgee Contact',
+    // meta: {
+    //   title: 'Bgee news',
+    //   description: 'Bgee news describing each new releases',
+    //   keywords: 'News, latest, information, releases',
+    // },
+  },
   [PATHS.ABOUT.NEWS]: {
     // component: NewsPage,
     title: 'Bgee News',

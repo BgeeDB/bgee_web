@@ -84,10 +84,14 @@ const UserFeedback = () => {
       </div>
 
       <div className="field">
-        <label className="label">A penny for your thoughts (optional)</label>
+        <label for="feedback" className="label">
+          A penny for your thoughts (optional)
+        </label>
         <div className="control">
           <textarea
+            id="feedback"
             className="textarea"
+            minlength="1"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Your feedback helps us improve"
@@ -96,11 +100,16 @@ const UserFeedback = () => {
       </div>
 
       <div className="field">
-        <label className="label">Email (optional)</label>
+        <label for="email" className="label">
+          Email (optional)
+        </label>
         <div className="control">
           <input
             type="email"
+            id="email"
             className="input"
+            minlength="4"
+            maxlength="100"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email if you'd like us to follow up"

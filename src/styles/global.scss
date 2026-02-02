@@ -18,7 +18,8 @@ $code: $primary;
 $title-color: $primary;
 $light-color: #ffffff;
 $light-gray: #f5f5f5;
-$light-opacity: #ffffff4d;
+$light-opacity: #ffff4d;
+$red: #e20613; // SIB red
 
 $nav-hover: linear-gradient(117deg, rgb(54, 54, 54) 0%, rgb(73, 70, 70) 100%);
 $dark-bg-color: #282828;
@@ -649,6 +650,22 @@ a.image.cc {
 }
 .privacycolor {
   color: #9e9e9e;
+}
+
+.red {
+  color: $red;
+}
+.contact {
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  p {
+    font-size: 0.8rem;
+  }
+  .inline {
+    display: inline;
+  }
 }
 
 .archived-link {

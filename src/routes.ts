@@ -36,6 +36,7 @@ export default [
 
   // About routes
   route(PATHS.ABOUT.NEWS, './pages/about/NewsPage.tsx'),
+  route(PATHS.ABOUT.CONTACT, './pages/about/Contact.jsx'),
   route(PATHS.ABOUT.SOURCES, './pages/about/DataSource.tsx'),
   route(PATHS.ABOUT.ABOUT, './static/about/about.ts'),
   route(PATHS.ABOUT.COLLABORATIONS, './static/about/collaborations.ts'),

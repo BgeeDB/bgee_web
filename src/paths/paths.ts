@@ -60,6 +60,7 @@ const PATHS = {
   },
   ABOUT: {
     ABOUT: `${URL_ROOT}/about/`,
+    CONTACT: `${URL_ROOT}/about/contact`,
     NEWS: `${URL_ROOT}/about/news`,
     COLLABORATIONS: `${URL_ROOT}/about/collaborations`,
     PUBLICATION: `${URL_ROOT}/about/publications`,
