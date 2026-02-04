@@ -15,7 +15,8 @@ export function meta() {
   });
 }
 
-// TODO improve CSS: text size, ...
+// TODO add in menu
+// TODO test on different browsers (chromium-based)
 // FIXME automatically send user referer info
 // TODO replace feedback API call
 // TODO Other ways to contact us: social media?
@@ -46,16 +47,8 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [info, setInfo] = useState(additional_info);
   const [privacy, setPrivacy] = useState('');
-  const [sourceUrl, setSourceUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // null | 'success' | 'error'
-
-  // Update sourceUrl whenever the URL changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setSourceUrl(window.location.href);
-    }
-  }, [location.pathname, location.search]);
 
   const handleSubmitMessage = async () => {
     if (
@@ -70,10 +63,13 @@ const Contact = () => {
     setSubmitStatus(null);
 
     try {
-      await api.feedback.submit({
-        sourceUrl,
-        comment: message,
+      await api.message.submit({
+        name,
         email,
+        subject,
+        message,
+        info,
+        privacy,
       });
 
       // Clear form on success

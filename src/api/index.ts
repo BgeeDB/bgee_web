@@ -3,6 +3,7 @@ import search from './prod/search';
 import expressionComparison from './prod/expressionComparison';
 import get from './prod/get';
 import feedback from './prod/feedback';
+import message from './prod/message';
 
 /*
  * ERROR RESPONSE FORMAT
@@ -23,6 +24,7 @@ const api = {
   expressionComparison,
   get,
   feedback,
+  message,
 };
 
 export default api;
