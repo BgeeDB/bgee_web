@@ -119,7 +119,7 @@ const Contact = () => {
             id="email"
             className="input"
             required="required"
-            minlength="4"
+            minlength="6"
             maxlength="100"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
