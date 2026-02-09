@@ -42,6 +42,15 @@ const about = [
         type: 'link_external',
       },
       {
+        content: `), an ELIXIR Core Data Resources (`,
+        type: 'bold',
+      },
+      {
+        text: `ELIXIR Core`,
+        path: 'https://elixir-europe.org/platforms/data/core-data-resources',
+        type: 'link_external',
+      },
+      {
         content: `), and also an ELIXIR Recommended Interoperability Resources (`,
         type: 'bold',
       },
