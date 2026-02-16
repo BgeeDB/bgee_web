@@ -291,7 +291,7 @@ export default function Home({ loaderData }) {
                 className="ext-as-int-link"
                 to="https://elixir-europe.org/platforms/data/core-data-resources"
               >
-                ELIXIR Core Data Resources
+                ELIXIR Core Data Resource
               </LinkExternal>
               &nbsp;and an&nbsp;
               <LinkExternal className="ext-as-int-link" to="https://elixir-europe.org/platforms/interoperability/rirs">

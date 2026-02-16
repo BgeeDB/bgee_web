@@ -33,7 +33,7 @@ const about = [
     type: 'rich_text',
     content: [
       {
-        content: `Bgee is a Global Core Biodata Resources (`,
+        content: `Bgee is a Global Core Biodata Resource (`,
         type: 'bold',
       },
       {
@@ -42,7 +42,7 @@ const about = [
         type: 'link_external',
       },
       {
-        content: `), an ELIXIR Core Data Resources (`,
+        content: `), an ELIXIR Core Data Resource (`,
         type: 'bold',
       },
       {
@@ -51,7 +51,7 @@ const about = [
         type: 'link_external',
       },
       {
-        content: `), and also an ELIXIR Recommended Interoperability Resources (`,
+        content: `), and also an ELIXIR Recommended Interoperability Resource (`,
         type: 'bold',
       },
       {
