@@ -31,6 +31,60 @@ const collaborations = [
   },
   {
     type: 'section',
+    title: 'EOSC Data Commons',
+    children: [
+      {
+        type: 'link_image',
+        src: imagePath('/collab/eosc-data-commons-logo.webp'),
+        path: 'https://www.eosc-data-commons.eu/',
+        alt: 'EOSC Data Commons',
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'link_external',
+            path: 'https://www.eosc-data-commons.eu/',
+            text: 'EOSC Data Commons',
+          },
+          {
+            type: 'text',
+            content:
+              ' contributes to establishing EOSC as the European Research Commons, a global trusted ecosystem that provides seamless access to high-quality interoperable research outputs and services, enabling European researchers to collaborate more easily, be more productive and achieve higher levels of excellence.',
+          },
+        ],
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'text',
+            content: 'The ',
+          },
+          {
+            type: 'link_internal',
+            path: '/analysis/top-anat',
+            text: 'TopAnat',
+          },
+          {
+            type: 'text',
+            content: ' tool will be integrated with ',
+          },
+          {
+            type: 'link_external',
+            path: 'https://www.eosc-data-commons.eu/use-case/gene-expression-enrichment-with-the-topanat-tool',
+            text: 'EOSC Data Commons',
+          },
+          {
+            type: 'text',
+            content: ' Services and Components.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'section',
     title: 'gget',
     children: [
       {
