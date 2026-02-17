@@ -123,6 +123,12 @@ const SIDE_MENU = [
         path: `/sparql-editor${URL_ROOT}/`,
         type: 'internal',
       },
+      {
+        key: 'page.resources.api.test',
+        title: 'Bgee API',
+        path: '/doc-api/',
+        type: 'external',
+      },
     ],
   },
   {

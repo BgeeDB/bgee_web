@@ -137,6 +137,11 @@ const Footer = () => {
                   SPARQL editor
                 </Link>
               </li>
+              <li>
+                <a href="/doc-api/" target="_blank">
+                  Bgee API
+                </a>
+              </li>
             </ul>
           </div>
           <div className="nav-footer-col-spacer" />
