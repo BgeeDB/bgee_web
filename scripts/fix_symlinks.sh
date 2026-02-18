@@ -9,6 +9,7 @@ done
 
 # Add the ftp symlink which may have issues at build time if the destination does not exist!
 ln -fs /mnt/FTPBGEE/ftp ftp
+ln -fs ../doc-api doc-api
 
 exit
 
