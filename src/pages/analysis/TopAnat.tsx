@@ -175,6 +175,14 @@ const TopAnat = () => {
         setFlowState(TOP_ANAT_FLOW.GOT_RESULTS);
       })
       .catch((err) => {
+        if (err?.data?.data.exceptionType === 'RequestParametersNotFoundException' && err.data.code === 400) {
+          console.debug('[ERROR] api.topAnat.getResults(%s)', ID, err);
+          addNotification({
+            id: random().toString(),
+            children: <p>{err.data.message}</p>,
+            className: 'is-danger',
+          });
+        }
         if (err?.data?.data.exceptionType === 'JobResultNotFoundException' && err.data.code === 400) {
           const rp = err.data.requestParameters;
           const formData = ApiReducer.topAnatForm(rp)({});
