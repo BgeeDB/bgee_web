@@ -85,6 +85,56 @@ const collaborations = [
   },
   {
     type: 'section',
+    title: 'Galaxy SWISS',
+    children: [
+      {
+        type: 'link_image',
+        src: imagePath('/collab/galaxy-swiss-logo.webp'),
+        path: 'https://usegalaxy.ch/',
+        alt: 'Galaxy SWISS',
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'link_external',
+            path: 'https://usegalaxy.ch/',
+            text: 'Galaxy SWISS',
+          },
+          {
+            type: 'text',
+            content:
+              ' empowers Swiss researchers with an accessible, transdisciplinary computational ecosystem built on ',
+          },
+          {
+            type: 'link_external',
+            path: 'https://usegalaxy.org/',
+            text: 'Galaxy',
+          },
+          {
+            type: 'text',
+            content: '.',
+          },
+        ],
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'text',
+            content: 'The Galaxy SWISS project is funded by ',
+          },
+          {
+            type: 'link_external',
+            path: 'https://www.swissuniversities.ch/',
+            text: 'swissuniversities',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'section',
     title: 'gget',
     children: [
       {
