@@ -776,8 +776,8 @@ const useLogic = (isExprCalls) => {
           return api.search.genes.AutoCompleteByType(type, query, selectedSpecies.value).then((resp) => {
             if (resp.code === 200) {
               const results = resp.data.result.searchMatches || resp.data.result.geneMatches;
-              let list = [];
-              list = results.map(mappingFn);
+              // let list = [];
+              const list = results.map(mappingFn);
               return list;
             }
             return [];

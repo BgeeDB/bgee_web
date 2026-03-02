@@ -109,7 +109,8 @@ const search = {
       }),
     AutoCompleteByType: (searchType: string, query: string, speciesId: string) =>
       new Promise((resolve, reject) => {
-        let params = new URLSearchParams();
+        // let params = new URLSearchParams();
+        let params;
 
         //! /!\ Destined to change once all search_autcomplete are the same
         //! The (if gene...) should then be removed
