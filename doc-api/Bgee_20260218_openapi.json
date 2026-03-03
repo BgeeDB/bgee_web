@@ -246,7 +246,7 @@
           "url": "https://www.bgee.org/support/tutorial-expression-calls"
         },
         "summary": "Retrieve expression calls",
-        "description": "To answer to the question \"Is this gene expressed under this  condition?\"\n\nRetrieve present/absent gene expression calls per condition. These present/absent expression calls are generated through data type-specific statistical tests to assess if the gene expression significantly surpasses the background transcriptional and experimental noise in the defined condition. A 'condition' is defined by any one or a combination of anatomical entity, developmental stage, sex, or strain. \\\nSee the main [Bgee publications](https://www.bgee.org/about/publications) or [Bgee documentation](https://www.bgee.org/support/tutorial-expression-call-download-documentation)  for details. \n\nThe results include FDR-corrected p-values and additional expression metrics for each gene within that particular condition.",
+        "description": "To answer to the question \"Is this gene expressed under this  condition?\"\n\nRetrieve present/absent gene expression calls per condition. These present/absent expression calls are generated through data type-specific statistical tests to assess if the gene expression significantly surpasses the background transcriptional and experimental noise in the defined condition. A 'condition' is defined by any or a combination of anatomical entity, developmental stage, sex, or strain. \\\nSee the main [Bgee publications](https://www.bgee.org/about/publications) or [Bgee documentation](https://www.bgee.org/support/tutorial-expression-call-download-documentation)  for details. \n\nThe results include FDR-corrected p-values and additional expression metrics for each gene within that particular condition.",
         "parameters": [
           {
             "name": "page",
@@ -383,7 +383,7 @@
           {
             "name": "strain",
             "in": "query",
-            "description": "Strain(s) of interest, or ethnicity in humans. Bgee uses the UniProt controlled vocabulary of strains. Applicable only when 'strain' is included among the condition parameters. Applicable only when 'strain' is included among the condition parameters. E.g Asian",
+            "description": "Strain(s) of interest, or ethnicity in humans. Bgee uses the UniProt controlled vocabulary of strains. Applicable only when 'strain' is included among the condition parameters. Applicable only when 'strain' is included among the condition parameters. E.g. Asian",
             "required": false,
             "schema": {
               "type": "array",
@@ -397,7 +397,7 @@
           {
             "name": "cell_type_id",
             "in": "query",
-            "description": "Cell type identifier(s) of interest, using [CL ontology ID](https://www.ebi.ac.uk/ols4/ontologies/cl).  Multiple IDs allowed. Applicable only when 'cell_type' is included among the condition parameters and with single cell RNA-Seq data type. E.g CL:0000540",
+            "description": "Cell type identifier(s) of interest, using [CL ontology ID](https://www.ebi.ac.uk/ols4/ontologies/cl).  Multiple IDs allowed. Applicable only when 'cell_type' is included among the condition parameters and with single cell RNA-Seq data type. E.g. CL:0000540",
             "required": false,
             "schema": {
               "type": "array",
@@ -683,7 +683,7 @@
               "minimum": 0,
               "default": 0.2
             },
-            "description": "False Discovery Rate (FDR) threshold used for significance filtering. Anatomical terms with a FDR higher than this threshold will not be considered as significant. Must be ≥ 0. Default: 0.2.\n"
+            "description": "False Discovery Rate (FDR) threshold used for significance filtering. Anatomical terms with an FDR higher than this threshold will not be considered as significant. Must be ≥ 0. Default: 0.2.\n"
           },
           {
             "name": "p_value_thr",
@@ -733,7 +733,7 @@
                 "parent-child"
               ]
             },
-            "description": "Algorithm to reduce false positives from ontology structure. See topGO docs for more informations. The value `classic` means that no decorrelation using the ontology structure is performed."
+            "description": "Algorithm to reduce false positives from ontology structure. See topGO docs for more information. The value `classic` means that no decorrelation using the ontology structure is performed."
           },
           {
             "name": "job_title",
@@ -923,7 +923,7 @@
               "minimum": 1
             },
             "required": true,
-            "description": "Unique identifier of the submitted TopAnat job, returned by the `POST /top_anat` submission.."
+            "description": "Unique identifier of the submitted TopAnat job, returned by the `POST /top_anat` submission."
           },
           {
             "in": "query",
@@ -1193,7 +1193,7 @@
           "Gene focus"
         ],
         "summary": "Identify where a gene is expressed or absent",
-        "description": "Provide a ranked list of conditions where the expression or absence of expression of a gene has been reported, enabling exploration of gene activity across various biological contexts. \n\nA 'condition' is defined by any one or a combination of anatomical entity, developmental stage, sex, or strain. The default focus is on anatomical localization, with the option to expand or specify other factors using the cond_param query parameters. \n\nThe response provides details on the call's localization, FDR-corrected p-value for presence/absence, expression state and quality, expression score along with its confidence level, supported data types, and links to the source data.\n\n[More details](https://www.bgee.org/support/tutorial-gene-page)\n",
+        "description": "Provide a ranked list of conditions where the expression or absence of expression of a gene has been reported, enabling exploration of gene activity across various biological contexts. \n\nA 'condition' is defined by any or a combination of anatomical entity, developmental stage, sex, or strain. The default focus is on anatomical localization, with the option to expand or specify other factors using the cond_param query parameters. \n\nThe response provides details on the call's localization, FDR-corrected p-value for presence/absence, expression state and quality, expression score along with its confidence level, supported data types, and links to the source data.\n\n[More details](https://www.bgee.org/support/tutorial-gene-page)\n",
         "parameters": [
           {
             "in": "query",
@@ -1424,7 +1424,7 @@
         "tags": [
           "Species focus"
         ],
-        "summary": "Retrieve species-specific informations",
+        "summary": "Retrieve species-specific information",
         "description": "Fetches detailed information for a specified species using its NCBI Taxonomy ID. \n\nThe output includes detailed species information and download paths for gene expression call files, and processed expression files per data type. Omitting the species ID returns a comprehensive list of all species available in Bgee. \n\n[More details and mouse data example](https://www.bgee.org/species/10090)\n",
         "parameters": [
           {
@@ -1778,7 +1778,7 @@
       "strain": {
         "name": "strain",
         "in": "query",
-        "description": "Strain(s) of interest, or ethnicity in humans. Bgee uses the UniProt controlled vocabulary of strains.<br>  E.g Asian",
+        "description": "Strain(s) of interest, or ethnicity in humans. Bgee uses the UniProt controlled vocabulary of strains.<br> E.g. Asian",
         "required": false,
         "schema": {
           "type": "array",
@@ -1844,7 +1844,7 @@
       "cell_type_id": {
         "name": "cell_type_id",
         "in": "query",
-        "description": "Cell type identifier(s) of interest, using [CL ontology ID](https://www.ebi.ac.uk/ols4/ontologies/cl). Only available for single cell RNA-Seq data type. Multiple IDs allowed.<br> e.g CL:0000540",
+        "description": "Cell type identifier(s) of interest, using [CL ontology ID](https://www.ebi.ac.uk/ols4/ontologies/cl). Only available for single cell RNA-Seq data type. Multiple IDs allowed.<br> E.g. CL:0000540",
         "required": false,
         "schema": {
           "type": "array",
@@ -1867,7 +1867,7 @@
       "exp_assay_id": {
         "name": "exp_assay_id",
         "in": "query",
-        "description": "Search for specific experiment(s) using [Gene Expression Omnibus (GEO)](https://www.ncbi.nlm.nih.gov/geo/) or [Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra) identifiers. Multiple IDs allowed.<br> E.g SRP000304\n",
+        "description": "Search for specific experiment(s) using [Gene Expression Omnibus (GEO)](https://www.ncbi.nlm.nih.gov/geo/) or [Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra) identifiers. Multiple IDs allowed.<br> E.g. SRP000304\n",
         "required": false,
         "schema": {
           "type": "array",
