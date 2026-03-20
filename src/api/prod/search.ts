@@ -499,7 +499,7 @@ const search = {
   geneExpressionMatrix: {
     // get request parameters from previous search
     getRequestParams: (form, detailedRP = false) =>
-      new Promise((resolve) => {
+      new Promise((resolve, reject) => {
         // populate request params
         const params = DEFAULT_PARAMETERS('data', 'expr_calls');
         params.append('get_results', '0');
@@ -534,10 +534,18 @@ const search = {
           .then(({ data }) => {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             return resolve({ resp: data, paramsURLCalled });
-            // })
-            // .catch((error) => {
-            //   errorHandler(error);
-            //   reject(error?.response || error?.message);
+          })
+          .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              return resolve({
+                resp: { code: 0, message: error.message },
+                paramsURLCalled,
+                canceled: true,
+              });
+            }
+            errorHandler(error);
+            return reject(error?.response || error?.message);
           });
       }),
 

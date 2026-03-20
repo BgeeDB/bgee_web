@@ -821,6 +821,7 @@ const useLogic = (isExprCalls) => {
   };
 
   const initFromUrlParams = async () => {
+    let shouldResetInitializationFlag = true;
     const params = {
       hash: initHash,
       isFirstSearch: true,
@@ -904,13 +905,17 @@ const useLogic = (isExprCalls) => {
                 value: gene.geneId,
               }))
             );
+            // Keep the flag set so the follow-up effect can trigger the initial search.
+            shouldResetInitializationFlag = false;
           }
         }
       }
     } catch (error) {
       console.error('[initFromUrlParams] Error:', error);
     } finally {
-      // setIsInitializingFromUrl(false);
+      if (shouldResetInitializationFlag) {
+        setIsInitializingFromUrl(false);
+      }
     }
   };
 

@@ -6,7 +6,8 @@
   "prodDomain": "https://www.bgee.org",
   "permanentVersionedDomain": "https://www.bgee.org/bgee15-2",
   "imageDomain": "/img",
-  "apiDomain": "https://www.bgee.org/api",
+  "apiDomain": "http://bioinfo.unil.ch:8080/api",
+  "apiDomainProd": "https://www.bgee.org/api",
   "ftpDomain": "https://www.bgee.org/ftp/current",
   "archivedVersion": [
     {
