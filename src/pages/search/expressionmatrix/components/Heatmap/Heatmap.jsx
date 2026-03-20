@@ -23,6 +23,8 @@ const STORAGE_KEYS = {
   SHOW_DESC_MAX: 'bgee-heatmap-show-desc-max',
   SHOW_MISSING_DATA: 'bgee-heatmap-show-missing',
   USE_ADAPTIVE_SCALE: 'bgee-heatmap-adaptive-scale',
+  ROW_ORDERING: 'bgee-heatmap-row-ordering',
+  ROW_AGG_FN: 'bgee-heatmap-row-agg-fn',
 };
 
 // Helper function to get stored value with default
@@ -69,6 +71,8 @@ export const Heatmap = ({
   const [useAdaptiveScale, setUseAdaptiveScale] = useState(() =>
     getStoredValue(STORAGE_KEYS.USE_ADAPTIVE_SCALE, false)
   );
+  const [rowOrdering, setRowOrdering] = useState(() => getStoredValue(STORAGE_KEYS.ROW_ORDERING, 'alphabetical'));
+  const [rowAggFn, setRowAggFn] = useState(() => getStoredValue(STORAGE_KEYS.ROW_AGG_FN, 'mean'));
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
@@ -142,6 +146,16 @@ export const Heatmap = ({
     setUseAdaptiveScale(value);
     localStorage.setItem(STORAGE_KEYS.USE_ADAPTIVE_SCALE, JSON.stringify(value));
   };
+  const updateRowOrdering = (event) => {
+    const { value } = event.target;
+    setRowOrdering(value);
+    localStorage.setItem(STORAGE_KEYS.ROW_ORDERING, value);
+  };
+  const updateRowAggFn = (event) => {
+    const { value } = event.target;
+    setRowAggFn(value);
+    localStorage.setItem(STORAGE_KEYS.ROW_AGG_FN, value);
+  };
 
   // DEBUG: remove console log in prod
   // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
@@ -213,8 +227,7 @@ export const Heatmap = ({
       .range(COLORS[colorPalette]);
   }, [data, visibleTermIds, useAdaptiveScale, colorPalette]);
 
-  // sort entries by y coordinate
-  const displayData = data.sort((a, b) => a.y.localeCompare(b.y));
+  const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
 
   const downloadTsv = () => {
     if (!data) return;
@@ -316,6 +329,8 @@ export const Heatmap = ({
     setShowDescMax('none');
     setShowMissingData(true);
     setUseAdaptiveScale(false);
+    setRowOrdering('alphabetical');
+    setRowAggFn('mean');
 
     // Clear all stored settings
     Object.values(STORAGE_KEYS).forEach((key) => {
@@ -364,6 +379,8 @@ export const Heatmap = ({
             colorLegendHeight={COLOR_LEGEND_HEIGHT}
             maxGraphWidth={maxGraphWidth}
             setGraphWidth={setGraphWidth}
+            rowOrdering={rowOrdering}
+            rowAggFn={rowAggFn}
           />
 
           <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />
@@ -551,39 +568,62 @@ export const Heatmap = ({
                     </table>
                   </div>
                   <div className="column">
-                    {SHOW_DEBUG_OPTIONS ? (
-                      <div>
-                        <h1>DATA</h1>
-                        <table>
-                          <tbody>
-                            <tr>
-                              <td>Show missing data:</td>
-                              <td>
-                                <input type="checkbox" checked={showMissingData} onChange={updateShowMissingData} />
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>Show homologs:</td>
-                              <td>
-                                <input type="checkbox" checked={showHomologs} onChange={updateShowHomologs} />
-                              </td>
-                            </tr>
-
-                            <tr>
-                              <td>Show max. descendant score as:</td>
-                              <td>
-                                <select value={showDescMax} onChange={updateShowDescMax}>
-                                  <option value="border">border</option>
-                                  <option value="center">center</option>
-                                  <option value="split">split cell</option>
-                                  <option value="none">none</option>
-                                </select>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : null}
+                    <div>
+                      <h1>DATA</h1>
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td>Row ordering:</td>
+                            <td>
+                              <select value={rowOrdering} onChange={updateRowOrdering}>
+                                <option value="alphabetical">alphabetically</option>
+                                <option value="expression">expression score</option>
+                              </select>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Aggregation function:</td>
+                            <td>
+                              <select
+                                value={rowAggFn}
+                                onChange={updateRowAggFn}
+                                disabled={rowOrdering !== 'expression'}
+                              >
+                                <option value="mean">mean</option>
+                                <option value="max">max</option>
+                              </select>
+                            </td>
+                          </tr>
+                          {SHOW_DEBUG_OPTIONS ? (
+                            <>
+                              <tr>
+                                <td>Show missing data:</td>
+                                <td>
+                                  <input type="checkbox" checked={showMissingData} onChange={updateShowMissingData} />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Show homologs:</td>
+                                <td>
+                                  <input type="checkbox" checked={showHomologs} onChange={updateShowHomologs} />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Show max. descendant score as:</td>
+                                <td>
+                                  <select value={showDescMax} onChange={updateShowDescMax}>
+                                    <option value="border">border</option>
+                                    <option value="center">center</option>
+                                    <option value="split">split cell</option>
+                                    <option value="none">none</option>
+                                  </select>
+                                </td>
+                              </tr>
+                            </>
+                          ) : null}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
                 <div className="columns">
