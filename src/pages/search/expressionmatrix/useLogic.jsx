@@ -785,12 +785,30 @@ const useLogic = (options = {}) => {
       });
   };
 
+  const aggregateTerms = (terms, fallbackTerm) => {
+    if (!Array.isArray(terms) || terms.length === 0) return fallbackTerm;
+
+    const validTerms = terms.filter((term) => term?.id && term?.name);
+    if (validTerms.length === 0) return fallbackTerm;
+
+    return {
+      id: validTerms.map((term) => term.id).join(','),
+      name: validTerms.map((term) => term.name).join(', '),
+    };
+  };
+
   // Transform multispec multiSpeciesCondition to condition format for heatmap
   const transformMultispecCall = (call) => {
     if (call.condition) return call;
     const msc = call.multiSpeciesCondition;
-    const anatEntity = msc?.anatEntities?.[0] || { id: 'UBERON:0001062', name: 'anatomical entity' };
-    const cellType = msc?.cellTypes?.[0] || { id: 'GO:0005575', name: 'cellular component' };
+    const anatEntity = aggregateTerms(msc?.anatEntities, {
+      id: 'UBERON:0001062',
+      name: 'anatomical entity',
+    });
+    const cellType = aggregateTerms(msc?.cellTypes, {
+      id: 'GO:0005575',
+      name: 'cellular component',
+    });
     return { ...call, condition: { anatEntity, cellType } };
   };
 

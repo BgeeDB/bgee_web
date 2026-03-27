@@ -4,12 +4,24 @@ import GeneExpressionHeatmap from '../../../components/Gene/GeneExpressionHeatma
 const DEFAULT_ANAT_ENTITY = { id: 'UBERON:0001062', name: 'anatomical entity' };
 const DEFAULT_CELL_TYPE = { id: 'GO:0005575', name: 'cellular component' };
 
+const aggregateTerms = (terms, fallbackTerm) => {
+  if (!Array.isArray(terms) || terms.length === 0) return fallbackTerm;
+
+  const validTerms = terms.filter((term) => term?.id && term?.name);
+  if (validTerms.length === 0) return fallbackTerm;
+
+  return {
+    id: validTerms.map((term) => term.id).join(','),
+    name: validTerms.map((term) => term.name).join(', '),
+  };
+};
+
 const transformToExpressionCall = (result) => {
   let condition = result.condition;
   if (result.multiSpeciesCondition) {
     const msc = result.multiSpeciesCondition;
-    const anatEntity = msc.anatEntities?.[0] || DEFAULT_ANAT_ENTITY;
-    const cellType = msc.cellTypes?.[0] || DEFAULT_CELL_TYPE;
+    const anatEntity = aggregateTerms(msc.anatEntities, DEFAULT_ANAT_ENTITY);
+    const cellType = aggregateTerms(msc.cellTypes, DEFAULT_CELL_TYPE);
     condition = { anatEntity, cellType };
   }
   return {
