@@ -118,18 +118,8 @@ export const Renderer = forwardRef(
     const yTermsOrderedCopy = JSON.parse(JSON.stringify(yTermsOrdered));
     const yLblOrdered = yTermsOrderedCopy;
 
-    // const allXGroups = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
-    // use specified xTerms parameter to get the xLabels
-    const allXGroups = useMemo(
-      () =>
-        xTerms.map((d) => {
-          if (d.label?.includes(' - ')) {
-            return d.label.split(' - ')[1];
-          }
-          return d.label || 'Unknown';
-        }),
-      [xTerms]
-    );
+    // Use xTerms.value for scale domain (unique key per column), xTerms.label for display
+    const allXGroups = useMemo(() => xTerms.map((d) => d.value ?? d.label ?? 'Unknown'), [xTerms]);
     // const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.label))], [yLblOrdered]);
     const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 
@@ -348,56 +338,53 @@ export const Renderer = forwardRef(
       }
     });
 
-    const xLabelsTop = allXGroups.map((name, i) => {
-      const x = xScale(name);
+    const xLabelsTop = xTerms.map((term, i) => {
+      const x = xScale(term.value ?? term.label);
       const xCoord = x + xScale.bandwidth() / 2;
       const yCoord = -10;
-      // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
+      const displayLabel = term.topLabel ?? term.label ?? term.value ?? 'Unknown';
 
-      if (!x) {
+      if (x === undefined) {
         return null;
       }
 
-      const idx = i;
       return (
         <text
-          key={`heatMapXLabel-${idx}`}
+          key={`heatMapXLabel-${i}`}
           x={xLabelRotation === 0 ? xCoord : null}
           y={xLabelRotation === 0 ? yCoord : null}
           transform={xLabelRotation !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotation})` : null}
           textAnchor={xLabelRotation === 0 ? 'middle' : 'start'}
           dominantBaseline="middle"
           fontSize={15}
-          // transform="`rotate(-10) translate(${xCoord}, ${yCoord})`"
         >
-          {name}
+          {displayLabel}
         </text>
       );
     });
 
-    const xLabelsBottom = allXGroups.map((name, i) => {
-      const x = xScale(name);
+    const xLabelsBottom = xTerms.map((term, i) => {
+      const x = xScale(term.value ?? term.label);
       const xCoord = x + xScale.bandwidth() / 2;
       const actualHeatmapHeight = yScale.range()[1] || 0;
       const yCoord = actualHeatmapHeight + 10;
+      const displayLabel = term.bottomLabel ?? term.label ?? term.value ?? 'Unknown';
 
-      if (!x) {
+      if (x === undefined) {
         return null;
       }
 
-      const idx = i;
       return (
         <text
-          key={`heatMapXLabel-${idx}`}
+          key={`heatMapXLabelBottom-${i}`}
           x={xLabelRotation === 0 ? xCoord : null}
           y={xLabelRotation === 0 ? yCoord : null}
           transform={xLabelRotation !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotation})` : null}
           textAnchor={xLabelRotation === 0 ? 'middle' : 'end'}
           dominantBaseline="middle"
           fontSize={15}
-          // transform="`rotate(-10) translate(${xCoord}, ${yCoord})`"
         >
-          {name}
+          {displayLabel}
         </text>
       );
     });

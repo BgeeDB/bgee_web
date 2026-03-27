@@ -7,6 +7,7 @@
   "permanentVersionedDomain": "https://www.bgee.org/bgee15-2",
   "imageDomain": "/img",
   "apiDomain": "https://www.bgee.org/api",
+  "apiDomainDev": "http://localhost:8080/bgee-webapp",
   "ftpDomain": "https://www.bgee.org/ftp/current",
   "archivedVersion": [
     {

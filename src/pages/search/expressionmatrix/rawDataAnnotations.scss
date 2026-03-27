@@ -184,4 +184,91 @@
     font-weight: bold;
     color: black;
   }
+
+  .selected-genes-table {
+    table-layout: fixed;
+    width: 100%;
+
+    th,
+    td {
+      vertical-align: middle;
+    }
+  }
+
+  .selected-genes-col-species,
+  .selected-genes-col-gene {
+    width: 30%;
+  }
+
+  .selected-genes-col-actions {
+    width: 40%;
+    min-width: 20rem;
+  }
+
+  .selected-genes-primary-cell {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .selected-genes-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .selected-genes-remove-btn {
+    flex: 0 0 auto;
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+  }
+
+  .selected-genes-ortholog-controls {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 0 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap;
+  }
+
+  .selected-genes-taxon-select {
+    flex: 0 1 11rem;
+    min-width: 11rem;
+  }
+
+  .selected-genes-taxon-select select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .selected-genes-add-btn {
+    flex: 0 0 auto;
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .selected-genes-col-species,
+    .selected-genes-col-gene {
+      width: 28%;
+    }
+
+    .selected-genes-col-actions {
+      width: 44%;
+      min-width: 17rem;
+    }
+  }
+
+  @media screen and (max-width: 900px) {
+    .selected-genes-table {
+      min-width: 46rem;
+    }
+  }
 }

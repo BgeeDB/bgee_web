@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
-import { Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import Button from '../../../../components/Bulma/Button/Button';
 import Select from '../../../../components/Select/Select';
 import api from '../../../../api';
@@ -131,13 +131,13 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
   };
 
   return (
-    <div className="table-container mt-4">
-      <table className="table is-fullwidth is-striped">
+    <div className="table-container mt-4 selected-genes-table-container">
+      <table className="table is-fullwidth is-striped selected-genes-table">
         <thead>
           <tr>
-            <th>Species</th>
-            <th>Gene</th>
-            <th>Actions</th>
+            <th className="selected-genes-col-species">Species</th>
+            <th className="selected-genes-col-gene">Gene</th>
+            <th className="selected-genes-col-actions">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -146,8 +146,8 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
             const isLoading = loadingOrthologs[key] || false;
             return (
               <tr key={`${gene.speciesId}-${gene.geneId}-${index}`}>
-                <td>
-                  <div>
+                <td className="selected-genes-cell-species">
+                  <div className="selected-genes-primary-cell">
                     <strong>
                       <Link
                         className="internal-link"
@@ -162,8 +162,8 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
                     <small className="has-text-grey">{gene.speciesId}</small>
                   </div>
                 </td>
-                <td>
-                  <div>
+                <td className="selected-genes-cell-gene">
+                  <div className="selected-genes-primary-cell">
                     <strong>
                       <Link
                         className="internal-link"
@@ -178,44 +178,50 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
                     <small className="has-text-grey">{gene.geneId}</small>
                   </div>
                 </td>
-                <td>
-                  <div className="buttons">
-                    <Button
-                      type="button"
-                      className="button is-small is-danger is-outlined"
-                      onClick={() => removeGene(gene.speciesId, gene.geneId)}
-                      aria-label="Remove gene"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                    <div className="is-flex is-align-items-center" style={{ gap: '0.5rem' }}>
+                <td className="selected-genes-cell-actions">
+                  <div className="selected-genes-actions">
+                    <div className="selected-genes-ortholog-controls">
                       {fetchingOrthologs[key] ? (
                         <span className="is-size-7 has-text-grey">Loading taxa...</span>
                       ) : (
                         <>
-                          <Select
-                            title="Select taxon"
-                            defaultValue=""
-                            value={selectedTaxons[key] || ''}
-                            options={[{ value: '', text: 'Select taxon...' }, ...getTaxonOptions(key)]}
-                            onChange={(value) => {
-                              setSelectedTaxons((prev) => ({
-                                ...prev,
-                                [key]: value,
-                              }));
-                            }}
-                          />
+                          <div className="selected-genes-taxon-select">
+                            <Select
+                              title="Select taxon"
+                              defaultValue=""
+                              value={selectedTaxons[key] || ''}
+                              options={[{ value: '', text: 'Select taxon...' }, ...getTaxonOptions(key)]}
+                              onChange={(value) => {
+                                setSelectedTaxons((prev) => ({
+                                  ...prev,
+                                  [key]: value,
+                                }));
+                              }}
+                            />
+                          </div>
                           <Button
                             type="button"
-                            className="button is-small is-info is-outlined"
+                            className="button is-small is-info is-outlined selected-genes-add-btn"
                             onClick={() => handleAddOrthologs(gene.geneId, gene.speciesId, selectedTaxons[key])}
                             disabled={isLoading || !selectedTaxons[key] || fetchingOrthologs[key]}
+                            loading={isLoading}
+                            aria-label="Add orthologs"
+                            title="Add orthologs"
                           >
-                            {isLoading ? 'Loading...' : 'Add Orthologs'}
+                            {!isLoading && <Plus size={14} />}
                           </Button>
                         </>
                       )}
                     </div>
+                    <Button
+                      type="button"
+                      className="button is-small is-danger is-outlined selected-genes-remove-btn"
+                      onClick={() => removeGene(gene.speciesId, gene.geneId)}
+                      aria-label="Remove gene"
+                      title="Remove gene"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
                   </div>
                 </td>
               </tr>

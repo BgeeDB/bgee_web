@@ -29,7 +29,21 @@ export function meta() {
   });
 }
 
+// Track genes with species information across all species
+interface GeneWithSpecies {
+  speciesId: string;
+  speciesLabel: string;
+  geneId: string;
+  geneLabel: string;
+}
+
 const GeneExpressionMatrix = () => {
+  const [multiSpeciesGenes, setMultiSpeciesGenes] = useState<GeneWithSpecies[]>([]);
+  const [isGenesListExpanded, setIsGenesListExpanded] = useState(true);
+  // TODO: remove this useless state
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setPageIsBrowseResult] = useState(false);
+
   const {
     searchResult,
     show,
@@ -59,38 +73,10 @@ const GeneExpressionMatrix = () => {
     addConditionalParam,
     getSearchParams,
     triggerSearchChildren,
-    // devStages,
-    // hasDevStageSubStructure,
-    // selectedDevStages,
-    // selectedStrain,
-    // speciesSexes,
-    // selectedSexes,
-    // callTypes,
-    // setCallTypes,
-    // toggleSex,
-    // setSelectedStrain,
-    // setSelectedDevStages,
-    // setDevStageSubStructure,
-  }: any = useLogic();
-
-  // DEBUG: remove console log in prod
-  // console.log(`[GeneExpressionMatrix] anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
-
-  // TODO: remove this useless state, wth is it even doing?
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setPageIsBrowseResult] = useState(false);
-
-  // State for collapsed/expanded selected genes list
-  const [isGenesListExpanded, setIsGenesListExpanded] = useState(true);
-
-  // Track genes with species information across all species
-  interface GeneWithSpecies {
-    speciesId: string;
-    speciesLabel: string;
-    geneId: string;
-    geneLabel: string;
-  }
-  const [multiSpeciesGenes, setMultiSpeciesGenes] = useState<GeneWithSpecies[]>([]);
+  }: any = useLogic({
+    setMultiSpeciesGenes,
+    multiSpeciesGenes,
+  });
 
   // Wrapper for setSelectedGene that tracks genes with species information
   const handleGeneSelection = useCallback(
@@ -463,6 +449,20 @@ const GeneExpressionMatrix = () => {
               href={`${URL_ROOT}/search/expression-matrix?species_id=9606&gene_id=ENSG00000206172&gene_id=ENSG00000188536&gene_id=ENSG00000244734&gene_id=ENSG00000223609&gene_id=ENSG00000213934&gene_id=ENSG00000196565&gene_id=ENSG00000206177&gene_id=ENSG00000130656`}
             >
               Hemoglobin genes (<i>Homo sapiens</i>)
+            </a>
+            <br />
+            <a
+              className="internal-link"
+              href={`${URL_ROOT}/search/expression-matrix?gene_list=ENSG00000139767%0AENSMUSG00000063919%0AENSPPAG00000028134%0AENSPTRG00000005517ENSBTAG00000008676%0AENSRNOG00000001141%0AENSSSCG00000009845%0AENSECAG00000021729%0AENSCAFG00000023113%0AENSOCUG00000004503%0AENSMODG00000015283%0AENSACAG00000004139%0AENSXETG00000019934&display_rp=1&display_type=json`}
+            >
+              SSRM4 - brain specific genes (<i>multi-species</i>)
+            </a>
+            <br />
+            <a
+              className="internal-link"
+              href={`${URL_ROOT}/search/expression-matrix?gene_list=ENSDARG00000059263%0AENSG00000170178%0AENSMUSG00000001823&display_rp=1&display_type=json`}
+            >
+              Hoxd12 - pattern development genes (<i>multi-species</i>)
             </a>
           </p>
 

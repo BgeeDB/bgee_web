@@ -532,7 +532,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
       const isExpressed = result.expressionState === 'expressed';
 
       return {
-        x: gName?.length > 0 ? gName : gId,
+        x: gId, // Use geneId for x coordinate (matches xTerms.value for scale domain)
         y: termId,
         termId,
         termName,

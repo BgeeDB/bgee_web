@@ -1,15 +1,29 @@
 import GeneExpressionHeatmap from '../../../components/Gene/GeneExpressionHeatmap';
 
-const GeneExpressionMatrixResults = ({ results = [], genes, isLoading, isFirstSearch, onFetchChildren }) => {
-  // Transform results to expression calls format expected by GeneExpressionHeatmap
-  const expressionCalls = results.map((result) => ({
+// Transform multispec API format (multiSpeciesCondition) to heatmap format (condition)
+const DEFAULT_ANAT_ENTITY = { id: 'UBERON:0001062', name: 'anatomical entity' };
+const DEFAULT_CELL_TYPE = { id: 'GO:0005575', name: 'cellular component' };
+
+const transformToExpressionCall = (result) => {
+  let condition = result.condition;
+  if (result.multiSpeciesCondition) {
+    const msc = result.multiSpeciesCondition;
+    const anatEntity = msc.anatEntities?.[0] || DEFAULT_ANAT_ENTITY;
+    const cellType = msc.cellTypes?.[0] || DEFAULT_CELL_TYPE;
+    condition = { anatEntity, cellType };
+  }
+  return {
     gene: result.gene,
-    condition: result.condition,
+    condition,
     expressionScore: result.expressionScore,
     expressionState: result.expressionState,
     dataTypesWithData: result.dataTypesWithData,
-    isOrphan: result.isOrphan, // Preserve isOrphan flag if present
-  }));
+    isOrphan: result.isOrphan,
+  };
+};
+
+const GeneExpressionMatrixResults = ({ results = [], genes, isLoading, isFirstSearch, onFetchChildren }) => {
+  const expressionCalls = results.map(transformToExpressionCall);
 
   return (
     <>
