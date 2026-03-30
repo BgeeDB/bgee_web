@@ -565,9 +565,19 @@ const search = {
         params.append('offset', '0');
         params.append('limit', '10000');
         params.append('gene_list', geneList);
-        params.append('anat_entity_id', 'SUMMARY');
-        params.append('cell_type_id', 'SUMMARY');
+        if (form.selectedTissue?.length > 0) {
+          form.selectedTissue.forEach((t) => params.append('anat_entity_id', t));
+        } else {
+          params.append('anat_entity_id', 'SUMMARY');
+        }
+        if (form.selectedCellTypes?.length > 0) {
+          form.selectedCellTypes.forEach((ct) => params.append('cell_type_id', ct));
+        } else {
+          params.append('cell_type_id', 'SUMMARY');
+        }
         params.append('cond_param2', 'anat_entity');
+        if (form.hasTissueSubStructure) params.append('anat_entity_descendant', '1');
+        if (form.hasCellTypeSubStructure) params.append('cell_type_descendant', '1');
         if (form.dataType?.length > 0) {
           form.dataType.forEach((type) => params.append('data_type', type));
         }
