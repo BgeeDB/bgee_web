@@ -896,7 +896,7 @@ All direct attributes of a given gene in the Bgee knowledge graph are listed bel
 
 #### Q14:
 
-> _Question_: What is all the metadata related to the `ENSG00000130208` gene, where `ENSG00000130208` is the identifier of the "APOC1" human gene.
+> _Question_: What are all the metadata related to the `ENSG00000130208` gene, where `ENSG00000130208` is the identifier of the "APOC1" human gene?
 > _SPARQL query_ (see [Q14 graphical representation](#Q14-graphical-representation:)):
 
 ```sparql
