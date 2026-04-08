@@ -6,7 +6,23 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'archives', 'scripts', '.react-router', 'build', 'node_modules', 'public/js', 'misc', 'doc-api'],
+    ignores: [
+      'archives',
+      'build',
+      'dist',
+      'doc-api',
+      '.git',
+      '.github',
+      '.husky',
+      'misc',
+      'node_modules',
+      'playwright-report',
+      'public/js',
+      '.react-router',
+      'scripts',
+      'test-results',
+      '.vscode',
+    ],
   },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
