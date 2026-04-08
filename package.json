@@ -13,6 +13,7 @@
     "restart": "pm2 restart bgee-web",
     "restart:all": "pm2 restart all",
     "logs": "pm2 logs bgee-web",
+    "log-flush": "pm2 flush bgee-web",
     "status": "pm2 status",
     "typecheck": "react-router typegen && tsc",
     "fmt": "prettier --write . && eslint . --fix",
