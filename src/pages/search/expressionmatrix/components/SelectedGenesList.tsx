@@ -137,7 +137,7 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
           <tr>
             <th className="selected-genes-col-species">Species</th>
             <th className="selected-genes-col-gene">Gene</th>
-            <th className="selected-genes-col-actions">Actions</th>
+            <th className="selected-genes-col-actions">Orthologs</th>
           </tr>
         </thead>
         <tbody>

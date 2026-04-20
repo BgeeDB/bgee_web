@@ -200,9 +200,14 @@
     width: 30%;
   }
 
-  .selected-genes-col-actions {
+  th.selected-genes-col-actions {
     width: 40%;
     min-width: 20rem;
+    text-align: right;
+  }
+
+  .selected-genes-cell-actions {
+    text-align: right;
   }
 
   .selected-genes-primary-cell {
@@ -213,6 +218,7 @@
   .selected-genes-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 0.5rem;
     flex-wrap: wrap;
   }
