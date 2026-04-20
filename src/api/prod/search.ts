@@ -576,8 +576,14 @@ const search = {
           params.append('cell_type_id', 'SUMMARY');
         }
         params.append('cond_param2', 'anat_entity');
-        if (form.hasTissueSubStructure) params.append('anat_entity_descendant', '1');
-        if (form.hasCellTypeSubStructure) params.append('cell_type_descendant', '1');
+        // Only request descendant expansion when the user selected a concrete tissue/cell type
+        // AND explicitly enabled the corresponding "sub-structure" checkbox.
+        if (form.hasTissueSubStructure && form.selectedTissue?.length > 0) {
+          params.append('anat_entity_descendant', '1');
+        }
+        if (form.hasCellTypeSubStructure && form.selectedCellTypes?.length > 0) {
+          params.append('cell_type_descendant', '1');
+        }
         if (form.dataType?.length > 0) {
           form.dataType.forEach((type) => params.append('data_type', type));
         }
@@ -618,7 +624,9 @@ const search = {
         params.append('cond_param2', 'anat_entity');
         params.append('discard_anat_entity_and_children_id', 'SUMMARY');
         params.append('observed_data', '1');
-        params.append('anat_entity_descendant', '1');
+        if (form.hasTissueSubStructure && form.selectedTissue?.length > 0) {
+          params.append('anat_entity_descendant', '1');
+        }
         params.append('exclude_non_informative', '1');
         if (form.dataType?.length > 0) {
           form.dataType.forEach((type) => params.append('data_type', type));
@@ -662,7 +670,9 @@ const search = {
         }
         form.selectedCellTypes?.forEach((ct) => params.append('cell_type_id', ct));
         form.selectedTissue?.forEach((t) => params.append('anat_entity_id', t));
-        if (form.hasTissueSubStructure) params.append('anat_entity_descendant', '1');
+        if (form.hasTissueSubStructure && form.selectedTissue?.length > 0) {
+          params.append('anat_entity_descendant', '1');
+        }
         if (form.conditionalParam2?.length > 0) {
           form.conditionalParam2.forEach((cp) => params.append('cond_param2', cp));
         }
