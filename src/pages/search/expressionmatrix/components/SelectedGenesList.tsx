@@ -41,6 +41,22 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
   const [selectedTaxons, setSelectedTaxons] = useState<Record<string, string>>({});
   const fetchedGenesRef = useRef<Set<string>>(new Set());
 
+  const formatSpeciesDisplayLabel = (label: string) => {
+    if (!label) {
+      return label;
+    }
+    if (label.includes(' - ')) {
+      return label;
+    }
+    const bracketMatch = label.match(/^(.*)\s+\(([^)]+)\)$/);
+    if (bracketMatch) {
+      const scientificName = bracketMatch[1].trim();
+      const commonName = bracketMatch[2].trim();
+      return `${scientificName} - ${commonName}`;
+    }
+    return label;
+  };
+
   // Automatically fetch orthologs when genes are added
   useEffect(() => {
     selectedGenes.forEach((gene) => {
@@ -155,7 +171,7 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {gene.speciesLabel}
+                        {formatSpeciesDisplayLabel(gene.speciesLabel)}
                       </Link>
                     </strong>
                     <br />

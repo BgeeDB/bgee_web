@@ -1085,7 +1085,9 @@ const useLogic = (options = {}) => {
         const { gene } = result.data.result.geneMatches[0];
         return {
           speciesId: gene.species.id,
-          speciesLabel: `${gene.species.genus} ${gene.species.speciesName}`,
+          speciesLabel: `${gene.species.genus} ${gene.species.speciesName}${
+            gene.species.name ? ` - ${gene.species.name}` : ''
+          }`,
           geneId: gene.geneId,
           geneLabel: getGeneLabel(gene),
         };
