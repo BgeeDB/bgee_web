@@ -310,6 +310,24 @@ export default function Home({ loaderData }) {
               &nbsp;initiative to standardize single-cell genomics data and promote findable, accessible, interoperable,
               and reusable single-cell data.
             </div>
+            <div className="resource-logos">
+              <LinkExternal
+                className="ext-as-int-link"
+                to="https://www.sib.swiss/activities/open-software-and-databases"
+              >
+                <img src={imagePath(`/logo/logo-sib-emblem-new.svg`)} alt="SIB's portfolio" width="70" height="42" />
+              </LinkExternal>
+              <div>
+                Bgee is part of&nbsp;
+                <LinkExternal
+                  className="ext-as-int-link"
+                  to="https://www.sib.swiss/activities/open-software-and-databases"
+                >
+                  SIB's portfolio
+                </LinkExternal>
+                of open databases and software tools
+              </div>
+            </div>
           </Bulma.C>
           <Bulma.C size={6}>
             {!config.archive && (
