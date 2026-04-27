@@ -36,6 +36,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
     selectedGene,
     selectedTissue,
     isLoading,
+    isLoadingChildren,
     isFirstSearch,
     isInitializingFromUrl,
     dataTypesExpCalls,
@@ -84,6 +85,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
   // const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
 
   const detailedData = TAB_PAGE_EXPR_CALL;
+  const isBusy = isLoading || isLoadingChildren;
 
   // TODO: remove this useless useEffect, wth is it even doing? Changing a state that is not used anywhere?
   // Burning through CPU cycles for no reason?
@@ -200,7 +202,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
                         className="button is-success is-light is-outlined"
                         type="submit"
                         onClick={onSubmit}
-                        disabled={isLoading}
+                        disabled={isBusy}
                       >
                         Submit
                       </Button>
@@ -244,7 +246,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
           <h2 className="gradient-underline title is-size-5 has-text-primary">{detailedData?.resultLabel}</h2>
 
           <div className="resultPart" style={{ position: 'relative' }}>
-            {isLoading && (
+            {isBusy && (
               <div
                 style={{
                   position: 'absolute',

@@ -199,6 +199,7 @@ const useLogic = (isExprCalls) => {
 
   // results
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingChildren, setIsLoadingChildren] = useState(false);
   const [show, setShow] = useState(true);
   const [searchResult, setSearchResult] = useState(null);
   // const [maxExpScore, setMaxExpScore] = useState({});
@@ -746,7 +747,7 @@ const useLogic = (isExprCalls) => {
       params.discardAnatEntityAndChildrenId = 'SUMMARY';
     }
 
-    setIsLoading(true);
+    setIsLoadingChildren(true);
     // DEBUG: remove console log in prod
     // console.log(`[useLogic] triggerSearchChildren - triggered!`);
     return api.search.geneExpressionMatrix
@@ -846,7 +847,7 @@ const useLogic = (isExprCalls) => {
 
             // Add property to each element in the current level
             return node.map((item) => {
-              const newItem = { ...item };
+              const newItem = { ...item, children: [...(item.children || [])] };
               if (item.id === termId) {
                 // add children
                 // console.log(`[Heatmap useLogic] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
@@ -880,45 +881,49 @@ const useLogic = (isExprCalls) => {
           return traverse(hierarchy);
         }
         if (newChildTerms.size > 0) {
-          const newAnatTerms = addChildren(anatomicalTerms, parentId, [...newChildTerms]);
-          // DEBUG: remove console log in prod
-          // console.log(`[useLogic] triggerSearchChildren anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
-          // console.log(`[useLogic] triggerSearchChildren newAnatTerms:\n${JSON.stringify(newAnatTerms)}`);
-          // console.log(`[useLogic] CALL setAnatomicalTerms`);
-          setAnatomicalTerms(newAnatTerms);
+          setAnatomicalTerms((prevTerms) => addChildren(prevTerms, parentId, [...newChildTerms]));
           // add term props for new terms
-          const newAnatTermsProps = { ...anatomicalTermsProps };
-          newChildTerms.forEach((child) => {
-            if (!(child.id in newAnatTermsProps)) {
-              newAnatTermsProps[child.id] = {
-                isTopLevel: child.isTopLevelTerm,
-                isExpanded: child.isExpanded,
-                isPopulated: child.isPopulated,
-                hasBeenQueried: child.hasBeenQueried,
-                isSingleCell: child.isSingleCell,
-              };
-            }
+          setAnatomicalTermsProps((prevProps) => {
+            const newAnatTermsProps = { ...prevProps };
+            newChildTerms.forEach((childStr) => {
+              const child = JSON.parse(childStr);
+              if (!(child.id in newAnatTermsProps)) {
+                newAnatTermsProps[child.id] = {
+                  isTopLevel: child.isTopLevelTerm,
+                  isExpanded: child.isExpanded,
+                  isPopulated: child.isPopulated,
+                  hasBeenQueried: child.hasBeenQueried,
+                  isSingleCell: child.isSingleCell,
+                };
+              }
+            });
+            return newAnatTermsProps;
           });
-          setAnatomicalTermsProps(newAnatTermsProps);
         }
 
         // add additional data to previous ones
-        const exprData = searchResult;
-        const newExpressionCalls = resp?.data?.expressionData?.expressionCalls ?? [];
-        exprData.expressionData.expressionCalls.push(...newExpressionCalls);
-        setSearchResult(exprData);
+        setSearchResult((prevResult) => {
+          if (!prevResult?.expressionData?.expressionCalls) return prevResult;
+          const newCalls = resp?.data?.expressionData?.expressionCalls || [];
+          return {
+            ...prevResult,
+            expressionData: {
+              ...prevResult.expressionData,
+              expressionCalls: [...prevResult.expressionData.expressionCalls, ...newCalls],
+            },
+          };
+        });
 
         // Finally, we set the values we are interested in
         setIsLoading(false);
       })
       .catch((error) => {
-        if (axios.isCancel(error)) {
-          setIsLoading(false);
-          return;
+        if (!axios.isCancel(error)) {
+          // keep behavior consistent: ignore non-cancel errors here
         }
-        setIsLoading(false);
       })
       .finally(() => {
+        setIsLoadingChildren(false);
         // The next searches will not be considered as the first
         // --> Filters will now be used for the next requests
         setIsFirstSearch(false);
@@ -1300,6 +1305,7 @@ const useLogic = (isExprCalls) => {
     speciesSexes,
     selectedSexes,
     isLoading,
+    isLoadingChildren,
     isFirstSearch,
     isInitializingFromUrl,
     filters,
