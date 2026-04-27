@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Heatmap } from './components/Heatmap/Heatmap';
 
 const GeneExpressionMatrixResults = ({
@@ -15,7 +16,7 @@ const GeneExpressionMatrixResults = ({
   // console.log(`[GeneExpressionMatrixResults] results:\n${JSON.stringify(results, null, 2)}`);
   // console.log(`[GeneExpressionMatrixResults] anatomicalTerms:\n${JSON.stringify(anatomicalTerms, null, 2)}`);
   // console.log(`[GeneExpressionMatrixResults] anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
-  const heatmapData = results.map((result) => {
+  const heatmapData = useMemo(() => results.map((result) => {
     const { geneId, name: geneName } = result.gene;
     const speciesId = result.gene.species.id;
     const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;
@@ -52,7 +53,7 @@ const GeneExpressionMatrixResults = ({
       ylvl: 0,
     };
     return row;
-  });
+  }), [results, maxExpScore]);
 
   return (
     <>

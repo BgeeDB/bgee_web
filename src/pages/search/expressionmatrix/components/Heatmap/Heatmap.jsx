@@ -251,14 +251,33 @@ export const Heatmap = ({
 
   const syncTopLevelAutoExpandRef = useRef(onSyncTopLevelAutoExpand);
   syncTopLevelAutoExpandRef.current = onSyncTopLevelAutoExpand;
+  const autoExpandRunNonceRef = useRef(0);
+  const appliedAutoExpandRunNonceRef = useRef(-1);
+
+  useEffect(() => {
+    // Re-enable one-shot auto-expand whenever relevant settings change.
+    autoExpandRunNonceRef.current += 1;
+    appliedAutoExpandRunNonceRef.current = -1;
+  }, [autoExpandMostExpressed, rowAggFn]);
+
+  useEffect(() => {
+    // Re-arm auto-expand only when a new search starts loading.
+    if (!isLoading) return;
+    autoExpandRunNonceRef.current += 1;
+    appliedAutoExpandRunNonceRef.current = -1;
+  }, [isLoading]);
 
   useEffect(() => {
     if (isLoading || isInitializingFromUrl || !topLevelAutoExpandWinnerIds) {
       return;
     }
+    if (appliedAutoExpandRunNonceRef.current === autoExpandRunNonceRef.current) {
+      return;
+    }
     const sync = syncTopLevelAutoExpandRef.current;
     if (!sync) return;
     sync(topLevelAutoExpandWinnerIds);
+    appliedAutoExpandRunNonceRef.current = autoExpandRunNonceRef.current;
   }, [isLoading, isInitializingFromUrl, topLevelAutoExpandWinnerIds]);
 
   const downloadTsv = () => {
