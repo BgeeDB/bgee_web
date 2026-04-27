@@ -10,6 +10,9 @@ import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
 import { computeTermAggregates, pickWinnerChildIdForRoot } from './heatmapAggregates';
 
 const SHOW_DEBUG_OPTIONS = false;
+const ROW_HEIGHT_PX = 16;
+const EXTRA_VERTICAL_SPACE_PX = 140;
+const MIN_GRAPH_HEIGHT_PX = 360;
 
 // Add constants for localStorage keys
 const STORAGE_KEYS = {
@@ -194,7 +197,10 @@ export const Heatmap = ({
     }
 
     const { count: numVisibleTerms, maxLabelLength } = countVisibleTerms(terms);
-    const flexHeight = Math.max(numVisibleTerms * 30 + COLOR_LEGEND_HEIGHT, 250);
+    const flexHeight = Math.max(
+      numVisibleTerms * ROW_HEIGHT_PX + COLOR_LEGEND_HEIGHT + EXTRA_VERTICAL_SPACE_PX,
+      MIN_GRAPH_HEIGHT_PX
+    );
     const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, currentMarginLeft);
     const flexWidth = Math.max(flexMarginLeft + 50, width);
 
