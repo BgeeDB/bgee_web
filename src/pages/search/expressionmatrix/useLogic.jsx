@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router';
-
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
 import { getIdAndNameLabel, getOptionsForFilter } from '../../../helpers/selects';
@@ -553,9 +553,13 @@ const useLogic = (isExprCalls) => {
         setSearchResult(data);
       }
     } catch (error) {
-      console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
-      navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
-      setIsLoading(false);
+      if (axios.isCancel(error)) {
+        setIsLoading(false);
+      } else {
+        console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
+        history.replace(`${URL_ROOT}${loc.pathname}`);
+        setIsLoading(false);
+      }
     } finally {
       // console.log(`[useLogic.triggerInitialSearch] finally.`)
       setIsFirstSearch(false);
@@ -706,9 +710,12 @@ const useLogic = (isExprCalls) => {
         //     : resp?.data?.resultCount?.[dataType]
         // );
       })
-      .catch(() => {
-        // We remove all the parameters that we may have sent
-        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
+      .catch((error) => {
+        if (axios.isCancel(error)) {
+          setIsLoading(false);
+          return;
+        }
+        history.replace(`${URL_ROOT}${loc.pathname}`);
         setIsLoading(false);
       })
       .finally(() => {
@@ -731,31 +738,191 @@ const useLogic = (isExprCalls) => {
     }
     params.hasTissueSubStructure = 1; // we want children of parent term!
     params.conditionalParam2 = ['anat_entity']; // HD: restrict to anatomical terms
-
+    // Child fetch must use explicit anat/cell params — never merge initSearch (hash) while
+    // isFirstSearch is true, or SUMMARY from the top-level query is sent and the API returns 400.
+    params.isFirstSearch = false;
     // HD: discard top-level terms from search results
     if (parentId === 'UBERON:0000468-GO:0005575') {
       params.discardAnatEntityAndChildrenId = 'SUMMARY';
     }
 
-    try {
-      const result = await api.search.geneExpressionMatrix.search(params, false);
-      const { resp } = result;
+    setIsLoading(true);
+    // DEBUG: remove console log in prod
+    // console.log(`[useLogic] triggerSearchChildren - triggered!`);
+    return api.search.geneExpressionMatrix
+      .search(params, false, true)
+      .then(({ resp, paramsURLCalled }) => {
+        // DEBUG: remove in prod
+        // console.log(`[useLogic] triggerSearchChildren - response:\n${JSON.stringify(resp)}`);
+        if (resp.code === 200) {
+          // DEBUG: remove console log in prod
+          // console.log(`[useLogic] triggerSearchChildren - resp.data:\n${JSON.stringify(resp.data)}`);
+          // console.log(`[useLogic] triggerSearchChildren - params:\n${JSON.stringify(params)}`)
 
-      if (resp.code === 200) {
-        // Prefix anatEntity.id with termId for each expression call
-        resp.data.expressionData.expressionCalls.forEach((exprCall) => {
-          exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
+          // TODO: make sure, URL reflects current query state
+          // "Mirroring" management in URL's parameter (with & without hash)
+          const searchParams = new URLSearchParams(paramsURLCalled);
+          // If there is a hash we put it in the URL
+          // And as all next data are "coded" in the Hash...
+          // We can clear the URL from those (aka storableParams)
+          const newHash = resp?.requestParameters?.data;
+          if (newHash) {
+            // We delete the potential old hash
+            searchParams.delete('data');
+
+            resp?.requestParameters?.storableParameters?.forEach((key) => {
+              if (key !== 'data_type') {
+                searchParams.delete(key);
+              }
+            });
+
+            // Adding Hash (in "data" key)
+            searchParams.append('data', newHash);
+          }
+
+          // We can always clean those "tech" parameters from the URL
+          searchParams.delete('display_type');
+          searchParams.delete('page');
+          searchParams.delete('action');
+          searchParams.delete('get_results');
+          searchParams.delete('get_column_definition');
+          searchParams.delete('get_filters');
+          searchParams.delete('display_rp');
+          searchParams.delete('detailed_rp');
+          searchParams.delete('offset');
+          searchParams.delete('get_result_count');
+          searchParams.delete('filters_for_all');
+
+          // The following code clean the url of any default value
+          if (searchParams.get('pageType') === 'experiments') {
+            searchParams.delete('pageType');
+          }
+          if (searchParams.get('sex') === 'all') {
+            searchParams.delete('sex');
+          }
+          if (searchParams.get('cell_type_descendant') === 'true') {
+            searchParams.delete('cell_type_descendant');
+          }
+          if (searchParams.get('stage_descendant') === 'true') {
+            searchParams.delete('stage_descendant');
+          }
+          if (searchParams.get('anat_entity_descendant') === 'true') {
+            searchParams.delete('anat_entity_descendant');
+          }
+        }
+
+        // update anatomical terms
+        const newChildTerms = new Set();
+        resp?.data.expressionData.expressionCalls.forEach((exprCall) => {
+          const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
+          const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
+          const isSingleCell = cellTypeId !== 'GO:0005575';
+          // if (!(anatEntityId === selectedTissueId && cellTypeId === 'GO:0005575')) {
+          if (!(anatEntityId === selectedTissueId) || isSingleCell) {
+            newChildTerms.add(
+              JSON.stringify({
+                id: `${anatEntityId}-${cellTypeId}`,
+                // label: cellTypeId !== '' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
+                label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
+                anatEntityId,
+                anatEntityLabel: anatEntityName,
+                cellTypeId,
+                cellTypeLabel: cellTypeName,
+                isTopLevelTerm: false,
+                isExpanded: false,
+                isPopulated: false,
+                hasBeenQueried: false,
+                isSingleCell,
+              })
+            );
+          }
         });
+        // DEBUG: remove console log in prod
+        // console.log(`[useLogic] triggerSearchChildren newChildTerms:\n${JSON.stringify([...newChildTerms])}`);
+        function addChildren(hierarchy, termId, children) {
+          // Helper function to recursively traverse the array
+          function traverse(node) {
+            if (!node || !Array.isArray(node)) return []; // break condition
 
-        // Return only the expression calls - GeneExpressionHeatmap will handle hierarchy updates
-        return resp.data.expressionData.expressionCalls;
-      }
+            // Add property to each element in the current level
+            return node.map((item) => {
+              const newItem = { ...item };
+              if (item.id === termId) {
+                // add children
+                // console.log(`[Heatmap useLogic] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
+                children.forEach((childStr) => {
+                  const child = JSON.parse(childStr);
+                  if (child.id !== newItem.id)
+                    newItem.children.push({
+                      id: child.id,
+                      label: child.label,
+                      anatEntityId: child.anatEntityId,
+                      anatEntityLabel: child.anatEntityLabel,
+                      cellTypeId: child.cellTypeId,
+                      cellTypeLabel: child.cellTypeLabel,
+                      depth: newItem.depth + 1,
+                      isTopLevelTerm: false,
+                      isExpanded: false,
+                      isPopulated: false,
+                      hasBeenQueried: false,
+                      isSingleCell: child.isSingleCell,
+                      children: [],
+                    });
+                });
+                newItem.isExpanded = true;
+                newItem.hasBeenQueried = true;
+              }
+              newItem.children = traverse(newItem.children); // Recursively traverse children
+              return newItem;
+            });
+          }
+          // Start traversal from the root
+          return traverse(hierarchy);
+        }
+        if (newChildTerms.size > 0) {
+          const newAnatTerms = addChildren(anatomicalTerms, parentId, [...newChildTerms]);
+          // DEBUG: remove console log in prod
+          // console.log(`[useLogic] triggerSearchChildren anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
+          // console.log(`[useLogic] triggerSearchChildren newAnatTerms:\n${JSON.stringify(newAnatTerms)}`);
+          // console.log(`[useLogic] CALL setAnatomicalTerms`);
+          setAnatomicalTerms(newAnatTerms);
+          // add term props for new terms
+          const newAnatTermsProps = { ...anatomicalTermsProps };
+          newChildTerms.forEach((child) => {
+            if (!(child.id in newAnatTermsProps)) {
+              newAnatTermsProps[child.id] = {
+                isTopLevel: child.isTopLevelTerm,
+                isExpanded: child.isExpanded,
+                isPopulated: child.isPopulated,
+                hasBeenQueried: child.hasBeenQueried,
+                isSingleCell: child.isSingleCell,
+              };
+            }
+          });
+          setAnatomicalTermsProps(newAnatTermsProps);
+        }
 
-      return [];
-    } catch (error) {
-      console.error(`[useLogic.triggerSearchChildren] ERROR:\n${JSON.stringify(error)}`);
-      return [];
-    }
+        // add additional data to previous ones
+        const exprData = searchResult;
+        const newExpressionCalls = resp?.data?.expressionData?.expressionCalls ?? [];
+        exprData.expressionData.expressionCalls.push(...newExpressionCalls);
+        setSearchResult(exprData);
+
+        // Finally, we set the values we are interested in
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        if (axios.isCancel(error)) {
+          setIsLoading(false);
+          return;
+        }
+        setIsLoading(false);
+      })
+      .finally(() => {
+        // The next searches will not be considered as the first
+        // --> Filters will now be used for the next requests
+        setIsFirstSearch(false);
+      });
   };
 
   const getSexesAndDevStageForSpecies = () => {
@@ -978,6 +1145,99 @@ const useLogic = (isExprCalls) => {
     }
   };
 
+  // Expand or collapse a term
+  const onToggleExpandCollapse = (term) => {
+    // console.log(`[useLogic] onToggleExpandCollapse:\n${JSON.stringify(term)}`);
+
+    function updateExpandedStateHierarchically(terms) {
+      const newTermProps = { ...anatomicalTermsProps };
+
+      // Helper function to recursively traverse the array
+      function traverse(node) {
+        if (!node || !Array.isArray(node)) return []; // break condition
+
+        // Add property to each element in the current level
+        return node.map((item) => {
+          const newItem = JSON.parse(JSON.stringify(item));
+          if (item.id === term.id) {
+            // get data for descendants
+            if (!item.hasBeenQueried) {
+              // console.log(`[useLogic] onToggleExpandCollapse - get child data for:\n${term.id}`);
+              triggerSearchChildren(term.id, term.anatEntityId);
+              newItem.hasBeenQueried = true;
+              newItem.isExpanded = true;
+              newTermProps[term.id].hasBeenQueried = true;
+              newTermProps[term.id].isExpanded = true;
+            } else {
+              // console.log(`[useLogic] flipping item.isExpanded from ${item.isExpanded} to ${!item.isExpanded}.`);
+              newItem.isExpanded = !item.isExpanded;
+              newItem.isPopulated = item.isPopulated;
+              // Update term props
+              newTermProps[term.id].isExpanded = !item.isExpanded;
+            }
+          }
+          newItem.children = traverse(newItem.children);
+          return newItem;
+        });
+      }
+
+      // Start traversal from the root
+      const newDrilldown = traverse(terms);
+      return { newDrilldown, newTermProps };
+    }
+
+    const { newDrilldown, newTermProps } = updateExpandedStateHierarchically(anatomicalTerms);
+
+    // Update anatomical terms state
+    // console.log(`[useLogic] CALL setAnatomicalTermsProps...`);
+    setAnatomicalTermsProps(newTermProps);
+    // console.log(`[useLogic] CALL setAnatomicalTerms...`);
+    setAnatomicalTerms(newDrilldown);
+
+    // console.log(`[useLogic] DONE onToggleExpandCollapse.`);
+  };
+
+  /** Expand exactly one highest-scoring direct child per tree root; collapse sibling top-level children. */
+  const syncHeatmapTopLevelAutoExpand = useCallback(
+    (winnerIds) => {
+      if (!winnerIds?.length) return;
+      setAnatomicalTerms((prev) => {
+        if (!prev?.length || winnerIds.length !== prev.length) return prev;
+        let changed = false;
+        const next = prev.map((root, i) => {
+          const winnerId = winnerIds[i];
+          if (winnerId == null || !root.children?.length) return root;
+          const pool = root.children.filter((c) => c.isTopLevelTerm);
+          const candidates = pool.length ? pool : [...root.children];
+          const expandedAmongCandidates = candidates.filter((c) => c.isExpanded);
+          if (expandedAmongCandidates.length === 1 && expandedAmongCandidates[0].id === winnerId) {
+            return root;
+          }
+          changed = true;
+          const newRoot = JSON.parse(JSON.stringify(root));
+          newRoot.children = newRoot.children.map((child) => {
+            const newChild = JSON.parse(JSON.stringify(child));
+            const inCandidates = candidates.some((c) => c.id === child.id);
+            if (!inCandidates) return newChild;
+            if (child.id === winnerId) {
+              if (!child.hasBeenQueried) {
+                triggerSearchChildren(child.id, child.anatEntityId);
+                newChild.hasBeenQueried = true;
+              }
+              newChild.isExpanded = true;
+            } else {
+              newChild.isExpanded = false;
+            }
+            return newChild;
+          });
+          return newRoot;
+        });
+        return changed ? next : prev;
+      });
+    },
+    [triggerSearchChildren]
+  );
+
   // Add function to process gene list
   const processGeneList = async (geneListParam) => {
     if (!geneListParam) return;
@@ -1041,6 +1301,7 @@ const useLogic = (isExprCalls) => {
     selectedSexes,
     isLoading,
     isFirstSearch,
+    isInitializingFromUrl,
     filters,
     dataTypesExpCalls,
     dataQuality,
@@ -1075,6 +1336,8 @@ const useLogic = (isExprCalls) => {
     triggerSearchChildren,
     addConditionalParam,
     getSearchParams,
+    onToggleExpandCollapse,
+    syncHeatmapTopLevelAutoExpand,
     processGeneList,
   };
 };

@@ -3,10 +3,11 @@ import * as d3 from 'd3';
 import { Download } from 'lucide-react';
 
 import Bulma from '../../../../../components/Bulma';
-import { Renderer } from './Renderer.jsx';
+import { Renderer } from './Renderer';
 import { Tooltip } from './Tooltip';
 import { DetailView } from './DetailView';
 import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
+import { computeTermAggregates, pickWinnerChildIdForRoot } from './heatmapAggregates';
 
 const SHOW_DEBUG_OPTIONS = false;
 
@@ -25,6 +26,7 @@ const STORAGE_KEYS = {
   USE_ADAPTIVE_SCALE: 'bgee-heatmap-adaptive-scale',
   ROW_ORDERING: 'bgee-heatmap-row-ordering',
   ROW_AGG_FN: 'bgee-heatmap-row-agg-fn',
+  AUTO_EXPAND_MOST_EXPRESSED: 'bgee-heatmap-auto-expand-most-expressed',
 };
 
 // Helper function to get stored value with default
@@ -49,6 +51,8 @@ export const Heatmap = ({
   termProps,
   yLabelJustify = 'right',
   onToggleExpandCollapse,
+  onSyncTopLevelAutoExpand,
+  isInitializingFromUrl = false,
   isLoading,
 }) => {
   // COMPONENT STATE
@@ -73,6 +77,9 @@ export const Heatmap = ({
   );
   const [rowOrdering, setRowOrdering] = useState(() => getStoredValue(STORAGE_KEYS.ROW_ORDERING, 'alphabetical'));
   const [rowAggFn, setRowAggFn] = useState(() => getStoredValue(STORAGE_KEYS.ROW_AGG_FN, 'mean'));
+  const [autoExpandMostExpressed, setAutoExpandMostExpressed] = useState(() =>
+    getStoredValue(STORAGE_KEYS.AUTO_EXPAND_MOST_EXPRESSED, true)
+  );
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
@@ -156,6 +163,11 @@ export const Heatmap = ({
     setRowAggFn(value);
     localStorage.setItem(STORAGE_KEYS.ROW_AGG_FN, value);
   };
+  const updateAutoExpandMostExpressed = () => {
+    const value = !autoExpandMostExpressed;
+    setAutoExpandMostExpressed(value);
+    localStorage.setItem(STORAGE_KEYS.AUTO_EXPAND_MOST_EXPRESSED, JSON.stringify(value));
+  };
 
   // DEBUG: remove console log in prod
   // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
@@ -228,6 +240,26 @@ export const Heatmap = ({
   }, [data, visibleTermIds, useAdaptiveScale, colorPalette]);
 
   const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
+
+  const topLevelAutoExpandWinnerIds = useMemo(() => {
+    if (!autoExpandMostExpressed || !data?.length || !yTerms?.length) {
+      return null;
+    }
+    const scoreMap = computeTermAggregates(data, rowAggFn);
+    return yTerms.map((root) => pickWinnerChildIdForRoot(root, scoreMap));
+  }, [autoExpandMostExpressed, data, rowAggFn, yTerms]);
+
+  const syncTopLevelAutoExpandRef = useRef(onSyncTopLevelAutoExpand);
+  syncTopLevelAutoExpandRef.current = onSyncTopLevelAutoExpand;
+
+  useEffect(() => {
+    if (isLoading || isInitializingFromUrl || !topLevelAutoExpandWinnerIds) {
+      return;
+    }
+    const sync = syncTopLevelAutoExpandRef.current;
+    if (!sync) return;
+    sync(topLevelAutoExpandWinnerIds);
+  }, [isLoading, isInitializingFromUrl, topLevelAutoExpandWinnerIds]);
 
   const downloadTsv = () => {
     if (!data) return;
@@ -331,6 +363,7 @@ export const Heatmap = ({
     setUseAdaptiveScale(false);
     setRowOrdering('alphabetical');
     setRowAggFn('mean');
+    setAutoExpandMostExpressed(true);
 
     // Clear all stored settings
     Object.values(STORAGE_KEYS).forEach((key) => {
@@ -587,13 +620,27 @@ export const Heatmap = ({
                               <select
                                 value={rowAggFn}
                                 onChange={updateRowAggFn}
-                                disabled={rowOrdering !== 'expression'}
+                                disabled={
+                                  rowOrdering !== 'expression' && !(autoExpandMostExpressed && onSyncTopLevelAutoExpand)
+                                }
                               >
                                 <option value="mean">mean</option>
                                 <option value="max">max</option>
                               </select>
                             </td>
                           </tr>
+                          {onSyncTopLevelAutoExpand ? (
+                            <tr>
+                              <td>Auto-expand most expressed:</td>
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  checked={autoExpandMostExpressed}
+                                  onChange={updateAutoExpandMostExpressed}
+                                />
+                              </td>
+                            </tr>
+                          ) : null}
                           {SHOW_DEBUG_OPTIONS ? (
                             <>
                               <tr>

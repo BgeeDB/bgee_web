@@ -8,32 +8,7 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import { Tooltip } from "../../../Tooltip";
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
-
-/** Numeric score only; skips null/undefined/NaN/non-numeric (avoids string + number concat in reduce). */
-function toNumericScore(v) {
-  if (v === null || v === undefined) return null;
-  const n = typeof v === 'number' ? v : Number(v);
-  return Number.isFinite(n) ? n : null;
-}
-
-function computeTermAggregates(rows, aggFn) {
-  const byTerm = new Map();
-  (rows || []).forEach((d) => {
-    const n = toNumericScore(d.value);
-    if (n === null) return;
-    if (!byTerm.has(d.y)) byTerm.set(d.y, []);
-    byTerm.get(d.y).push(n);
-  });
-  const scores = new Map();
-  byTerm.forEach((values, termId) => {
-    if (aggFn === 'max') {
-      scores.set(termId, Math.max(...values));
-    } else {
-      scores.set(termId, values.reduce((a, b) => a + b, 0) / values.length);
-    }
-  });
-  return scores;
-}
+import { toNumericScore, computeTermAggregates } from './heatmapAggregates';
 
 const DEBUG_ROW_SORT_KEY = 'bgee-debug-heatmap-row-sort';
 
@@ -46,19 +21,21 @@ function logHeatmapRowSortDebug(rows, aggFn, scoreMap) {
     byTerm.get(d.y).push(n);
   });
   const skipped = (rows || []).filter((d) => toNumericScore(d.value) === null).length;
-  const tableRows = [...byTerm.entries()].map(([termId, values]) => {
-    const mean = values.reduce((a, b) => a + b, 0) / values.length;
-    const max = Math.max(...values);
-    return {
-      termId,
-      n: values.length,
-      min: Math.min(...values),
-      max,
-      mean: Math.round(mean * 1000) / 1000,
-      sortKey: aggFn === 'max' ? max : mean,
-      inScoreMap: scoreMap.has(termId),
-    };
-  });
+  const tableRows = [...byTerm.entries()]
+    .map(([termId, values]) => {
+      const mean = values.reduce((a, b) => a + b, 0) / values.length;
+      const max = Math.max(...values);
+      return {
+        termId,
+        n: values.length,
+        min: Math.min(...values),
+        max,
+        mean: Math.round(mean * 1000) / 1000,
+        sortKey: aggFn === 'max' ? max : mean,
+        inScoreMap: scoreMap.has(termId),
+      };
+    })
+    .sort((a, b) => b.sortKey - a.sortKey);
   console.log(
     `[Heatmap row sort] aggFn=${aggFn}, terms with numeric data=${tableRows.length}, cells skipped (no finite score)=${skipped}`
   );
@@ -102,7 +79,6 @@ export const Renderer = forwardRef(
       width,
       height,
       data,
-      xTerms,
       drilldown,
       termProps,
       hoveredCell,
@@ -169,7 +145,6 @@ export const Renderer = forwardRef(
       }
 
       traverse(objectList, 0, true, []);
-
       return orderedLabels;
     }
 
@@ -192,17 +167,13 @@ export const Renderer = forwardRef(
     }, [drilldown, rowOrdering, termScoreById]);
 
     // sort x-axis labels alphabetically
-    // const xLabels = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
-    // console.log(`[Renderer] xTerms:\n${JSON.stringify(xTerms, null, 2)}`);
-    // use specified xTerms parameter to get the xLabels
-    const xLabels = xTerms.map((d) => {
-      if (d.label.includes(' - ')) {
-        return d.label.split(' - ')[1];
-      }
-      return d.label;
-    });
+    const xLabels = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
     const xLabelsOrdered = xLabels.sort((a, b) => a.localeCompare(b));
+
+    // sort y-axis labels hierarchically
     const yTermsOrdered = orderLabelsHierarchically(drilldownOrdered);
+    // console.log(`[Renderer] yTerms:\n${JSON.stringify(yTerms)}`);
+    // console.log(`[Renderer] yTermsOrdered:\n${JSON.stringify(yTermsOrdered)}`);
     // TODO: filter out missing data?
     const yTermsOrderedCopy = JSON.parse(JSON.stringify(yTermsOrdered));
     const yLblOrdered = yTermsOrderedCopy;
@@ -247,7 +218,7 @@ export const Renderer = forwardRef(
       }
       const idx = i;
       const fillColour = d.isExpressed ? colorScale(d.value) : '#cccccc';
-      const strokeColour = termProps[d.termId]?.isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
+      const strokeColour = termProps[d.termId].isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
@@ -260,7 +231,7 @@ export const Renderer = forwardRef(
         cellTypeName: d.cellTypeName,
         cellTypeUrlOls: `http://purl.obolibrary.org/obo/${d.cellTypeId.replace(':', '_')}`,
         xLabel: `${d.geneId} - ${d.geneName}`,
-        yLabel: `${d.termName}`,
+        yLabel: `${d.termId} - ${d.termName}`,
         xPos: x + xScale.bandwidth() + marginLeft,
         yPos: y + xScale.bandwidth() / 2 + MARGIN.bottom,
         value: Math.round(d.value * 100) / 100,
@@ -515,32 +486,32 @@ export const Renderer = forwardRef(
     return (
       <div style={{ width: '100%', overflow: 'hidden' }}>
         {/* {showReactSVGPanZoomControls && (
-      <div>
-      <h1>ReactSVGPanZoom</h1>
-      <hr/>
+    <div>
+    <h1>ReactSVGPanZoom</h1>
+    <hr/>
 
-      <button type="button" className="btn" onClick={() => zoomOnViewerCenter1()}>Zoom on center (mode 1)</button>
-      <button type="button" className="btn" onClick={() => fitSelection1()}>Zoom area 200x200 (mode 1)</button>
-      <button type="button" className="btn" onClick={() => fitToViewer1()}>Fit (mode 1)</button>
-      <hr/>
+    <button type="button" className="btn" onClick={() => zoomOnViewerCenter1()}>Zoom on center (mode 1)</button>
+    <button type="button" className="btn" onClick={() => fitSelection1()}>Zoom area 200x200 (mode 1)</button>
+    <button type="button" className="btn" onClick={() => fitToViewer1()}>Fit (mode 1)</button>
+    <hr/>
 
-      <button type="button" className="btn" onClick={() => zoomOnViewerCenter2()}>Zoom on center (mode 2)</button>
-      <button type="button" className="btn" onClick={() => fitSelection2()}>Zoom area 200x200 (mode 2)</button>
-      <button type="button" className="btn" onClick={() => fitToViewer2()}>Fit (mode 2)</button>
-      <hr/>
-      </div>
-      )} */}
+    <button type="button" className="btn" onClick={() => zoomOnViewerCenter2()}>Zoom on center (mode 2)</button>
+    <button type="button" className="btn" onClick={() => fitSelection2()}>Zoom area 200x200 (mode 2)</button>
+    <button type="button" className="btn" onClick={() => fitToViewer2()}>Fit (mode 2)</button>
+    <hr/>
+    </div>
+    )} */}
 
         {/* <ReactSVGPanZoom
-        ref={Viewer}
-        width={Math.min(width, maxGraphWidth)} height={height + colorLegendHeight + 100}
-        tool={tool} onChangeTool={setTool}
-        value={value} onChangeValue={setValue}
-        onZoom={e => console.log('zoom')}
-        onPan={e => console.log('pan')}
-        onClick={event => console.log('click', event.x, event.y, event.originalEvent)}
-        background="white"
-      > */}
+      ref={Viewer}
+      width={Math.min(width, maxGraphWidth)} height={height + colorLegendHeight + 100}
+      tool={tool} onChangeTool={setTool}
+      value={value} onChangeValue={setValue}
+      onZoom={e => console.log('zoom')}
+      onPan={e => console.log('pan')}
+      onClick={event => console.log('click', event.x, event.y, event.originalEvent)}
+      background="white"
+    > */}
 
         <svg
           ref={ref}
@@ -552,25 +523,26 @@ export const Renderer = forwardRef(
         >
           <defs>
             <style>{`
-            @font-face {
-              font-family: 'Open Sans';
-              src: url('data:application/font-woff;charset=utf-8;base64,${fonts.openSansWoff}') format('woff');
-              font-weight: normal;
-              font-style: normal;
-            }
-            @font-face {
-              font-family: 'Spectral Regular';
-              src: url('data:application/font-woff;charset=utf-8;base64,${fonts.spectralRegularWoff}') format('woff');
-              font-weight: normal;
-              font-style: normal;
-            }
-          `}</style>
+          @font-face {
+            font-family: 'Open Sans';
+            src: url('data:application/font-woff;charset=utf-8;base64,${fonts.openSansWoff}') format('woff');
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'Spectral Regular';
+            src: url('data:application/font-woff;charset=utf-8;base64,${fonts.spectralRegularWoff}') format('woff');
+            font-weight: normal;
+            font-style: normal;
+          }
+        `}</style>
             <linearGradient id="colorLegendGradient">{colorLegendStops}</linearGradient>
           </defs>
           <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
             {allShapes}
             {xLabelsTop}
             {xLabelsBottom}
+            {/* {yLabels} */}
 
             <g transform={`translate(-${marginLeft - 10}, 5)`}>
               <Tree
