@@ -1,13 +1,24 @@
-declare module '*.md';
+import 'react';
 
-// Define types to properly work with TypeScript JSX
-declare namespace JSX {
-  interface IntrinsicElements {
-    'sparql-editor': any;
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'sparql-editor': any;
+      'ion-icon': any;
+    }
   }
 }
 
-// Make sure React knows about custom elements
+declare module 'react/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'sparql-editor': any;
+      'ion-icon': any;
+    }
+  }
+}
+
 interface HTMLElementTagNameMap {
   'sparql-editor': HTMLElement;
+  'ion-icon': HTMLElement;
 }

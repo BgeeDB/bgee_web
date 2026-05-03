@@ -5,8 +5,35 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import { Tooltip } from "../../../Tooltip";
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
+import { computeTermAggregates } from './heatmapAggregates';
 
-const DEFAULT_MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
+function sortSiblingTerms(children, rowOrdering, scoreMap) {
+  if (!children?.length) return children;
+  const low = children.filter((c) => !c.isTopLevelTerm);
+  const high = children.filter((c) => c.isTopLevelTerm);
+  const cmpAlpha = (a, b) => a.label.localeCompare(b.label);
+  const cmpExpr = (a, b) => {
+    const sa = scoreMap.has(a.id) ? scoreMap.get(a.id) : -Infinity;
+    const sb = scoreMap.has(b.id) ? scoreMap.get(b.id) : -Infinity;
+    if (sb !== sa) return sb - sa;
+    return a.label.localeCompare(b.label);
+  };
+  const cmp = rowOrdering === 'expression' ? cmpExpr : cmpAlpha;
+  low.sort(cmp);
+  high.sort(cmp);
+  return [...low, ...high];
+}
+
+function reorderAnatomyTree(nodes, rowOrdering, scoreMap) {
+  if (!nodes?.length) return nodes;
+  const withSubtrees = nodes.map((node) => ({
+    ...node,
+    children: node.children?.length ? reorderAnatomyTree(node.children, rowOrdering, scoreMap) : node.children,
+  }));
+  return sortSiblingTerms(withSubtrees, rowOrdering, scoreMap);
+}
+
+const MARGIN = { top: 50, right: 10, bottom: 50, left: 200 };
 const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
 
 export const Renderer = forwardRef(
@@ -15,7 +42,9 @@ export const Renderer = forwardRef(
       width,
       height,
       data,
-      xTerms,
+      getChildData: _getChildData,
+      xTerms: _xTerms,
+      yTerms: _yTerms,
       drilldown,
       termProps,
       hoveredCell,
@@ -26,6 +55,7 @@ export const Renderer = forwardRef(
       backgroundColor,
       marginLeft,
       xLabelRotation,
+      yLabelJustify: _yLabelJustify,
       showLegend,
       showMissingData,
       showDescMax,
@@ -34,21 +64,16 @@ export const Renderer = forwardRef(
       maxCellWidth,
       minCellWidth = 20,
       minCellHeight = 10,
-      defaultCellHeight = 15, // eslint-disable-line @typescript-eslint/no-unused-vars
-      maxGraphWidth = 800,
+      maxGraphWidth = 1000,
       setGraphWidth,
-      scaleSvg = false,
-      rendererMargins,
+      rowOrdering = 'alphabetical',
+      rowAggFn = 'mean',
     },
     ref
   ) => {
-    // Use provided margins or fall back to default
-    const MARGIN = rendererMargins || DEFAULT_MARGIN;
     // The bounds (=area inside the axis) is calculated by substracting the margins
     const boundsWidth = width - MARGIN.right - marginLeft;
-    // Separate main heatmap height from total height (which includes legend)
-    const mainHeatmapHeight = height - colorLegendHeight;
-    const boundsHeight = mainHeatmapHeight - MARGIN.top - MARGIN.bottom;
+    const boundsHeight = height - MARGIN.top - MARGIN.bottom;
     const colorLegendBoundsHeight = colorLegendHeight - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
 
     // show only selected and top-level data points
@@ -62,6 +87,14 @@ export const Renderer = forwardRef(
     // console.log(`[Renderer] drilldown:\n${JSON.stringify(drilldown)}`);
     // console.log(`[Renderer] termProps:\n${JSON.stringify(termProps)}`);
 
+    const termScoreById = useMemo(() => computeTermAggregates(data, rowAggFn), [data, rowAggFn]);
+
+    const drilldownOrdered = useMemo(() => {
+      if (!drilldown?.length) return drilldown;
+      const clone = JSON.parse(JSON.stringify(drilldown));
+      return reorderAnatomyTree(clone, rowOrdering, termScoreById);
+    }, [drilldown, rowOrdering, termScoreById]);
+
     // reorder y-axis terms according to hierarchy
     function orderLabelsHierarchically(objectList) {
       const orderedLabels = [];
@@ -69,21 +102,8 @@ export const Renderer = forwardRef(
       function traverse(children, depth, visible, embedLvls) {
         if (!children || !Array.isArray(children)) return;
 
-        // collect low-level children
-        const childrenLowLvl = children
-          .filter((child) => !child.isTopLevelTerm)
-          .sort((a, b) => a.label.localeCompare(b.label));
-        // collect high-level children
-        const childrenHighLvl = children
-          .filter((child) => child.isTopLevelTerm)
-          .sort((a, b) => a.label.localeCompare(b.label));
-
-        // Sort the children based on the label
-        children.sort((a, b) => a.label.localeCompare(b.label));
-
         // Push the labels at the current depth
-        [...childrenLowLvl, ...childrenHighLvl].forEach((child, idx, arr) => {
-          // children.forEach((child, idx, arr) => {
+        children.forEach((child, idx, arr) => {
           if (visible && (child.isPopulated || showMissingData)) {
             const newLabel = {
               id: child.id,
@@ -110,26 +130,15 @@ export const Renderer = forwardRef(
       return orderedLabels;
     }
 
-    const drilldownCopy = JSON.parse(JSON.stringify(drilldown));
-    const yTermsOrdered = orderLabelsHierarchically(drilldownCopy);
+    const yTermsOrdered = orderLabelsHierarchically(drilldownOrdered);
     // console.log(`[Renderer] yTerms:\n${JSON.stringify(yTerms)}`);
     // console.log(`[Renderer] yTermsOrdered:\n${JSON.stringify(yTermsOrdered)}`);
     // TODO: filter out missing data?
     const yTermsOrderedCopy = JSON.parse(JSON.stringify(yTermsOrdered));
     const yLblOrdered = yTermsOrderedCopy;
 
-    // const allXGroups = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
-    // use specified xTerms parameter to get the xLabels
-    const allXGroups = useMemo(
-      () =>
-        xTerms.map((d) => {
-          if (d.label?.includes(' - ')) {
-            return d.label.split(' - ')[1];
-          }
-          return d.label || 'Unknown';
-        }),
-      [xTerms]
-    );
+    // const allYGroups = useMemo(() => [...new Set(dataShow.map((d) => d.y))], [dataShow]);
+    const allXGroups = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
     // const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.label))], [yLblOrdered]);
     const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 
@@ -138,8 +147,6 @@ export const Renderer = forwardRef(
       // Calculate required width based on minimum cell width, including 4px margin
       const requiredWidth = allXGroups.length * (cellWidth + 4);
       if (requiredWidth > boundsWidth) {
-        // console.log('[Renderer] requiredWidth:', requiredWidth);
-        // console.log('[Renderer] boundsWidth:', boundsWidth);
         // Update graph width if needed
         setGraphWidth(requiredWidth + MARGIN.right + marginLeft);
       }
@@ -148,7 +155,6 @@ export const Renderer = forwardRef(
     }, [dataShow, width, maxCellWidth, minCellWidth, allXGroups, boundsWidth, marginLeft, setGraphWidth]);
 
     const yScale = useMemo(() => {
-      // console.log('[Renderer] allYGroups:', allYGroups);
       // Calculate required height based on minimum cell height, including 4px margin
       const requiredHeight = allYGroups.length * (minCellHeight + 4);
       const actualHeight = Math.max(boundsHeight, requiredHeight);
@@ -170,9 +176,8 @@ export const Renderer = forwardRef(
       const fillColour = d.isExpressed ? colorScale(d.value) : '#cccccc';
       if (!termProps[d.termId]) {
         // console.log(`[Renderer] termProps[${d.termId}] not found`);
-        // console.log(`[Renderer] termProps: ${JSON.stringify(termProps)}`);
       }
-      const strokeColour = termProps[d.termId]?.isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
+      const strokeColour = termProps[d.termId].isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
@@ -185,12 +190,12 @@ export const Renderer = forwardRef(
         cellTypeName: d.cellTypeName,
         cellTypeUrlOls: `http://purl.obolibrary.org/obo/${d.cellTypeId.replace(':', '_')}`,
         xLabel: `${d.geneId} - ${d.geneName}`,
-        yLabel: `${d.termName}`,
+        yLabel: `${d.termId} - ${d.termName}`,
         xPos: x + xScale.bandwidth() + marginLeft,
-        yPos: y + yScale.bandwidth() / 2 + MARGIN.bottom,
+        yPos: y + xScale.bandwidth() / 2 + MARGIN.bottom,
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
-        maxExpScore: d.maxExp?.toFixed(2),
+        // maxExpScore: d.maxExp.toFixed(2),
         hasDataAffy: d.hasDataAffy,
         hasDataEst: d.hasDataEst,
         hasDataInSitu: d.hasDataInSitu,
@@ -207,6 +212,42 @@ export const Renderer = forwardRef(
       const w1 = cellWidth * (2 / 3);
       const w2 = cellWidth - w1;
       const x1 = x + w1;
+
+      // return (
+      //   <g id={`heatmapCell-${idx}`}>
+      //     <rect
+      //       key={`valueSelf-${idx}`}
+      //       x={x}
+      //       y={y}
+      //       width={w1}
+      //       height={cellHeight}
+      //       opacity={1}
+      //       fill={fillColour}
+      //       strokeWidth={4}
+      //       onMouseEnter={(e) => {
+      //         setHoveredCell(cellData);
+      //       }}
+      //       onMouseLeave={() => setHoveredCell(null)}
+      //       cursor="pointer"
+      //     />
+
+      //     <rect
+      //       key={`valueDesc-${idx}`}
+      //       x={x1}
+      //       y={y}
+      //       width={w2}
+      //       height={cellHeight}
+      //       opacity={1}
+      //       fill={strokeColour}
+      //       strokeWidth={4}
+      //       onMouseEnter={(e) => {
+      //         setHoveredCell(cellData);
+      //       }}
+      //       onMouseLeave={() => setHoveredCell(null)}
+      //       cursor="pointer"
+      //     />
+      //   </g>
+      // );
 
       switch (showDescMax) {
         case 'border':
@@ -378,8 +419,8 @@ export const Renderer = forwardRef(
     const xLabelsBottom = allXGroups.map((name, i) => {
       const x = xScale(name);
       const xCoord = x + xScale.bandwidth() / 2;
-      const actualHeatmapHeight = yScale.range()[1] || 0;
-      const yCoord = actualHeatmapHeight + 10;
+      const yCoord = boundsHeight + 10;
+      // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
 
       if (!x) {
         return null;
@@ -414,22 +455,16 @@ export const Renderer = forwardRef(
       <stop key={`colorLegendStop-${idx}`} stopColor={colorScale((max * idx) / 100)} offset={`${idx}%`} />
     ));
     const colorLegendPosX = 0;
-    // Position legend after the main heatmap
-    // Calculate the actual heatmap content height (yScale range height)
-    const actualHeatmapHeight = yScale.range()[1] || 0;
-    // Add space for top x-axis labels (which are positioned at y=-10 with rotation)
-    const topLabelsSpace = xLabelRotation !== 0 ? 20 : 0;
-    // Position legend just below the heatmap with a small gap
-    const colorLegendPosY = actualHeatmapHeight + topLabelsSpace + 40;
+    const colorLegendPosY = height;
 
     return (
       <svg
         ref={ref}
         width={Math.min(width, maxGraphWidth)}
-        height={height}
+        height={height + colorLegendHeight}
         style={{ backgroundColor }}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio={scaleSvg ? 'xMidYMid meet' : 'none'}
+        viewBox={`0 0 ${width} ${height + colorLegendHeight}`}
+        preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           <style>{`
@@ -449,13 +484,12 @@ export const Renderer = forwardRef(
           <linearGradient id="colorLegendGradient">{colorLegendStops}</linearGradient>
         </defs>
         <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
-          <g>
-            <g>{allShapes}</g>
-            <g>{xLabelsTop}</g>
-            <g>{xLabelsBottom}</g>
-            <g transform={`translate(-${marginLeft - 10}, 5)`}>
-              <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
-            </g>
+          {allShapes}
+          {xLabelsTop}
+          {xLabelsBottom}
+
+          <g transform={`translate(-${marginLeft - 10}, 5)`}>
+            <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
           </g>
 
           <g transform={`translate(-${marginLeft - 50}, 0)`}>
@@ -463,7 +497,7 @@ export const Renderer = forwardRef(
               <g>
                 <ColorLegendSvg
                   posX={colorLegendPosX}
-                  posY={colorLegendPosY}
+                  posY={colorLegendPosY - 50}
                   width={colorLegendWidth}
                   height={colorLegendHeight}
                   colorScale={colorScale}

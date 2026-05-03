@@ -1,12 +1,31 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-
 import Bulma from '../Bulma';
 import api from '../../api';
 import Heatmap from '../Heatmap/Heatmap';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import useQuery from '../../hooks/useQuery';
-import { URL_ROOT } from '~/helpers/constants';
+import config from '../../config.json';
+
+const APP_VERSION = config.version;
+const URL_VERSION = APP_VERSION.replaceAll('.', '-');
+const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
+
+const logApiError = (context, error, extra = {}) => {
+  const responseData = error?.response?.data;
+  const payload = {
+    message: error?.message || String(error),
+    name: error?.name,
+    code: error?.code,
+    status: error?.response?.status,
+    statusText: error?.response?.statusText,
+    responseData,
+    stack: error?.stack,
+    ...extra,
+  };
+
+  console.error(`${context} - ERROR`, payload);
+};
 
 const DATA_TYPES = [
   {
@@ -54,6 +73,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
   const [dataType, setDataTypes] = useState(ALL_DATA_TYPES);
   const dataTypeKey = 'data_type';
   const dataTypeExpr = useQuery(dataTypeKey);
+  const autoExpandFetchInFlightRef = useRef(new Set());
 
   // Sync local state with URL parameter
   useEffect(() => {
@@ -77,7 +97,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
       isFirstSearch: true,
       initSearch,
       pageType: EXPR_CALLS,
-      dataType: dataTypeExpr?.toString().split(',') || ALL_DATA_TYPES,
+      dataType: dataTypeExpr ? dataTypeExpr.split(',') : dataType,
       dataQuality: 'SILVER',
       selectedExpOrAssay: [],
       selectedSpecies: speciesId,
@@ -283,7 +303,9 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
         setSearchResult(data);
       }
     } catch (error) {
-      console.log(`[GeneExpressionGraph.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
+      logApiError('[GeneExpressionGraph.triggerInitialSearch]', error, {
+        params: getSearchParams(),
+      });
       setIsLoading(false);
     } finally {
       // console.log(`[GeneExpressionGraph.triggerInitialSearch] finally.`)
@@ -466,7 +488,11 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(`[GeneExpressionGraph] triggerSearchChildren - ERROR:\n${JSON.stringify(error)}`);
+        logApiError('[GeneExpressionGraph] triggerSearchChildren', error, {
+          parentId,
+          selectedTissueId,
+          params,
+        });
         setIsLoading(false);
       });
   };
@@ -520,13 +546,63 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
     // console.log(`[GeneExpressionGraph] DONE onToggleExpandCollapse.`);
   };
 
+  const syncTopLevelAutoExpand = useCallback(
+    (winnerIds) => {
+      if (!winnerIds?.length) return;
+      if (!anatomicalTerms?.length || winnerIds.length !== anatomicalTerms.length) return;
+      const termsToFetch: { id: string; anatEntityId: string }[] = [];
+      let changed = false;
+      const next = anatomicalTerms.map((root, i) => {
+        const winnerId = winnerIds[i];
+        if (winnerId == null || !root.children?.length) return root;
+        const pool = root.children.filter((c) => c.isTopLevelTerm);
+        const candidates = pool.length ? pool : [...root.children];
+        const expandedAmongCandidates = candidates.filter((c) => c.isExpanded);
+        if (expandedAmongCandidates.length === 1 && expandedAmongCandidates[0].id === winnerId) {
+          return root;
+        }
+        changed = true;
+        const newRoot = JSON.parse(JSON.stringify(root));
+        newRoot.children = newRoot.children.map((child) => {
+          const newChild = JSON.parse(JSON.stringify(child));
+          const inCandidates = candidates.some((c) => c.id === child.id);
+          if (!inCandidates) return newChild;
+          if (child.id === winnerId) {
+            if (!child.hasBeenQueried) {
+              termsToFetch.push({ id: child.id, anatEntityId: child.anatEntityId });
+              newChild.hasBeenQueried = true;
+            }
+            newChild.isExpanded = true;
+          } else {
+            newChild.isExpanded = false;
+          }
+          return newChild;
+        });
+        return newRoot;
+      });
+
+      if (changed) {
+        setAnatomicalTerms(next);
+      }
+
+      termsToFetch.forEach(({ id, anatEntityId }) => {
+        if (autoExpandFetchInFlightRef.current.has(id)) return;
+        autoExpandFetchInFlightRef.current.add(id);
+        Promise.resolve(triggerSearchChildren(id, anatEntityId)).finally(() => {
+          autoExpandFetchInFlightRef.current.delete(id);
+        });
+      });
+    },
+    [anatomicalTerms, triggerSearchChildren]
+  );
+
   const heatmapData =
     searchResult?.expressionData?.expressionCalls?.map((result) => {
       const { geneId: gId, name: gName } = result.gene;
       const specId = result.gene.species.id;
-      const { id: anatEntityId, name: anatEntityName, dataId: anatEntityDataId } = result.condition.anatEntity;
+      const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = result.condition.cellType;
-      const termId = anatEntityDataId ? `${anatEntityDataId}-${cellTypeId}` : `${anatEntityId}-${cellTypeId}`;
+      const termId = `${anatEntityId}-${cellTypeId}`;
       const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
       const expScore = result.expressionScore.expressionScore;
       const isExpressed = result.expressionState === 'expressed';
@@ -630,6 +706,8 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
             yTerms={anatomicalTerms}
             termProps={anatomicalTermsProps}
             onToggleExpandCollapse={onToggleExpandCollapse}
+            onSyncTopLevelAutoExpand={syncTopLevelAutoExpand}
+            isLoading={isLoading}
             width={800}
             height={800}
             backgroundColor="white"
