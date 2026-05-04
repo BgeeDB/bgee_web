@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "react-router build && sh scripts/fix_symlinks.sh",
-    "dev": "CHOKIDAR_USEPOLLING=true CHOKIDAR_INTERVAL=200 react-router dev",
+    "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "cluster": "pm2 start 'npx react-router-serve ./build/server/index.js' --name bgee-web -i 62",
     "stop": "pm2 stop bgee-web",
