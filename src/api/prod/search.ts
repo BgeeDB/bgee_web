@@ -415,6 +415,19 @@ const search = {
               }
             }
           }
+
+          // Preserve default descendant behavior on first load when URL omits them.
+          // Without these defaults, direct links with anat/cell/stage filters can return
+          // exact-only matches on first render and differ from subsequent searches.
+          if (!form.initSearch.has('anat_entity_descendant') && form.hasTissueSubStructure) {
+            params.append('anat_entity_descendant', '1');
+          }
+          if (!form.initSearch.has('cell_type_descendant') && form.hasCellTypeSubStructure) {
+            params.append('cell_type_descendant', '1');
+          }
+          if (!form.initSearch.has('stage_descendant') && form.hasDevStageSubStructure) {
+            params.append('stage_descendant', '1');
+          }
         } else {
           // If no hash, we send all parameters separately
           if (form.selectedSpecies) {
