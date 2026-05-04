@@ -23,7 +23,7 @@ const logApiError = (context, error, extra = {}) => {
     stack: error?.stack,
     ...extra,
   };
-   
+
   console.error(`${context} - ERROR`, payload);
 };
 
