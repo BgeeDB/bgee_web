@@ -14,7 +14,6 @@ export type RendererProps = {
   colorScale: unknown;
   marginLeft: number;
   xLabelRotation: number;
-  yLabelJustify: string;
   showLegend: boolean;
   showMissingData: boolean;
   showDescMax: boolean;
@@ -30,6 +29,7 @@ export type RendererProps = {
   getChildData?: unknown;
   yTerms?: unknown;
   xTerms?: unknown;
+  yLabelJustify?: string;
   clickedCell?: unknown;
 };
 
