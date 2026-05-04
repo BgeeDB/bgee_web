@@ -1,14 +1,8 @@
 import axios from 'axios';
 import config from '../../config.json';
 
-const resolvedApiDomain =
-  import.meta.env.VITE_APP_API_DOMAIN ||
-  import.meta.env.REACT_APP_API_DOMAIN ||
-  config.apiDomainProd ||
-  config.apiDomain;
-
 const axiosInstance = axios.create({
-  baseURL: resolvedApiDomain,
+  baseURL: config.apiDomain,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
   },
