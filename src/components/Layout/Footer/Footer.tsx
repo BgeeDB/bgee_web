@@ -81,7 +81,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to={PATHS.SEARCH.EXPRESSION_MATRIX} className="nav_a">
-                  Expression graph (beta)
+                  Expression graph
                 </Link>
               </li>
             </ul>

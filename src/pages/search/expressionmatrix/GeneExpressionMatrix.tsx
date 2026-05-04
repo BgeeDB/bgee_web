@@ -19,7 +19,7 @@ import './rawDataAnnotations.scss';
 
 export function meta() {
   return getMetadata({
-    title: 'Expression graph (beta)',
+    title: 'Expression graph',
   });
 }
 
