@@ -266,15 +266,24 @@ export const Heatmap = ({
 
   const syncTopLevelAutoExpandRef = useRef(onSyncTopLevelAutoExpand);
   syncTopLevelAutoExpandRef.current = onSyncTopLevelAutoExpand;
+  const lastAutoExpandSyncKeyRef = useRef(null);
 
   // Run in layout phase so expand/collapse runs before paint; key includes rowAggFn so aggregation changes always re-sync.
   useLayoutEffect(() => {
     if (isLoading || isInitializingFromUrl) return;
     if (topLevelAutoExpandWinners.key === null || !topLevelAutoExpandWinners.winnerIds) return;
+    if (lastAutoExpandSyncKeyRef.current === topLevelAutoExpandWinners.key) return;
     const sync = syncTopLevelAutoExpandRef.current;
     if (!sync) return;
     sync(topLevelAutoExpandWinners.winnerIds);
+    lastAutoExpandSyncKeyRef.current = topLevelAutoExpandWinners.key;
   }, [isLoading, isInitializingFromUrl, topLevelAutoExpandWinners]);
+
+  useEffect(() => {
+    if (!autoExpandMostExpressed) {
+      lastAutoExpandSyncKeyRef.current = null;
+    }
+  }, [autoExpandMostExpressed]);
 
   const downloadTsv = () => {
     if (!data) return;
