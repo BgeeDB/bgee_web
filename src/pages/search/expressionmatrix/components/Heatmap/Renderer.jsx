@@ -196,7 +196,8 @@ export const Renderer = forwardRef(
         .range([0, Math.max(boundsWidth, requiredWidth)])
         .domain(allXGroups)
         .padding(0.01);
-    }, [dataShow, width, minCellWidth, allXGroups]);
+      // marginLeft sets boundsWidth; include it so x-scale recomputes when y-axis labels widen (e.g. auto-expand).
+    }, [dataShow, width, marginLeft, minCellWidth, allXGroups]);
 
     const yScale = useMemo(() => {
       // Calculate required height based on minimum cell height, including 4px margin

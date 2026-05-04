@@ -1,7 +1,11 @@
 import axios from 'axios';
 import config from '../../config.json';
 
-const resolvedApiDomain = process.env.REACT_APP_API_DOMAIN || config.apiDomainProd || config.apiDomain;
+const resolvedApiDomain =
+  import.meta.env.VITE_APP_API_DOMAIN ||
+  import.meta.env.REACT_APP_API_DOMAIN ||
+  config.apiDomainProd ||
+  config.apiDomain;
 
 const axiosInstance = axios.create({
   baseURL: resolvedApiDomain,

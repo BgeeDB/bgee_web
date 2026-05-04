@@ -1,8 +1,5 @@
- 
- 
- 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import axios from 'axios';
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
@@ -12,6 +9,7 @@ import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
 import { URL_ROOT } from '~/helpers/constants';
+import { ensureDrilldownAndTermProps } from './buildDrilldownFromCalls';
 // DEBUG: remove in PROD
 // import maxExpScoreCsv from '../../../assets/maxExpScore.csv'
 
@@ -206,6 +204,8 @@ const useLogic = (isExprCalls) => {
   const autoExpandFetchInFlightRef = useRef(new Set());
   const [show, setShow] = useState(true);
   const [searchResult, setSearchResult] = useState(null);
+  const searchResultRef = useRef(searchResult);
+  searchResultRef.current = searchResult;
   // const [maxExpScore, setMaxExpScore] = useState({});
   const maxExpScore = [];
 
@@ -555,14 +555,14 @@ const useLogic = (isExprCalls) => {
         }
 
         setIsLoading(false);
-        setSearchResult(data);
+        setSearchResult(ensureDrilldownAndTermProps(data));
       }
     } catch (error) {
       if (axios.isCancel(error)) {
         setIsLoading(false);
       } else {
         console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
-        history.replace(`${URL_ROOT}${loc.pathname}`);
+        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
         setIsLoading(false);
       }
     } finally {
@@ -705,8 +705,9 @@ const useLogic = (isExprCalls) => {
 
         // Finally, we set the values we are interested in
         setIsLoading(false);
-        // TODO: CONTINUE - how to handle initial view?
-        setSearchResult(resp?.data);
+        if (resp?.code === 200 && resp.data) {
+          setSearchResult(ensureDrilldownAndTermProps(resp.data));
+        }
 
         // TODO: add result count to previous one?
         // setLocalCount(
@@ -720,7 +721,7 @@ const useLogic = (isExprCalls) => {
           setIsLoading(false);
           return;
         }
-        history.replace(`${URL_ROOT}${loc.pathname}`);
+        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
         setIsLoading(false);
       })
       .finally(() => {
@@ -818,7 +819,7 @@ const useLogic = (isExprCalls) => {
 
         // update anatomical terms
         const newChildTerms = new Set();
-        resp?.data.expressionData.expressionCalls.forEach((exprCall) => {
+        resp?.data?.expressionData?.expressionCalls?.forEach((exprCall) => {
           const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
           const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
           const isSingleCell = cellTypeId !== 'GO:0005575';
@@ -884,15 +885,18 @@ const useLogic = (isExprCalls) => {
           // Start traversal from the root
           return traverse(hierarchy);
         }
-        if (newChildTerms.size > 0) {
-          setAnatomicalTerms((prevTerms) => addChildren(prevTerms, parentId, [...newChildTerms]));
-          // add term props for new terms
-          setAnatomicalTermsProps((prevProps) => {
-            const newAnatTermsProps = { ...prevProps };
+        // add additional data to previous ones (drilldown / termProps + expression calls)
+        setSearchResult((prevResult) => {
+          if (!prevResult?.expressionData?.expressionCalls) return prevResult;
+          const newCalls = resp?.data?.expressionData?.expressionCalls || [];
+          let nextDrilldown = prevResult.expressionData.drilldown ?? [];
+          const nextTermProps = { ...(prevResult.expressionData.termProps ?? {}) };
+          if (newChildTerms.size > 0) {
+            nextDrilldown = addChildren(nextDrilldown, parentId, [...newChildTerms]);
             newChildTerms.forEach((childStr) => {
               const child = JSON.parse(childStr);
-              if (!(child.id in newAnatTermsProps)) {
-                newAnatTermsProps[child.id] = {
+              if (!(child.id in nextTermProps)) {
+                nextTermProps[child.id] = {
                   isTopLevel: child.isTopLevelTerm,
                   isExpanded: child.isExpanded,
                   isPopulated: child.isPopulated,
@@ -901,18 +905,13 @@ const useLogic = (isExprCalls) => {
                 };
               }
             });
-            return newAnatTermsProps;
-          });
-        }
-
-        // add additional data to previous ones
-        setSearchResult((prevResult) => {
-          if (!prevResult?.expressionData?.expressionCalls) return prevResult;
-          const newCalls = resp?.data?.expressionData?.expressionCalls || [];
+          }
           return {
             ...prevResult,
             expressionData: {
               ...prevResult.expressionData,
+              drilldown: nextDrilldown,
+              termProps: nextTermProps,
               expressionCalls: [...prevResult.expressionData.expressionCalls, ...newCalls],
             },
           };
@@ -1157,6 +1156,10 @@ const useLogic = (isExprCalls) => {
   // Expand or collapse a term
   const onToggleExpandCollapse = (term) => {
     // console.log(`[useLogic] onToggleExpandCollapse:\n${JSON.stringify(term)}`);
+    const prev = searchResultRef.current;
+    if (!prev?.expressionData) return;
+    const anatomicalTerms = prev.expressionData.drilldown ?? [];
+    const anatomicalTermsProps = prev.expressionData.termProps ?? {};
 
     function updateExpandedStateHierarchically(terms) {
       const newTermProps = { ...anatomicalTermsProps };
@@ -1197,11 +1200,17 @@ const useLogic = (isExprCalls) => {
 
     const { newDrilldown, newTermProps } = updateExpandedStateHierarchically(anatomicalTerms);
 
-    // Update anatomical terms state
-    // console.log(`[useLogic] CALL setAnatomicalTermsProps...`);
-    setAnatomicalTermsProps(newTermProps);
-    // console.log(`[useLogic] CALL setAnatomicalTerms...`);
-    setAnatomicalTerms(newDrilldown);
+    setSearchResult((latest) => {
+      if (!latest?.expressionData) return latest;
+      return {
+        ...latest,
+        expressionData: {
+          ...latest.expressionData,
+          drilldown: newDrilldown,
+          termProps: newTermProps,
+        },
+      };
+    });
 
     // console.log(`[useLogic] DONE onToggleExpandCollapse.`);
   };
@@ -1210,25 +1219,32 @@ const useLogic = (isExprCalls) => {
   const syncHeatmapTopLevelAutoExpand = useCallback(
     (winnerIds) => {
       if (!winnerIds?.length) return;
-      if (!anatomicalTerms?.length || winnerIds.length !== anatomicalTerms.length) return;
+      const anatomicalTerms = searchResultRef.current?.expressionData?.drilldown ?? [];
+      if (!anatomicalTerms.length || winnerIds.length !== anatomicalTerms.length) return;
       const termsToFetch = [];
       let changed = false;
       const next = anatomicalTerms.map((root, i) => {
         const winnerId = winnerIds[i];
-        if (winnerId == null || !root.children?.length) return root;
+        if (!root.children?.length) return root;
+
         const pool = root.children.filter((c) => c.isTopLevelTerm);
         const candidates = pool.length ? pool : [...root.children];
-        const expandedAmongCandidates = candidates.filter((c) => c.isExpanded);
-        if (expandedAmongCandidates.length === 1 && expandedAmongCandidates[0].id === winnerId) {
-          return root;
-        }
+
+        const desiredExpanded = (child) => {
+          const inCandidates = candidates.some((c) => c.id === child.id);
+          if (!inCandidates) return false;
+          return winnerId != null && child.id === winnerId;
+        };
+
+        const rootNeedsUpdate = root.children.some((child) => child.isExpanded !== desiredExpanded(child));
+        if (!rootNeedsUpdate) return root;
+
         changed = true;
         const newRoot = JSON.parse(JSON.stringify(root));
         newRoot.children = newRoot.children.map((child) => {
           const newChild = JSON.parse(JSON.stringify(child));
-          const inCandidates = candidates.some((c) => c.id === child.id);
-          if (!inCandidates) return newChild;
-          if (child.id === winnerId) {
+          const expand = desiredExpanded(child);
+          if (expand) {
             if (!child.hasBeenQueried) {
               termsToFetch.push({ id: child.id, anatEntityId: child.anatEntityId });
               newChild.hasBeenQueried = true;
@@ -1242,9 +1258,21 @@ const useLogic = (isExprCalls) => {
         return newRoot;
       });
       if (changed) {
-        setAnatomicalTerms(next);
+        setSearchResult((latest) => {
+          if (!latest?.expressionData) return latest;
+          return {
+            ...latest,
+            expressionData: {
+              ...latest.expressionData,
+              drilldown: next,
+            },
+          };
+        });
       }
+      const seenFetch = new Set();
       termsToFetch.forEach(({ id, anatEntityId }) => {
+        if (seenFetch.has(id)) return;
+        seenFetch.add(id);
         if (autoExpandFetchInFlightRef.current.has(id)) return;
         autoExpandFetchInFlightRef.current.add(id);
         Promise.resolve(triggerSearchChildren(id, anatEntityId)).finally(() => {
@@ -1252,7 +1280,7 @@ const useLogic = (isExprCalls) => {
         });
       });
     },
-    [anatomicalTerms, triggerSearchChildren]
+    [triggerSearchChildren]
   );
 
   // Add function to process gene list

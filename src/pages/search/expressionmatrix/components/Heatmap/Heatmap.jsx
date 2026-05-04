@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import { Download } from 'lucide-react';
 
@@ -165,6 +165,12 @@ export const Heatmap = ({
     const { value } = event.target;
     setRowAggFn(value);
     localStorage.setItem(STORAGE_KEYS.ROW_AGG_FN, value);
+    // Apply immediately: passive effects can miss the expand hand-off when only rowAggFn changes.
+    if (isLoading || isInitializingFromUrl || !autoExpandMostExpressed) return;
+    if (!data?.length || !yTerms?.length) return;
+    const scoreMap = computeTermAggregates(data, value);
+    const winnerIds = yTerms.map((root) => pickWinnerChildIdForRoot(root, scoreMap));
+    onSyncTopLevelAutoExpand?.(winnerIds);
   };
   const updateAutoExpandMostExpressed = () => {
     const value = !autoExpandMostExpressed;
@@ -247,44 +253,28 @@ export const Heatmap = ({
 
   const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
 
-  const topLevelAutoExpandWinnerIds = useMemo(() => {
+  /** Winner ids per root + stable key (includes rowAggFn) so we re-run sync when aggregation changes the pick. */
+  const topLevelAutoExpandWinners = useMemo(() => {
     if (!autoExpandMostExpressed || !data?.length || !yTerms?.length) {
-      return null;
+      return { key: null, winnerIds: null };
     }
     const scoreMap = computeTermAggregates(data, rowAggFn);
-    return yTerms.map((root) => pickWinnerChildIdForRoot(root, scoreMap));
+    const winnerIds = yTerms.map((root) => pickWinnerChildIdForRoot(root, scoreMap));
+    const key = `${rowAggFn}::${winnerIds.map((id) => (id == null ? '∅' : String(id))).join('|')}`;
+    return { key, winnerIds };
   }, [autoExpandMostExpressed, data, rowAggFn, yTerms]);
 
   const syncTopLevelAutoExpandRef = useRef(onSyncTopLevelAutoExpand);
   syncTopLevelAutoExpandRef.current = onSyncTopLevelAutoExpand;
-  const autoExpandRunNonceRef = useRef(0);
-  const appliedAutoExpandRunNonceRef = useRef(-1);
 
-  useEffect(() => {
-    // Re-enable one-shot auto-expand whenever relevant settings change.
-    autoExpandRunNonceRef.current += 1;
-    appliedAutoExpandRunNonceRef.current = -1;
-  }, [autoExpandMostExpressed, rowAggFn]);
-
-  useEffect(() => {
-    // Re-arm auto-expand only when a new search starts loading.
-    if (!isLoading) return;
-    autoExpandRunNonceRef.current += 1;
-    appliedAutoExpandRunNonceRef.current = -1;
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (isLoading || isInitializingFromUrl || !topLevelAutoExpandWinnerIds) {
-      return;
-    }
-    if (appliedAutoExpandRunNonceRef.current === autoExpandRunNonceRef.current) {
-      return;
-    }
+  // Run in layout phase so expand/collapse runs before paint; key includes rowAggFn so aggregation changes always re-sync.
+  useLayoutEffect(() => {
+    if (isLoading || isInitializingFromUrl) return;
+    if (topLevelAutoExpandWinners.key === null || !topLevelAutoExpandWinners.winnerIds) return;
     const sync = syncTopLevelAutoExpandRef.current;
     if (!sync) return;
-    sync(topLevelAutoExpandWinnerIds);
-    appliedAutoExpandRunNonceRef.current = autoExpandRunNonceRef.current;
-  }, [isLoading, isInitializingFromUrl, topLevelAutoExpandWinnerIds]);
+    sync(topLevelAutoExpandWinners.winnerIds);
+  }, [isLoading, isInitializingFromUrl, topLevelAutoExpandWinners]);
 
   const downloadTsv = () => {
     if (!data) return;
