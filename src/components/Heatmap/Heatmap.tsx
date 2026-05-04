@@ -66,8 +66,6 @@ const Heatmap = ({
   height = 800,
   backgroundColor = '#ffffff',
   data,
-  getChildData,
-  xTerms,
   yTerms,
   termProps,
   yLabelJustify = 'right',
