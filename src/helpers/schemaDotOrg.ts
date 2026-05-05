@@ -19,7 +19,7 @@ import obolibraryLinkFromID, { obolibraryNCBITaxonLinkFromID } from './obolibrar
 // });
 
 export const topanatToLdJSON = (url: string, version: string) => ({
-  '@context': 'http://schema.org',
+  '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'TopAnat - Gene Expression Enrichment',
   url: url,
@@ -448,10 +448,10 @@ export const speciesToLdJSON = ({
       `https://nov2020.archive.ensembl.org/${genus}_${speciesName}`,
     ],
     taxonRank: [
-      'http://rs.tdwg.org/ontology/voc/TaxonRank#Species',
-      'http://purl.uniprot.org/core/Species',
-      'http://purl.obolibrary.org/obo/NCBITaxon_species',
-      'http://www.wikidata.org/entity/Q7432',
+      'https://rs.tdwg.org/ontology/voc/TaxonRank#Species',
+      'https://purl.uniprot.org/core/Species',
+      'https://purl.obolibrary.org/obo/NCBITaxon_species',
+      'https://www.wikidata.org/entity/Q7432',
       'species',
     ],
     subjectOf: [
@@ -480,115 +480,7 @@ export const speciesToLdJSON = ({
         name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression calls`,
         url: `${url}#expr-calls`,
         version: config.version,
-        hasPart: [
-          {
-            '@type': 'Dataset',
-            dateModified: config.bioSchemaModifiedData,
-            creator: {
-              '@type': 'Organization',
-              url: 'https://www.bgee.org/',
-              name: 'The Bgee Team',
-            },
-            license: {
-              '@type': 'CreativeWork',
-              name: 'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
-              url: 'https://creativecommons.org/publicdomain/zero/1.0/',
-            },
-            isAccessibleForFree: 'true',
-            name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression simple`,
-            description: 'Anatomical entities only, file without advanced columns.',
-            url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-anat-simple`,
-            distribution: [
-              {
-                '@type': 'DataDownload',
-                encodingFormat: 'TSV',
-                contentUrl: downloadFiles.find(
-                  (d) => d.category === 'expr_simple' && d.conditionParameters.length === 1
-                ).path,
-              },
-            ],
-          },
-          {
-            '@type': 'Dataset',
-            dateModified: config.bioSchemaModifiedData,
-            creator: {
-              '@type': 'Organization',
-              url: 'https://www.bgee.org/',
-              name: 'The Bgee Team',
-            },
-            license: {
-              '@type': 'CreativeWork',
-              name: 'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
-              url: 'https://creativecommons.org/publicdomain/zero/1.0/',
-            },
-            isAccessibleForFree: 'true',
-            name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression advanced`,
-            description: 'Anatomical entities only, file with advanced columns.',
-            url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-anat-advanced`,
-            distribution: [
-              {
-                '@type': 'DataDownload',
-                encodingFormat: 'TSV',
-                contentUrl: downloadFiles.find(
-                  (d) => d.category === 'expr_advanced' && d.conditionParameters.length === 1
-                ).path,
-              },
-            ],
-          },
-          {
-            '@type': 'Dataset',
-            dateModified: config.bioSchemaModifiedData,
-            creator: {
-              '@type': 'Organization',
-              url: 'https://www.bgee.org/',
-              name: 'The Bgee Team',
-            },
-            license: {
-              '@type': 'CreativeWork',
-              name: 'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
-              url: 'https://creativecommons.org/publicdomain/zero/1.0/',
-            },
-            isAccessibleForFree: 'true',
-            name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression simple with all conditions`,
-            description: `Anatomical entities, developmental stages, sexes and ${id === 9606 ? 'ethnicities' : 'strains'}. File without advanced columns.`,
-            url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-cond-simple`,
-            distribution: [
-              {
-                '@type': 'DataDownload',
-                encodingFormat: 'TSV',
-                contentUrl: downloadFiles.find((d) => d.category === 'expr_simple' && d.conditionParameters.length > 1)
-                  .path,
-              },
-            ],
-          },
-          {
-            '@type': 'Dataset',
-            dateModified: config.bioSchemaModifiedData,
-            creator: {
-              '@type': 'Organization',
-              url: 'https://www.bgee.org/',
-              name: 'The Bgee Team',
-            },
-            license: {
-              '@type': 'CreativeWork',
-              name: 'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
-              url: 'https://creativecommons.org/publicdomain/zero/1.0/',
-            },
-            isAccessibleForFree: 'true',
-            name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression advanced with all conditions`,
-            description: `Anatomical entities, developmental stages, sexes and ${id === 9606 ? 'ethnicities' : 'strains'}. File with advanced columns.`,
-            url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-cond-advanced`,
-            distribution: [
-              {
-                '@type': 'DataDownload',
-                encodingFormat: 'TSV',
-                contentUrl: downloadFiles.find(
-                  (d) => d.category === 'expr_advanced' && d.conditionParameters.length > 1
-                ).path,
-              },
-            ],
-          },
-        ],
+        hasPart: [],
       },
       {
         '@type': 'Dataset',
@@ -598,7 +490,7 @@ export const speciesToLdJSON = ({
           url: 'https://www.bgee.org/',
           name: 'The Bgee Team',
         },
-        citation: 'https://doi.org/10.1093/nar/gkaa793',
+        citation: '["https://doi.org/10.1093/nar/gkaa793","https://doi.org/10.1093/nar/gkae1118"]',
         description: `Annotations and experiment information (e.g., annotations to anatomy and development, quality scores used in QCs, library information), and processed expression values (e.g., read counts, TPM and FPKM values) for ${genus} ${speciesName}.`,
         includedInDataCatalog: {
           '@id': config.permanentVersionedDomain,
@@ -630,6 +522,43 @@ export const speciesToLdJSON = ({
       },
     ],
   };
+
+  let callFile = downloadFiles.find((d) => d.category === 'expr_simple' && d.conditionParameters.length === 1);
+  if (callFile) {
+    json.subjectOf[0].hasPart.push({
+      ...fileDownloadProps(callFile),
+      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression simple`,
+      description: 'Anatomical entities only, file without advanced columns.',
+      url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-anat-simple`,
+    });
+  }
+  callFile = downloadFiles.find((d) => d.category === 'expr_advanced' && d.conditionParameters.length === 1);
+  if (callFile) {
+    json.subjectOf[0].hasPart.push({
+      ...fileDownloadProps(callFile),
+      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression advanced`,
+      description: 'Anatomical entities only, file with advanced columns.',
+      url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-anat-advanced`,
+    });
+  }
+  callFile = downloadFiles.find((d) => d.category === 'expr_simple' && d.conditionParameters.length > 1);
+  if (callFile) {
+    json.subjectOf[0].hasPart.push({
+      ...fileDownloadProps(callFile),
+      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression simple with all conditions`,
+      description: `Anatomical entities, developmental stages, sexes and ${id === 9606 ? 'ethnicities' : 'strains'}. File without advanced columns.`,
+      url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-cond-simple`,
+    });
+  }
+  callFile = downloadFiles.find((d) => d.category === 'expr_advanced' && d.conditionParameters.length > 1);
+  if (callFile) {
+    json.subjectOf[0].hasPart.push({
+      ...fileDownloadProps(callFile),
+      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression advanced with all conditions`,
+      description: `Anatomical entities, developmental stages, sexes and ${id === 9606 ? 'ethnicities' : 'strains'}. File with advanced columns.`,
+      url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-cond-advanced`,
+    });
+  }
 
   let file = downloadFiles.find((d) => d.category === 'affy_annot');
   if (file) {
