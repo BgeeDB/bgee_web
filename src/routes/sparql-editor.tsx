@@ -29,10 +29,7 @@ export default function Page() {
       <div style={{ textAlign: 'center', overflow: 'hidden', marginTop: '1rem', fontWeight: 'bold' }}>
         Bgee SPARQL endpoint: <code>https://www.bgee.org/sparql/</code>
       </div>
-      {isMounted && (
-        // @ts-expect-error Property 'sparql-editor' does not exist on type 'JSX.IntrinsicElements'
-        <sparql-editor endpoint="https://www.bgee.org/sparql/"></sparql-editor>
-      )}
+      {isMounted && <sparql-editor endpoint="https://www.bgee.org/sparql/"></sparql-editor>}
       <div style={{ textAlign: 'center', overflow: 'hidden', marginTop: '2rem' }}>
         <ul>
           <li>

@@ -13,7 +13,6 @@ import DataQualityParameter from './components/filters/DataQualityParameter';
 // import Strain from './components/filters/Strain/Strain';
 // import CallType from './components/filters/CallType';
 import GeneExpressionMatrixResults from './GeneExpressionMatrixResults';
-import UserFeedback from './components/UserFeedback';
 import { getMetadata } from '~/helpers/metadata';
 import { URL_ROOT } from '~/helpers/constants';
 import './rawDataAnnotations.scss';
@@ -27,6 +26,7 @@ export function meta() {
 const GeneExpressionMatrix = ({ isExprCalls = true }) => {
   const {
     searchResult,
+    maxExpScore,
     dataType,
     show,
     selectedSpecies,
@@ -36,7 +36,9 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
     selectedGene,
     selectedTissue,
     isLoading,
+    isLoadingChildren,
     isFirstSearch,
+    isInitializingFromUrl,
     dataTypesExpCalls,
     dataQuality,
     setDataQuality,
@@ -54,20 +56,9 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
     resetForm,
     addConditionalParam,
     getSearchParams,
-    triggerSearchChildren,
-    // devStages,
-    // hasDevStageSubStructure,
-    // selectedDevStages,
-    // selectedStrain,
-    // speciesSexes,
-    // selectedSexes,
-    // callTypes,
-    // setCallTypes,
-    // toggleSex,
-    // setSelectedStrain,
-    // setSelectedDevStages,
-    // setDevStageSubStructure,
-  }: any = useLogic(isExprCalls);
+    onToggleExpandCollapse,
+    syncHeatmapTopLevelAutoExpand,
+  } = useLogic(isExprCalls);
 
   // DEBUG: remove console log in prod
   // console.log(`[GeneExpressionMatrix] anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
@@ -75,14 +66,26 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
   // TODO: remove this useless state, wth is it even doing?
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setPageIsBrowseResult] = useState(false);
-  const defaultResults = searchResult?.results?.[dataType] || [];
-  const resultExprsCall = searchResult?.expressionData?.expressionCalls || [];
+  const searchResultSafe = (searchResult ?? {}) as {
+    results?: Record<string, never[]>;
+    expressionData?: {
+      expressionCalls?: never[];
+      drilldown?: never[];
+      termProps?: Record<string, never>;
+    };
+  };
+  const defaultResults = searchResultSafe.results?.[dataType] ?? [];
+  const resultExprsCall = searchResultSafe.expressionData?.expressionCalls ?? [];
   const results = isExprCalls ? resultExprsCall : defaultResults;
+  const genes = selectedGene;
+  const anatomicalTerms = searchResultSafe.expressionData?.drilldown ?? [];
+  const anatomicalTermsProps = searchResultSafe.expressionData?.termProps ?? {};
   // const defaultColumDesc = searchResult?.columnDescriptions?.[dataType] || [];
   // const columnDescExprsCall = searchResult?.columnDescriptions || [];
   // const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
 
   const detailedData = TAB_PAGE_EXPR_CALL;
+  const isBusy = isLoading || isLoadingChildren;
 
   // TODO: remove this useless useEffect, wth is it even doing? Changing a state that is not used anywhere?
   // Burning through CPU cycles for no reason?
@@ -199,7 +202,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
                         className="button is-success is-light is-outlined"
                         type="submit"
                         onClick={onSubmit}
-                        disabled={isLoading}
+                        disabled={isBusy}
                       >
                         Submit
                       </Button>
@@ -243,7 +246,7 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
           <h2 className="gradient-underline title is-size-5 has-text-primary">{detailedData?.resultLabel}</h2>
 
           <div className="resultPart" style={{ position: 'relative' }}>
-            {isLoading && (
+            {isBusy && (
               <div
                 style={{
                   position: 'absolute',
@@ -270,12 +273,15 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
 
             <GeneExpressionMatrixResults
               results={results}
-              // columnDescriptions={columnsDesc}
-              // searchParams={getSearchParams}
-              genes={selectedGene}
+              genes={genes}
+              anatomicalTerms={anatomicalTerms}
+              anatomicalTermsProps={anatomicalTermsProps}
+              maxExpScore={maxExpScore}
+              onToggleExpandCollapse={onToggleExpandCollapse}
+              onSyncTopLevelAutoExpand={syncHeatmapTopLevelAutoExpand}
+              isInitializingFromUrl={isInitializingFromUrl}
               isLoading={isLoading}
               isFirstSearch={isFirstSearch}
-              onFetchChildren={triggerSearchChildren}
             />
           </div>
           {/* <UserFeedback /> */}

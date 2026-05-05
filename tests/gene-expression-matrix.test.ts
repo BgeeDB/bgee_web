@@ -195,21 +195,21 @@ test.describe('Gene Expression Matrix Page', () => {
         await page.waitForLoadState('networkidle');
         await page.waitForTimeout(3000);
 
-        // Check for the expression graph SVG (800x660)
-        const expressionGraphSvg = page.locator('svg[width="800"][height="660"]');
+        // Check for an expression graph SVG in the results container (size is dynamic)
+        const expressionGraphSvg = page.locator('.resultPart svg').first();
         const graphExists = await expressionGraphSvg.isVisible();
 
         if (graphExists) {
           console.log('Expression graph SVG rendered successfully');
         } else {
-          console.log('Expression graph SVG not found - checking for other SVGs...');
+          console.log('Expression graph SVG not found in resultPart - checking all SVGs...');
           const svgElements = page.locator('svg');
           const svgCount = await svgElements.count();
-          console.log(`Found ${svgCount} SVG elements (none match expected 800x660 dimensions)`);
+          console.log(`Found ${svgCount} SVG elements`);
         }
 
-        // Check that results section appears - verify the SVG graph is rendered
-        await expect(page.locator('svg[width="800"][height="660"]')).toBeVisible();
+        // Check that results section appears - verify a graph SVG is rendered
+        await expect(page.locator('.resultPart svg').first()).toBeVisible();
       } else {
         console.log('No gene options available in autocomplete - cannot test search');
         test.skip();
@@ -281,8 +281,8 @@ test.describe('Gene Expression Matrix Page', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
-    // Verify results section - verify the SVG graph is rendered
-    await expect(page.locator('svg[width="800"][height="660"]')).toBeVisible();
+    // Verify results section - verify a graph SVG is rendered
+    await expect(page.locator('.resultPart svg').first()).toBeVisible();
   });
 
   test('should reset form when reset button is clicked', async ({ page }) => {

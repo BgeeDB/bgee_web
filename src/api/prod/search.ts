@@ -25,6 +25,8 @@ export const SEARCH_CANCEL_API: any = {
   rawData: {
     search: null,
     count: null,
+    /** Request-parameter / display_rp fetches — must not share token with `search` or URL init cancels */
+    requestParams: null,
   },
 };
 
@@ -512,7 +514,7 @@ const search = {
   geneExpressionMatrix: {
     // get request parameters from previous search
     getRequestParams: (form, detailedRP = false) =>
-      new Promise((resolve) => {
+      new Promise((resolve, reject) => {
         // populate request params
         const params = DEFAULT_PARAMETERS('data', 'expr_calls');
         params.append('get_results', '0');
@@ -537,7 +539,12 @@ const search = {
 
         const paramsURLCalled = params.toString();
 
-        const typeToken = 'search'; // alternatives: 'count'
+        const typeToken = 'requestParams';
+        if (SEARCH_CANCEL_API?.rawData?.[typeToken] !== null) {
+          SEARCH_CANCEL_API?.rawData?.[typeToken]?.(
+            '-- Request-parameters fetch canceled because another was started --'
+          );
+        }
         axiosInstance
           .get(`/?${paramsURLCalled}`, {
             cancelToken: new axios.CancelToken((c) => {
@@ -547,10 +554,18 @@ const search = {
           .then(({ data }) => {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             return resolve({ resp: data, paramsURLCalled });
-            // })
-            // .catch((error) => {
-            //   errorHandler(error);
-            //   reject(error?.response || error?.message);
+          })
+          .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              return resolve({
+                resp: { code: 0, message: error.message },
+                paramsURLCalled,
+                canceled: true,
+              });
+            }
+            errorHandler(error);
+            return reject(error?.response || error?.message);
           });
       }),
 
@@ -643,8 +658,13 @@ const search = {
             return resolve({ resp: data, paramsURLCalled });
           })
           .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              reject(error);
+              return;
+            }
             errorHandler(error);
-            reject(error?.response || error?.message);
+            reject(error?.response ?? error?.message ?? error);
           });
       }),
 
@@ -705,8 +725,13 @@ const search = {
             return resolve({ resp: data, paramsURLCalled });
           })
           .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              reject(error);
+              return;
+            }
             errorHandler(error);
-            reject(error?.response || error?.message);
+            reject(error?.response ?? error?.message ?? error);
           });
       }),
 
@@ -741,13 +766,7 @@ const search = {
           // (Basics parameters are the one originally filled when opening the page for the first time)
 
           for (const [key, val] of form.initSearch) {
-            if (
-              key !== 'data_type' &&
-              // key !== 'offset' &&
-              // key !== 'limit' &&
-              key !== 'pageType' // &&
-              // key !== 'pageNumber'
-            ) {
+            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               // For the 1st search we don't send the filters if we request OnlyCount
               // onlyCount => all parameters but the filters
               //! this approach works only when the URL does not contain a hash
@@ -825,8 +844,13 @@ const search = {
             return resolve({ resp: data, paramsURLCalled });
           })
           .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              reject(error);
+              return;
+            }
             errorHandler(error);
-            reject(error?.response || error?.message);
+            reject(error?.response ?? error?.message ?? error);
           });
       }),
   },

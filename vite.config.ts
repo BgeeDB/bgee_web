@@ -10,6 +10,8 @@ import rehypeSlug from 'rehype-slug';
 import rehypeLink from './src/helpers/rehypeLink';
 
 export default defineConfig({
+  // Allow CRA-style REACT_APP_* in .env alongside Vite's VITE_* (see src/api/prod/constant.ts).
+  envPrefix: ['VITE_', 'REACT_APP_'],
   resolve: {
     tsconfigPaths: true,
   },
