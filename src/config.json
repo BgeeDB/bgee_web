@@ -1,14 +1,18 @@
 {
-  "version": "15.2",
-  "fullversion": "15.2.4",
+  "version": "16.0",
+  "fullversion": "16.0.0",
   "archive": false,
   "genericDomain": "https://www.bgee.org",
   "prodDomain": "https://www.bgee.org",
-  "permanentVersionedDomain": "https://www.bgee.org/bgee15-2",
+  "permanentVersionedDomain": "https://www.bgee.org/bgee16-0",
   "imageDomain": "/img",
   "apiDomain": "https://www.bgee.org/api",
   "ftpDomain": "https://www.bgee.org/ftp/current",
   "archivedVersion": [
+    {
+      "version": "15.2",
+      "url": "https://archives.bgee.org/15-2/"
+    },
     {
       "version": "15.1",
       "url": "https://archives.bgee.org/15-1/"

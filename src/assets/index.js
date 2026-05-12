@@ -18,8 +18,8 @@ const assets = {
 
 export const heroCounts = {
   speciesCount: 52,
-  libraryCount: 31467,
-  conditionCount: 55997,
+  libraryCount: 75583,
+  conditionCount: 84368,
 };
 
 export default assets;
