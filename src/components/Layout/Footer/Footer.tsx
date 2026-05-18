@@ -105,6 +105,11 @@ const Footer = () => {
                   Species
                 </Link>
               </li>
+              <li>
+                <Link to={PATHS.SEARCH.SPECIES_ANATOMY_OVERVIEW} className="nav_a">
+                  Species ⨯ anatomy overview
+                </Link>
+              </li>
             </ul>
           </div>
           <div className="nav-footer-col-spacer" />

@@ -23,6 +23,7 @@ const PATHS = {
     RAW_DATA_ANNOTATIONS: `${URL_ROOT}/search/raw-data`,
     EXPRESSION_CALLS: `${URL_ROOT}/search/expression-calls`,
     EXPRESSION_MATRIX: `${URL_ROOT}/search/expression-matrix`,
+    SPECIES_ANATOMY_OVERVIEW: `${URL_ROOT}/search/species-anatomy-overview`,
     EXPERIMENT: `${URL_ROOT}/experiment/:id`,
   },
   DOWNLOAD: {

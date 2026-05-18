@@ -1712,6 +1712,87 @@ h1.title.in-md {
   }
 }
 
+.species-anatomy-heatmap {
+  margin-top: 1.5rem;
+
+  &__toolbar {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    .button {
+      align-items: center;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+  }
+
+  &__zoom-label {
+    font-variant-numeric: tabular-nums;
+    min-width: 3.5rem;
+    text-align: center;
+  }
+
+  &__reset-label {
+    margin-left: 0.15rem;
+  }
+
+  &__hint {
+    flex: 1 1 100%;
+    margin-top: 0.15rem;
+
+    @media screen and (min-width: 769px) {
+      flex: 1 1 auto;
+      margin-left: 0.5rem;
+      margin-top: 0;
+      text-align: right;
+    }
+  }
+
+  &__viewport {
+    background: #fff;
+    border: 1px solid $grey-lighter;
+    border-radius: 4px;
+    max-width: 100%;
+    overflow: hidden;
+    overscroll-behavior: contain;
+    position: relative;
+    touch-action: none;
+    user-select: none;
+    width: 100%;
+  }
+
+  &__stage {
+    line-height: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &__pan-layer {
+    cursor: default;
+    inset: 0;
+    position: absolute;
+    touch-action: none;
+    z-index: 1;
+
+    &--over-link {
+      cursor: pointer;
+    }
+
+    &--dragging {
+      cursor: grabbing;
+    }
+  }
+
+  object {
+    display: block;
+    pointer-events: none;
+  }
+}
+
 @media screen and (max-width: $smallestscreen) {
   /* GENERAL */
   .section {
@@ -1757,6 +1838,7 @@ h1.title.in-md {
       }
     }
   }
+
   /* RESOURCE AND ARCHIVE */
   .bgee-resource-archive {
     .columns {
