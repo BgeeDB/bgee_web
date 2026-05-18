@@ -1755,6 +1755,7 @@ h1.title.in-md {
     background: #fff;
     border: 1px solid $grey-lighter;
     border-radius: 4px;
+    cursor: grab;
     max-width: 100%;
     overflow: hidden;
     overscroll-behavior: contain;
@@ -1762,6 +1763,10 @@ h1.title.in-md {
     touch-action: none;
     user-select: none;
     width: 100%;
+
+    &--dragging {
+      cursor: grabbing;
+    }
   }
 
   &__stage {
@@ -1771,25 +1776,52 @@ h1.title.in-md {
     left: 0;
   }
 
-  &__pan-layer {
-    cursor: default;
-    inset: 0;
-    position: absolute;
-    touch-action: none;
-    z-index: 1;
+  &__svg-host {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    width: 100%;
 
-    &--over-link {
+    a {
       cursor: pointer;
     }
 
-    &--dragging {
-      cursor: grabbing;
+    svg {
+      display: block;
+      height: 100%;
+      max-width: 100%;
+      width: 100%;
     }
   }
 
-  object {
-    display: block;
+  &__loading {
+    padding: 1rem;
+  }
+
+  &__debug-marker {
+    border-left: 1px solid $red;
+    border-top: 1px solid $red;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
     pointer-events: none;
+    position: fixed;
+    width: 20px;
+    z-index: 10;
+  }
+
+  &__debug-panel {
+    margin-top: 0.75rem;
+    max-height: 12rem;
+    overflow: auto;
+  }
+
+  &__debug-href {
+    max-width: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

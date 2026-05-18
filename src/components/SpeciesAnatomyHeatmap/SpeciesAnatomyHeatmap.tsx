@@ -1,5 +1,6 @@
 import React from 'react';
 import { Minus, Plus, Maximize2 } from 'lucide-react';
+import { useLocation } from 'react-router';
 
 import Bulma from '~/components/Bulma';
 
@@ -9,9 +10,16 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 4;
 const DRAG_THRESHOLD_PX = 4;
 const MAX_VIEWPORT_HEIGHT_PX = 1200;
-const XLINK_NS = 'http://www.w3.org/1999/xlink';
 
 type Point = { x: number; y: number };
+type HitProbeResult = {
+  method: string;
+  x: number;
+  y: number;
+  tag: string | null;
+  href: string | null;
+};
+
 type SpeciesAnatomyHeatmapProps = {
   src: string;
   title: string;
@@ -29,20 +37,42 @@ const clampPan = (pan: Point, viewport: HTMLElement, contentWidth: number, conte
   };
 };
 
-const getSvgAnchorHref = (anchor: Element): string | null => {
-  const href = anchor.getAttribute('href') ?? anchor.getAttributeNS(XLINK_NS, 'href');
-  if (href) return href;
+const prepareInlineSvg = (svg: SVGSVGElement) => {
+  const parsedWidth = Number.parseFloat(svg.getAttribute('width') || '');
+  const parsedHeight = Number.parseFloat(svg.getAttribute('height') || '');
 
-  const svgAnchor = anchor as SVGAElement;
-  if (svgAnchor.href?.baseVal) return svgAnchor.href.baseVal;
+  svg.removeAttribute('width');
+  svg.removeAttribute('height');
 
-  return null;
+  const viewBox = svg.viewBox?.baseVal;
+  if (!viewBox?.width || !viewBox?.height) {
+    const width = Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth : DEFAULT_SVG_SIZE.width;
+    const height = Number.isFinite(parsedHeight) && parsedHeight > 0 ? parsedHeight : DEFAULT_SVG_SIZE.height;
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  }
+
+  svg.setAttribute('width', '100%');
+  svg.setAttribute('height', '100%');
+  svg.setAttribute('preserveAspectRatio', 'xMinYMin meet');
+
+  svg.querySelectorAll('a').forEach((anchor) => {
+    anchor.setAttribute('target', '_blank');
+    anchor.setAttribute('rel', 'noopener noreferrer');
+  });
+
+  const box = svg.viewBox.baseVal;
+  return { width: box.width, height: box.height };
 };
 
 const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
+  const location = useLocation();
+  const debugEnabled = React.useMemo(
+    () => new URLSearchParams(location.search).has('heatmapDebug'),
+    [location.search]
+  );
+
   const viewportRef = React.useRef<HTMLDivElement>(null);
-  const objectRef = React.useRef<HTMLObjectElement>(null);
-  const panLayerRef = React.useRef<HTMLDivElement>(null);
+  const svgHostRef = React.useRef<HTMLDivElement>(null);
   const pinchRef = React.useRef<{ distance: number; zoom: number } | null>(null);
   const zoomRef = React.useRef(1);
   const panRef = React.useRef<Point>({ x: 0, y: 0 });
@@ -54,12 +84,15 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
     moved: boolean;
   } | null>(null);
 
+  const [svgHtml, setSvgHtml] = React.useState<string | null>(null);
+  const [svgLoadError, setSvgLoadError] = React.useState<string | null>(null);
   const [svgSize, setSvgSize] = React.useState(DEFAULT_SVG_SIZE);
   const [fitScale, setFitScale] = React.useState(1);
   const [zoom, setZoom] = React.useState(1);
   const [pan, setPan] = React.useState<Point>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = React.useState(false);
-  const [isOverLink, setIsOverLink] = React.useState(false);
+  const [debugMarker, setDebugMarker] = React.useState<Point | null>(null);
+  const [debugProbes, setDebugProbes] = React.useState<HitProbeResult[]>([]);
 
   const scale = fitScale * zoom;
   const contentWidth = svgSize.width * scale;
@@ -87,9 +120,51 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
     const viewport = viewportRef.current;
     if (!viewport) return;
     const availableWidth = viewport.clientWidth;
-    if (availableWidth <= 0) return;
-    setFitScale(availableWidth / svgSize.width);
-  }, [svgSize.width]);
+    const svgWidth = svgSizeRef.current.width;
+    if (availableWidth <= 0 || svgWidth <= 0) return;
+    setFitScale(availableWidth / svgWidth);
+  }, []);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    setSvgHtml(null);
+    setSvgLoadError(null);
+
+    fetch(src)
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.text();
+      })
+      .then((html) => {
+        if (cancelled) return;
+
+        const doc = new DOMParser().parseFromString(html, 'image/svg+xml');
+        const svg = doc.querySelector('svg');
+        if (!svg) {
+          setSvgLoadError('Invalid SVG document');
+          return;
+        }
+
+        const size = prepareInlineSvg(svg);
+        setSvgSize(size);
+        setSvgHtml(svg.outerHTML);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setSvgLoadError(error instanceof Error ? error.message : 'Failed to load heatmap');
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  React.useLayoutEffect(() => {
+    if (!svgHtml) return;
+    updateFitScale();
+    setPanClamped((current) => current);
+  }, [svgHtml, svgSize, updateFitScale, setPanClamped]);
 
   React.useEffect(() => {
     updateFitScale();
@@ -108,137 +183,74 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
     setPanClamped((current) => current);
   }, [contentWidth, contentHeight, setPanClamped]);
 
-  const onObjectLoad = () => {
-    const svg = objectRef.current?.contentDocument?.querySelector('svg');
-    if (!svg) return;
+  const probeHitMethods = React.useCallback((clientX: number, clientY: number): HitProbeResult[] => {
+    const host = svgHostRef.current;
+    const svg = host?.querySelector('svg');
+    if (!host || !svg) return [];
 
-    const viewBox = svg.viewBox?.baseVal;
-    if (viewBox?.width > 0 && viewBox?.height > 0) {
-      setSvgSize({ width: viewBox.width, height: viewBox.height });
+    const hostRect = host.getBoundingClientRect();
+    if (hostRect.width <= 0 || hostRect.height <= 0) return [];
+
+    const localX = clientX - hostRect.left;
+    const localY = clientY - hostRect.top;
+    const { width: vbWidth, height: vbHeight } = svgSizeRef.current;
+
+    const describe = (method: string, x: number, y: number, element: Element | null): HitProbeResult => {
+      const anchor = element?.closest('a') ?? null;
+      const href =
+        anchor?.getAttribute('href') ?? anchor?.getAttributeNS('http://www.w3.org/1999/xlink', 'href') ?? null;
+      return {
+        method,
+        x: Math.round(x),
+        y: Math.round(y),
+        tag: element?.tagName?.toLowerCase() ?? null,
+        href,
+      };
+    };
+
+    const probes: HitProbeResult[] = [];
+
+    probes.push(describe('document @ client', clientX, clientY, document.elementFromPoint(clientX, clientY)));
+
+    probes.push(describe('host-local px', localX, localY, document.elementFromPoint(
+      hostRect.left + localX,
+      hostRect.top + localY
+    )));
+
+    const viewBoxX = (localX / hostRect.width) * vbWidth;
+    const viewBoxY = (localY / hostRect.height) * vbHeight;
+    const svgDoc = svg.ownerDocument;
+    if (svgDoc) {
+      probes.push(describe('viewBox', viewBoxX, viewBoxY, svgDoc.elementFromPoint(viewBoxX, viewBoxY)));
     }
-  };
 
-  const getLinkHrefAt = React.useCallback((clientX: number, clientY: number): string | null => {
-    const object = objectRef.current;
-    const doc = object?.contentDocument;
-    const svg = doc?.querySelector('svg');
-    if (!object || !doc || !svg) return null;
-
-    let anchor: Element | null = null;
-
-    // Map screen coordinates into SVG user space (stable across zoom and pan)
     if (typeof svg.createSVGPoint === 'function') {
       const ctm = svg.getScreenCTM();
-      if (ctm) {
+      if (ctm && svgDoc) {
         const point = svg.createSVGPoint();
         point.x = clientX;
         point.y = clientY;
         const { x, y } = point.matrixTransform(ctm.inverse());
-        anchor = doc.elementFromPoint(x, y)?.closest('a') ?? null;
+        probes.push(describe('getScreenCTM⁻¹', x, y, svgDoc.elementFromPoint(x, y)));
       }
     }
 
-    // Fallback: coordinates in the object's rendered pixel space
-    if (!anchor) {
-      const objectRect = object.getBoundingClientRect();
-      if (objectRect.width <= 0 || objectRect.height <= 0) return null;
-      anchor = doc.elementFromPoint(clientX - objectRect.left, clientY - objectRect.top)?.closest('a') ?? null;
-    }
-
-    return anchor ? getSvgAnchorHref(anchor) : null;
+    return probes;
   }, []);
 
-  const updateLinkHover = React.useCallback(
+  const runDebugProbe = React.useCallback(
     (clientX: number, clientY: number) => {
-      setIsOverLink(getLinkHrefAt(clientX, clientY) !== null);
+      setDebugMarker({ x: clientX, y: clientY });
+      setDebugProbes(probeHitMethods(clientX, clientY));
     },
-    [getLinkHrefAt]
+    [probeHitMethods]
   );
-
-  const openLinkAt = (clientX: number, clientY: number) => {
-    const href = getLinkHrefAt(clientX, clientY);
-    if (href) {
-      window.open(href, '_blank', 'noopener,noreferrer');
-    }
-  };
 
   const zoomIn = () => setZoom((current) => clampZoom(current * ZOOM_FACTOR));
   const zoomOut = () => setZoom((current) => clampZoom(current / ZOOM_FACTOR));
   const resetView = () => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
-  };
-
-  const endDrag = (pointerId: number) => {
-    const panLayer = panLayerRef.current;
-    if (panLayer?.hasPointerCapture(pointerId)) {
-      panLayer.releasePointerCapture(pointerId);
-    }
-    dragRef.current = null;
-    setIsDragging(false);
-  };
-
-  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
-
-    dragRef.current = {
-      pointerId: event.pointerId,
-      startClient: { x: event.clientX, y: event.clientY },
-      startPan: { ...panRef.current },
-      moved: false,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
-  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current;
-
-    if (drag && drag.pointerId === event.pointerId) {
-      const deltaX = event.clientX - drag.startClient.x;
-      const deltaY = event.clientY - drag.startClient.y;
-
-      if (!drag.moved && Math.hypot(deltaX, deltaY) < DRAG_THRESHOLD_PX) {
-        updateLinkHover(event.clientX, event.clientY);
-        return;
-      }
-
-      drag.moved = true;
-      if (!isDragging) setIsDragging(true);
-
-      event.preventDefault();
-      setPanClamped({
-        x: drag.startPan.x + deltaX,
-        y: drag.startPan.y + deltaY,
-      });
-      return;
-    }
-
-    updateLinkHover(event.clientX, event.clientY);
-  };
-
-  const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-
-    if (drag.moved) {
-      event.preventDefault();
-    } else {
-      openLinkAt(event.clientX, event.clientY);
-    }
-
-    endDrag(event.pointerId);
-    updateLinkHover(event.clientX, event.clientY);
-  };
-
-  const onPointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
-    endDrag(event.pointerId);
-    setIsOverLink(false);
-  };
-
-  const onPointerLeave = () => {
-    if (!isDragging) {
-      setIsOverLink(false);
-    }
   };
 
   React.useEffect(() => {
@@ -251,6 +263,72 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
       } else if (deltaY > 0) {
         setZoom((current) => clampZoom(current / ZOOM_FACTOR));
       }
+    };
+
+    const endDrag = (event: PointerEvent) => {
+      if (viewport.hasPointerCapture(event.pointerId)) {
+        viewport.releasePointerCapture(event.pointerId);
+      }
+      dragRef.current = null;
+      setIsDragging(false);
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.button !== 0) return;
+
+      dragRef.current = {
+        pointerId: event.pointerId,
+        startClient: { x: event.clientX, y: event.clientY },
+        startPan: { ...panRef.current },
+        moved: false,
+      };
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const drag = dragRef.current;
+
+      if (drag && drag.pointerId === event.pointerId) {
+        const deltaX = event.clientX - drag.startClient.x;
+        const deltaY = event.clientY - drag.startClient.y;
+
+        if (!drag.moved) {
+          if (Math.hypot(deltaX, deltaY) < DRAG_THRESHOLD_PX) {
+            if (debugEnabled) runDebugProbe(event.clientX, event.clientY);
+            return;
+          }
+          drag.moved = true;
+          setIsDragging(true);
+          viewport.setPointerCapture(event.pointerId);
+        }
+
+        event.preventDefault();
+        setPanClamped({
+          x: drag.startPan.x + deltaX,
+          y: drag.startPan.y + deltaY,
+        });
+        return;
+      }
+
+      if (debugEnabled) runDebugProbe(event.clientX, event.clientY);
+    };
+
+    const onPointerUp = (event: PointerEvent) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+
+      if (drag.moved) {
+        event.preventDefault();
+      } else if (debugEnabled) {
+        runDebugProbe(event.clientX, event.clientY);
+      }
+
+      endDrag(event);
+    };
+
+    const onPointerCancel = (event: PointerEvent) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      endDrag(event);
     };
 
     const onWheel = (event: WheelEvent) => {
@@ -272,7 +350,6 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
 
     const onTouchMove = (event: TouchEvent) => {
       if (event.touches.length !== 2 || !pinchRef.current) return;
-
       event.preventDefault();
       const [a, b] = [event.touches[0], event.touches[1]];
       const distance = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
@@ -284,6 +361,10 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
       pinchRef.current = null;
     };
 
+    viewport.addEventListener('pointerdown', onPointerDown, true);
+    viewport.addEventListener('pointermove', onPointerMove, true);
+    viewport.addEventListener('pointerup', onPointerUp, true);
+    viewport.addEventListener('pointercancel', onPointerCancel, true);
     viewport.addEventListener('wheel', onWheel, { passive: false });
     viewport.addEventListener('touchstart', onTouchStart, { passive: true });
     viewport.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -291,21 +372,24 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
     viewport.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
     return () => {
+      viewport.removeEventListener('pointerdown', onPointerDown, true);
+      viewport.removeEventListener('pointermove', onPointerMove, true);
+      viewport.removeEventListener('pointerup', onPointerUp, true);
+      viewport.removeEventListener('pointercancel', onPointerCancel, true);
       viewport.removeEventListener('wheel', onWheel);
       viewport.removeEventListener('touchstart', onTouchStart);
       viewport.removeEventListener('touchmove', onTouchMove);
       viewport.removeEventListener('touchend', onTouchEnd);
       viewport.removeEventListener('touchcancel', onTouchEnd);
     };
-  }, []);
+  }, [debugEnabled, runDebugProbe, setPanClamped]);
 
   const zoomPercent = Math.round(zoom * 100);
   const viewportHeight = Math.min(contentHeight, MAX_VIEWPORT_HEIGHT_PX);
 
-  const panLayerClassName = [
-    'species-anatomy-heatmap__pan-layer',
-    isDragging ? 'species-anatomy-heatmap__pan-layer--dragging' : '',
-    !isDragging && isOverLink ? 'species-anatomy-heatmap__pan-layer--over-link' : '',
+  const viewportClassName = [
+    'species-anatomy-heatmap__viewport',
+    isDragging ? 'species-anatomy-heatmap__viewport--dragging' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -335,10 +419,20 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
         </Bulma.Button>
         <span className="species-anatomy-heatmap__hint is-size-7 has-text-grey">
           Drag to pan · Pinch or wheel to zoom · Click cells and labels to open links
+          {debugEnabled ? ' · Debug mode on' : ''}
         </span>
       </div>
 
-      <div ref={viewportRef} className="species-anatomy-heatmap__viewport" style={{ height: viewportHeight }}>
+      {debugEnabled && (
+        <p className="species-anatomy-heatmap__debug-hint is-size-7 has-text-grey">
+          Move the mouse over the heatmap to compare hit-test methods. The red crosshair marks the pointer; the row
+          that reports <code>&lt;a&gt;</code> under the cursor is the coordinate system the browser uses here.
+        </p>
+      )}
+
+      {svgLoadError && <p className="notification is-danger is-light">Could not load heatmap: {svgLoadError}</p>}
+
+      <div ref={viewportRef} className={viewportClassName} style={{ height: viewportHeight }}>
         <div
           className="species-anatomy-heatmap__stage"
           style={{
@@ -348,36 +442,58 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
             height: contentHeight,
           }}
         >
-          <object
-            ref={objectRef}
-            type="image/svg+xml"
-            data={src}
-            title={title}
-            aria-label={title}
-            width={contentWidth}
-            height={contentHeight}
-            onLoad={onObjectLoad}
-          >
-            <p>
-              Your browser cannot display this SVG.{' '}
-              <a href={src} target="_blank" rel="noopener noreferrer">
-                Open the heatmap image
-              </a>
-              .
-            </p>
-          </object>
+          {svgHtml ? (
+            <div
+              ref={svgHostRef}
+              className="species-anatomy-heatmap__svg-host"
+              style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
+              dangerouslySetInnerHTML={{ __html: svgHtml }}
+              aria-label={title}
+            />
+          ) : (
+            !svgLoadError && <p className="species-anatomy-heatmap__loading">Loading heatmap…</p>
+          )}
         </div>
-        <div
-          ref={panLayerRef}
-          className={panLayerClassName}
-          aria-hidden
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerCancel}
-          onPointerLeave={onPointerLeave}
-        />
+
+        {debugEnabled && debugMarker && (
+          <div
+            className="species-anatomy-heatmap__debug-marker"
+            style={{ left: debugMarker.x, top: debugMarker.y }}
+            aria-hidden
+          />
+        )}
       </div>
+
+      {debugEnabled && debugProbes.length > 0 && (
+        <div className="species-anatomy-heatmap__debug-panel content is-size-7">
+          <p>
+            <strong>Hit-test probe</strong> (zoom {zoomPercent}%, pan {Math.round(pan.x)}, {Math.round(pan.y)}, host{' '}
+            {Math.round(contentWidth)}×{Math.round(contentHeight)}px)
+          </p>
+          <table className="table is-narrow is-fullwidth">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>x</th>
+                <th>y</th>
+                <th>Element</th>
+                <th>href</th>
+              </tr>
+            </thead>
+            <tbody>
+              {debugProbes.map((probe) => (
+                <tr key={probe.method}>
+                  <td>{probe.method}</td>
+                  <td>{probe.x}</td>
+                  <td>{probe.y}</td>
+                  <td>{probe.tag ?? '—'}</td>
+                  <td className="species-anatomy-heatmap__debug-href">{probe.href ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
