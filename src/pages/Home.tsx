@@ -94,36 +94,48 @@ export default function Home({ loaderData }) {
                 </Link>
               </div>
               <Bulma.Columns className="has-text-uppercase has-text-weight-bold is-size-6 has-text-white my-3 is-desktop hero-data-columns">
-                <Bulma.C size={3}>
-                  <div className="inner-hero-data-column">
-                    <span>
-                      comparable
-                      <br />
-                      species
-                    </span>
-                    <p className="is-size-2">{heroCounts.speciesCount}</p>
-                  </div>
-                </Bulma.C>
-                <Bulma.C size={4}>
-                  <div className="inner-hero-data-column">
-                    <span>
-                      bulk and single-cell
-                      <br />
-                      RNA-Seq libraries
-                    </span>
-                    <p className="is-size-2">{heroCounts.libraryCount}</p>
-                  </div>
-                </Bulma.C>
-                <Bulma.C size={4}>
-                  <div className="inner-hero-data-column">
-                    <span>
-                      unique annotated
-                      <br />
-                      conditions
-                    </span>
-                    <p className="is-size-2">{heroCounts.conditionCount}</p>
-                  </div>
-                </Bulma.C>
+                <Link to={PATHS.SEARCH.SPECIES} style={{ color: '#fff' }}>
+                  <Bulma.C size={3}>
+                    <div className="inner-hero-data-column">
+                      <span>
+                        comparable
+                        <br />
+                        species
+                      </span>
+                      <p className="is-size-2">{heroCounts.speciesCount}</p>
+                    </div>
+                  </Bulma.C>
+                </Link>
+                <Link
+                  to={`${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=raw_data_annots&data_type=RNA_SEQ`}
+                  style={{ color: '#fff' }}
+                >
+                  <Bulma.C size={4}>
+                    <div className="inner-hero-data-column">
+                      <span>
+                        Bulk RNA-Seq
+                        <br />
+                        libraries
+                      </span>
+                      <p className="is-size-2">YYY</p>
+                    </div>
+                  </Bulma.C>
+                </Link>
+                <Link
+                  to={`${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=raw_data_annots&data_type=SC_RNA_SEQ`}
+                  style={{ color: '#fff' }}
+                >
+                  <Bulma.C size={4}>
+                    <div className="inner-hero-data-column">
+                      <span>
+                        Single-cell cell types
+                        <br />
+                        across libraries
+                      </span>
+                      <p className="is-size-2">XXX</p>
+                    </div>
+                  </Bulma.C>
+                </Link>
               </Bulma.Columns>
             </Bulma.C>
 

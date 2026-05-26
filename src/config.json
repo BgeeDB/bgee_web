@@ -6,7 +6,7 @@
   "prodDomain": "https://www.bgee.org",
   "permanentVersionedDomain": "https://www.bgee.org/bgee15-2",
   "imageDomain": "/img",
-  "apiDomain": "https://www.bgee.org/api",
+  "apiDomain": "http://sbioinfo.unil.ch/bgeeapi",
   "ftpDomain": "https://www.bgee.org/ftp/current",
   "archivedVersion": [
     {
@@ -35,7 +35,7 @@
     }
   ],
   "contactEmail": "Bgee@sib.swiss",
-  "bioSchemaModifiedData": "2024-12-11",
+  "bioSchemaModifiedData": "2026-04-30",
   "oboLibraryOboPath": "http://purl.obolibrary.org/obo/",
   "oboLibraryNCBITaxonPath": "http://purl.obolibrary.org/obo/NCBITaxon_",
   "isRawDataOnly": false,
