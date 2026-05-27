@@ -182,7 +182,7 @@ const bgeesab = [
         children: [
           {
             type: 'text',
-            content: 'March 2026',
+            content: 'April 2027',
           },
         ],
       },
@@ -193,6 +193,10 @@ const bgeesab = [
       {
         type: 'unordered_list',
         children: [
+          {
+            type: 'text',
+            content: 'June 18 2026',
+          },
           {
             type: 'text',
             content: 'April 15 2025',
