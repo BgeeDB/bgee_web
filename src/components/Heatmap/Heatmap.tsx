@@ -449,6 +449,7 @@ const Heatmap = ({
             defaultCellHeight={defaultCellHeight}
             maxGraphWidth={maxGraphWidth}
             setGraphWidth={setGraphWidth}
+            setGraphHeight={setGraphHeight}
             rendererMargins={rendererMargins}
           />
 

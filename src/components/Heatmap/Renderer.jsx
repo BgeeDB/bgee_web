@@ -9,6 +9,26 @@ import fonts from './fonts';
 const DEFAULT_MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
 const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
 
+// X-axis label geometry constants (must match the <text> elements below)
+const X_LABEL_FONT_SIZE = 15;
+// Empirical average glyph width for 15px sans-serif (Open Sans); slight over-estimate is safer.
+const X_LABEL_CHAR_WIDTH = 8.5;
+// Extra breathing room added on top of the projected label extent.
+const X_LABEL_PADDING = 15;
+// Minimum gap between the bottom of the heatmap and the color legend.
+const DEFAULT_BOTTOM_LABEL_GAP = 40;
+
+// Estimate the vertical SVG extent (in px) of a label when rotated by `rotationDeg`.
+// Projects the text bounding box onto the y-axis using sin/cos of the rotation angle.
+const estimateLabelVerticalExtent = (text, rotationDeg) => {
+  if (!text) return 0;
+  const rotRad = (rotationDeg * Math.PI) / 180;
+  const sinAbs = Math.abs(Math.sin(rotRad));
+  const cosAbs = Math.abs(Math.cos(rotRad));
+  const textWidth = text.length * X_LABEL_CHAR_WIDTH;
+  return sinAbs * textWidth + cosAbs * X_LABEL_FONT_SIZE;
+};
+
 export const Renderer = forwardRef(
   (
     {
@@ -34,9 +54,10 @@ export const Renderer = forwardRef(
       maxCellWidth,
       minCellWidth = 20,
       minCellHeight = 10,
-      defaultCellHeight = 15, // eslint-disable-line @typescript-eslint/no-unused-vars
+      defaultCellHeight = 15,
       maxGraphWidth = 800,
       setGraphWidth,
+      setGraphHeight,
       scaleSvg = false,
       rendererMargins,
     },
@@ -46,9 +67,31 @@ export const Renderer = forwardRef(
     const MARGIN = rendererMargins || DEFAULT_MARGIN;
     // The bounds (=area inside the axis) is calculated by substracting the margins
     const boundsWidth = width - MARGIN.right - marginLeft;
+
+    // Determine how much vertical space the rotated x-axis labels need so that
+    // top labels are not clipped and bottom labels don't overlap the legend.
+    const { topLabelSpace, bottomLabelSpace } = useMemo(() => {
+      let maxTopText = '';
+      let maxBottomText = '';
+      xTerms.forEach((t) => {
+        const top = t?.topLabel ?? t?.label ?? t?.value ?? '';
+        const bottom = t?.bottomLabel ?? t?.label ?? t?.value ?? '';
+        if (top.length > maxTopText.length) maxTopText = top;
+        if (bottom.length > maxBottomText.length) maxBottomText = bottom;
+      });
+      return {
+        topLabelSpace: estimateLabelVerticalExtent(maxTopText, xLabelRotation) + X_LABEL_PADDING,
+        bottomLabelSpace: estimateLabelVerticalExtent(maxBottomText, xLabelRotation) + X_LABEL_PADDING,
+      };
+    }, [xTerms, xLabelRotation]);
+
+    const effectiveMarginTop = Math.max(MARGIN.top, topLabelSpace);
+    const bottomLabelGap = Math.max(DEFAULT_BOTTOM_LABEL_GAP, bottomLabelSpace);
+
     // Separate main heatmap height from total height (which includes legend)
     const mainHeatmapHeight = height - colorLegendHeight;
-    const boundsHeight = mainHeatmapHeight - MARGIN.top - MARGIN.bottom;
+    // Reserve vertical room for the bottom labels between the cells and the legend.
+    const boundsHeight = mainHeatmapHeight - effectiveMarginTop - bottomLabelGap - MARGIN.bottom;
     const colorLegendBoundsHeight = colorLegendHeight - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
 
     // show only selected and top-level data points
@@ -143,8 +186,30 @@ export const Renderer = forwardRef(
       const requiredHeight = allYGroups.length * (minCellHeight + 4);
       const actualHeight = Math.max(boundsHeight, requiredHeight);
 
+      // Grow the SVG height if the current `height` cannot fit the desired cell
+      // height plus the label margins and the legend. Uses `defaultCellHeight` so
+      // it does not depend on the current `height` (avoids a resize feedback loop).
+      const desiredCellsHeight = allYGroups.length * defaultCellHeight;
+      const requiredTotalHeight =
+        effectiveMarginTop + desiredCellsHeight + bottomLabelGap + colorLegendHeight + MARGIN.bottom;
+      if (requiredTotalHeight > height && setGraphHeight) {
+        setGraphHeight(requiredTotalHeight);
+      }
+
       return d3.scaleBand().range([0, actualHeight]).domain(allYGroups).padding(0.01);
-    }, [dataShow, height, minCellHeight, allYGroups, boundsHeight]);
+    }, [
+      dataShow,
+      height,
+      minCellHeight,
+      allYGroups,
+      boundsHeight,
+      defaultCellHeight,
+      effectiveMarginTop,
+      bottomLabelGap,
+      colorLegendHeight,
+      MARGIN.bottom,
+      setGraphHeight,
+    ]);
 
     // Build the rectangles
     const allShapes = dataShow.map((d, i) => {
@@ -404,10 +469,9 @@ export const Renderer = forwardRef(
     // Position legend after the main heatmap
     // Calculate the actual heatmap content height (yScale range height)
     const actualHeatmapHeight = yScale.range()[1] || 0;
-    // Add space for top x-axis labels (which are positioned at y=-10 with rotation)
-    const topLabelsSpace = xLabelRotation !== 0 ? 20 : 0;
-    // Position legend just below the heatmap with a small gap
-    const colorLegendPosY = actualHeatmapHeight + topLabelsSpace + 40;
+    // Position legend just below the heatmap, with enough gap to clear the
+    // (possibly rotated and long) bottom x-axis labels.
+    const colorLegendPosY = actualHeatmapHeight + bottomLabelGap;
 
     return (
       <svg
@@ -435,7 +499,11 @@ export const Renderer = forwardRef(
         `}</style>
           <linearGradient id="colorLegendGradient">{colorLegendStops}</linearGradient>
         </defs>
-        <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
+        <g
+          width={boundsWidth}
+          height={boundsHeight}
+          transform={`translate(${[marginLeft, effectiveMarginTop].join(',')})`}
+        >
           <g>
             <g>{allShapes}</g>
             <g>{xLabelsTop}</g>
