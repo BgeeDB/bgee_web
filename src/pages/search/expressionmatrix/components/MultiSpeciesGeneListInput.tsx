@@ -88,12 +88,15 @@ const MultiSpeciesGeneListInput = ({
   isResolving,
   hasResolved,
 }: MultiSpeciesGeneListInputProps) => {
-  const lines = parseLines(value);
-  const showStatuses = hasResolved && lines.length > 0;
+  const rawLines = parseLines(value);
+  // Show one row per unique gene ID; preserve first-seen order
+  const uniqueLines = Array.from(new Set(rawLines));
+  const duplicateCount = rawLines.length - uniqueLines.length;
+  const showStatuses = hasResolved && uniqueLines.length > 0;
 
   let summary: React.ReactNode = null;
   if (showStatuses) {
-    const counts = lines.reduce(
+    const counts = uniqueLines.reduce(
       (acc, id) => {
         const s = statuses[id]?.state;
         if (s === 'found') acc.found += 1;
@@ -125,7 +128,13 @@ const MultiSpeciesGeneListInput = ({
             <span className="has-text-grey">{counts.pending} pending</span>
           </>
         )}
-        <span className="has-text-grey"> · {lines.length} total</span>
+        <span className="has-text-grey"> · {uniqueLines.length} unique</span>
+        {duplicateCount > 0 && (
+          <span className="has-text-grey">
+            {' '}
+            ({duplicateCount} duplicate{duplicateCount === 1 ? '' : 's'} ignored)
+          </span>
+        )}
       </p>
     );
   }
@@ -165,10 +174,10 @@ const MultiSpeciesGeneListInput = ({
               </tr>
             </thead>
             <tbody>
-              {lines.map((id, idx) => {
+              {uniqueLines.map((id) => {
                 const status = statuses[id];
                 return (
-                  <tr key={`${id}-${idx}`}>
+                  <tr key={id}>
                     <td className="multispec-gene-list-status-cell">
                       <StatusIcon status={status} />
                     </td>

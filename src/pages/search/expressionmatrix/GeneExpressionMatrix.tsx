@@ -48,9 +48,12 @@ interface GeneWithSpecies {
   geneLabel: string;
 }
 
+type SelectedGenesFilter = 'all' | 'with' | 'without';
+
 const GeneExpressionMatrix = () => {
   const [multiSpeciesGenes, setMultiSpeciesGenes] = useState<GeneWithSpecies[]>([]);
   const [isGenesListExpanded, setIsGenesListExpanded] = useState(true);
+  const [selectedGenesFilter, setSelectedGenesFilter] = useState<SelectedGenesFilter>('all');
 
   // Multi-species gene list input (alternative input mode)
   const [inputMode, setInputMode] = useState<InputMode>('species');
@@ -65,6 +68,7 @@ const GeneExpressionMatrix = () => {
 
   const {
     searchResult,
+    setSearchResult,
     show,
     selectedSpecies,
     selectedCellTypes,
@@ -145,55 +149,50 @@ const GeneExpressionMatrix = () => {
     [selectedSpecies.value, setSelectedGene]
   );
 
-  // Add orthologs for a gene
+  // Add orthologs for a gene.
+  //
+  // The /homologs API returns orthologsByTaxon ordered from most specific (highest "level")
+  // to most general (lowest "level"). Each entry's `genes` array is ALREADY cumulative for
+  // that taxon, i.e. it contains every ortholog at or below that taxonomic level. So when
+  // the user picks a taxon, we just take that single entry's genes -- iterating across
+  // multiple levels would re-add the same genes several times (Bilateria already contains
+  // every Chordate gene, which already contains every Clupeocephala gene, etc.).
   const addOrthologs = useCallback(async (geneId: string, speciesId: string, taxonId?: string) => {
     try {
       const result = await api.search.genes.homologs(geneId, speciesId);
-      const orthologs: GeneWithSpecies[] = [];
+      const taxa = result?.data?.orthologsByTaxon || [];
 
+      let sourceEntry: any = null;
       if (taxonId) {
-        // Find the selected taxon and include it plus all more specific taxa (descendants)
-        const selectedTaxonIndex = result.data.orthologsByTaxon.findIndex(
-          (entry: any) => entry.taxon.id === taxonId || entry.taxon.id.toString() === taxonId.toString()
+        sourceEntry = taxa.find(
+          (entry: any) => entry.taxon.id === taxonId || entry.taxon.id?.toString() === taxonId.toString()
         );
-
-        if (selectedTaxonIndex !== -1) {
-          // The array is ordered from most specific (highest level) to most general (lowest level)
-          // When a user selects a taxon, we want to include:
-          // - The selected taxon
-          // - All more specific taxa (which come BEFORE the selected taxon in the array)
-          // So we include from index 0 up to and including the selected taxon index
-          for (let i = 0; i <= selectedTaxonIndex; i++) {
-            const entry = result.data.orthologsByTaxon[i];
-            entry.genes.forEach((gene: any) => {
-              orthologs.push({
-                speciesId: gene.species.id,
-                speciesLabel: `${gene.species.genus} ${gene.species.speciesName}${
-                  gene.species.name ? ` - ${gene.species.name}` : ''
-                }`,
-                geneId: gene.geneId,
-                geneLabel: getGeneLabel(gene),
-              });
-            });
-          }
-        }
       } else {
-        // If no taxon selected, include all orthologs (original behavior)
-        result.data.orthologsByTaxon.forEach((entry: any) => {
-          entry.genes.forEach((gene: any) => {
-            orthologs.push({
-              speciesId: gene.species.id,
-              speciesLabel: `${gene.species.genus} ${gene.species.speciesName}${
-                gene.species.name ? ` - ${gene.species.name}` : ''
-              }`,
-              geneId: gene.geneId,
-              geneLabel: getGeneLabel(gene),
-            });
-          });
-        });
+        // No explicit taxon -> take the most general (last) entry, which already includes
+        // every ortholog returned by the API.
+        sourceEntry = taxa[taxa.length - 1] || null;
       }
+      if (!sourceEntry) return;
 
-      // Add orthologs that don't already exist
+      // Build orthologs with an intra-batch dedup safety net (in case the API ever
+      // returns duplicate entries within a single taxon's genes array).
+      const seenInBatch = new Set<string>();
+      const orthologs: GeneWithSpecies[] = [];
+      (sourceEntry.genes || []).forEach((gene: any) => {
+        const key = `${gene.species.id}:${gene.geneId}`;
+        if (seenInBatch.has(key)) return;
+        seenInBatch.add(key);
+        orthologs.push({
+          speciesId: gene.species.id,
+          speciesLabel: `${gene.species.genus} ${gene.species.speciesName}${
+            gene.species.name ? ` - ${gene.species.name}` : ''
+          }`,
+          geneId: gene.geneId,
+          geneLabel: getGeneLabel(gene),
+        });
+      });
+
+      // Merge into multiSpeciesGenes, skipping any orthologs already present.
       setMultiSpeciesGenes((prev) => {
         const existingKeys = new Set(prev.map((g) => `${g.speciesId}:${g.geneId}`));
         const newOrthologs = orthologs.filter((orth) => !existingKeys.has(`${orth.speciesId}:${orth.geneId}`));
@@ -252,14 +251,19 @@ const GeneExpressionMatrix = () => {
     }
   }, [selectedSpecies.value, multiSpeciesGenes, setSelectedGene]); // Sync when species changes
 
-  // Handler for Reinitialize button - clears multiSpeciesGenes and resets form
+  // Handler for Reinitialize button - clears multiSpeciesGenes, resets form, and
+  // clears the previous search result so the "With data" / "No data" filters return
+  // to their inactive state and any stale heatmap is hidden.
   const handleReinitialize = useCallback(() => {
     setMultiSpeciesGenes([]);
     setGeneListText('');
     setGeneListStatuses({});
     setHasResolvedGeneList(false);
+    setSelectedGenesFilter('all');
+    setIsGenesListExpanded(true);
+    setSearchResult(null);
     resetForm(false);
-  }, [resetForm]);
+  }, [resetForm, setSearchResult]);
 
   // Resolve textarea content into multiSpeciesGenes; returns the resolved gene list.
   // Each line's resolution status is tracked in geneListStatuses for inline display.
@@ -334,14 +338,21 @@ const GeneExpressionMatrix = () => {
     return resolved;
   }, []);
 
-  // Submit handler that resolves the gene list first when list-input mode is active
+  // Submit handler that resolves the gene list first when list-input mode is active.
+  // After a successful submit we collapse the "Selected Genes" panel so the user's
+  // attention is directed to the Expression Graph below; the search form itself
+  // stays expanded so filters can be tweaked and re-submitted.
   const handleSubmit = useCallback(async () => {
+    setSelectedGenesFilter('all');
     if (inputMode === 'list') {
       const resolved = await resolveGeneList(geneListText);
       if (resolved.length === 0) return;
+      setIsGenesListExpanded(false);
       onSubmit(resolved);
       return;
     }
+    if (multiSpeciesGenes.length === 0) return;
+    setIsGenesListExpanded(false);
     onSubmit(multiSpeciesGenes);
   }, [inputMode, geneListText, resolveGeneList, onSubmit, multiSpeciesGenes]);
 
@@ -380,6 +391,28 @@ const GeneExpressionMatrix = () => {
     });
     return Array.from(geneMap.values());
   }, [results, multiSpeciesGenes]);
+
+  // Set of geneIds that returned at least one expression call in the current search results
+  const geneIdsWithData = useMemo<Set<string>>(() => new Set(results.map((r: any) => r.gene.geneId)), [results]);
+
+  // Whether a search has been run (so we can show with/without data filters)
+  const hasSearchResults = searchResult !== null;
+
+  // Counts for the Selected Genes header filter tabs
+  const genesWithDataCount = useMemo(
+    () => multiSpeciesGenes.filter((g) => geneIdsWithData.has(g.geneId)).length,
+    [multiSpeciesGenes, geneIdsWithData]
+  );
+  const genesWithoutDataCount = multiSpeciesGenes.length - genesWithDataCount;
+
+  // Apply the active filter to the gene list shown in the SelectedGenesList table
+  const filteredSelectedGenes = useMemo(() => {
+    if (!hasSearchResults || selectedGenesFilter === 'all') return multiSpeciesGenes;
+    if (selectedGenesFilter === 'with') {
+      return multiSpeciesGenes.filter((g) => geneIdsWithData.has(g.geneId));
+    }
+    return multiSpeciesGenes.filter((g) => !geneIdsWithData.has(g.geneId));
+  }, [hasSearchResults, multiSpeciesGenes, geneIdsWithData, selectedGenesFilter]);
 
   const detailedData = TAB_PAGE_EXPR_CALL;
 
@@ -457,13 +490,65 @@ const GeneExpressionMatrix = () => {
                       <Bulma.Card className="mt-4">
                         <Bulma.Card.Body>
                           <div className="content">
-                            <div className="is-flex is-align-items-center is-justify-content-space-between mb-2">
-                              <label className="has-text-weight-semibold">
-                                Selected Genes ({multiSpeciesGenes.length})
+                            <div className="selected-genes-header mb-2">
+                              <label className="has-text-weight-semibold selected-genes-header-label">
+                                Selected Genes
                               </label>
+                              <div className="tabs is-toggle is-small selected-genes-filter-tabs">
+                                <ul>
+                                  <li className={selectedGenesFilter === 'all' ? 'is-active' : ''}>
+                                    <a onClick={() => setSelectedGenesFilter('all')}>
+                                      <span>All</span>
+                                      <span className="selected-genes-filter-count">({multiSpeciesGenes.length})</span>
+                                    </a>
+                                  </li>
+                                  <li
+                                    className={`${selectedGenesFilter === 'with' ? 'is-active' : ''} ${
+                                      !hasSearchResults ? 'is-disabled' : ''
+                                    }`}
+                                  >
+                                    <a
+                                      onClick={() => {
+                                        if (hasSearchResults) setSelectedGenesFilter('with');
+                                      }}
+                                      title={
+                                        hasSearchResults
+                                          ? 'Show only genes with expression data in the current search'
+                                          : 'Run a search to enable this filter'
+                                      }
+                                    >
+                                      <span>With data</span>
+                                      <span className="selected-genes-filter-count has-text-success">
+                                        ({hasSearchResults ? genesWithDataCount : '—'})
+                                      </span>
+                                    </a>
+                                  </li>
+                                  <li
+                                    className={`${selectedGenesFilter === 'without' ? 'is-active' : ''} ${
+                                      !hasSearchResults ? 'is-disabled' : ''
+                                    }`}
+                                  >
+                                    <a
+                                      onClick={() => {
+                                        if (hasSearchResults) setSelectedGenesFilter('without');
+                                      }}
+                                      title={
+                                        hasSearchResults
+                                          ? 'Show only genes without expression data in the current search'
+                                          : 'Run a search to enable this filter'
+                                      }
+                                    >
+                                      <span>No data</span>
+                                      <span className="selected-genes-filter-count has-text-danger">
+                                        ({hasSearchResults ? genesWithoutDataCount : '—'})
+                                      </span>
+                                    </a>
+                                  </li>
+                                </ul>
+                              </div>
                               <button
                                 type="button"
-                                className="button is-small is-text"
+                                className="button is-small is-text selected-genes-header-toggle"
                                 onClick={() => setIsGenesListExpanded(!isGenesListExpanded)}
                                 aria-label={isGenesListExpanded ? 'Collapse list' : 'Expand list'}
                               >
@@ -472,13 +557,20 @@ const GeneExpressionMatrix = () => {
                                 </span>
                               </button>
                             </div>
-                            {isGenesListExpanded && (
-                              <SelectedGenesList
-                                selectedGenes={multiSpeciesGenes}
-                                removeGene={removeGene}
-                                addOrthologs={addOrthologs}
-                              />
-                            )}
+                            {isGenesListExpanded &&
+                              (filteredSelectedGenes.length > 0 ? (
+                                <SelectedGenesList
+                                  selectedGenes={filteredSelectedGenes}
+                                  removeGene={removeGene}
+                                  addOrthologs={addOrthologs}
+                                />
+                              ) : (
+                                <p className="has-text-grey is-italic is-size-7 mt-2">
+                                  {selectedGenesFilter === 'with'
+                                    ? 'No selected gene has expression data in the current search.'
+                                    : 'All selected genes have expression data in the current search.'}
+                                </p>
+                              ))}
                           </div>
                         </Bulma.Card.Body>
                       </Bulma.Card>

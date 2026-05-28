@@ -278,6 +278,49 @@
     }
   }
 
+  // Header for the Selected Genes card: title + filter tabs + collapse toggle
+  .selected-genes-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .selected-genes-header-label {
+    margin: 0;
+    flex: 0 0 auto;
+  }
+
+  .selected-genes-header-toggle {
+    margin-left: auto;
+    flex: 0 0 auto;
+  }
+
+  // Filter tabs inside the Selected Genes header (All / With data / No data)
+  .selected-genes-filter-tabs {
+    margin-bottom: 0;
+    flex: 0 1 auto;
+
+    ul {
+      border-bottom: none;
+    }
+
+    li a {
+      padding: 0.2rem 0.65rem;
+      line-height: 1.2;
+    }
+
+    .selected-genes-filter-count {
+      margin-left: 0.35rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    li.is-disabled a {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+
   // Input-mode tabs (switch between per-species controls and pasted gene list)
   .gene-input-mode-tabs {
     margin-top: 0.25rem;

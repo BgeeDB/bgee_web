@@ -612,9 +612,9 @@ const useLogic = (options = {}) => {
           });
         }
 
-        if (!isFirstSearch) {
-          setShow(false);
-        }
+        // Keep the search form visible after Submit so the user can tweak filters
+        // and re-submit without having to re-open the form. The "Selected Genes"
+        // panel collapses separately to direct attention to the Expression Graph.
 
         setIsLoading(false);
         setSearchResult(combinedData);
@@ -756,10 +756,7 @@ const useLogic = (options = {}) => {
           }
         }
 
-        // The search form will be collapsed if this is not the first time we're on the page
-        if (!isFirstSearch) {
-          setShow(false);
-        }
+        // Keep the search form visible after Submit (see triggerInitialSearch above).
 
         // Finally, we set the values we are interested in
         setIsLoading(false);
@@ -1069,7 +1066,16 @@ const useLogic = (options = {}) => {
     if (!geneListParam) return;
 
     setIsProcessingGeneList(true);
-    const geneIds = geneListParam.split(/[\r\n]+/).filter(Boolean);
+    // Trim, drop empties, and deduplicate the input IDs so duplicates in the URL
+    // do not inflate multiSpeciesGenes (and consequently the gene_list sent back to the API).
+    const geneIds = Array.from(
+      new Set(
+        geneListParam
+          .split(/[\r\n]+/)
+          .map((id) => id.trim())
+          .filter(Boolean)
+      )
+    );
 
     try {
       const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
@@ -1081,16 +1087,23 @@ const useLogic = (options = {}) => {
       if (validResults.length === 0) return;
 
       // Build multiSpeciesGenes with correct species per gene (supports multi-species)
-      const multiSpeciesGenes = validResults.map((result) => {
+      // Also guard against the (unlikely) case where two distinct input IDs resolve
+      // to the same speciesId:geneId pair.
+      const seenKeys = new Set();
+      const multiSpeciesGenes = [];
+      validResults.forEach((result) => {
         const { gene } = result.data.result.geneMatches[0];
-        return {
+        const key = `${gene.species.id}:${gene.geneId}`;
+        if (seenKeys.has(key)) return;
+        seenKeys.add(key);
+        multiSpeciesGenes.push({
           speciesId: gene.species.id,
           speciesLabel: `${gene.species.genus} ${gene.species.speciesName}${
             gene.species.name ? ` - ${gene.species.name}` : ''
           }`,
           geneId: gene.geneId,
           geneLabel: getGeneLabel(gene),
-        };
+        });
       });
 
       if (setMultiSpeciesGenes) {
@@ -1111,6 +1124,7 @@ const useLogic = (options = {}) => {
 
   return {
     searchResult,
+    setSearchResult,
     maxExpScore,
     dataType,
     show,

@@ -47,10 +47,20 @@ const DEFAULT_PARAMETERS: any = (page: string, action: string | undefined = unde
   return params;
 };
 
-// Build gene_list param from multiSpeciesGenes for multispec API
+// Build gene_list param from multiSpeciesGenes for multispec API.
+// Deduplicates gene IDs as a safety net so callers that did not pre-dedup
+// (or that merged lists from multiple sources) do not blow up the URL.
 const buildGeneList = (multiSpeciesGenes: Array<{ geneId: string }> | null | undefined): string | null => {
   if (!multiSpeciesGenes || multiSpeciesGenes.length === 0) return null;
-  return multiSpeciesGenes.map((g) => g.geneId).join('\n');
+  const seen = new Set<string>();
+  const ids: string[] = [];
+  multiSpeciesGenes.forEach((g) => {
+    const id = g?.geneId;
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    ids.push(id);
+  });
+  return ids.length === 0 ? null : ids.join('\n');
 };
 
 // TODO: improve the functions return types. They are the source of all data in the app.
