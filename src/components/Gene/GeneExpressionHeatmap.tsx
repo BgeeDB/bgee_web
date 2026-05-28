@@ -445,8 +445,9 @@ const GeneExpressionHeatmap = ({
       const isExpressed = result.expressionState === 'expressed';
 
       return {
-        // In multispecies mode, use the bottom label as x-domain key so positions follow uniquified labels.
-        x: axisLabels.bottomLabel,
+        // Use geneId as x-domain key so columns are unique even when species prefix
+        // and gene name collide (renderer reads top/bottom labels separately for display).
+        x: gId,
         y: termId,
         termId,
         termName,
@@ -479,8 +480,8 @@ const GeneExpressionHeatmap = ({
       const axisLabels = getAxisLabels({ geneId, geneName, species, isMultispecies });
 
       return {
-        // Keep value as the x-domain key; renderer reads top/bottom labels separately.
-        value: axisLabels.bottomLabel,
+        // Use geneId as the x-domain key (unique per gene); renderer reads top/bottom labels separately for display.
+        value: geneId,
         label: axisLabels.bottomLabel,
         topLabel: axisLabels.topLabel,
         bottomLabel: axisLabels.bottomLabel,
