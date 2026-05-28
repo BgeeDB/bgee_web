@@ -15,6 +15,8 @@ import DataQualityParameter from './components/filters/DataQualityParameter';
 import GeneExpressionMatrixResults from './GeneExpressionMatrixResults';
 import UserFeedback from './components/UserFeedback';
 import SelectedGenesList from './components/SelectedGenesList';
+import MultiSpeciesGeneListInput from './components/MultiSpeciesGeneListInput';
+import type { GeneResolutionStatus } from './components/MultiSpeciesGeneListInput';
 import { getMetadata } from '~/helpers/metadata';
 import { URL_ROOT } from '~/helpers/constants';
 import './rawDataAnnotations.scss';
@@ -22,6 +24,15 @@ import Bulma from '~/components/Bulma';
 import api from '~/api';
 import { getGeneLabel } from '~/helpers/gene';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+
+type InputMode = 'species' | 'list';
+
+// Parse newline-separated, trimmed, non-empty gene IDs (preserving original order)
+const parseGeneListIds = (text: string): string[] =>
+  text
+    .split(/[\r\n]+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 
 export function meta() {
   return getMetadata({
@@ -40,6 +51,14 @@ interface GeneWithSpecies {
 const GeneExpressionMatrix = () => {
   const [multiSpeciesGenes, setMultiSpeciesGenes] = useState<GeneWithSpecies[]>([]);
   const [isGenesListExpanded, setIsGenesListExpanded] = useState(true);
+
+  // Multi-species gene list input (alternative input mode)
+  const [inputMode, setInputMode] = useState<InputMode>('species');
+  const [geneListText, setGeneListText] = useState('');
+  const [geneListStatuses, setGeneListStatuses] = useState<Record<string, GeneResolutionStatus>>({});
+  const [hasResolvedGeneList, setHasResolvedGeneList] = useState(false);
+  const [isResolvingGeneList, setIsResolvingGeneList] = useState(false);
+
   // TODO: remove this useless state
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setPageIsBrowseResult] = useState(false);
@@ -236,8 +255,104 @@ const GeneExpressionMatrix = () => {
   // Handler for Reinitialize button - clears multiSpeciesGenes and resets form
   const handleReinitialize = useCallback(() => {
     setMultiSpeciesGenes([]);
+    setGeneListText('');
+    setGeneListStatuses({});
+    setHasResolvedGeneList(false);
     resetForm(false);
   }, [resetForm]);
+
+  // Resolve textarea content into multiSpeciesGenes; returns the resolved gene list.
+  // Each line's resolution status is tracked in geneListStatuses for inline display.
+  const resolveGeneList = useCallback(async (text: string): Promise<GeneWithSpecies[]> => {
+    const geneIds = Array.from(new Set(parseGeneListIds(text)));
+    if (geneIds.length === 0) {
+      setGeneListStatuses({});
+      setHasResolvedGeneList(true);
+      setMultiSpeciesGenes([]);
+      return [];
+    }
+
+    setIsResolvingGeneList(true);
+    setHasResolvedGeneList(true);
+    setGeneListStatuses(
+      geneIds.reduce<Record<string, GeneResolutionStatus>>((acc, id) => {
+        acc[id] = { state: 'pending' };
+        return acc;
+      }, {})
+    );
+
+    const settled = await Promise.all(
+      geneIds.map(async (geneId): Promise<[string, GeneResolutionStatus, GeneWithSpecies | null]> => {
+        try {
+          const result: any = await api.search.genes.geneSearchResult(geneId);
+          if (result?.code !== 200) {
+            return [geneId, { state: 'error' }, null];
+          }
+          const matchCount = result.data?.result?.totalMatchCount ?? 0;
+          const matches = result.data?.result?.geneMatches || [];
+          if (matchCount === 1 && matches[0]?.gene) {
+            const gene = matches[0].gene;
+            const speciesLabel = `${gene.species.genus} ${gene.species.speciesName}${
+              gene.species.name ? ` - ${gene.species.name}` : ''
+            }`;
+            const geneEntry: GeneWithSpecies = {
+              speciesId: gene.species.id,
+              speciesLabel,
+              geneId: gene.geneId,
+              geneLabel: getGeneLabel(gene),
+            };
+            return [geneId, { state: 'found', speciesLabel, geneLabel: geneEntry.geneLabel }, geneEntry];
+          }
+          if (matchCount > 1) {
+            return [geneId, { state: 'ambiguous', matchCount }, null];
+          }
+          return [geneId, { state: 'not_found' }, null];
+        } catch (err) {
+          console.error(`[GeneExpressionMatrix.resolveGeneList] error for ${geneId}:`, err);
+          return [geneId, { state: 'error' }, null];
+        }
+      })
+    );
+
+    const nextStatuses: Record<string, GeneResolutionStatus> = {};
+    const resolved: GeneWithSpecies[] = [];
+    const seenKeys = new Set<string>();
+    settled.forEach(([id, status, gene]) => {
+      nextStatuses[id] = status;
+      if (gene) {
+        const key = `${gene.speciesId}:${gene.geneId}`;
+        if (!seenKeys.has(key)) {
+          seenKeys.add(key);
+          resolved.push(gene);
+        }
+      }
+    });
+
+    setGeneListStatuses(nextStatuses);
+    setMultiSpeciesGenes(resolved);
+    setIsResolvingGeneList(false);
+    return resolved;
+  }, []);
+
+  // Submit handler that resolves the gene list first when list-input mode is active
+  const handleSubmit = useCallback(async () => {
+    if (inputMode === 'list') {
+      const resolved = await resolveGeneList(geneListText);
+      if (resolved.length === 0) return;
+      onSubmit(resolved);
+      return;
+    }
+    onSubmit(multiSpeciesGenes);
+  }, [inputMode, geneListText, resolveGeneList, onSubmit, multiSpeciesGenes]);
+
+  // Whether the Submit button should be enabled
+  const canSubmit = useMemo(() => {
+    if (isLoading || isResolvingGeneList) return false;
+    if (inputMode === 'list') {
+      return parseGeneListIds(geneListText).length > 0;
+    }
+    return multiSpeciesGenes.length > 0;
+  }, [isLoading, isResolvingGeneList, inputMode, geneListText, multiSpeciesGenes.length]);
 
   const resultExprsCall = searchResult?.expressionData?.expressionCalls || [];
   const results = resultExprsCall;
@@ -291,22 +406,50 @@ const GeneExpressionMatrix = () => {
             <>
               <div className="columns is-8">
                 <div className="column mr-6">
-                  <div className="mb-2 maxWidth50">
-                    <Species
-                      selectedSpecies={selectedSpecies}
-                      onChangeSpecies={onChangeSpecies}
-                      getSpeciesLabel={getSpeciesLabel}
-                    />
+                  <div className="tabs is-toggle is-small is-fullwidth maxWidth50 mb-3 gene-input-mode-tabs">
+                    <ul>
+                      <li className={inputMode === 'species' ? 'is-active' : ''}>
+                        <a onClick={() => setInputMode('species')}>
+                          <span>Pick species &amp; genes</span>
+                        </a>
+                      </li>
+                      <li className={inputMode === 'list' ? 'is-active' : ''}>
+                        <a onClick={() => setInputMode('list')}>
+                          <span>Paste gene list (multi-species)</span>
+                        </a>
+                      </li>
+                    </ul>
                   </div>
-                  {selectedSpecies.value && (
-                    <div>
-                      <div className="my-2 maxWidth50">
-                        <Gene
-                          selectedGene={currentSpeciesGenes}
-                          setSelectedGene={handleGeneSelection}
-                          AutoCompleteByType={AutoCompleteByType}
+                  {inputMode === 'species' ? (
+                    <>
+                      <div className="mb-2 maxWidth50">
+                        <Species
+                          selectedSpecies={selectedSpecies}
+                          onChangeSpecies={onChangeSpecies}
+                          getSpeciesLabel={getSpeciesLabel}
                         />
                       </div>
+                      {selectedSpecies.value && (
+                        <div>
+                          <div className="my-2 maxWidth50">
+                            <Gene
+                              selectedGene={currentSpeciesGenes}
+                              setSelectedGene={handleGeneSelection}
+                              AutoCompleteByType={AutoCompleteByType}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="my-2 maxWidth50">
+                      <MultiSpeciesGeneListInput
+                        value={geneListText}
+                        onChange={setGeneListText}
+                        statuses={geneListStatuses}
+                        isResolving={isResolvingGeneList}
+                        hasResolved={hasResolvedGeneList}
+                      />
                     </div>
                   )}
                   {multiSpeciesGenes.length > 0 && (
@@ -343,7 +486,7 @@ const GeneExpressionMatrix = () => {
                   )}
                 </div>
                 <div className="column">
-                  {selectedGene.length > 0 && (
+                  {(selectedGene.length > 0 || inputMode === 'list' || multiSpeciesGenes.length > 0) && (
                     <>
                       <div className="my-2 maxWidth50">
                         <Tissues
@@ -400,7 +543,7 @@ const GeneExpressionMatrix = () => {
                     </>
                   )}
                   <div>
-                    {selectedGene.length > 0 && (
+                    {(selectedGene.length > 0 || inputMode === 'list' || multiSpeciesGenes.length > 0) && (
                       <>
                         <DataType dataTypes={dataTypesExpCalls} setDataTypes={setDataTypesExpCalls} />
                         {/* {false && ( // TODO: remove permanently?
@@ -414,10 +557,10 @@ const GeneExpressionMatrix = () => {
                       <Button
                         className="button is-success is-light is-outlined"
                         type="submit"
-                        onClick={() => onSubmit(multiSpeciesGenes)}
-                        disabled={isLoading}
+                        onClick={handleSubmit}
+                        disabled={!canSubmit}
                       >
-                        Submit
+                        {isResolvingGeneList ? 'Resolving...' : 'Submit'}
                       </Button>
                       <Button
                         type="button"
