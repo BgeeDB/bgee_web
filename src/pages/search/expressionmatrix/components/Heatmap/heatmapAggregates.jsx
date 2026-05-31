@@ -24,26 +24,3 @@ export function computeTermAggregates(rows, aggFn) {
   });
   return scores;
 }
-
-/** Pick highest-scoring direct child (prefer isTopLevelTerm pool) under one tree root. */
-export function pickWinnerChildIdForRoot(root, scoreByTermId) {
-  if (!root?.children?.length) return null;
-  const pool = root.children.filter((c) => c.isTopLevelTerm);
-  const candidates = pool.length ? pool : [...root.children];
-
-  const withScores = candidates.map((c) => ({
-    id: c.id,
-    label: c.label,
-    score: scoreByTermId.has(c.id) ? scoreByTermId.get(c.id) : -Infinity,
-  }));
-
-  const ranked = withScores
-    .filter((x) => x.score > -Infinity)
-    .sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return a.label.localeCompare(b.label);
-    });
-
-  if (!ranked.length) return null;
-  return ranked[0].id;
-}

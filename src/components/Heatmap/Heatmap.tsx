@@ -1,11 +1,10 @@
-import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import Bulma from '../Bulma';
 import { Renderer } from './Renderer';
 import { Tooltip } from './Tooltip';
 import { DetailView } from './DetailView';
 import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
-import { computeTermAggregates, pickWinnerChildIdForRoot } from './heatmapAggregates';
 
 const SHOW_DEBUG_OPTIONS = false;
 
@@ -24,7 +23,6 @@ const STORAGE_KEYS = {
   SHOW_SETTINGS: 'bgee-heatmap-show-settings',
   ROW_ORDERING: 'bgee-heatmap-row-ordering',
   ROW_AGG_FN: 'bgee-heatmap-row-agg-fn',
-  AUTO_EXPAND_MOST_EXPRESSED: 'bgee-heatmap-auto-expand-most-expressed',
 };
 
 // Add helper function
@@ -51,7 +49,6 @@ export type HeatmapProps = {
   termProps: any;
   yLabelJustify?: string;
   onToggleExpandCollapse: any;
-  onSyncTopLevelAutoExpand?: any;
   isLoading?: boolean;
   isInitializingFromUrl?: boolean;
   defaultXLabelRotation?: unknown;
@@ -70,9 +67,6 @@ const Heatmap = ({
   termProps,
   yLabelJustify = 'right',
   onToggleExpandCollapse,
-  onSyncTopLevelAutoExpand,
-  isLoading = false,
-  isInitializingFromUrl = false,
   ..._heatmapMatrixOnlyOpts
 }: HeatmapProps) => {
   void _heatmapMatrixOnlyOpts;
@@ -98,9 +92,6 @@ const Heatmap = ({
   );
   const [rowOrdering, setRowOrdering] = useState(() => getStoredValue(STORAGE_KEYS.ROW_ORDERING, 'alphabetical'));
   const [rowAggFn, setRowAggFn] = useState(() => getStoredValue(STORAGE_KEYS.ROW_AGG_FN, 'mean'));
-  const [autoExpandMostExpressed, setAutoExpandMostExpressed] = useState(() =>
-    getStoredValue(STORAGE_KEYS.AUTO_EXPAND_MOST_EXPRESSED, true)
-  );
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
@@ -225,16 +216,6 @@ const Heatmap = ({
   const updateRowAggFn = ({ target: { value } }) => {
     setRowAggFn(value);
     localStorage.setItem(STORAGE_KEYS.ROW_AGG_FN, value);
-    if (isLoading || isInitializingFromUrl || !autoExpandMostExpressed) return;
-    if (!data?.length || !yTerms?.length) return;
-    const scoreMap = computeTermAggregates(data, value);
-    const winnerIds = yTerms.map((root) => pickWinnerChildIdForRoot(root, scoreMap));
-    onSyncTopLevelAutoExpand?.(winnerIds);
-  };
-  const updateAutoExpandMostExpressed = () => {
-    const value = !autoExpandMostExpressed;
-    setAutoExpandMostExpressed(value);
-    localStorage.setItem(STORAGE_KEYS.AUTO_EXPAND_MOST_EXPRESSED, JSON.stringify(value));
   };
 
   // Add handler for adaptive scale toggle
@@ -283,35 +264,16 @@ const Heatmap = ({
 
   const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
 
-  const topLevelAutoExpandWinners = useMemo(() => {
-    if (!autoExpandMostExpressed || !data?.length || !yTerms?.length) {
-      return { key: null as string | null, winnerIds: null as string[] | null };
+  // With a single gene (column), mean === max, so the aggregation choice is meaningless.
+  const hasMultipleGenes = useMemo(() => {
+    if (!data?.length) return false;
+    const seen = new Set();
+    for (const d of data) {
+      seen.add(d.x);
+      if (seen.size > 1) return true;
     }
-    const scoreMap = computeTermAggregates(data, rowAggFn);
-    const winnerIds = yTerms.map((root) => pickWinnerChildIdForRoot(root, scoreMap));
-    const key = `${rowAggFn}::${winnerIds.map((id) => (id == null ? '∅' : String(id))).join('|')}`;
-    return { key, winnerIds };
-  }, [autoExpandMostExpressed, data, rowAggFn, yTerms]);
-
-  const syncTopLevelAutoExpandRef = useRef(onSyncTopLevelAutoExpand);
-  syncTopLevelAutoExpandRef.current = onSyncTopLevelAutoExpand;
-  const lastAutoExpandSyncKeyRef = useRef<string | null>(null);
-
-  useLayoutEffect(() => {
-    if (isLoading || isInitializingFromUrl) return;
-    if (topLevelAutoExpandWinners.key === null || !topLevelAutoExpandWinners.winnerIds) return;
-    if (lastAutoExpandSyncKeyRef.current === topLevelAutoExpandWinners.key) return;
-    const sync = syncTopLevelAutoExpandRef.current;
-    if (!sync) return;
-    sync(topLevelAutoExpandWinners.winnerIds);
-    lastAutoExpandSyncKeyRef.current = topLevelAutoExpandWinners.key;
-  }, [isLoading, isInitializingFromUrl, topLevelAutoExpandWinners]);
-
-  useEffect(() => {
-    if (!autoExpandMostExpressed) {
-      lastAutoExpandSyncKeyRef.current = null;
-    }
-  }, [autoExpandMostExpressed]);
+    return false;
+  }, [data]);
 
   const downloadTsv = () => {
     if (!data) return;
@@ -650,30 +612,18 @@ const Heatmap = ({
                             </select>
                           </td>
                         </tr>
-                        <tr>
-                          <td>Aggregation function:</td>
-                          <td>
-                            <select
-                              value={rowAggFn}
-                              onChange={updateRowAggFn}
-                              disabled={
-                                rowOrdering !== 'expression' && !(autoExpandMostExpressed && onSyncTopLevelAutoExpand)
-                              }
-                            >
-                              <option value="mean">mean</option>
-                              <option value="max">max</option>
-                            </select>
-                          </td>
-                        </tr>
-                        {onSyncTopLevelAutoExpand ? (
+                        {hasMultipleGenes ? (
                           <tr>
-                            <td>Auto-expand most expressed:</td>
+                            <td>Aggregation function:</td>
                             <td>
-                              <input
-                                type="checkbox"
-                                checked={autoExpandMostExpressed}
-                                onChange={updateAutoExpandMostExpressed}
-                              />
+                              <select
+                                value={rowAggFn}
+                                onChange={updateRowAggFn}
+                                disabled={rowOrdering !== 'expression'}
+                              >
+                                <option value="mean">mean</option>
+                                <option value="max">max</option>
+                              </select>
                             </td>
                           </tr>
                         ) : null}

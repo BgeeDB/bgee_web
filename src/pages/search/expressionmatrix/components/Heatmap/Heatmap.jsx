@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import { Download } from 'lucide-react';
 
@@ -7,7 +7,6 @@ import { Renderer } from './Renderer';
 import { Tooltip } from './Tooltip';
 import { DetailView } from './DetailView';
 import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
-import { computeTermAggregates, pickWinnerChildIdForRoot } from './heatmapAggregates';
 
 const SHOW_DEBUG_OPTIONS = false;
 const ROW_HEIGHT_PX = 16;
@@ -29,7 +28,6 @@ const STORAGE_KEYS = {
   USE_ADAPTIVE_SCALE: 'bgee-heatmap-adaptive-scale',
   ROW_ORDERING: 'bgee-heatmap-row-ordering',
   ROW_AGG_FN: 'bgee-heatmap-row-agg-fn',
-  AUTO_EXPAND_MOST_EXPRESSED: 'bgee-heatmap-auto-expand-most-expressed',
 };
 
 // Helper function to get stored value with default
@@ -54,8 +52,6 @@ export const Heatmap = ({
   termProps,
   yLabelJustify = 'right',
   onToggleExpandCollapse,
-  onSyncTopLevelAutoExpand,
-  isInitializingFromUrl = false,
   isLoading,
 }) => {
   // COMPONENT STATE
@@ -80,9 +76,6 @@ export const Heatmap = ({
   );
   const [rowOrdering, setRowOrdering] = useState(() => getStoredValue(STORAGE_KEYS.ROW_ORDERING, 'alphabetical'));
   const [rowAggFn, setRowAggFn] = useState(() => getStoredValue(STORAGE_KEYS.ROW_AGG_FN, 'mean'));
-  const [autoExpandMostExpressed, setAutoExpandMostExpressed] = useState(() =>
-    getStoredValue(STORAGE_KEYS.AUTO_EXPAND_MOST_EXPRESSED, true)
-  );
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
@@ -165,17 +158,6 @@ export const Heatmap = ({
     const { value } = event.target;
     setRowAggFn(value);
     localStorage.setItem(STORAGE_KEYS.ROW_AGG_FN, value);
-    // Apply immediately: passive effects can miss the expand hand-off when only rowAggFn changes.
-    if (isLoading || isInitializingFromUrl || !autoExpandMostExpressed) return;
-    if (!data?.length || !yTerms?.length) return;
-    const scoreMap = computeTermAggregates(data, value);
-    const winnerIds = yTerms.map((root) => pickWinnerChildIdForRoot(root, scoreMap));
-    onSyncTopLevelAutoExpand?.(winnerIds);
-  };
-  const updateAutoExpandMostExpressed = () => {
-    const value = !autoExpandMostExpressed;
-    setAutoExpandMostExpressed(value);
-    localStorage.setItem(STORAGE_KEYS.AUTO_EXPAND_MOST_EXPRESSED, JSON.stringify(value));
   };
 
   // DEBUG: remove console log in prod
@@ -253,37 +235,16 @@ export const Heatmap = ({
 
   const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
 
-  /** Winner ids per root + stable key (includes rowAggFn) so we re-run sync when aggregation changes the pick. */
-  const topLevelAutoExpandWinners = useMemo(() => {
-    if (!autoExpandMostExpressed || !data?.length || !yTerms?.length) {
-      return { key: null, winnerIds: null };
+  // With a single gene (column), mean === max, so the aggregation choice is meaningless.
+  const hasMultipleGenes = useMemo(() => {
+    if (!data?.length) return false;
+    const seen = new Set();
+    for (const d of data) {
+      seen.add(d.x);
+      if (seen.size > 1) return true;
     }
-    const scoreMap = computeTermAggregates(data, rowAggFn);
-    const winnerIds = yTerms.map((root) => pickWinnerChildIdForRoot(root, scoreMap));
-    const key = `${rowAggFn}::${winnerIds.map((id) => (id == null ? '∅' : String(id))).join('|')}`;
-    return { key, winnerIds };
-  }, [autoExpandMostExpressed, data, rowAggFn, yTerms]);
-
-  const syncTopLevelAutoExpandRef = useRef(onSyncTopLevelAutoExpand);
-  syncTopLevelAutoExpandRef.current = onSyncTopLevelAutoExpand;
-  const lastAutoExpandSyncKeyRef = useRef(null);
-
-  // Run in layout phase so expand/collapse runs before paint; key includes rowAggFn so aggregation changes always re-sync.
-  useLayoutEffect(() => {
-    if (isLoading || isInitializingFromUrl) return;
-    if (topLevelAutoExpandWinners.key === null || !topLevelAutoExpandWinners.winnerIds) return;
-    if (lastAutoExpandSyncKeyRef.current === topLevelAutoExpandWinners.key) return;
-    const sync = syncTopLevelAutoExpandRef.current;
-    if (!sync) return;
-    sync(topLevelAutoExpandWinners.winnerIds);
-    lastAutoExpandSyncKeyRef.current = topLevelAutoExpandWinners.key;
-  }, [isLoading, isInitializingFromUrl, topLevelAutoExpandWinners]);
-
-  useEffect(() => {
-    if (!autoExpandMostExpressed) {
-      lastAutoExpandSyncKeyRef.current = null;
-    }
-  }, [autoExpandMostExpressed]);
+    return false;
+  }, [data]);
 
   const downloadTsv = () => {
     if (!data) return;
@@ -387,7 +348,6 @@ export const Heatmap = ({
     setUseAdaptiveScale(false);
     setRowOrdering('alphabetical');
     setRowAggFn('mean');
-    setAutoExpandMostExpressed(true);
 
     // Clear all stored settings
     Object.values(STORAGE_KEYS).forEach((key) => {
@@ -638,30 +598,18 @@ export const Heatmap = ({
                               </select>
                             </td>
                           </tr>
-                          <tr>
-                            <td>Aggregation function:</td>
-                            <td>
-                              <select
-                                value={rowAggFn}
-                                onChange={updateRowAggFn}
-                                disabled={
-                                  rowOrdering !== 'expression' && !(autoExpandMostExpressed && onSyncTopLevelAutoExpand)
-                                }
-                              >
-                                <option value="mean">mean</option>
-                                <option value="max">max</option>
-                              </select>
-                            </td>
-                          </tr>
-                          {onSyncTopLevelAutoExpand ? (
+                          {hasMultipleGenes ? (
                             <tr>
-                              <td>Auto-expand most expressed:</td>
+                              <td>Aggregation function:</td>
                               <td>
-                                <input
-                                  type="checkbox"
-                                  checked={autoExpandMostExpressed}
-                                  onChange={updateAutoExpandMostExpressed}
-                                />
+                                <select
+                                  value={rowAggFn}
+                                  onChange={updateRowAggFn}
+                                  disabled={rowOrdering !== 'expression'}
+                                >
+                                  <option value="mean">mean</option>
+                                  <option value="max">max</option>
+                                </select>
                               </td>
                             </tr>
                           ) : null}

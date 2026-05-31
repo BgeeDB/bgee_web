@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
+
 import axios from 'axios';
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
@@ -201,7 +202,6 @@ const useLogic = (isExprCalls) => {
   // results
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingChildren, setIsLoadingChildren] = useState(false);
-  const autoExpandFetchInFlightRef = useRef(new Set());
   const [show, setShow] = useState(true);
   const [searchResult, setSearchResult] = useState(null);
   const searchResultRef = useRef(searchResult);
@@ -1215,74 +1215,6 @@ const useLogic = (isExprCalls) => {
     // console.log(`[useLogic] DONE onToggleExpandCollapse.`);
   };
 
-  /** Expand exactly one highest-scoring direct child per tree root; collapse sibling top-level children. */
-  const syncHeatmapTopLevelAutoExpand = useCallback(
-    (winnerIds) => {
-      if (!winnerIds?.length) return;
-      const anatomicalTerms = searchResultRef.current?.expressionData?.drilldown ?? [];
-      if (!anatomicalTerms.length || winnerIds.length !== anatomicalTerms.length) return;
-      const termsToFetch = [];
-      let changed = false;
-      const next = anatomicalTerms.map((root, i) => {
-        const winnerId = winnerIds[i];
-        if (!root.children?.length) return root;
-
-        const pool = root.children.filter((c) => c.isTopLevelTerm);
-        const candidates = pool.length ? pool : [...root.children];
-
-        const desiredExpanded = (child) => {
-          const inCandidates = candidates.some((c) => c.id === child.id);
-          if (!inCandidates) return false;
-          return winnerId != null && child.id === winnerId;
-        };
-
-        const rootNeedsUpdate = root.children.some((child) => child.isExpanded !== desiredExpanded(child));
-        if (!rootNeedsUpdate) return root;
-
-        changed = true;
-        const newRoot = JSON.parse(JSON.stringify(root));
-        newRoot.children = newRoot.children.map((child) => {
-          const newChild = JSON.parse(JSON.stringify(child));
-          const expand = desiredExpanded(child);
-          if (expand) {
-            if (!child.hasBeenQueried) {
-              termsToFetch.push({ id: child.id, anatEntityId: child.anatEntityId });
-              newChild.hasBeenQueried = true;
-            }
-            newChild.isExpanded = true;
-          } else {
-            newChild.isExpanded = false;
-          }
-          return newChild;
-        });
-        return newRoot;
-      });
-      if (changed) {
-        setSearchResult((latest) => {
-          if (!latest?.expressionData) return latest;
-          return {
-            ...latest,
-            expressionData: {
-              ...latest.expressionData,
-              drilldown: next,
-            },
-          };
-        });
-      }
-      const seenFetch = new Set();
-      termsToFetch.forEach(({ id, anatEntityId }) => {
-        if (seenFetch.has(id)) return;
-        seenFetch.add(id);
-        if (autoExpandFetchInFlightRef.current.has(id)) return;
-        autoExpandFetchInFlightRef.current.add(id);
-        Promise.resolve(triggerSearchChildren(id, anatEntityId)).finally(() => {
-          autoExpandFetchInFlightRef.current.delete(id);
-        });
-      });
-    },
-    [triggerSearchChildren]
-  );
-
   // Add function to process gene list
   const processGeneList = async (geneListParam) => {
     if (!geneListParam) return;
@@ -1383,7 +1315,6 @@ const useLogic = (isExprCalls) => {
     addConditionalParam,
     getSearchParams,
     onToggleExpandCollapse,
-    syncHeatmapTopLevelAutoExpand,
     processGeneList,
   };
 };

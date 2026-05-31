@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import Bulma from '../Bulma';
 import api from '../../api';
@@ -112,7 +112,6 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
   const [dataType, setDataTypes] = useState<string[]>(ALL_DATA_TYPES);
   const dataTypeKey = 'data_type';
   const dataTypeExpr = useQuery(dataTypeKey);
-  const autoExpandFetchInFlightRef = useRef(new Set());
 
   // Sync local state with URL parameter
   useEffect(() => {
@@ -578,56 +577,6 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
     // console.log(`[GeneExpressionGraph] DONE onToggleExpandCollapse.`);
   };
 
-  const syncTopLevelAutoExpand = useCallback(
-    (winnerIds) => {
-      if (!winnerIds?.length) return;
-      if (!anatomicalTerms?.length || winnerIds.length !== anatomicalTerms.length) return;
-      const termsToFetch: { id: string; anatEntityId: string }[] = [];
-      let changed = false;
-      const next = anatomicalTerms.map((root, i) => {
-        const winnerId = winnerIds[i];
-        if (winnerId == null || !root.children?.length) return root;
-        const pool = root.children.filter((c) => c.isTopLevelTerm);
-        const candidates = pool.length ? pool : [...root.children];
-        const expandedAmongCandidates = candidates.filter((c) => c.isExpanded);
-        if (expandedAmongCandidates.length === 1 && expandedAmongCandidates[0].id === winnerId) {
-          return root;
-        }
-        changed = true;
-        const newRoot = JSON.parse(JSON.stringify(root));
-        newRoot.children = newRoot.children.map((child) => {
-          const newChild = JSON.parse(JSON.stringify(child));
-          const inCandidates = candidates.some((c) => c.id === child.id);
-          if (!inCandidates) return newChild;
-          if (child.id === winnerId) {
-            if (!child.hasBeenQueried) {
-              termsToFetch.push({ id: child.id, anatEntityId: child.anatEntityId });
-              newChild.hasBeenQueried = true;
-            }
-            newChild.isExpanded = true;
-          } else {
-            newChild.isExpanded = false;
-          }
-          return newChild;
-        });
-        return newRoot;
-      });
-
-      if (changed) {
-        setAnatomicalTerms(next);
-      }
-
-      termsToFetch.forEach(({ id, anatEntityId }) => {
-        if (autoExpandFetchInFlightRef.current.has(id)) return;
-        autoExpandFetchInFlightRef.current.add(id);
-        Promise.resolve(triggerSearchChildren(id, anatEntityId)).finally(() => {
-          autoExpandFetchInFlightRef.current.delete(id);
-        });
-      });
-    },
-    [anatomicalTerms, triggerSearchChildren]
-  );
-
   const heatmapData =
     searchResult?.expressionData?.expressionCalls?.map((result) => {
       const { geneId: gId, name: gName } = result.gene;
@@ -738,7 +687,6 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
             yTerms={anatomicalTerms}
             termProps={anatomicalTermsProps}
             onToggleExpandCollapse={onToggleExpandCollapse}
-            onSyncTopLevelAutoExpand={syncTopLevelAutoExpand}
             isLoading={isLoading}
             width={800}
             height={800}

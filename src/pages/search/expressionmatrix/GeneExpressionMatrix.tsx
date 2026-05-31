@@ -38,7 +38,6 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
     isLoading,
     isLoadingChildren,
     isFirstSearch,
-    isInitializingFromUrl,
     dataTypesExpCalls,
     dataQuality,
     setDataQuality,
@@ -57,7 +56,6 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
     addConditionalParam,
     getSearchParams,
     onToggleExpandCollapse,
-    syncHeatmapTopLevelAutoExpand,
   } = useLogic(isExprCalls);
 
   // DEBUG: remove console log in prod
@@ -278,8 +276,6 @@ const GeneExpressionMatrix = ({ isExprCalls = true }) => {
               anatomicalTermsProps={anatomicalTermsProps}
               maxExpScore={maxExpScore}
               onToggleExpandCollapse={onToggleExpandCollapse}
-              onSyncTopLevelAutoExpand={syncHeatmapTopLevelAutoExpand}
-              isInitializingFromUrl={isInitializingFromUrl}
               isLoading={isLoading}
               isFirstSearch={isFirstSearch}
             />
