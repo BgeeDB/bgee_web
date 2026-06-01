@@ -24,6 +24,7 @@ export const SEARCH_CANCEL_API: any = {
   },
   rawData: {
     search: null,
+    getAssayCount: null,
     count: null,
     /** Request-parameter / display_rp fetches — must not share token with `search` or URL init cancels */
     requestParams: null,
@@ -364,6 +365,27 @@ const search = {
       }),
   },
   rawData: {
+    // Results returned faster for the frontpage
+    getAssayCount: (): any =>
+      new Promise((resolve, reject) => {
+        const paramsURLCalled =
+          'display_type=json&page=data&action=raw_data_annots&pageType=raw_data_annots&get_result_count=1';
+        const typeToken = 'get';
+        axiosInstance
+          .get(`/?${paramsURLCalled}`, {
+            cancelToken: new axios.CancelToken((c) => {
+              SEARCH_CANCEL_API.rawData[typeToken] = c;
+            }),
+          })
+          .then(({ data }) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            return resolve({ resp: data, paramsURLCalled });
+          })
+          .catch((error) => {
+            errorHandler(error);
+            reject(error?.response || error?.message);
+          });
+      }),
     search: (form, isOnlyCounts, bypassInitSearchParam = false): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('data', form.pageType);

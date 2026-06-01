@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-import assets, { heroCounts } from '../assets';
+import assets from '../assets';
 import PATHS from '../paths/paths';
 import Bulma from '../components/Bulma';
 import config from '../config.json';
@@ -15,12 +15,19 @@ import { getMetadata } from '~/helpers/metadata';
 
 export async function loader() {
   try {
-    const res = await api.search.species.list();
-    return res.data;
+    // Run both calls in parallel for better performance
+    const [speciesRes, assayRes] = await Promise.all([api.search.species.list(), api.search.rawData.getAssayCount()]);
+
+    return {
+      species: speciesRes.data?.species ?? [],
+      assays: assayRes.resp?.data?.resultCount ?? {},
+    };
   } catch (error) {
-    console.warn('Error loading species list:', error);
-    // throw new Response(error.data.message || error.message || 'Failed to load data from API', { status: 404 });
-    return [];
+    console.warn('Error loading species list and/or assay counts:', error);
+    return {
+      species: [],
+      assays: {},
+    };
   }
 }
 
@@ -57,7 +64,7 @@ const HomeCard = (props) => {
 };
 
 export default function Home({ loaderData }) {
-  const { species: speciesList } = loaderData;
+  const { species: speciesList, assays: resultCount } = loaderData;
 
   React.useEffect(() => {
     // Add the class to the body element when the component mounts
@@ -102,7 +109,7 @@ export default function Home({ loaderData }) {
                         <br />
                         species
                       </span>
-                      <p className="is-size-2">{heroCounts.speciesCount}</p>
+                      <p className="is-size-2">{speciesList.length}</p>
                     </div>
                   </Bulma.C>
                 </Link>
@@ -117,7 +124,7 @@ export default function Home({ loaderData }) {
                         <br />
                         libraries
                       </span>
-                      <p className="is-size-2">YYY</p>
+                      <p className="is-size-2">{resultCount?.RNA_SEQ?.assayCount}</p>
                     </div>
                   </Bulma.C>
                 </Link>
@@ -132,7 +139,7 @@ export default function Home({ loaderData }) {
                         <br />
                         across libraries
                       </span>
-                      <p className="is-size-2">XXX</p>
+                      <p className="is-size-2">{resultCount?.SC_RNA_SEQ?.assayCount}</p>
                     </div>
                   </Bulma.C>
                 </Link>

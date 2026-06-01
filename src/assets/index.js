@@ -16,10 +16,4 @@ const assets = {
   dnaIcon: imagePath('/home/ic-dna.svg'),
 };
 
-export const heroCounts = {
-  speciesCount: 52,
-  libraryCount: 31467,
-  conditionCount: 55997,
-};
-
 export default assets;
