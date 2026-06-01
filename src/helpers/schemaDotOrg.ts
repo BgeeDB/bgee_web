@@ -450,7 +450,6 @@ export const speciesToLdJSON = ({
     taxonRank: [
       'https://rs.tdwg.org/ontology/voc/TaxonRank#Species',
       'https://purl.uniprot.org/core/Species',
-      'https://purl.obolibrary.org/obo/NCBITaxon_species',
       'https://www.wikidata.org/entity/Q7432',
       'species',
     ],
