@@ -300,6 +300,10 @@
   .selected-genes-filter-tabs {
     margin-bottom: 0;
     flex: 0 1 auto;
+    // Bulma toggle tabs set z-index: 1 on the active tab (border overlap). Without a
+    // local stacking context that competes with react-select menus (also z-index: 1)
+    // and wins by DOM order when the dropdown overlaps this card.
+    isolation: isolate;
 
     ul {
       border-bottom: none;
@@ -324,6 +328,7 @@
   // Input-mode tabs (switch between per-species controls and pasted gene list)
   .gene-input-mode-tabs {
     margin-top: 0.25rem;
+    isolation: isolate;
 
     ul {
       border-bottom: none;
