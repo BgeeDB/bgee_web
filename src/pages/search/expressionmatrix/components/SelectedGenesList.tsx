@@ -1,10 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Plus, Trash2 } from 'lucide-react';
 import Button from '../../../../components/Bulma/Button/Button';
 import Select from '../../../../components/Select/Select';
-import api from '../../../../api';
-
 interface GeneEntry {
   speciesId: string;
   speciesLabel: string;
@@ -18,7 +16,7 @@ interface TaxonOption {
   taxonId: string;
 }
 
-interface OrthologData {
+export interface OrthologData {
   orthologsByTaxon: Array<{
     taxon: {
       id: string;
@@ -28,18 +26,25 @@ interface OrthologData {
   }>;
 }
 
+export const getSelectedGeneKey = (speciesId: string, geneId: string) => `${speciesId}:${geneId}`;
+
 interface SelectedGenesListProps {
   selectedGenes: GeneEntry[];
   removeGene: (speciesId: string, geneId: string) => void;
   addOrthologs: (geneId: string, speciesId: string, taxonId?: string) => Promise<void>;
+  orthologData: Record<string, OrthologData>;
+  fetchingOrthologs: Record<string, boolean>;
 }
 
-const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: SelectedGenesListProps) => {
+const SelectedGenesList = ({
+  selectedGenes,
+  removeGene,
+  addOrthologs,
+  orthologData,
+  fetchingOrthologs,
+}: SelectedGenesListProps) => {
   const [loadingOrthologs, setLoadingOrthologs] = useState<Record<string, boolean>>({});
-  const [fetchingOrthologs, setFetchingOrthologs] = useState<Record<string, boolean>>({});
-  const [orthologData, setOrthologData] = useState<Record<string, OrthologData>>({});
   const [selectedTaxons, setSelectedTaxons] = useState<Record<string, string>>({});
-  const fetchedGenesRef = useRef<Set<string>>(new Set());
 
   const formatSpeciesDisplayLabel = (label: string) => {
     if (!label) {
@@ -56,63 +61,6 @@ const SelectedGenesList = ({ selectedGenes, removeGene, addOrthologs }: Selected
     }
     return label;
   };
-
-  // Automatically fetch orthologs when genes are added
-  useEffect(() => {
-    selectedGenes.forEach((gene) => {
-      const key = `${gene.speciesId}:${gene.geneId}`;
-      // Only fetch if we haven't already fetched for this gene
-      if (!fetchedGenesRef.current.has(key)) {
-        fetchedGenesRef.current.add(key);
-        setFetchingOrthologs((prev) => ({ ...prev, [key]: true }));
-        api.search.genes
-          .homologs(gene.geneId, gene.speciesId)
-          .then((result) => {
-            setOrthologData((prev) => ({
-              ...prev,
-              [key]: result.data,
-            }));
-          })
-          .catch((error) => {
-            console.error(`Error fetching orthologs for ${key}:`, error);
-            // Remove from ref on error so we can retry
-            fetchedGenesRef.current.delete(key);
-          })
-          .finally(() => {
-            setFetchingOrthologs((prev) => ({ ...prev, [key]: false }));
-          });
-      }
-    });
-  }, [selectedGenes]);
-
-  // Clean up ortholog data when genes are removed
-  useEffect(() => {
-    const currentKeys = new Set(selectedGenes.map((g) => `${g.speciesId}:${g.geneId}`));
-    // Clean up ref
-    fetchedGenesRef.current.forEach((key) => {
-      if (!currentKeys.has(key)) {
-        fetchedGenesRef.current.delete(key);
-      }
-    });
-    setOrthologData((prev) => {
-      const filtered: Record<string, OrthologData> = {};
-      Object.keys(prev).forEach((key) => {
-        if (currentKeys.has(key)) {
-          filtered[key] = prev[key];
-        }
-      });
-      return filtered;
-    });
-    setSelectedTaxons((prev) => {
-      const filtered: Record<string, string> = {};
-      Object.keys(prev).forEach((key) => {
-        if (currentKeys.has(key)) {
-          filtered[key] = prev[key];
-        }
-      });
-      return filtered;
-    });
-  }, [selectedGenes]);
 
   if (selectedGenes.length === 0) {
     return null;
