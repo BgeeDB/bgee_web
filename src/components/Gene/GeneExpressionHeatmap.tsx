@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
+import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
 import Heatmap from '../Heatmap/Heatmap';
 
 const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
@@ -454,6 +455,7 @@ const GeneExpressionHeatmap = ({
         geneId: gId,
         geneName: gName,
         speciesId: specId,
+        speciesLabel: getSpeciesLabel(result.gene.species),
         anatEntityId,
         anatEntityName,
         cellTypeId,

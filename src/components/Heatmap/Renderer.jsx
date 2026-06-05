@@ -233,6 +233,8 @@ export const Renderer = forwardRef(
         geneName: d.geneName,
         geneUrlBgee: `https://www.bgee.org/gene/${d.geneId}`,
         speciesId: d.speciesId,
+        speciesLabel: d.speciesLabel,
+        speciesUrl: d.speciesId ? `/species/${d.speciesId}` : undefined,
         anatEntityId: d.anatEntityId,
         anatEntityName: d.anatEntityName,
         anatEntityUrlOls: `http://purl.obolibrary.org/obo/${d.anatEntityId.replace(':', '_')}`,
@@ -252,6 +254,16 @@ export const Renderer = forwardRef(
         hasDataRnaSeq: d.hasDataRnaSeq,
         hasDataScRnaSeq: d.hasDataScRnaSeq,
       };
+      const getHoverData = (e, yLabel = `${d.termId} - ${d.termName}`) => ({
+        speciesLabel: d.speciesLabel,
+        xLabel: `${d.geneId} - ${d.geneName}`,
+        yLabel,
+        value: Math.round(d.value * 100) / 100,
+        isExpressed: d.isExpressed,
+        ...(d.maxExp != null && { maxExpScore: d.maxExp.toFixed(2) }),
+        clientX: e.clientX + 10,
+        clientY: e.clientY - 10,
+      });
 
       // for central circle
       const r = (Math.min(cellWidth, cellHeight) / 2) * 0.9;
@@ -279,15 +291,7 @@ export const Renderer = forwardRef(
               stroke={strokeColour}
               strokeWidth={4}
               onMouseEnter={(e) => {
-                setHoveredCell({
-                  xLabel: `${d.geneId} - ${d.geneName}`,
-                  yLabel: `${d.termId} - ${d.termName}`,
-                  value: Math.round(d.value * 100) / 100,
-                  isExpressed: d.isExpressed,
-                  maxExpScore: d.maxExp.toFixed(2),
-                  clientX: e.clientX + 10,
-                  clientY: e.clientY - 10,
-                });
+                setHoveredCell(getHoverData(e));
               }}
               onMouseLeave={() => setHoveredCell(null)}
               onClick={() => setClickedCell(cellData)}
@@ -310,15 +314,7 @@ export const Renderer = forwardRef(
                 rx={5}
                 strokeWidth={1}
                 onMouseEnter={(e) => {
-                  setHoveredCell({
-                    xLabel: `${d.geneId} - ${d.geneName}`,
-                    yLabel: `${d.termId} - ${d.termName}`,
-                    value: Math.round(d.value * 100) / 100,
-                    isExpressed: d.isExpressed,
-                    maxExpScore: d.maxExp.toFixed(2),
-                    clientX: e.clientX + 10,
-                    clientY: e.clientY - 10,
-                  });
+                  setHoveredCell(getHoverData(e));
                 }}
                 onMouseLeave={() => setHoveredCell(null)}
                 onClick={() => setClickedCell(cellData)}
@@ -342,8 +338,8 @@ export const Renderer = forwardRef(
                 opacity={1}
                 fill={fillColour}
                 strokeWidth={4}
-                onMouseEnter={() => {
-                  setHoveredCell(cellData);
+                onMouseEnter={(e) => {
+                  setHoveredCell({ ...cellData, clientX: e.clientX + 10, clientY: e.clientY - 10 });
                 }}
                 onMouseLeave={() => setHoveredCell(null)}
                 onClick={() => setClickedCell(cellData)}
@@ -359,8 +355,8 @@ export const Renderer = forwardRef(
                 opacity={1}
                 fill={strokeColour}
                 strokeWidth={4}
-                onMouseEnter={() => {
-                  setHoveredCell(cellData);
+                onMouseEnter={(e) => {
+                  setHoveredCell({ ...cellData, clientX: e.clientX + 10, clientY: e.clientY - 10 });
                 }}
                 onMouseLeave={() => setHoveredCell(null)}
                 onClick={() => setClickedCell(cellData)}
@@ -385,15 +381,7 @@ export const Renderer = forwardRef(
               stroke="white"
               strokeWidth={2}
               onMouseEnter={(e) => {
-                setHoveredCell({
-                  xLabel: `${d.geneId} - ${d.geneName}`,
-                  yLabel: `${d.termId} - ${d.termName}`,
-                  value: Math.round(d.value * 100) / 100,
-                  isExpressed: d.isExpressed,
-                  // maxExpScore: d.maxExp.toFixed(2),
-                  clientX: e.clientX + 10,
-                  clientY: e.clientY - 10,
-                });
+                setHoveredCell(getHoverData(e, `${d.termName}`));
               }}
               onMouseLeave={() => setHoveredCell(null)}
               onClick={() => setClickedCell(cellData)}

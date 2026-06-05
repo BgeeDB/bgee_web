@@ -57,6 +57,20 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           ✕
         </button>
 
+        {data.speciesId ? (
+          <>
+            <div className="card-content">
+              <p className="title">Species</p>
+              <div className="content">
+                <DetailRow label="ID" value={data.speciesId} url={data.speciesUrl} />
+                <DetailRow label="name" value={data.speciesLabel} />
+              </div>
+            </div>
+
+            <hr style={{ margin: '0px' }} />
+          </>
+        ) : null}
+
         <div className="card-content">
           <p className="title">Gene</p>
           <div className="content">

@@ -5,6 +5,7 @@ import Bulma from '../Bulma';
 import api from '../../api';
 import Heatmap from '../Heatmap/Heatmap';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
+import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
 import useQuery from '../../hooks/useQuery';
 import { URL_ROOT } from '~/helpers/constants';
 
@@ -539,6 +540,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
         geneId: gId,
         geneName: gName,
         speciesId: specId,
+        speciesLabel: getSpeciesLabel(result.gene.species),
         anatEntityId,
         anatEntityName,
         cellTypeId,
