@@ -30,7 +30,7 @@ const team = [
     children: [
       {
         type: 'only_image',
-        src: imagePath('/team/Bgee-team-202506.webp'),
+        src: imagePath('/team/Bgee-team-202606.webp'),
         alt: 'The current Bgee team',
       },
       {
@@ -38,13 +38,31 @@ const team = [
         content: [
           {
             type: 'text',
-            content: 'The Bgee team as of June 2025 photo (from left to right):',
+            content: 'The Bgee team as of June 2026 photo (from left to right):',
           },
         ],
       },
       {
         type: 'unordered_list',
         children: [
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'bold',
+                content: 'Bastian, Frederic',
+              },
+              {
+                type: 'text',
+                content: ' (Associate Director: grant writer, MySQL and Java developer, Bgee howto) ',
+              },
+              {
+                type: 'link_external',
+                text: '[ORCID]',
+                path: 'https://orcid.org/0000-0002-9415-5104',
+              },
+            ],
+          },
           {
             type: 'rich_text',
             content: [
@@ -60,78 +78,6 @@ const team = [
                 type: 'link_external',
                 text: '[ORCID]',
                 path: 'https://orcid.org/0009-0006-5956-9842',
-              },
-            ],
-          },
-          {
-            type: 'rich_text',
-            content: [
-              {
-                type: 'bold',
-                content: 'Moretti, Sebastien',
-              },
-              {
-                type: 'text',
-                content: ' (Software Developer: pipeline and container developer, system administrator) ',
-              },
-              {
-                type: 'link_external',
-                text: '[ORCID]',
-                path: 'https://orcid.org/0000-0003-3947-488X',
-              },
-            ],
-          },
-          {
-            type: 'rich_text',
-            content: [
-              {
-                type: 'bold',
-                content: 'Detering, Harry',
-              },
-              {
-                type: 'text',
-                content: ` (Making sense of data through visualisation, machine learning and workflow automation) `,
-              },
-              {
-                type: 'link_external',
-                text: '[ORCID]',
-                path: 'https://orcid.org/0000-0002-0134-7618',
-              },
-            ],
-          },
-          {
-            type: 'rich_text',
-            content: [
-              {
-                type: 'bold',
-                content: 'Niknejad, Anne',
-              },
-              {
-                type: 'text',
-                content: ' (Lead biocurator: provide reference healthy wild-type expression data: the Bgee core) ',
-              },
-              {
-                type: 'link_external',
-                text: '[ORCID]',
-                path: 'https://orcid.org/0000-0003-3308-6245',
-              },
-            ],
-          },
-          {
-            type: 'rich_text',
-            content: [
-              {
-                type: 'bold',
-                content: 'Wollbrett, Julien',
-              },
-              {
-                type: 'text',
-                content: ' (Software Developer: Bgee R packages maintainer, pipeline and Java developer) ',
-              },
-              {
-                type: 'link_external',
-                text: '[ORCID]',
-                path: 'https://orcid.org/0000-0002-3099-3117',
               },
             ],
           },
@@ -158,34 +104,16 @@ const team = [
             content: [
               {
                 type: 'bold',
-                content: 'Dind, Sagane',
+                content: 'Detering, Harry',
               },
               {
                 type: 'text',
-                content: ' (Bioinformatician: pre-filter data before curation, molecular protocol master) ',
+                content: ` (Making sense of data through visualisation, machine learning and workflow automation) `,
               },
               {
                 type: 'link_external',
                 text: '[ORCID]',
-                path: 'https://orcid.org/0000-0003-4771-6113',
-              },
-            ],
-          },
-          {
-            type: 'rich_text',
-            content: [
-              {
-                type: 'bold',
-                content: 'Robinson-Rechavi, Marc',
-              },
-              {
-                type: 'text',
-                content: ' (Associate Director: roadmap, idea agitator and provider, Bgee initiator) ',
-              },
-              {
-                type: 'link_external',
-                text: '[ORCID]',
-                path: 'https://orcid.org/0000-0002-3437-3329',
+                path: 'https://orcid.org/0000-0002-0134-7618',
               },
             ],
           },
@@ -212,16 +140,101 @@ const team = [
             content: [
               {
                 type: 'bold',
-                content: 'Bastian, Frederic',
+                content: 'Wollbrett, Julien',
               },
               {
                 type: 'text',
-                content: ' (Associate Director: grant writer, MySQL and Java developer, Bgee howto) ',
+                content: ' (Software Developer: Bgee R packages maintainer, pipeline and Java developer) ',
               },
               {
                 type: 'link_external',
                 text: '[ORCID]',
-                path: 'https://orcid.org/0000-0002-9415-5104',
+                path: 'https://orcid.org/0000-0002-3099-3117',
+              },
+            ],
+          },
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'bold',
+                content: 'Niknejad, Anne',
+              },
+              {
+                type: 'text',
+                content: ' (Lead biocurator: provide reference healthy wild-type expression data: the Bgee core) ',
+              },
+              {
+                type: 'link_external',
+                text: '[ORCID]',
+                path: 'https://orcid.org/0000-0003-3308-6245',
+              },
+            ],
+          },
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'bold',
+                content: 'Robinson-Rechavi, Marc',
+              },
+              {
+                type: 'text',
+                content: ' (Associate Director: roadmap, idea agitator and provider, Bgee initiator) ',
+              },
+              {
+                type: 'link_external',
+                text: '[ORCID]',
+                path: 'https://orcid.org/0000-0002-3437-3329',
+              },
+            ],
+          },
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'bold',
+                content: 'Rech De Laval, Valentine',
+              },
+              {
+                type: 'text',
+                content: ' (Quality control and continuous integration manager) ',
+              },
+              {
+                type: 'link_external',
+                text: '[ORCID]',
+                path: 'https://orcid.org/0000-0002-3020-1490',
+              },
+            ],
+          },
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'bold',
+                content: 'Van Meer, Julie',
+              },
+              {
+                type: 'text',
+                content: ' (Intern: TopAnat enhancer)',
+              },
+            ],
+          },
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'bold',
+                content: 'Moretti, Sebastien',
+              },
+              {
+                type: 'text',
+                content: ' (Software Developer: pipeline and container developer, system administrator) ',
+              },
+              {
+                type: 'link_external',
+                text: '[ORCID]',
+                path: 'https://orcid.org/0000-0003-3947-488X',
               },
             ],
           },
@@ -262,12 +275,26 @@ const team = [
             content: [
               {
                 type: 'text',
+                content: 'Dind, Sagane',
+              },
+              {
+                type: 'link_external',
+                text: '[ORCID]',
+                path: 'https://orcid.org/0000-0003-4771-6113',
+              },
+            ],
+          },
+          {
+            type: 'rich_text',
+            content: [
+              {
+                type: 'text',
                 content: 'Echchiki, Amina ',
               },
               {
                 type: 'link_external',
                 text: '[ORCID]',
-                path: 'http://orcid.org/0000-0003-3571-5420',
+                path: 'https://orcid.org/0000-0003-3571-5420',
               },
             ],
           },
@@ -407,20 +434,6 @@ const team = [
               {
                 type: 'text',
                 content: 'Person, Emilie',
-              },
-            ],
-          },
-          {
-            type: 'rich_text',
-            content: [
-              {
-                type: 'text',
-                content: 'Rech De Laval, Valentine ',
-              },
-              {
-                type: 'link_external',
-                text: '[ORCID]',
-                path: 'https://orcid.org/0000-0002-3020-1490',
               },
             ],
           },

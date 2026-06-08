@@ -137,7 +137,7 @@ export default function Home({ loaderData }) {
                       <span>
                         Single-cell cell types
                         <br />
-                        across libraries
+                        &#119909; libraries
                       </span>
                       <p className="is-size-2">{resultCount?.SC_RNA_SEQ?.assayCount}</p>
                     </div>
