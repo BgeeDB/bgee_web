@@ -24,10 +24,7 @@ const GeneExpressionMatrixResults = ({
         const termId = `${anatEntityId}-${cellTypeId}`;
         const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
         const expScore = result.expressionScore.expressionScore;
-        const maxExp =
-          geneId in maxExpScore && termId in maxExpScore[geneId]
-            ? maxExpScore[geneId][termId]
-            : 0;
+        const maxExp = geneId in maxExpScore && termId in maxExpScore[geneId] ? maxExpScore[geneId][termId] : 0;
         const isExpressed = result.expressionState === 'expressed';
 
         const row = {
