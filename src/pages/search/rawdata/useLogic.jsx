@@ -286,26 +286,6 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
 
   const [pageCanLoadFirstCount, setPageCanLoadFirstCount] = useState(false);
 
-  const resetForm = (isSpeciesChange = false, pageWillBeReset = false) => {
-    setSelectedCellTypes([]);
-    setSelectedGene([]);
-    setSelectedStrain([]);
-    setSelectedTissue([]);
-    setSelectedSexes([]);
-    setSelectedDevStages([]);
-    setHasCellTypeSubStructure(true);
-    setHasTissueSubStructure(true);
-    setDevStageSubStructure(true);
-    setOnlyPropagated(isExprCalls);
-    if (!isSpeciesChange) {
-      setSelectedSpecies(EMPTY_SPECIES_VALUE);
-      setSelectedExpOrAssay([]);
-    }
-    if (pageWillBeReset) {
-      setNeedToResetThePage(true);
-    }
-  };
-
   useEffect(() => {
     const sp = new URLSearchParams(loc.search);
     const nextLimit = sp.get('limit');
@@ -326,72 +306,108 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     }
   }, [loc.search]);
 
-  const getSearchParams = () => {
-    let params = {
-      hash: initHash,
-      isFirstSearch,
-      initSearch,
-      pageType,
-      dataType: [dataType],
-      selectedExpOrAssay: selectedExpOrAssay.map((exp) => exp.value),
-      selectedSpecies: selectedSpecies.value,
-      selectedCellTypes: selectedCellTypes.map((ct) => ct.value),
-      selectedGene: selectedGene.map((g) => g.value),
-      selectedStrain: selectedStrain.map((s) => s.value),
-      selectedTissue: selectedTissue.map((t) => t.value),
-      selectedDevStages: selectedDevStages.map((ds) => ds.value),
-      selectedSexes: selectedSexes.length > 0 ? selectedSexes : ['all'],
-      hasCellTypeSubStructure,
-      hasDevStageSubStructure,
-      hasTissueSubStructure,
-      onlyPropagated,
-      pageNumber,
-      limit,
-    };
+  useEffect(() => {
+    if (needToResetThePage) {
+      // We set FirstSearch at TRUE so we don't trigger all the useEffect that checks for it
+      setIsFirstSearch(true);
+      setDataType(initDataType);
+      setDataTypesExpCalls(initDataTypeExpCalls);
+      setPageType(isExprCalls ? EXPR_CALLS : initPageType);
 
-    // Here we are filtering the filters themself
-    // We don't send to the backend the filters that have no corresponding list in the filters object from last research
-    const defaultdataFilters = searchResult?.filters?.[dataType] || {};
-    const dataFiltersExprCall = searchResult?.filters || {};
-    const dataFilters = isExprCalls ? dataFiltersExprCall : defaultdataFilters;
-    const wantedFilters = filters[dataType] || {};
-    // ( if there is any filters that have been set before )
-    if (!isEmpty(dataFilters)) {
-      const myFilters = {};
-      Object.entries(wantedFilters)
-        .filter(([wantedFilterKey]) => {
-          const filterExists = Object.entries(dataFilters).some(
-            ([, existingFilter]) => wantedFilterKey === existingFilter?.urlParameterName
-          );
-          return filterExists;
-        })
-        .forEach(([key, values]) => {
-          myFilters[key] = values;
-        });
+      setIsFirstSearch(false);
+      setLocalCount({});
+      triggerCounts();
+      triggerSearch(true, true);
 
-      params.filters = myFilters;
-    } else {
-      params.filters = filters[dataType];
+      setNeedToResetThePage(false);
     }
-    if (isExprCalls) {
-      const dataTypeForExpCalls = dataTypesExpCalls.length === 0 ? ALL_DATA_TYPES_ID : dataTypesExpCalls;
-      params.dataType = dataTypeForExpCalls;
-      params = {
-        ...params,
-        dataQuality,
-        callTypes,
-        conditionalParam2,
-        isExprCalls,
-      };
+  }, [needToResetThePage]);
+
+  useEffect(() => {
+    if (pageCanLoadFirstCount) {
+      triggerCounts(false, true);
     }
-    return params;
+  }, [pageCanLoadFirstCount]);
+
+  const onChangeSpecies = (newSpecies) => {
+    setSelectedSpecies(newSpecies);
+    setSelectedCellTypes([]);
+    setSelectedGene([]);
+    setSelectedStrain([]);
+    setSelectedTissue([]);
+    setSelectedSexes([]);
   };
 
-  const getSpeciesLabel = (specie) => {
-    if (specie.name !== '') {
-      return `${specie.genus} ${specie.speciesName} - ${specie.name}`;
+  useEffect(() => {
+    // Use the ref to not execute the side effect twice in React StrictMode dev
+    if (mountedRef.current) return;
+
+    if (Object.keys(initSearchResult).length > 0) {
+      // Run when init searchResult provided by loader (enable basic SSR for experiments)
+      // console.log('initSearchResult = ', initSearchResult);
+      // setSelectedSpecies({
+      //   label: initSearchResult.initSpecies,
+      //   value: initSearchResult.initSpecies,
+      // });
+      setSearchResult(initSearchResult);
+      setLocalCount(
+        isExprCalls ? { assayCount: initSearchResult.expressionCallCount } : initSearchResult.resultCount?.[dataType]
+      );
+      setIsLoading(false);
+      setIsFirstSearch(false);
+      // return;
     }
-    return `${specie.genus} ${specie.speciesName}`;
+
+    mountedRef.current = true;
+
+    triggerSearch();
+    setIsCountLoading(true);
+
+    // TODO: Allow to detect a browser back btn pressed and force all the worflow to work again by forcing reload @ugly
+    // history.listen(() => {
+    //   if (history.action === 'POP') {
+    //     location.reload();
+    //   }
+    // });
+  }, []);
+
+  useEffect(() => {
+    if (!isFirstSearch) {
+      triggerSearch();
+    }
+  }, [pageNumber, limit]);
+
+  useEffect(() => {
+    if (!isFirstSearch && !isExprCalls) {
+      setLocalCount({});
+      triggerSearch(false, false);
+    }
+  }, [dataType]);
+
+  useEffect(() => {
+    if (!isFirstSearch) {
+      setLocalCount({});
+      triggerSearch(true, true);
+      triggerCounts();
+    }
+  }, [pageType]);
+
+  useEffect(() => {
+    if (selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
+      getSexesAndDevStageForSpecies();
+    }
+  }, [selectedSpecies]);
+
+  const onSubmit = () => {
+    triggerSearch(true, true);
+    triggerCounts();
+  };
+
+  const addConditionalParam = (id) => {
+    const indexOfValue = conditionalParam2.indexOf(id);
+    if (indexOfValue === -1) {
+      setConditionalParam2([...conditionalParam2, id]);
+    }
   };
 
   const initFormFromDetailedRP = (resp) => {
@@ -563,6 +579,67 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     setPageCanLoadFirstCount(true);
   };
 
+  const getSearchParams = () => {
+    let params = {
+      hash: initHash,
+      isFirstSearch,
+      initSearch,
+      pageType,
+      dataType: [dataType],
+      selectedExpOrAssay: selectedExpOrAssay.map((exp) => exp.value),
+      selectedSpecies: selectedSpecies.value,
+      selectedCellTypes: selectedCellTypes.map((ct) => ct.value),
+      selectedGene: selectedGene.map((g) => g.value),
+      selectedStrain: selectedStrain.map((s) => s.value),
+      selectedTissue: selectedTissue.map((t) => t.value),
+      selectedDevStages: selectedDevStages.map((ds) => ds.value),
+      selectedSexes: selectedSexes.length > 0 ? selectedSexes : ['all'],
+      hasCellTypeSubStructure,
+      hasDevStageSubStructure,
+      hasTissueSubStructure,
+      onlyPropagated,
+      pageNumber,
+      limit,
+    };
+
+    // Here we are filtering the filters themself
+    // We don't send to the backend the filters that have no corresponding list in the filters object from last research
+    const defaultdataFilters = searchResult?.filters?.[dataType] || {};
+    const dataFiltersExprCall = searchResult?.filters || {};
+    const dataFilters = isExprCalls ? dataFiltersExprCall : defaultdataFilters;
+    const wantedFilters = filters[dataType] || {};
+    // ( if there is any filters that have been set before )
+    if (!isEmpty(dataFilters)) {
+      const myFilters = {};
+      Object.entries(wantedFilters)
+        .filter(([wantedFilterKey]) => {
+          const filterExists = Object.entries(dataFilters).some(
+            ([, existingFilter]) => wantedFilterKey === existingFilter?.urlParameterName
+          );
+          return filterExists;
+        })
+        .forEach(([key, values]) => {
+          myFilters[key] = values;
+        });
+
+      params.filters = myFilters;
+    } else {
+      params.filters = filters[dataType];
+    }
+    if (isExprCalls) {
+      const dataTypeForExpCalls = dataTypesExpCalls.length === 0 ? ALL_DATA_TYPES_ID : dataTypesExpCalls;
+      params.dataType = dataTypeForExpCalls;
+      params = {
+        ...params,
+        dataQuality,
+        callTypes,
+        conditionalParam2,
+        isExprCalls,
+      };
+    }
+    return params;
+  };
+
   const triggerSearch = async (cleanFilters = false, cleanPagination = false) => {
     const params = getSearchParams();
     if (cleanPagination) {
@@ -642,92 +719,6 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     }
   };
 
-  useEffect(() => {
-    if (needToResetThePage) {
-      // We set FirstSearch at TRUE so we don't trigger all the useEffect that checks for it
-      setIsFirstSearch(true);
-      setDataType(initDataType);
-      setDataTypesExpCalls(initDataTypeExpCalls);
-      setPageType(isExprCalls ? EXPR_CALLS : initPageType);
-
-      setIsFirstSearch(false);
-      setLocalCount({});
-      triggerCounts();
-      triggerSearch(true, true);
-
-      setNeedToResetThePage(false);
-    }
-  }, [needToResetThePage]);
-
-  useEffect(() => {
-    if (pageCanLoadFirstCount) {
-      triggerCounts(false, true);
-    }
-  }, [pageCanLoadFirstCount]);
-
-  const onChangeSpecies = (newSpecies) => {
-    setSelectedSpecies(newSpecies);
-    setSelectedCellTypes([]);
-    setSelectedGene([]);
-    setSelectedStrain([]);
-    setSelectedTissue([]);
-    setSelectedSexes([]);
-  };
-
-  useEffect(() => {
-    // Use the ref to not execute the side effect twice in React StrictMode dev
-    if (mountedRef.current) return;
-
-    if (Object.keys(initSearchResult).length > 0) {
-      // Run when init searchResult provided by loader (enable basic SSR for experiments)
-      // console.log('initSearchResult = ', initSearchResult);
-      // setSelectedSpecies({
-      //   label: initSearchResult.initSpecies,
-      //   value: initSearchResult.initSpecies,
-      // });
-      setSearchResult(initSearchResult);
-      setLocalCount(
-        isExprCalls ? { assayCount: initSearchResult.expressionCallCount } : initSearchResult.resultCount?.[dataType]
-      );
-      setIsLoading(false);
-      setIsFirstSearch(false);
-      // return;
-    }
-
-    mountedRef.current = true;
-
-    triggerSearch();
-    setIsCountLoading(true);
-
-    // TODO: Allow to detect a browser back btn pressed and force all the worflow to work again by forcing reload @ugly
-    // history.listen(() => {
-    //   if (history.action === 'POP') {
-    //     location.reload();
-    //   }
-    // });
-  }, []);
-
-  useEffect(() => {
-    if (!isFirstSearch) {
-      triggerSearch();
-    }
-  }, [pageNumber, limit]);
-
-  useEffect(() => {
-    if (!isFirstSearch && !isExprCalls) {
-      setLocalCount({});
-      triggerSearch(false, false);
-    }
-  }, [dataType]);
-
-  useEffect(() => {
-    if (!isFirstSearch) {
-      setLocalCount({});
-      triggerSearch(true, true);
-      triggerCounts();
-    }
-  }, [pageType]);
-
   const getSexesAndDevStageForSpecies = () => {
     api.search.species.speciesDevelopmentSexe(selectedSpecies.value).then((resp) => {
       if (resp.code === 200) {
@@ -737,24 +728,6 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
         setSpeciesSexes([]);
       }
     });
-  };
-
-  useEffect(() => {
-    if (selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
-      getSexesAndDevStageForSpecies();
-    }
-  }, [selectedSpecies]);
-
-  const onSubmit = () => {
-    triggerSearch(true, true);
-    triggerCounts();
-  };
-
-  const addConditionalParam = (id) => {
-    const indexOfValue = conditionalParam2.indexOf(id);
-    if (indexOfValue === -1) {
-      setConditionalParam2([...conditionalParam2, id]);
-    }
   };
 
   const AutoCompleteByType = (type, mappingFn) =>
@@ -777,6 +750,13 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       [selectedSpecies.value]
     );
 
+  const getSpeciesLabel = (specie) => {
+    if (specie.name !== '') {
+      return `${specie.genus} ${specie.speciesName} - ${specie.name}`;
+    }
+    return `${specie.genus} ${specie.speciesName}`;
+  };
+
   const toggleSex = (sexName) => {
     const i = selectedSexes.indexOf(sexName);
     // Edge case where "all" is set
@@ -790,6 +770,26 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       const nextSexes = [...selectedSexes];
       nextSexes.splice(i, 1);
       setSelectedSexes(nextSexes);
+    }
+  };
+
+  const resetForm = (isSpeciesChange = false, pageWillBeReset = false) => {
+    setSelectedCellTypes([]);
+    setSelectedGene([]);
+    setSelectedStrain([]);
+    setSelectedTissue([]);
+    setSelectedSexes([]);
+    setSelectedDevStages([]);
+    setHasCellTypeSubStructure(true);
+    setHasTissueSubStructure(true);
+    setDevStageSubStructure(true);
+    setOnlyPropagated(isExprCalls);
+    if (!isSpeciesChange) {
+      setSelectedSpecies(EMPTY_SPECIES_VALUE);
+      setSelectedExpOrAssay([]);
+    }
+    if (pageWillBeReset) {
+      setNeedToResetThePage(true);
     }
   };
 
