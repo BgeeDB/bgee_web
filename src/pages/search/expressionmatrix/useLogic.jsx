@@ -212,6 +212,37 @@ const useLogic = (isExprCalls) => {
   // filters
   const [filters, setFilters] = useState({});
 
+  const resetForm = (isSpeciesChange = false, preserveGenes = false) => {
+    // console.log(`[useLogic.resetForm] resetForm called with:`, {isSpeciesChange, preserveGenes});
+    if (!preserveGenes) {
+      // console.log(`[useLogic.resetForm] Clearing genes in resetForm`);
+      setSelectedGene([]);
+    }
+    setSelectedCellTypes([]);
+    setSelectedStrain([]);
+    setSelectedTissue([]);
+    setSelectedSexes([]);
+    setSelectedDevStages([]);
+    setHasCellTypeSubStructure(true);
+    setHasTissueSubStructure(true);
+    setDevStageSubStructure(true);
+    if (!isSpeciesChange) {
+      setSelectedSpecies(EMPTY_SPECIES_VALUE);
+      setSelectedExpOrAssay([]);
+    }
+  };
+
+  const getSexesAndDevStageForSpecies = () => {
+    api.search.species.speciesDevelopmentSexe(selectedSpecies.value).then((resp) => {
+      if (resp.code === 200) {
+        setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
+        setDevStages(resp.data?.requestDetails?.requestedSpeciesDevStageOntology);
+      } else {
+        setSpeciesSexes([]);
+      }
+    });
+  };
+
   const updateSelectedSpecies = (newSpecies, preserveGenes = false) => {
     setSelectedSpecies(newSpecies);
     if (newSpecies.value !== EMPTY_SPECIES_VALUE.value) {
@@ -933,17 +964,6 @@ const useLogic = (isExprCalls) => {
       });
   };
 
-  const getSexesAndDevStageForSpecies = () => {
-    api.search.species.speciesDevelopmentSexe(selectedSpecies.value).then((resp) => {
-      if (resp.code === 200) {
-        setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
-        setDevStages(resp.data?.requestDetails?.requestedSpeciesDevStageOntology);
-      } else {
-        setSpeciesSexes([]);
-      }
-    });
-  };
-
   const AutoCompleteByType = (type, mappingFn) =>
     useCallback(
       async (query) => {
@@ -1120,6 +1140,49 @@ const useLogic = (isExprCalls) => {
   useEffect(() => {
     //  console.log(`[useLogic.js] loc.search CHANGED:`, loc.search);
 
+    // Add function to process gene list
+    const processGeneList = async (geneListParam) => {
+      if (!geneListParam) return;
+
+      setIsProcessingGeneList(true);
+      const geneIds = geneListParam.split(/[\r\n]+/);
+
+      try {
+        // Get search results for all genes
+        const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
+
+        // Process results
+        const validResults = searchResults.filter(
+          (result) => result.code === 200 && result.data.result.totalMatchCount === 1
+        );
+
+        // Set species
+        const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
+        const speciesValue = {
+          label: getSpeciesLabel(firstSpecies),
+          value: firstSpecies.id,
+        };
+
+        // Set genes
+        const genes = validResults.map((result) => {
+          const { gene } = result.data.result.geneMatches[0];
+          return {
+            label: getGeneLabel(gene),
+            value: gene.geneId,
+          };
+        });
+
+        // Update state with species and genes
+        setIsInitializingFromUrl(true);
+        setSelectedSpeciesFromUrl(speciesValue);
+        setSelectedGene(genes);
+      } catch (error) {
+        console.error('Error processing gene list:', error);
+      } finally {
+        setIsProcessingGeneList(false);
+      }
+    };
+
     const searchParams = new URLSearchParams(loc.search);
     const geneList = searchParams.get('gene_list');
     if (geneList) {
@@ -1132,26 +1195,6 @@ const useLogic = (isExprCalls) => {
       initFromUrlParams();
     }
   }, [loc.search]);
-
-  const resetForm = (isSpeciesChange = false, preserveGenes = false) => {
-    // console.log(`[useLogic.resetForm] resetForm called with:`, {isSpeciesChange, preserveGenes});
-    if (!preserveGenes) {
-      // console.log(`[useLogic.resetForm] Clearing genes in resetForm`);
-      setSelectedGene([]);
-    }
-    setSelectedCellTypes([]);
-    setSelectedStrain([]);
-    setSelectedTissue([]);
-    setSelectedSexes([]);
-    setSelectedDevStages([]);
-    setHasCellTypeSubStructure(true);
-    setHasTissueSubStructure(true);
-    setDevStageSubStructure(true);
-    if (!isSpeciesChange) {
-      setSelectedSpecies(EMPTY_SPECIES_VALUE);
-      setSelectedExpOrAssay([]);
-    }
-  };
 
   // Expand or collapse a term
   const onToggleExpandCollapse = (term) => {
@@ -1213,49 +1256,6 @@ const useLogic = (isExprCalls) => {
     });
 
     // console.log(`[useLogic] DONE onToggleExpandCollapse.`);
-  };
-
-  // Add function to process gene list
-  const processGeneList = async (geneListParam) => {
-    if (!geneListParam) return;
-
-    setIsProcessingGeneList(true);
-    const geneIds = geneListParam.split(/[\r\n]+/);
-
-    try {
-      // Get search results for all genes
-      const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
-
-      // Process results
-      const validResults = searchResults.filter(
-        (result) => result.code === 200 && result.data.result.totalMatchCount === 1
-      );
-
-      // Set species
-      const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
-      const speciesValue = {
-        label: getSpeciesLabel(firstSpecies),
-        value: firstSpecies.id,
-      };
-
-      // Set genes
-      const genes = validResults.map((result) => {
-        const { gene } = result.data.result.geneMatches[0];
-        return {
-          label: getGeneLabel(gene),
-          value: gene.geneId,
-        };
-      });
-
-      // Update state with species and genes
-      setIsInitializingFromUrl(true);
-      setSelectedSpeciesFromUrl(speciesValue);
-      setSelectedGene(genes);
-    } catch (error) {
-      console.error('Error processing gene list:', error);
-    } finally {
-      setIsProcessingGeneList(false);
-    }
   };
 
   return {

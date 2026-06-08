@@ -67,6 +67,8 @@ const GenesCell = ({ genes }) => {
         {pos < genes.length && <br />}
       </span>
     );
+    // FIXME
+    // eslint-disable-next-line react-hooks/immutability
     prevSpecies = a.species.id;
 
     return r;

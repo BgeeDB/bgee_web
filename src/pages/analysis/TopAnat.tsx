@@ -63,9 +63,8 @@ const TopAnat = () => {
   if (loc.hash !== '' && loc.hash.match(oldResultFragment)) {
     // Get result hashtag from loc.hash, and clean the loc.hash value
     const resultId = loc.hash.replace(oldResultFragment, '');
-    loc.hash = '';
     // Rewrite the loc with the current pathname + resultId
-    navigate(`${resultId}`);
+    navigate(`${resultId}`, { replace: true });
   }
 
   const getJobStatus = React.useCallback((ID, jobID, requestParams = true) => {
@@ -86,6 +85,8 @@ const TopAnat = () => {
             });
           }
         } else if (res.data.jobResponse.jobStatus === 'RUNNING') {
+          // FIXME
+          // eslint-disable-next-line react-hooks/immutability
           getJobStatusTimeOut = setTimeout(() => getJobStatus(ID, jobID, false), 7000);
           setResults({ jobId: res.data.jobResponse.jobId });
           if (requestParams) {

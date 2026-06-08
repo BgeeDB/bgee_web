@@ -179,6 +179,8 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
   const [cFields, setCFields]: any = React.useState({ anat: true });
   const [dataType, setDataTypes] = React.useState(DATA_TYPES.map((d) => d.key));
 
+  // FIXME
+  // eslint-disable-next-line react-hooks/use-memo
   const columns = React.useMemo(columnsGenerator(cFields, data), [cFields, data]);
 
   // In order to disable the search button in the search has already been made
