@@ -27,7 +27,7 @@ const GeneExpressionMatrixResults = ({
         const maxExp =
           geneId in maxExpScore && termId in maxExpScore[geneId]
             ? maxExpScore[geneId][termId]
-            : 50 + 10 * Math.random();
+            : 0;
         const isExpressed = result.expressionState === 'expressed';
 
         const row = {
