@@ -50,29 +50,21 @@ const ExpandCell = ({ onClick }) => (
 );
 const GenesCell = ({ genes }) => {
   // const { width } = useWindowSize();
-  let prevSpecies = 0;
-  const expandContent = genes.reduce((r, a, pos) => {
-    r.push(
-      <span className="is-size-7" key={a.geneId}>
-        {pos !== 0 && a.species.id !== prevSpecies && <div style={Styles.separator} />}
-        <Link
-          className="internal-link"
-          to={PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', a.geneId)
-            .replace(':speciesId', a.geneMappedToSameGeneIdCount === 1 ? '' : a.species.id)
-            .replace(/\/$/, '')}
-        >
-          {a.geneId}
-        </Link>
-        {a.name ? ` ${a.name}` : ''}
-        {pos < genes.length && <br />}
-      </span>
-    );
-    // FIXME
-    // eslint-disable-next-line react-hooks/immutability
-    prevSpecies = a.species.id;
-
-    return r;
-  }, []);
+  const expandContent = genes.map((a, pos) => (
+    <span className="is-size-7" key={a.geneId}>
+      {pos !== 0 && a.species.id !== genes[pos - 1].species.id && <div style={Styles.separator} />}
+      <Link
+        className="internal-link"
+        to={PATHS.SEARCH.GENE_ITEM_BY_SPECIES.replace(':geneId', a.geneId)
+          .replace(':speciesId', a.geneMappedToSameGeneIdCount === 1 ? '' : a.species.id)
+          .replace(/\/$/, '')}
+      >
+        {a.geneId}
+      </Link>
+      {a.name ? ` ${a.name}` : ''}
+      {pos < genes.length - 1 && <br />}
+    </span>
+  ));
 
   return (
     <div

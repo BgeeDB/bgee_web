@@ -67,7 +67,7 @@ const TopAnat = () => {
     navigate(`${resultId}`, { replace: true });
   }
 
-  const getJobStatus = React.useCallback((ID, jobID, requestParams = true) => {
+  function getJobStatus(ID, jobID, requestParams = true) {
     api.topAnat
       .getJob(ID, jobID, requestParams)
       .then((res) => {
@@ -85,8 +85,6 @@ const TopAnat = () => {
             });
           }
         } else if (res.data.jobResponse.jobStatus === 'RUNNING') {
-          // FIXME
-          // eslint-disable-next-line react-hooks/immutability
           getJobStatusTimeOut = setTimeout(() => getJobStatus(ID, jobID, false), 7000);
           setResults({ jobId: res.data.jobResponse.jobId });
           if (requestParams) {
@@ -153,7 +151,7 @@ const TopAnat = () => {
         console.debug('[ERROR] api.topAnat.getResults(%s)', ID, err);
         setFlowState(TOP_ANAT_FLOW.ERROR_GET_JOB);
       });
-  }, []);
+  }
 
   const getResults = React.useCallback((ID) => {
     api.topAnat

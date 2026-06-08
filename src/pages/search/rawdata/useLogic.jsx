@@ -286,128 +286,11 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
 
   const [pageCanLoadFirstCount, setPageCanLoadFirstCount] = useState(false);
 
-  useEffect(() => {
-    const sp = new URLSearchParams(loc.search);
-    const nextLimit = sp.get('limit');
-    const nextPageNumber = sp.get('pageNumber');
-    if (nextLimit !== null) {
-      setLimit(nextLimit);
+  const getSpeciesLabel = (specie) => {
+    if (specie.name !== '') {
+      return `${specie.genus} ${specie.speciesName} - ${specie.name}`;
     }
-    if (nextPageNumber) {
-      setPageNumber(nextPageNumber);
-    } else {
-      setPageNumber('1');
-    }
-
-    // If we are already on the Raw-Data page and we try to access it again in the Header all the search variables will be cleared.
-    // If there is no search variable we set back the page to it default state.
-    if (!loc.search && !isFirstSearch && !isLoading) {
-      resetForm(false, true);
-    }
-  }, [loc.search]);
-
-  useEffect(() => {
-    if (needToResetThePage) {
-      // We set FirstSearch at TRUE so we don't trigger all the useEffect that checks for it
-      setIsFirstSearch(true);
-      setDataType(initDataType);
-      setDataTypesExpCalls(initDataTypeExpCalls);
-      setPageType(isExprCalls ? EXPR_CALLS : initPageType);
-
-      setIsFirstSearch(false);
-      setLocalCount({});
-      triggerCounts();
-      triggerSearch(true, true);
-
-      setNeedToResetThePage(false);
-    }
-  }, [needToResetThePage]);
-
-  useEffect(() => {
-    if (pageCanLoadFirstCount) {
-      triggerCounts(false, true);
-    }
-  }, [pageCanLoadFirstCount]);
-
-  const onChangeSpecies = (newSpecies) => {
-    setSelectedSpecies(newSpecies);
-    setSelectedCellTypes([]);
-    setSelectedGene([]);
-    setSelectedStrain([]);
-    setSelectedTissue([]);
-    setSelectedSexes([]);
-  };
-
-  useEffect(() => {
-    // Use the ref to not execute the side effect twice in React StrictMode dev
-    if (mountedRef.current) return;
-
-    if (Object.keys(initSearchResult).length > 0) {
-      // Run when init searchResult provided by loader (enable basic SSR for experiments)
-      // console.log('initSearchResult = ', initSearchResult);
-      // setSelectedSpecies({
-      //   label: initSearchResult.initSpecies,
-      //   value: initSearchResult.initSpecies,
-      // });
-      setSearchResult(initSearchResult);
-      setLocalCount(
-        isExprCalls ? { assayCount: initSearchResult.expressionCallCount } : initSearchResult.resultCount?.[dataType]
-      );
-      setIsLoading(false);
-      setIsFirstSearch(false);
-      // return;
-    }
-
-    mountedRef.current = true;
-
-    triggerSearch();
-    setIsCountLoading(true);
-
-    // TODO: Allow to detect a browser back btn pressed and force all the worflow to work again by forcing reload @ugly
-    // history.listen(() => {
-    //   if (history.action === 'POP') {
-    //     location.reload();
-    //   }
-    // });
-  }, []);
-
-  useEffect(() => {
-    if (!isFirstSearch) {
-      triggerSearch();
-    }
-  }, [pageNumber, limit]);
-
-  useEffect(() => {
-    if (!isFirstSearch && !isExprCalls) {
-      setLocalCount({});
-      triggerSearch(false, false);
-    }
-  }, [dataType]);
-
-  useEffect(() => {
-    if (!isFirstSearch) {
-      setLocalCount({});
-      triggerSearch(true, true);
-      triggerCounts();
-    }
-  }, [pageType]);
-
-  useEffect(() => {
-    if (selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
-      getSexesAndDevStageForSpecies();
-    }
-  }, [selectedSpecies]);
-
-  const onSubmit = () => {
-    triggerSearch(true, true);
-    triggerCounts();
-  };
-
-  const addConditionalParam = (id) => {
-    const indexOfValue = conditionalParam2.indexOf(id);
-    if (indexOfValue === -1) {
-      setConditionalParam2([...conditionalParam2, id]);
-    }
+    return `${specie.genus} ${specie.speciesName}`;
   };
 
   const initFormFromDetailedRP = (resp) => {
@@ -719,15 +602,165 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     }
   };
 
-  const getSexesAndDevStageForSpecies = () => {
-    api.search.species.speciesDevelopmentSexe(selectedSpecies.value).then((resp) => {
-      if (resp.code === 200) {
-        setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
-        setDevStages(resp.data?.requestDetails?.requestedSpeciesDevStageOntology);
-      } else {
-        setSpeciesSexes([]);
+  const getSexesAndDevStageForSpecies = useCallback(
+    (speciesId = selectedSpecies.value) => {
+      api.search.species.speciesDevelopmentSexe(speciesId).then((resp) => {
+        if (resp.code === 200) {
+          setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
+          setDevStages(resp.data?.requestDetails?.requestedSpeciesDevStageOntology);
+        } else {
+          setSpeciesSexes([]);
+        }
+      });
+    },
+    [selectedSpecies.value]
+  );
+
+  const resetForm = useCallback(
+    (isSpeciesChange = false, pageWillBeReset = false) => {
+      setSelectedCellTypes([]);
+      setSelectedGene([]);
+      setSelectedStrain([]);
+      setSelectedTissue([]);
+      setSelectedSexes([]);
+      setSelectedDevStages([]);
+      setHasCellTypeSubStructure(true);
+      setHasTissueSubStructure(true);
+      setDevStageSubStructure(true);
+      setOnlyPropagated(isExprCalls);
+      if (!isSpeciesChange) {
+        setSelectedSpecies(EMPTY_SPECIES_VALUE);
+        setSelectedExpOrAssay([]);
       }
-    });
+      if (pageWillBeReset) {
+        setNeedToResetThePage(true);
+      }
+    },
+    [isExprCalls]
+  );
+
+  useEffect(() => {
+    const sp = new URLSearchParams(loc.search);
+    const nextLimit = sp.get('limit');
+    const nextPageNumber = sp.get('pageNumber');
+    if (nextLimit !== null) {
+      setLimit(nextLimit);
+    }
+    if (nextPageNumber) {
+      setPageNumber(nextPageNumber);
+    } else {
+      setPageNumber('1');
+    }
+
+    // If we are already on the Raw-Data page and we try to access it again in the Header all the search variables will be cleared.
+    // If there is no search variable we set back the page to it default state.
+    if (!loc.search && !isFirstSearch && !isLoading) {
+      resetForm(false, true);
+    }
+  }, [loc.search]);
+
+  useEffect(() => {
+    if (needToResetThePage) {
+      // We set FirstSearch at TRUE so we don't trigger all the useEffect that checks for it
+      setIsFirstSearch(true);
+      setDataType(initDataType);
+      setDataTypesExpCalls(initDataTypeExpCalls);
+      setPageType(isExprCalls ? EXPR_CALLS : initPageType);
+
+      setIsFirstSearch(false);
+      setLocalCount({});
+      triggerCounts();
+      triggerSearch(true, true);
+
+      setNeedToResetThePage(false);
+    }
+  }, [needToResetThePage]);
+
+  useEffect(() => {
+    if (pageCanLoadFirstCount) {
+      triggerCounts(false, true);
+    }
+  }, [pageCanLoadFirstCount]);
+
+  const onChangeSpecies = (newSpecies) => {
+    setSelectedSpecies(newSpecies);
+    setSelectedCellTypes([]);
+    setSelectedGene([]);
+    setSelectedStrain([]);
+    setSelectedTissue([]);
+    setSelectedSexes([]);
+  };
+
+  useEffect(() => {
+    // Use the ref to not execute the side effect twice in React StrictMode dev
+    if (mountedRef.current) return;
+
+    if (Object.keys(initSearchResult).length > 0) {
+      // Run when init searchResult provided by loader (enable basic SSR for experiments)
+      // console.log('initSearchResult = ', initSearchResult);
+      // setSelectedSpecies({
+      //   label: initSearchResult.initSpecies,
+      //   value: initSearchResult.initSpecies,
+      // });
+      setSearchResult(initSearchResult);
+      setLocalCount(
+        isExprCalls ? { assayCount: initSearchResult.expressionCallCount } : initSearchResult.resultCount?.[dataType]
+      );
+      setIsLoading(false);
+      setIsFirstSearch(false);
+      // return;
+    }
+
+    mountedRef.current = true;
+
+    triggerSearch();
+    setIsCountLoading(true);
+
+    // TODO: Allow to detect a browser back btn pressed and force all the worflow to work again by forcing reload @ugly
+    // history.listen(() => {
+    //   if (history.action === 'POP') {
+    //     location.reload();
+    //   }
+    // });
+  }, []);
+
+  useEffect(() => {
+    if (!isFirstSearch) {
+      triggerSearch();
+    }
+  }, [pageNumber, limit]);
+
+  useEffect(() => {
+    if (!isFirstSearch && !isExprCalls) {
+      setLocalCount({});
+      triggerSearch(false, false);
+    }
+  }, [dataType]);
+
+  useEffect(() => {
+    if (!isFirstSearch) {
+      setLocalCount({});
+      triggerSearch(true, true);
+      triggerCounts();
+    }
+  }, [pageType]);
+
+  useEffect(() => {
+    if (selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
+      getSexesAndDevStageForSpecies();
+    }
+  }, [selectedSpecies]);
+
+  const onSubmit = () => {
+    triggerSearch(true, true);
+    triggerCounts();
+  };
+
+  const addConditionalParam = (id) => {
+    const indexOfValue = conditionalParam2.indexOf(id);
+    if (indexOfValue === -1) {
+      setConditionalParam2([...conditionalParam2, id]);
+    }
   };
 
   const AutoCompleteByType = (type, mappingFn) =>
@@ -750,13 +783,6 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       [selectedSpecies.value]
     );
 
-  const getSpeciesLabel = (specie) => {
-    if (specie.name !== '') {
-      return `${specie.genus} ${specie.speciesName} - ${specie.name}`;
-    }
-    return `${specie.genus} ${specie.speciesName}`;
-  };
-
   const toggleSex = (sexName) => {
     const i = selectedSexes.indexOf(sexName);
     // Edge case where "all" is set
@@ -770,26 +796,6 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       const nextSexes = [...selectedSexes];
       nextSexes.splice(i, 1);
       setSelectedSexes(nextSexes);
-    }
-  };
-
-  const resetForm = (isSpeciesChange = false, pageWillBeReset = false) => {
-    setSelectedCellTypes([]);
-    setSelectedGene([]);
-    setSelectedStrain([]);
-    setSelectedTissue([]);
-    setSelectedSexes([]);
-    setSelectedDevStages([]);
-    setHasCellTypeSubStructure(true);
-    setHasTissueSubStructure(true);
-    setDevStageSubStructure(true);
-    setOnlyPropagated(isExprCalls);
-    if (!isSpeciesChange) {
-      setSelectedSpecies(EMPTY_SPECIES_VALUE);
-      setSelectedExpOrAssay([]);
-    }
-    if (pageWillBeReset) {
-      setNeedToResetThePage(true);
     }
   };
 
