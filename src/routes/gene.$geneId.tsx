@@ -54,8 +54,13 @@ export async function loader({ params, request }) {
       requestUrl: request.url.replace(/^https?:\/\/.+?\//, `${config.genericDomain}/`),
     };
   } catch (error: any) {
-    // console.error('Error loading gene data:', error);
-    throw new Response(error.data?.message || error.message || 'Gene not found', { status: 404 });
+    const status = error?.response?.status ?? error?.status;
+    if (status === 404 || (typeof status === 'number' && status >= 400 && status < 500)) {
+      throw new Response(error.data?.message || error.message || 'Gene not found', { status: 404 });
+    }
+    // Handle non 404 errors (e.g. network issues, server errors)
+    console.error('Gene loader API failure:', params.geneId, status ?? '', error?.message);
+    throw new Response('Upstream error while loading gene data', { status: 502 });
   }
 }
 

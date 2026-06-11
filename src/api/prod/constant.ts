@@ -1,8 +1,11 @@
 import axios from 'axios';
 import config from '../../config.json';
 
+// SSR goes through internal API domain to avoid Cloudflare limitations
+const baseURL = import.meta.env.SSR ? (process.env.INTERNAL_API_DOMAIN ?? config.apiDomain) : config.apiDomain;
+
 const axiosInstance = axios.create({
-  baseURL: config.apiDomain,
+  baseURL,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
   },
