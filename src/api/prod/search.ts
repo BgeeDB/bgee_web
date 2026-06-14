@@ -5,13 +5,7 @@ import PATHS from '../../paths/paths';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 import config from '../../config.json';
 
-// Use localhost for multispec API in dev when apiDomainDev is configured; otherwise use default axios baseURL
-const getMultispecRequestUrl = (paramsString: string) => {
-  if (import.meta.env.DEV && config.apiDomainDev) {
-    return `${config.apiDomainDev}/?${paramsString}`;
-  }
-  return `/?${paramsString}`;
-};
+const getMultispecRequestUrl = (paramsString: string) => `/?${paramsString}`;
 
 export const SEARCH_CANCEL_API: any = {
   genes: {

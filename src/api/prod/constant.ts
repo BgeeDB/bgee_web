@@ -1,8 +1,11 @@
 import axios from 'axios';
 import config from '../../config.json';
 
+// Vite sets import.meta.env.DEV automatically (true for `npm run dev`, false for production builds).
+const apiBaseUrl = import.meta.env.DEV && config.apiDomainDev ? config.apiDomainDev : config.apiDomain;
+
 const axiosInstance = axios.create({
-  baseURL: config.apiDomain,
+  baseURL: apiBaseUrl,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
   },
