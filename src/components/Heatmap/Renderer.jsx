@@ -22,11 +22,30 @@ const DEFAULT_BOTTOM_LABEL_GAP = 40;
 // Projects the text bounding box onto the y-axis using sin/cos of the rotation angle.
 const estimateLabelVerticalExtent = (text, rotationDeg) => {
   if (!text) return 0;
+  const lines = text.split('\n');
   const rotRad = (rotationDeg * Math.PI) / 180;
   const sinAbs = Math.abs(Math.sin(rotRad));
   const cosAbs = Math.abs(Math.cos(rotRad));
-  const textWidth = text.length * X_LABEL_CHAR_WIDTH;
-  return sinAbs * textWidth + cosAbs * X_LABEL_FONT_SIZE;
+  const maxLineLength = Math.max(...lines.map((line) => line.length));
+  const textWidth = maxLineLength * X_LABEL_CHAR_WIDTH;
+  const lineHeight = X_LABEL_FONT_SIZE * 1.2;
+  const textHeight = lines.length === 1 ? X_LABEL_FONT_SIZE : (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE;
+  return sinAbs * textWidth + cosAbs * textHeight;
+};
+
+const X_LABEL_LINE_HEIGHT = 1.2;
+
+const renderSvgTextLines = (text, keyPrefix) => {
+  const lines = text.split('\n');
+  if (lines.length === 1) {
+    return text;
+  }
+
+  return lines.map((line, lineIdx) => (
+    <tspan key={`${keyPrefix}-line-${lineIdx}`} x={0} dy={lineIdx === 0 ? 0 : `${X_LABEL_LINE_HEIGHT}em`}>
+      {line}
+    </tspan>
+  ));
 };
 
 export const Renderer = forwardRef(
@@ -411,7 +430,7 @@ export const Renderer = forwardRef(
           dominantBaseline="middle"
           fontSize={15}
         >
-          {displayLabel}
+          {renderSvgTextLines(displayLabel, `heatMapXLabel-${i}`)}
         </text>
       );
     });
@@ -437,7 +456,7 @@ export const Renderer = forwardRef(
           dominantBaseline="middle"
           fontSize={15}
         >
-          {displayLabel}
+          {renderSvgTextLines(displayLabel, `heatMapXLabelBottom-${i}`)}
         </text>
       );
     });

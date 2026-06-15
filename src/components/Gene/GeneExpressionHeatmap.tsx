@@ -5,15 +5,6 @@ import Heatmap from '../Heatmap/Heatmap';
 
 const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
 
-const getSpeciesPrefix = (species?: { genus?: string; speciesName?: string }) => {
-  const genus = species?.genus?.trim();
-  const speciesName = species?.speciesName?.trim();
-  if (genus && speciesName) {
-    return `${genus.charAt(0).toUpperCase()}${speciesName.slice(0, 3).toLowerCase()}`;
-  }
-  return 'Unk';
-};
-
 const getSpeciesDisplayName = (species?: { name?: string; genus?: string; speciesName?: string }) => {
   const commonName = species?.name?.trim();
   if (commonName) {
@@ -39,16 +30,16 @@ const getAxisLabels = ({
   isMultispecies: boolean;
 }) => {
   const displayGeneName = geneName || geneId;
+  const bottomLabel = `${displayGeneName}\n${geneId}`;
   if (!isMultispecies) {
     return {
       topLabel: '',
-      bottomLabel: displayGeneName,
+      bottomLabel,
     };
   }
-  const prefix = getSpeciesPrefix(species);
   return {
     topLabel: getSpeciesDisplayName(species),
-    bottomLabel: `(${prefix}) ${displayGeneName}`,
+    bottomLabel,
   };
 };
 
@@ -431,12 +422,6 @@ const GeneExpressionHeatmap = ({
   const heatmapData = useMemo(() => {
     return allExpressionCalls.map((result) => {
       const { geneId: gId, name: gName } = result.gene;
-      const axisLabels = getAxisLabels({
-        geneId: gId,
-        geneName: gName,
-        species: result.gene.species,
-        isMultispecies,
-      });
       const specId = result.gene.species.id;
       const { id: anatEntityId, name: anatEntityName, dataId: anatEntityDataId } = result.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = result.condition.cellType;
@@ -470,7 +455,7 @@ const GeneExpressionHeatmap = ({
         ylvl: 0,
       };
     });
-  }, [allExpressionCalls, isMultispecies]);
+  }, [allExpressionCalls]);
 
   // Generate xTerms from genes (value = unique key for scale, label = display text)
   const xTerms = useMemo(() => {
