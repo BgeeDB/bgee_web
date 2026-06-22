@@ -135,9 +135,9 @@ export default function Home({ loaderData }) {
                   <Bulma.C size={4}>
                     <div className="inner-hero-data-column">
                       <span>
-                        Single-cell cell types
+                        Single-cell cell
                         <br />
-                        &#119909; libraries
+                        types &#119909; libraries
                       </span>
                       <p className="is-size-2">{resultCount?.SC_RNA_SEQ?.assayCount}</p>
                     </div>

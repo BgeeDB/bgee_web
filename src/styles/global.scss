@@ -18,7 +18,7 @@ $code: $primary;
 $title-color: $primary;
 $light-color: #ffffff;
 $light-gray: #f5f5f5;
-$light-opacity: #ffff4d;
+$light-opacity: #ffffff;
 $red: #e20613; // SIB red
 
 $nav-hover: linear-gradient(117deg, rgb(54, 54, 54) 0%, rgb(73, 70, 70) 100%);
@@ -1733,11 +1733,16 @@ h1.title.in-md {
       .hero-data-columns {
         width: 100%;
         display: inline-block;
-        .column {
+
+        a {
+          display: contents; // <a> becomes layout-transparent
           &:not(:first-child) {
-            align-items: start;
-            border: none;
-            border-top: 1px solid $light-opacity;
+            .column {
+              align-items: center;
+              border: none;
+              border-top: 1px solid $light-opacity;
+              text-align: center;
+            }
           }
         }
       }
