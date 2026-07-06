@@ -66,10 +66,7 @@ const prepareInlineSvg = (svg: SVGSVGElement) => {
 
 const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
   const location = useLocation();
-  const debugEnabled = React.useMemo(
-    () => new URLSearchParams(location.search).has('heatmapDebug'),
-    [location.search]
-  );
+  const debugEnabled = React.useMemo(() => new URLSearchParams(location.search).has('heatmapDebug'), [location.search]);
 
   const viewportRef = React.useRef<HTMLDivElement>(null);
   const svgHostRef = React.useRef<HTMLDivElement>(null);
@@ -212,10 +209,14 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
 
     probes.push(describe('document @ client', clientX, clientY, document.elementFromPoint(clientX, clientY)));
 
-    probes.push(describe('host-local px', localX, localY, document.elementFromPoint(
-      hostRect.left + localX,
-      hostRect.top + localY
-    )));
+    probes.push(
+      describe(
+        'host-local px',
+        localX,
+        localY,
+        document.elementFromPoint(hostRect.left + localX, hostRect.top + localY)
+      )
+    );
 
     const viewBoxX = (localX / hostRect.width) * vbWidth;
     const viewBoxY = (localY / hostRect.height) * vbHeight;
@@ -410,7 +411,14 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
         <span className="species-anatomy-heatmap__zoom-label" aria-live="polite">
           {zoomPercent}%
         </span>
-        <Bulma.Button type="button" size="small" outlined onClick={zoomIn} disabled={zoom >= MAX_ZOOM} aria-label="Zoom in">
+        <Bulma.Button
+          type="button"
+          size="small"
+          outlined
+          onClick={zoomIn}
+          disabled={zoom >= MAX_ZOOM}
+          aria-label="Zoom in"
+        >
           <Plus size={16} aria-hidden />
         </Bulma.Button>
         <Bulma.Button type="button" size="small" outlined onClick={resetView} aria-label="Reset zoom and pan">
@@ -425,8 +433,8 @@ const SpeciesAnatomyHeatmap = ({ src, title }: SpeciesAnatomyHeatmapProps) => {
 
       {debugEnabled && (
         <p className="species-anatomy-heatmap__debug-hint is-size-7 has-text-grey">
-          Move the mouse over the heatmap to compare hit-test methods. The red crosshair marks the pointer; the row
-          that reports <code>&lt;a&gt;</code> under the cursor is the coordinate system the browser uses here.
+          Move the mouse over the heatmap to compare hit-test methods. The red crosshair marks the pointer; the row that
+          reports <code>&lt;a&gt;</code> under the cursor is the coordinate system the browser uses here.
         </p>
       )}
 

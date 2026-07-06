@@ -37,17 +37,12 @@ const SpeciesAnatomyOverview = () => (
           Each cell displays the number of libraries available for that species and anatomical entity. Cell background
           color reflects the library count, as shown in the legend (from fewer than 5 libraries in red to 100 or more in
           green). Clicking a cell opens the corresponding curated annotations in Bgee, filtered by species and anatomy.
-          Clicking a species name on the left shows all integrated data for that species. Drag the heatmap to
-          pan, and use the zoom controls, mouse wheel, or pinch gestures to magnify it on smaller screens.
+          Clicking a species name on the left shows all integrated data for that species. Drag the heatmap to pan, and
+          use the zoom controls, mouse wheel, or pinch gestures to magnify it on smaller screens.
         </p>
-        <p>
-          The heatmap is updated with each Bgee update to reflect newly integrated data.
-        </p>
+        <p>The heatmap is updated with each Bgee update to reflect newly integrated data.</p>
 
-        <SpeciesAnatomyHeatmap
-          src={HEATMAP_SVG}
-          title="Bgee integrated libraries by species and anatomical entity"
-        />
+        <SpeciesAnatomyHeatmap src={HEATMAP_SVG} title="Bgee integrated libraries by species and anatomical entity" />
 
         <p className="has-text-centered mt-4">
           <Link to={PATHS.SEARCH.RAW_DATA_ANNOTATIONS} className="internal-link">
