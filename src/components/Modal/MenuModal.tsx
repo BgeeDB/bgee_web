@@ -58,6 +58,12 @@ const SIDE_MENU = [
         path: PATHS.SEARCH.SPECIES,
       },
       {
+        key: 'page.browse.species-anatomy-overview.test',
+        title: ROUTES[PATHS.SEARCH.SPECIES_ANATOMY_OVERVIEW].title,
+        type: 'internal',
+        path: PATHS.SEARCH.SPECIES_ANATOMY_OVERVIEW,
+      },
+      {
         key: 'page.browse.raw-data-experiment.test',
         title: 'Experiments',
         type: 'internal',

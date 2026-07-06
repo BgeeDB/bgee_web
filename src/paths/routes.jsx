@@ -99,6 +99,9 @@ const SEARCH = {
     // component: SpeciesList,
     title: 'Species',
   },
+  [PATHS.SEARCH.SPECIES_ANATOMY_OVERVIEW]: {
+    title: 'Species ⨯ anatomy overview',
+  },
   [PATHS.SEARCH.SPECIES_ITEM]: {
     // component: Species,
     title: 'Species',
