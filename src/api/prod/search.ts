@@ -468,7 +468,6 @@ const search = {
           params.append('cell_type_descendant', form.hasCellTypeSubStructure);
           params.append('anat_entity_descendant', form.hasTissueSubStructure);
           params.append('stage_descendant', form.hasDevStageSubStructure);
-          params.append('only_propagated', form.onlyPropagated);
 
           // Search form for Expression calls
           if (form?.dataQuality) {
