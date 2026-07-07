@@ -55,7 +55,7 @@ export async function loader() {
   }
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   return getMetadata({
     title: 'Bgee Processed expression values download page',
     description:

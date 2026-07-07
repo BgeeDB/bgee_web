@@ -17,7 +17,7 @@ export function loader({ request }) {
   return { search: searchParams.get('search') };
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   return getMetadata({
     title: `${data.search ? `${data.search} - ` : ''}Gene search`,
     description: data.search ? `${data.search} gene search` : 'Search for a gene in Bgee',

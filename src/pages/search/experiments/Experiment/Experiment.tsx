@@ -18,7 +18,7 @@ export async function loader({ params }) {
   return res.data;
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   data = data.data;
   return getMetadata({
     title: `${data.experiment.name ? `${data.experiment.id} ${data.experiment.name}` : `${data.experiment.id} ${getUserFriendlyDataType(data?.dataType)} for ${data.experiment.id}`}`,

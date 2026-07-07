@@ -40,7 +40,7 @@ export async function loader({ params }) {
   }
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   const canonicalURL = `${config.genericDomain}${getCanonicalURL(data.species)}`;
   return getMetadata({
     title: `${data.speciesDisplay} gene list`,

@@ -64,7 +64,7 @@ export async function loader({ params, request }) {
   }
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   const { name, geneId, species, synonyms } = data.details;
   const latinName = `${species.genus} ${species.speciesName}`;
   const hasNameOpener = name ? `${name} (` : '';

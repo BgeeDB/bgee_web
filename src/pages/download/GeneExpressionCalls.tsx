@@ -53,7 +53,7 @@ export async function loader() {
   }
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   return getMetadata({
     title: 'Bgee Gene expression calls download page',
     description: 'Download TSV files containing present/absent gene expression calls from Bgee',

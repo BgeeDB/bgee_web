@@ -23,7 +23,7 @@ export async function loader({ params }) {
   }
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   const metaTitle = `${data.species.genus}  ${data.species.speciesName}
     ${data.species.name ? `( ${data.species.name} )` : ''}`;
   const metaDescription = `General information and datasets available

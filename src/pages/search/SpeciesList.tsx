@@ -25,7 +25,7 @@ export async function loader() {
   }
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   return getMetadata({
     title: 'Bgee Species list',
     description: 'List of species with expression data available in Bgee',
