@@ -264,9 +264,136 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
 
   const [pageCanLoadFirstCount, setPageCanLoadFirstCount] = useState(false);
 
-  const getSpeciesLabel = (specie) => {
-    if (specie.name !== '') {
-      return `${specie.genus} ${specie.speciesName} - ${specie.name}`;
+  useEffect(() => {
+    const sp = new URLSearchParams(loc.search);
+    const nextLimit = sp.get('limit');
+    const nextPageNumber = sp.get('pageNumber');
+    if (nextLimit !== null) {
+      setLimit(nextLimit);
+    }
+    if (nextPageNumber) {
+      setPageNumber(nextPageNumber);
+    } else {
+      setPageNumber('1');
+    }
+
+    // If we are already on the Raw-Data page and we try to access it again in the Header all the search variables will be cleared.
+    // If there is no search variable we set back the page to it default state.
+    if (!loc.search && !isFirstSearch && !isLoading) {
+      resetForm(false, true);
+    }
+  }, [loc.search]);
+
+  useEffect(() => {
+    if (needToResetThePage) {
+      // We set FirstSearch at TRUE so we don't trigger all the useEffect that checks for it
+      setIsFirstSearch(true);
+      setDataType(initDataType);
+      setDataTypesExpCalls(initDataTypeExpCalls);
+      setPageType(isExprCalls ? EXPR_CALLS : initPageType);
+
+      setIsFirstSearch(false);
+      setLocalCount({});
+      triggerCounts();
+      triggerSearch(true, true);
+
+      setNeedToResetThePage(false);
+    }
+  }, [needToResetThePage]);
+
+  useEffect(() => {
+    if (pageCanLoadFirstCount) {
+      triggerCounts(false, true);
+    }
+  }, [pageCanLoadFirstCount]);
+
+  const onChangeSpecies = (newSpecies) => {
+    setSelectedSpecies(newSpecies);
+    setSelectedCellTypes([]);
+    setSelectedGene([]);
+    setSelectedStrain([]);
+    setSelectedTissue([]);
+    setSelectedSexes([]);
+  };
+
+  useEffect(() => {
+    // Use the ref to not execute the side effect twice in React StrictMode dev
+    if (mountedRef.current) return;
+
+    if (Object.keys(initSearchResult).length > 0) {
+      // Run when init searchResult provided by loader (enable basic SSR for experiments)
+      // console.log('initSearchResult = ', initSearchResult);
+      // setSelectedSpecies({
+      //   label: initSearchResult.initSpecies,
+      //   value: initSearchResult.initSpecies,
+      // });
+      setSearchResult(initSearchResult);
+      setLocalCount(
+        isExprCalls ? { assayCount: initSearchResult.expressionCallCount } : initSearchResult.resultCount?.[dataType]
+      );
+      setIsLoading(false);
+      setIsFirstSearch(false);
+      // return;
+    }
+
+    mountedRef.current = true;
+
+    // On the expression-calls page, don't auto-run the search on a fresh load
+    // (no query string). Wait for the user to submit the form instead. A
+    // shared/bookmarked link that carries search params will still restore
+    // and run its search, since loc.search is non-empty in that case.
+    if (isExprCalls && !loc.search) {
+      return;
+    }
+
+    triggerSearch();
+    setIsCountLoading(true);
+
+    // TODO: Allow to detect a browser back btn pressed and force all the worflow to work again by forcing reload @ugly
+    // history.listen(() => {
+    //   if (history.action === 'POP') {
+    //     location.reload();
+    //   }
+    // });
+  }, []);
+
+  useEffect(() => {
+    if (!isFirstSearch) {
+      triggerSearch();
+    }
+  }, [pageNumber, limit]);
+
+  useEffect(() => {
+    if (!isFirstSearch && !isExprCalls) {
+      setLocalCount({});
+      triggerSearch(false, false);
+    }
+  }, [dataType]);
+
+  useEffect(() => {
+    if (!isFirstSearch) {
+      setLocalCount({});
+      triggerSearch(true, true);
+      triggerCounts();
+    }
+  }, [pageType]);
+
+  useEffect(() => {
+    if (selectedSpecies.value !== EMPTY_SPECIES_VALUE.value) {
+      getSexesAndDevStageForSpecies();
+      resetForm(true);
+    }
+  }, [selectedSpecies]);
+
+  const onSubmit = () => {
+    triggerSearch(true, true);
+    triggerCounts();
+  };
+
+  const addConditionalParam = (id) => {
+    const indexOfValue = conditionalParam2.indexOf(id);
+    if (indexOfValue === -1) {
+      setConditionalParam2([...conditionalParam2, id]);
     }
     return `${specie.genus} ${specie.speciesName}`;
   };
