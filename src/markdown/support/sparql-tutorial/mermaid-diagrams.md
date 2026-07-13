@@ -253,7 +253,7 @@ These query triple patterns are more accurate because we can now precisely defin
 When defining the condition to assess a gene expression, the [genex:hasAnatomicalEntity](https://biosoda.github.io/genex/#hasAnatomicalEntity) property is used to state cell types too
 since a cell type is also considered as an anatomical entity. For example, to define that a gene is expressed in lung, the graph below is built where we can interpret as the gene is
 expressed in a cellular component located in lung, in other words, in lung. Therefore, when the cell type is unspecified, we assert with `genex:hasAnatomicalEntity` property the
-value [obo:GO_0005575 (cellular_component)](http://purl.obolibrary.org/obo/GO_0005575), this [Gene Ontology]() term is the root of all cell types.
+value [obo:GO_0005575 (cellular_component)](http://purl.obolibrary.org/obo/GO_0005575), this [Gene Ontology](<>) term is the root of all cell types.
 
 ```mermaid
     graph TD
