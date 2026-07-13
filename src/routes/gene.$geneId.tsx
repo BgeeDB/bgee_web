@@ -9,7 +9,7 @@ export async function loader({ params, request }) {
     // Get general gene information
     const startTime = performance.now();
     const geneInfoResponse = await api.search.genes.getGeneralInformation(params.geneId);
-    // NOTE: we directly get the first gene
+    // NOTE we directly get the first gene
     const geneDetails = geneInfoResponse.data.genes[0];
     console.log(`Got gene details in (${(performance.now() - startTime).toFixed(2)}ms)`);
     if (!geneDetails) throw new Error('Page not found');
@@ -21,7 +21,7 @@ export async function loader({ params, request }) {
     const [homologsResult, xRefsResult]: any = await Promise.allSettled([
       api.search.genes.homologs(geneId, species.id),
       api.search.genes.xrefs(geneId, species.id),
-      // TODO: adding expression calls here slows down a lot the page loading
+      // TODO adding expression calls here slows down a lot the page loading
       // api.search.genes.expression(geneId, species.id, {}, ['all'], false),
       // api.search.genes.expression(geneId, species.id, {}, ['all'], true),
     ]);
@@ -43,12 +43,31 @@ export async function loader({ params, request }) {
     });
     // Process xrefs and expression data
     const xRefs = xRefsResult.status === 'fulfilled' ? xRefsResult.value.data : {};
+    // Filter unwanted xrefs to display
+    const fully_excluded = ['SMTHIFNEEDED'];
+    const ensembl_to_include = /^(ENSG0|ENS[A-Z][A-Z][A-Z]G0|FBgn|WBGene)/;
+    const filteredxRefs = xRefs?.gene
+      ? {
+          ...xRefs,
+          gene: {
+            ...xRefs.gene,
+            xRefs: xRefs.gene.xRefs
+              .filter((group) => !fully_excluded.includes(group.source.name))
+              .map((group) =>
+                group.source.name === 'Ensembl'
+                  ? { ...group, xRefs: group.xRefs.filter((x) => ensembl_to_include.test(x.xRefId)) }
+                  : group
+              )
+              .filter((group) => group.xRefs.length > 0),
+          },
+        }
+      : xRefs;
     // const exprData = exprResult.status === 'fulfilled' ? exprResult.value.data : {};
     // const notExprData = notExprResult.status === 'fulfilled' ? notExprResult.value.data : {};
     return {
       details: geneDetails,
       homologs,
-      xRefs,
+      xRefs: filteredxRefs,
       // exprData,
       // notExprData,
       requestUrl: request.url.replace(/^https?:\/\/.+?\//, `${config.genericDomain}/`),
