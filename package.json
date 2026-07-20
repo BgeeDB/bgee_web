@@ -34,8 +34,8 @@
     "axios": "^1.18.1",
     "bulma": "^0.9.4",
     "d3": "^7.9.0",
-    "isbot": "^5.2.0",
-    "lucide-react": "^1.24.0",
+    "isbot": "^5.2.1",
+    "lucide-react": "^1.25.0",
     "pm2": "^7.0.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -70,8 +70,8 @@
     "sass": "^1.101.0",
     "sass-loader": "^17.0.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.63.0",
-    "vite": "^8.1.4"
+    "typescript-eslint": "^8.64.0",
+    "vite": "^8.1.5"
   },
   "prettier": {
     "trailingComma": "es5",
