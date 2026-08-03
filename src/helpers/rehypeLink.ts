@@ -8,10 +8,10 @@ const rehypeLink = () => (tree) => {
     if (node.tagName === 'a') {
       if (isInternal.test(node.properties.href)) {
         node.properties.classname = 'internal-link';
-        const isInternalAndNotAnchor = /(^\/)|(^https:\/\/www.bgee.org)/gi;
         const regex = /\/\/+/g;
         node.properties.href = node.properties.href
-          .replace(isInternalAndNotAnchor, `${URL_ROOT}`)
+          .replace(/^\//, `${URL_ROOT}/`)
+          .replace(/^https:\/\/www\.bgee\.org/, `${URL_ROOT}`)
           .replaceAll(regex, '/');
         // Add a data attribute to identify internal links that need client-side navigation in mdxComponents
         node.properties['data-internal-link'] = true;

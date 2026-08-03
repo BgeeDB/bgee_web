@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
-import { Download } from 'lucide-react';
-
 import Bulma from '../Bulma';
-import { Renderer } from './Renderer.jsx';
+import { Renderer } from './Renderer';
 import { Tooltip } from './Tooltip';
 import { DetailView } from './DetailView';
 import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
@@ -23,6 +21,8 @@ const STORAGE_KEYS = {
   SHOW_DESC_MAX: 'bgee-heatmap-show-desc-max',
   SHOW_MISSING_DATA: 'bgee-heatmap-show-missing-data',
   SHOW_SETTINGS: 'bgee-heatmap-show-settings',
+  ROW_ORDERING: 'bgee-heatmap-row-ordering',
+  ROW_AGG_FN: 'bgee-heatmap-row-agg-fn',
 };
 
 // Add helper function
@@ -36,30 +36,40 @@ const getStoredValue = (key, defaultValue) => {
   }
 };
 
+/** Explicit props so callers are not required to pass matrix-only / debug options. */
+export type HeatmapProps = {
+  width: number;
+  height?: number;
+  backgroundColor?: string;
+  /** Row / cell payload (untyped until heatmap data is modeled). */
+  data: any;
+  getChildData?: any;
+  xTerms?: any;
+  yTerms: any;
+  termProps: any;
+  yLabelJustify?: string;
+  onToggleExpandCollapse: any;
+  isLoading?: boolean;
+  isInitializingFromUrl?: boolean;
+  defaultXLabelRotation?: unknown;
+  defaultMaxGraphWidth?: unknown;
+  defaultCellHeight?: unknown;
+  showResetButton?: unknown;
+  rendererMargins?: unknown;
+};
+
 const Heatmap = ({
   width,
   height = 800,
-  backgroundColor,
+  backgroundColor = '#ffffff',
   data,
-  getChildData,
-  xTerms,
   yTerms,
   termProps,
   yLabelJustify = 'right',
   onToggleExpandCollapse,
-}: {
-  width: number;
-  height?: number;
-  backgroundColor: string;
-  data: any[];
-  getChildData: (parentId: string, selectedTissueId: string) => any;
-  getHomologsData?: () => void;
-  xTerms: any[];
-  yTerms: any[];
-  termProps: any;
-  yLabelJustify?: string;
-  onToggleExpandCollapse: (id: string) => void;
-}) => {
+  ..._heatmapMatrixOnlyOpts
+}: HeatmapProps) => {
+  void _heatmapMatrixOnlyOpts;
   // COMPONENT STATE
   const [hoveredCell, setHoveredCell] = useState(null);
   const [clickedCell, setClickedCell] = useState(null);
@@ -80,10 +90,12 @@ const Heatmap = ({
   const [useAdaptiveScale, setUseAdaptiveScale] = useState(() =>
     getStoredValue(STORAGE_KEYS.USE_ADAPTIVE_SCALE, false)
   );
+  const [rowOrdering, setRowOrdering] = useState(() => getStoredValue(STORAGE_KEYS.ROW_ORDERING, 'alphabetical'));
+  const [rowAggFn, setRowAggFn] = useState(() => getStoredValue(STORAGE_KEYS.ROW_AGG_FN, 'mean'));
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
-  const [graphHeightInput, setGraphHeightInput] = useState(height);
+  const [graphHeightInput, setGraphHeightInput] = useState(graphHeight);
 
   // Update local input state without updating the actual graphWidth
   const handleGraphWidthChange = (event) => {
@@ -197,6 +209,14 @@ const Heatmap = ({
     setShowSettings(value);
     localStorage.setItem(STORAGE_KEYS.SHOW_SETTINGS, JSON.stringify(value));
   };
+  const updateRowOrdering = ({ target: { value } }) => {
+    setRowOrdering(value);
+    localStorage.setItem(STORAGE_KEYS.ROW_ORDERING, value);
+  };
+  const updateRowAggFn = ({ target: { value } }) => {
+    setRowAggFn(value);
+    localStorage.setItem(STORAGE_KEYS.ROW_AGG_FN, value);
+  };
 
   // Add handler for adaptive scale toggle
   const updateUseAdaptiveScale = () => {
@@ -234,36 +254,26 @@ const Heatmap = ({
     const { count: numVisibleTerms, maxLabelLength } = countVisibleTerms(yTerms);
     // console.log(`[Heatmap] ${numVisibleTerms} visible terms`);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
-    const cellHeight = 15;
-    const maxMarginLeft = 730;
-    // Calculate main heatmap height (without legend)
-    const mainHeatmapHeight = Math.max(numVisibleTerms * cellHeight, 250);
-    // Total height includes main heatmap + legend
-    const flexHeight = mainHeatmapHeight + COLOR_LEGEND_HEIGHT;
-    let flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
-    flexMarginLeft = Math.min(flexMarginLeft, maxMarginLeft);
+    const flexHeight = Math.max(numVisibleTerms * 30 + COLOR_LEGEND_HEIGHT, 250);
+    const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
     const flexWidth = Math.max(flexMarginLeft + 50, graphWidth);
-
-    // console.log('[Heatmap] flexHeight:', flexHeight);
-    // console.log('[Heatmap] flexWidth:', flexWidth);
-    // console.log('[Heatmap] maxGraphWidth:', maxGraphWidth);
-
-    // if (svgRef.current) {
-    //   const rect = svgRef.current.getBoundingClientRect();
-    //   console.log('[Heatmap] Rendered SVG size:', rect.width, rect.height);
-
-    //   const viewbox = svgRef.current.viewBox.baseVal;
-    //   console.log('[Heatmap] SVG user space:', viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-    // }
-
     setGraphHeight(flexHeight);
     setGraphWidth(flexWidth);
     setMarginLeft(flexMarginLeft);
-    setGraphHeightInput(flexHeight);
   }, [yTerms]);
 
-  // sort entries by y coordinate
-  const displayData = data.sort((a, b) => a.y.localeCompare(b.y));
+  const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
+
+  // With a single gene (column), mean === max, so the aggregation choice is meaningless.
+  const hasMultipleGenes = useMemo(() => {
+    if (!data?.length) return false;
+    const seen = new Set();
+    for (const d of data) {
+      seen.add(d.x);
+      if (seen.size > 1) return true;
+    }
+    return false;
+  }, [data]);
 
   const downloadTsv = () => {
     if (!data) return;
@@ -291,7 +301,7 @@ const Heatmap = ({
     document.body.removeChild(downloadLink);
   };
 
-  const svgRef = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const downloadSvg = () => {
     const svgElement = svgRef.current;
     if (!svgElement) return;
@@ -330,24 +340,24 @@ const Heatmap = ({
 
       // Draw the image onto the canvas
       const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-      }
+      if (!ctx) return;
+
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
 
       // Convert canvas to PNG and trigger download
       canvas.toBlob((blob) => {
-        if (blob) {
-          const pngUrl = URL.createObjectURL(blob);
-          const downloadLink = document.createElement('a');
-          downloadLink.href = pngUrl;
-          downloadLink.download = 'Bgee-genex-heatmap.png';
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
-          URL.revokeObjectURL(pngUrl);
-        }
+        if (!blob) return;
+
+        const pngUrl = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pngUrl;
+        downloadLink.download = 'Bgee-genex-heatmap.png';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(pngUrl);
       }, 'image/png');
     };
     img.src = svgUrl;
@@ -359,14 +369,10 @@ const Heatmap = ({
         <div className="column">
           <Renderer
             ref={svgRef}
-            // @ts-expect-error Type not assignable to type
             width={graphWidth}
-            height={graphHeight}
+            height={graphHeight - COLOR_LEGEND_HEIGHT}
             backgroundColor={bgColor}
             data={displayData}
-            getChildData={getChildData}
-            xTerms={xTerms}
-            yTerms={yTerms}
             drilldown={yTerms}
             termProps={termProps}
             hoveredCell={hoveredCell}
@@ -377,7 +383,6 @@ const Heatmap = ({
             colorScale={colorScale}
             marginLeft={marginLeft}
             xLabelRotation={xLabelRotation}
-            yLabelJustify={yLabelAlign}
             showLegend={showLegend}
             showMissingData={showMissingData}
             showDescMax={showDescMax}
@@ -386,9 +391,11 @@ const Heatmap = ({
             maxCellWidth={cellWidth}
             maxGraphWidth={maxGraphWidth}
             setGraphWidth={setGraphWidth}
+            rowOrdering={rowOrdering}
+            rowAggFn={rowAggFn}
           />
 
-          <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight} />
+          <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />
         </div>
 
         {clickedCell && (
@@ -427,7 +434,7 @@ const Heatmap = ({
             >
               PNG
               <span className="icon is-small ml-1">
-                <Download size={15} />
+                <ion-icon name="download-outline" />
               </span>
             </Bulma.Button>
 
@@ -440,7 +447,7 @@ const Heatmap = ({
             >
               SVG
               <span className="icon is-small ml-1">
-                <Download size={15} />
+                <ion-icon name="download-outline" />
               </span>
             </Bulma.Button>
 
@@ -453,7 +460,7 @@ const Heatmap = ({
             >
               TSV
               <span className="icon is-small ml-1">
-                <Download size={15} />
+                <ion-icon name="download-outline" />
               </span>
             </Bulma.Button>
           </div>
@@ -584,17 +591,43 @@ const Heatmap = ({
                   </table>
                 </div>
                 <div className="column">
-                  {SHOW_DEBUG_OPTIONS ? (
-                    <div>
-                      <h1>DATA</h1>
-                      <table>
-                        <tbody>
+                  <div>
+                    <h1>DATA</h1>
+                    <table>
+                      <tbody>
+                        {SHOW_DEBUG_OPTIONS ? (
                           <tr>
                             <td>Show missing data:</td>
                             <td>
                               <input type="checkbox" checked={showMissingData} onChange={updateShowMissingData} />
                             </td>
                           </tr>
+                        ) : null}
+                        <tr>
+                          <td>Row ordering:</td>
+                          <td>
+                            <select value={rowOrdering} onChange={updateRowOrdering}>
+                              <option value="alphabetical">alphabetically</option>
+                              <option value="expression">expression score</option>
+                            </select>
+                          </td>
+                        </tr>
+                        {hasMultipleGenes ? (
+                          <tr>
+                            <td>Aggregation function:</td>
+                            <td>
+                              <select
+                                value={rowAggFn}
+                                onChange={updateRowAggFn}
+                                disabled={rowOrdering !== 'expression'}
+                              >
+                                <option value="mean">mean</option>
+                                <option value="max">max</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ) : null}
+                        {SHOW_DEBUG_OPTIONS ? (
                           <tr>
                             <td>Show max. descendant score as:</td>
                             <td>
@@ -606,10 +639,10 @@ const Heatmap = ({
                               </select>
                             </td>
                           </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : null}
+                        ) : null}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>

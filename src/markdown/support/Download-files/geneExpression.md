@@ -57,7 +57,7 @@ The files can be found on the Bgee [download page](/download/gene-expression-cal
 
 Once on the download calls webpage, you can either search for a specific species in the top search bar or look through the species list at the bottom and click on the species logo to access the different download file options. These datasets can also be downloaded directly using our R package "BgeeDB”.
 
-![](../img/doc/Download-files/Expression-call-download.png#tutoimgborder)
+![](../img/doc/Download-files/Expression-call-download.webp#tutoimgborder)
 
 ### Potential download problems
 
@@ -69,7 +69,7 @@ Once on the download calls webpage, you can either search for a specific species
 
 Once a species is selected, you will need to choose if you want data only for anatomical entities or for all conditions, and if you want the summarized information (simple file) or all information (advanced file). The implications of each option are explained in further detail below.
 
-![](../img/doc/Download-files/Expression-call-download-per-species.png#tutoimgborder)
+![](../img/doc/Download-files/Expression-call-download-per-species.webp#tutoimgborder)
 
 ### Condition parameters
 

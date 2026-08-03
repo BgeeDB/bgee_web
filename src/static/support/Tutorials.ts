@@ -278,6 +278,31 @@ const tutorialValues = [
           },
         ],
       },
+      {
+        children: [
+          {
+            type: 'card',
+            title: 'Expression Graph',
+            image: {
+              src: imagePath('/document-text-outline.svg'),
+              alt: 'Document logo',
+            },
+            link: PATHS.SUPPORT.TUTORIAL_EXPRESSION_GRAPH,
+            linkType: 'internal',
+            classNames: 'mb-3',
+          },
+          {
+            type: 'rich_text',
+            classNames: 'has-text-centered',
+            content: [
+              {
+                type: 'text',
+                content: 'How to interpret and use the expression graph.',
+              },
+            ],
+          },
+        ],
+      },
     ],
     cols: 3,
     fillRow: true,

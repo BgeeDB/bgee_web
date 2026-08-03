@@ -37,7 +37,7 @@ const Species = ({ selectedSpecies, onChangeSpecies, getSpeciesLabel }) => {
       </label>
       <Select
         instanceId="species-select"
-        inputId="specied-id-select"
+        inputId="species-id-select"
         options={speciesOptions}
         className="form-control"
         classNamePrefix="react-select-species"

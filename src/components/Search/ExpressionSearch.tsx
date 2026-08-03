@@ -9,6 +9,7 @@ const ExpressionSearch = ({ search, setSearch, elements, onRender }) => {
       if (search !== '' && elements.length > 0) setShowAuto(true);
       setPrevSearch(search);
     }
+    if (search === '') setShowAuto(false);
   }, [search, elements, prevSearch]);
   React.useEffect(() => {
     const clickOutside = () => {

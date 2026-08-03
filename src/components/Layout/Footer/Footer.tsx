@@ -59,8 +59,8 @@ const NAVBAR_RIGHT = [
 const Footer = () => {
   const { addNotification } = React.useContext(NotificationContext);
   const loc = useLocation();
-  loc.pathname = `${config.archive ? loc.pathname.replace(/[\\/][^\\/]*/, '') : loc.pathname}`;
-  const permanentLink = React.useMemo(() => config.permanentVersionedDomain + loc.pathname, [loc]);
+  const pathname = `${config.archive ? loc.pathname.replace(/[\\/][^\\/]*/, '') : loc.pathname}`;
+  const permanentLink = React.useMemo(() => config.permanentVersionedDomain + pathname, [loc]);
 
   return (
     <Bulma.Footer>
@@ -81,7 +81,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to={PATHS.SEARCH.EXPRESSION_MATRIX} className="nav_a">
-                  Gene expression matrix (beta)
+                  Expression graph
                 </Link>
               </li>
             </ul>
@@ -103,6 +103,11 @@ const Footer = () => {
               <li>
                 <Link to={PATHS.SEARCH.SPECIES} className="nav_a">
                   Species
+                </Link>
+              </li>
+              <li>
+                <Link to={PATHS.SEARCH.SPECIES_ANATOMY_OVERVIEW} className="nav_a">
+                  Species ⨯ anatomy overview
                 </Link>
               </li>
             </ul>
@@ -133,8 +138,13 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href={PATHS.SEARCH.SPARQL} target="_blank" rel="noopener noreferrer" className="nav_a">
-                  SPARQL endpoint
+                <Link to={PATHS.SEARCH.SPARQL} className="nav_a">
+                  SPARQL editor
+                </Link>
+              </li>
+              <li>
+                <a href="/doc-api/" target="_blank">
+                  Bgee API
                 </a>
               </li>
             </ul>
@@ -230,7 +240,7 @@ const Footer = () => {
           <a href="https://www.sib.swiss/" target="_blank" rel="noopener noreferrer" className="dflex">
             <Bulma.Image
               className="no-responsive"
-              src={imagePath('/logo/sib-emblem.png')}
+              src={imagePath('/logo/sib-emblem.webp')}
               alt="SIB logo"
               height={15}
               width={20}

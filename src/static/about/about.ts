@@ -24,7 +24,16 @@ const about = [
     type: 'rich_text',
     content: [
       {
-        content: `As a SIB Resource, Bgee is developed and maintained thanks to SIB's support.`,
+        content: `Bgee is part of `,
+        type: 'bold',
+      },
+      {
+        text: `SIB's portfolio`,
+        path: 'https://www.sib.swiss/activities/open-software-and-databases',
+        type: 'link_external',
+      },
+      {
+        content: ` of open databases and software tools. As a SIB Resource, Bgee is developed and maintained thanks to SIB's support.`,
         type: 'bold',
       },
     ],
@@ -33,7 +42,7 @@ const about = [
     type: 'rich_text',
     content: [
       {
-        content: `Bgee is a Global Core Biodata Resources (`,
+        content: `Bgee is a Global Core Biodata Resource (`,
         type: 'bold',
       },
       {
@@ -42,7 +51,16 @@ const about = [
         type: 'link_external',
       },
       {
-        content: `), and also an ELIXIR Recommended Interoperability Resources (`,
+        content: `), an ELIXIR Core Data Resource (`,
+        type: 'bold',
+      },
+      {
+        text: `ELIXIR Core`,
+        path: 'https://elixir-europe.org/platforms/data/core-data-resources',
+        type: 'link_external',
+      },
+      {
+        content: `), and also an ELIXIR Recommended Interoperability Resource (`,
         type: 'bold',
       },
       {

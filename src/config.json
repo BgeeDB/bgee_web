@@ -1,6 +1,6 @@
 {
   "version": "15.2",
-  "fullversion": "15.2.4",
+  "fullversion": "15.2.6",
   "archive": false,
   "genericDomain": "https://www.bgee.org",
   "prodDomain": "https://www.bgee.org",
@@ -35,11 +35,10 @@
     }
   ],
   "contactEmail": "Bgee@sib.swiss",
-  "bioSchemaModifiedData": "2024-12-11",
+  "bioSchemaModifiedData": "2026-04-30",
   "oboLibraryOboPath": "http://purl.obolibrary.org/obo/",
   "oboLibraryNCBITaxonPath": "http://purl.obolibrary.org/obo/NCBITaxon_",
   "isRawDataOnly": false,
-  "isDevOnly": false,
   "dataType_RNA_SEQ": 1,
   "dataType_FULL_LENGTH": 2,
   "dataType_AFFYMETRIX": 3,

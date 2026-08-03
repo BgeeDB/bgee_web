@@ -182,7 +182,7 @@ const bgeesab = [
         children: [
           {
             type: 'text',
-            content: 'March 2026',
+            content: 'September 2026',
           },
         ],
       },

@@ -129,7 +129,16 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           <DetailRow label="expression score" value={String(data.value)} />
           <br />
           <a
-            href={`/search/raw-data?pageType=proc_expr_values&gene_id=${data.geneId}&species_id=${data.speciesId}&cell_type_id=${data.cellTypeId}&cell_type_descendant=true&stage_descendant=true&anat_entity_descendant=true&anat_entity_id=${data.anatEntityId}`}
+            href={
+              `/search/raw-data?pageType=proc_expr_values` +
+              `&gene_id=${data.geneId}` +
+              `&species_id=${data.speciesId}` +
+              `&cell_type_id=${data.cellTypeId}` +
+              `&anat_entity_id=${data.anatEntityId}` +
+              `&cell_type_descendant=true` +
+              `&stage_descendant=true` +
+              `&anat_entity_descendant=true`
+            }
           >
             See source data
           </a>

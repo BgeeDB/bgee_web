@@ -7,13 +7,13 @@ The [processed expression values](/download/processed-expression-values) page is
 - [droplet-based single cell RNA-Seq](/support/tutorial-processed-expression-values-download-scRNA-seq-droplet-based)
 - [Affymetrix](/support/tutorial-processed-expression-values-download-affymetrix)
 
-![](../img/doc/Download-files/Processed-expression-homepage.png#tutoimgborder)
+![](../img/doc/Download-files/Processed-expression-homepage.webp#tutoimgborder)
 
 ## Download processed expression data and annotation metadata
 
 To access the download page from the Bgee homepage, go to the download section on the top toolbar and click on "Processed expression values". This will bring you to the download page where you can either search for a specific species in the top search bar or look through the species list at the bottom and click on any species logo to see the different download file options available for each data type. These datasets can also be downloaded directly using our R package [BgeeDB](https://bioconductor.org/packages/release/bioc/html/BgeeDB.html).
 
-![](../img/doc/Download-files/Processed-expression-Species-data-types.png#tutoimgborder)
+![](../img/doc/Download-files/Processed-expression-Species-data-types.webp#tutoimgborder)
 
 ## Potential download problems
 

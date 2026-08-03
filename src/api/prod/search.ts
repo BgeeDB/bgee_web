@@ -24,7 +24,10 @@ export const SEARCH_CANCEL_API: any = {
   },
   rawData: {
     search: null,
+    getAssayCount: null,
     count: null,
+    /** Request-parameter / display_rp fetches — must not share token with `search` or URL init cancels */
+    requestParams: null,
   },
 };
 
@@ -109,7 +112,8 @@ const search = {
       }),
     AutoCompleteByType: (searchType: string, query: string, speciesId: string) =>
       new Promise((resolve, reject) => {
-        let params = new URLSearchParams();
+        // let params = new URLSearchParams();
+        let params;
 
         //! /!\ Destined to change once all search_autcomplete are the same
         //! The (if gene...) should then be removed
@@ -361,6 +365,27 @@ const search = {
       }),
   },
   rawData: {
+    // Results returned faster for the frontpage
+    getAssayCount: (): any =>
+      new Promise((resolve, reject) => {
+        const paramsURLCalled =
+          'display_type=json&page=data&action=raw_data_annots&pageType=raw_data_annots&get_result_count=1';
+        const typeToken = 'get';
+        axiosInstance
+          .get(`/?${paramsURLCalled}`, {
+            cancelToken: new axios.CancelToken((c) => {
+              SEARCH_CANCEL_API.rawData[typeToken] = c;
+            }),
+          })
+          .then(({ data }) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            return resolve({ resp: data, paramsURLCalled });
+          })
+          .catch((error) => {
+            errorHandler(error);
+            reject(error?.response || error?.message);
+          });
+      }),
     search: (form, isOnlyCounts, bypassInitSearchParam = false): any =>
       new Promise((resolve, reject) => {
         const params = DEFAULT_PARAMETERS('data', form.pageType);
@@ -413,6 +438,19 @@ const search = {
                 params.append(key, val);
               }
             }
+          }
+
+          // Preserve default descendant behavior on first load when URL omits them.
+          // Without these defaults, direct links with anat/cell/stage filters can return
+          // exact-only matches on first render and differ from subsequent searches.
+          if (!form.initSearch.has('anat_entity_descendant') && form.hasTissueSubStructure) {
+            params.append('anat_entity_descendant', '1');
+          }
+          if (!form.initSearch.has('cell_type_descendant') && form.hasCellTypeSubStructure) {
+            params.append('cell_type_descendant', '1');
+          }
+          if (!form.initSearch.has('stage_descendant') && form.hasDevStageSubStructure) {
+            params.append('stage_descendant', '1');
           }
         } else {
           // If no hash, we send all parameters separately
@@ -498,7 +536,7 @@ const search = {
   geneExpressionMatrix: {
     // get request parameters from previous search
     getRequestParams: (form, detailedRP = false) =>
-      new Promise((resolve) => {
+      new Promise((resolve, reject) => {
         // populate request params
         const params = DEFAULT_PARAMETERS('data', 'expr_calls');
         params.append('get_results', '0');
@@ -523,7 +561,12 @@ const search = {
 
         const paramsURLCalled = params.toString();
 
-        const typeToken = 'search'; // alternatives: 'count'
+        const typeToken = 'requestParams';
+        if (SEARCH_CANCEL_API?.rawData?.[typeToken] !== null) {
+          SEARCH_CANCEL_API?.rawData?.[typeToken]?.(
+            '-- Request-parameters fetch canceled because another was started --'
+          );
+        }
         axiosInstance
           .get(`/?${paramsURLCalled}`, {
             cancelToken: new axios.CancelToken((c) => {
@@ -533,10 +576,18 @@ const search = {
           .then(({ data }) => {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             return resolve({ resp: data, paramsURLCalled });
-            // })
-            // .catch((error) => {
-            //   errorHandler(error);
-            //   reject(error?.response || error?.message);
+          })
+          .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              return resolve({
+                resp: { code: 0, message: error.message },
+                paramsURLCalled,
+                canceled: true,
+              });
+            }
+            errorHandler(error);
+            return reject(error?.response || error?.message);
           });
       }),
 
@@ -629,8 +680,13 @@ const search = {
             return resolve({ resp: data, paramsURLCalled });
           })
           .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              reject(error);
+              return;
+            }
             errorHandler(error);
-            reject(error?.response || error?.message);
+            reject(error?.response ?? error?.message ?? error);
           });
       }),
 
@@ -691,8 +747,13 @@ const search = {
             return resolve({ resp: data, paramsURLCalled });
           })
           .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              reject(error);
+              return;
+            }
             errorHandler(error);
-            reject(error?.response || error?.message);
+            reject(error?.response ?? error?.message ?? error);
           });
       }),
 
@@ -727,13 +788,7 @@ const search = {
           // (Basics parameters are the one originally filled when opening the page for the first time)
 
           for (const [key, val] of form.initSearch) {
-            if (
-              key !== 'data_type' &&
-              // key !== 'offset' &&
-              // key !== 'limit' &&
-              key !== 'pageType' // &&
-              // key !== 'pageNumber'
-            ) {
+            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
               // For the 1st search we don't send the filters if we request OnlyCount
               // onlyCount => all parameters but the filters
               //! this approach works only when the URL does not contain a hash
@@ -811,8 +866,13 @@ const search = {
             return resolve({ resp: data, paramsURLCalled });
           })
           .catch((error) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            if (axios.isCancel(error)) {
+              reject(error);
+              return;
+            }
             errorHandler(error);
-            reject(error?.response || error?.message);
+            reject(error?.response ?? error?.message ?? error);
           });
       }),
   },

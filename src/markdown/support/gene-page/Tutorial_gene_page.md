@@ -19,7 +19,7 @@ Search with a gene name, e.g. **CDK5**, in upper or lowercase.
 
 Select the first match **Cdk5**. You can now see the corresponding search results.
 
-![](../img/doc/gene-search/Fig02_Gene-search-results.png#tutoimgborder)
+![](../img/doc/gene-search/Fig02_Gene-search-results.webp#tutoimgborder)
 
 If your search returns several entries, you can navigate between them in different ways:
 
@@ -27,7 +27,7 @@ If your search returns several entries, you can navigate between them in differe
 - Change the number of entries displayed per page with the _Show **N** entries_ at the top right of the result table.
 - Alternatively, you can filter the result entries with the _Filter_ box at the top left of the result table, e.g. with a species name.
 
-![](../img/doc/gene-search/Fig03_Gene-search-headers.png#tutoimgborder)
+![](../img/doc/gene-search/Fig03_Gene-search-headers.webp#tutoimgborder)
 
 If you search with a specific term like an identifier (ex. ENSMUSG00000028969), your gene result search will be more precise.
 
@@ -36,7 +36,7 @@ If you search with a specific term like an identifier (ex. ENSMUSG00000028969), 
 You can reach the species specific gene page by clicking on the **Gene ID** or the **Name** links in the gene result table.
 You can reach the species page by clicking on the **Organism** link in the gene result page.
 
-![](../img/doc/gene-search/Fig05_gene-page-linked-rows.png#tutoimgborder)
+![](../img/doc/gene-search/Fig05_gene-page-linked-rows.webp#tutoimgborder)
 
 The Bgee gene page is also directly accessible from the UniProt website, or from Wikipedia:
 
@@ -55,7 +55,7 @@ The gene page is the main page for a gene and includes information on gene expre
 
 This section provides important details about your selected gene, including its gene identifier, common name, a concise description, gene synonyms, the count of orthologs observed in various species, the count of paralogs within this species, and a hyperlink to access the processed expression values associated with the gene.
 
-![](../img/doc/gene-search/Fig06_species-gene-page.png#tutoimgborder)
+![](../img/doc/gene-search/Fig06_species-gene-page.webp#tutoimgborder)
 
 E.g. the gene ENSMUSG00000028969, also known as Cdk5, encodes the cyclin-dependent kinase 5 protein in _Mus musculus_ (mouse). The gene has been identified to have 45 orthologs in different species, and possesses 196 paralogs within the mouse genome. Access to processed expression values for Cdk5 allows us to explore its patterns in various tissues and conditions
 
@@ -75,7 +75,7 @@ By default, the gene page reports this information for each anatomical localizat
 - an overview of the data types supporting it
 - and a link to browse the source data that allowed to produce it.
 
-![](../img/doc/gene-search/Fig08_Expression-tab-gene-page.png#tutoimgborder)
+![](../img/doc/gene-search/Fig08_Expression-tab-gene-page.webp#tutoimgborder)
 
 Expression calls can be re-grouped by any of the following condition parameters, alone or in any combination:
 
@@ -84,11 +84,11 @@ Expression calls can be re-grouped by any of the following condition parameters,
 - sex
 - strain/ethnicity
 
-![](../img/doc/gene-search/Fig09_Expression-headers-gene-page.png#tutoimgborder)
+![](../img/doc/gene-search/Fig09_Expression-headers-gene-page.webp#tutoimgborder)
 
 It is also possible to filter by data types/techniques (Affymetrix, EST, RNA-Seq, etc.) used to produce the expression calls. By default, all are selected.
 
-![](../img/doc/gene-search/Fig10_Expression-Data-types.png#tutoimgborder)
+![](../img/doc/gene-search/Fig10_Expression-Data-types.webp#tutoimgborder)
 
 The data types supporting a call are reported in the column "Sources". A green box indicates the presence of data in this condition for this gene for the related data type, a grey box indicates no data for the related data type.
 
@@ -100,7 +100,7 @@ The data types supporting a call are reported in the column "Sources". A green b
 
 It is possible to view/retrieve the processed data used to produce each call by following the "see source data" link in the "Link to source data" column. More information is provided in the **documentation to retrieve curated annotations and processed expression values**.
 
-![](../img/doc/gene-search/Fig11_retrieve-processed-data.png#tutoimgborder)
+![](../img/doc/gene-search/Fig11_retrieve-processed-data.webp#tutoimgborder)
 
 ### Orthology and paralogy
 
@@ -117,7 +117,7 @@ For the Mus musculus gene [Cdk5](/gene/ENSMUSG00000028969#orthologs), orthologs 
 For this gene the most precise taxon is Murinae and the highest level one is Bilateria. At Murinae taxon level, Cdk5 has one ortholog gene (column _Gene(s)_) coming from one species (column _Species with orthologs_).
 Clicking on the _See details_ column allows you to see details of species and genes. At Murinae level, the only orthologous gene is Cdk5 (ENSRNOG00000008017) from _Rattus norvegicus_.
 
-![](../img/doc/gene-search/Fig13_orthologs-tab-explanation.png#tutoimgborder)
+![](../img/doc/gene-search/Fig13_orthologs-tab-explanation.webp#tutoimgborder)
 
 At Bilateria level the same gene has 45 orthologs coming from 44 species. Clicking on the _See details_ column allows us to see that each one of the 44 species has one ortholog, except Salmon that have 2 orthologs.
 
@@ -125,7 +125,7 @@ At Bilateria level the same gene has 45 orthologs coming from 44 species. Clicki
 
 You can filter the result entries with the _Filter_ box at the top left of the result table. You can for instance filter using a taxonomic level, a gene ID or a species name.
 
-![](../img/doc/gene-search/Fig15_Orthologs-expression-comparison.png#tutoimgborder)
+![](../img/doc/gene-search/Fig15_Orthologs-expression-comparison.webp#tutoimgborder)
 
 You can run an expression comparison analysis for all ortholog genes at one taxonomic level by clicking on the link "Compare expression" of the _Expression comparison_ column. For instance, clicking on the link "Compare expression" at the Bilateria level will run an expression comparison analysis for the 46 genes (45 orthologs + the gene itself) at that taxonomic level.
 
@@ -143,7 +143,7 @@ Clicking on the _See details_ column allows you to see names and IDs of these ge
 
 You can filter the result entries with the Filter box at the top left of the result table. You can for instance filter using a taxonomic level, a gene ID or a species name.
 
-![](../img/doc/gene-search/Fig18_Paralogs-expression-comparison-analysis.png#tutoimgborder)
+![](../img/doc/gene-search/Fig18_Paralogs-expression-comparison-analysis.webp#tutoimgborder)
 
 You can run an expression comparison analysis for all paralog genes at one taxonomic level by clicking on the link "Compare expression" of the _Expression comparison_ column. For instance, clicking on the link "Compare expression" at the Opisthokonta level will run an expression comparison analysis for the 197 genes (196 paralogs + the gene itself) at that taxonomic level.
 
@@ -154,6 +154,6 @@ All one-to-one paralogs generated from OMA SPARQL endpoint for species present i
 
 ### Cross-references
 
-![](../img/doc/gene-search/Fig19_Cross-ref.png#tutoimgborder)
+![](../img/doc/gene-search/Fig19_Cross-ref.webp#tutoimgborder)
 
 The section highlighted in the Figure shows several links to external resources. The first column is the resource name and the second column shows links that correspond to the current searched gene (e.g., Cdk5 in mouse). These links are named according to the identifiers defined by the external resource. For example, [ENSMUSG00000028969](https://nov2020.archive.ensembl.org/Mus_musculus/Gene/Summary?g=ENSMUSG00000028969) is the [Ensembl database](https://www.ensembl.org) identifier for the mouse's Cdk5 gene. In case not all links are displayed, click on the (+) button to see more.

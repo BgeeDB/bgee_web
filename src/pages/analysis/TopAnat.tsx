@@ -15,6 +15,7 @@ import { getAxiosAddNotif } from '../../api/prod/constant';
 import random from '../../helpers/random';
 import ApiReducer from '../../helpers/ApiReducer';
 import { TOP_ANAT_DEFAULT_RP } from '../../helpers/constants/topAnat';
+import { topanatToLdJSON } from '~/helpers/schemaDotOrg';
 import config from '../../config.json';
 import { getMetadata } from '~/helpers/metadata';
 
@@ -27,6 +28,7 @@ export function meta() {
     title: 'TopAnat: Expression enrichment analysis',
     description: 'GO-like enrichment of anatomical terms, mapped to genes by expression patterns',
     keywords: 'Enrichment, Gene expression, Anatomical terms',
+    schemaorg: [topanatToLdJSON(config.prodDomain + PATHS.ANALYSIS.TOP_ANAT, config.fullversion)],
   });
 }
 
@@ -61,12 +63,11 @@ const TopAnat = () => {
   if (loc.hash !== '' && loc.hash.match(oldResultFragment)) {
     // Get result hashtag from loc.hash, and clean the loc.hash value
     const resultId = loc.hash.replace(oldResultFragment, '');
-    loc.hash = '';
     // Rewrite the loc with the current pathname + resultId
-    navigate(`${resultId}`);
+    navigate(`${resultId}`, { replace: true });
   }
 
-  const getJobStatus = React.useCallback((ID, jobID, requestParams = true) => {
+  function getJobStatus(ID, jobID, requestParams = true) {
     api.topAnat
       .getJob(ID, jobID, requestParams)
       .then((res) => {
@@ -150,7 +151,7 @@ const TopAnat = () => {
         console.debug('[ERROR] api.topAnat.getResults(%s)', ID, err);
         setFlowState(TOP_ANAT_FLOW.ERROR_GET_JOB);
       });
-  }, []);
+  }
 
   const getResults = React.useCallback((ID) => {
     api.topAnat
@@ -173,6 +174,14 @@ const TopAnat = () => {
         setFlowState(TOP_ANAT_FLOW.GOT_RESULTS);
       })
       .catch((err) => {
+        if (err?.data?.data.exceptionType === 'RequestParametersNotFoundException' && err.data.code === 400) {
+          console.debug('[ERROR] api.topAnat.getResults(%s)', ID, err);
+          addNotification({
+            id: random().toString(),
+            children: <p>{err.data.message}</p>,
+            className: 'is-danger',
+          });
+        }
         if (err?.data?.data.exceptionType === 'JobResultNotFoundException' && err.data.code === 400) {
           const rp = err.data.requestParameters;
           const formData = ApiReducer.topAnatForm(rp)({});

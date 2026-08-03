@@ -29,7 +29,7 @@ const ontologies = [
             type: 'card',
             title: 'Developmental stage ontologies',
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'GitHub logo',
             },
             link: 'https://github.com/obophenotype/developmental-stage-ontologies',
@@ -64,7 +64,7 @@ const ontologies = [
             type: 'card',
             title: 'Confidence Information Ontology (CIO)',
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'GitHub logo',
             },
             link: 'https://github.com/BgeeDB/confidence-information-ontology',
@@ -84,7 +84,7 @@ const ontologies = [
             type: 'card',
             title: 'Homology ontology (HOM)',
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'GitHub logo',
             },
             link: 'https://github.com/BgeeDB/homology-ontology',
@@ -105,7 +105,7 @@ const ontologies = [
             type: 'card',
             title: 'Uberon ontology',
             image: {
-              src: imagePath('/logo/uberon-logo.png'),
+              src: imagePath('/logo/uberon-logo.webp'),
               alt: 'Uberon logo',
             },
             link: 'https://uberon.github.io/',
@@ -149,7 +149,7 @@ const ontologies = [
             type: 'card',
             title: 'Cell Ontology (CL)',
             image: {
-              src: imagePath('/logo/cell-ontology-logo.png'),
+              src: imagePath('/logo/cell-ontology-logo.webp'),
               alt: 'Cell Ontology logo',
             },
             link: 'https://obophenotype.github.io/cell-ontology/',
@@ -183,7 +183,7 @@ const ontologies = [
             type: 'card',
             title: 'scFAIR metadata schema (scFAIR)',
             image: {
-              src: imagePath('/logo/github-logo.png'),
+              src: imagePath('/logo/github-logo.webp'),
               alt: 'GitHub logo',
             },
             link: 'https://github.com/dosumis/single-cell-curation/blob/broadening-species-specificity/schema/5.1.0-broad/schema.md',
@@ -217,7 +217,7 @@ const ontologies = [
             type: 'card',
             title: 'NCBITaxon ontology',
             image: {
-              src: imagePath('/logo/obofoundry-logo.png'),
+              src: imagePath('/logo/obofoundry-logo.webp'),
               alt: 'OBOfoundry logo',
             },
             link: 'http://www.obofoundry.org/ontology/ncbitaxon.html',

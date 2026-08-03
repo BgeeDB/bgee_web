@@ -10,13 +10,13 @@ rsync -av --del . bgee@proxybioinfo.unil.ch:/var/www/html/bgee.unil.ch/
 
 
 # rbgee (dev/test server)
-echo 'Set isDevOnly to true to switch to dev build + Update DEV_URL if different from http://rbgee.unil.ch'
+echo 'Update DEV_URL if different from http://rbgee.unil.ch'
 rm -Rf build && yarn dev
 cd build/
 rsync -av --del . bgee@rbioinfo.unil.ch:/var/www/html/bgee.unil.ch/
 
 # dbbgee (dev/test server)
-echo 'Set isDevOnly to true to switch to dev build + Update DEV_URL if different from http://dbbgee.unil.ch'
+echo 'Update DEV_URL if different from http://dbbgee.unil.ch'
 rm -Rf build && yarn dev
 cd build/
 rsync -av --del . bgee@dbbioinfo.unil.ch:/var/www/html/bgee.unil.ch/

@@ -46,15 +46,18 @@ Experiment metadata:
 
 ## Annotation Process
 
+Annotation Guidelines can be found on the Bgee [expression-annotations-documents](https://github.com/BgeeDB/expression-annotations-documents/wiki/Annotation-Guidelines) repository.
+
 ### Ontologies Used
 
 The following ontologies are used for the associated use cases listed below.
-| Ontology | OBO Prefix | Use Case | Last Import |
-|:--|:--|:--|:--|
-| [Uberon composite metazoan anatomy ontology] | UBERON, others | anatomical structure annotation | 2020-09-16 |
-| [NCBI organismal classification] | NCBITaxon | species annotation | 2020-12-14 |
-| [Composite developmental and life stage ontology] | UBERON, others | developmental stage annotation | 2021-03-01 |
-| [Cell Ontology] | CL | cell type annotation | 2020-09-16 |
+
+| Ontology                                          | OBO Prefix     | Use Case                        | Last Import |
+| :------------------------------------------------ | :------------- | :------------------------------ | :---------- |
+| [Uberon composite metazoan anatomy ontology]      | UBERON, others | anatomical structure annotation | 2020-09-16  |
+| [NCBI organismal classification]                  | NCBITaxon      | species annotation              | 2020-12-14  |
+| [Composite developmental and life stage ontology] | UBERON, others | developmental stage annotation  | 2021-03-01  |
+| [Cell Ontology]                                   | CL             | cell type annotation            | 2020-09-16  |
 
 [Uberon composite metazoan anatomy ontology]: http://www.obofoundry.org/ontology/uberon.html
 [NCBI organismal classification]: http://obofoundry.org/ontology/ncbitaxon.html
@@ -68,47 +71,49 @@ Bgee manually curates expression data using ontologies and controlled vocabulari
 ### Anatomical Entity
 
 Uberon, the multi-species anatomy ontology is used to annotate anatomical entities. When the experiment is done using cells it can be appropriate to annotate using the Cell Ontology. Additionally, there will be cases where the anatomical entity is a post-composition of an anatomical structure and a cell type. There are a few special cases to look out for, which are listed below.
-| Term | Uberon ID | Uberon Name |
-|:--|:--|:--|
-| missing organ, embryo stage | UBERON:0000922 | embryo |
-| missing organ, adult stage | UBERON:0007023 | adult organism |
-| missing organ, unknown stage | UBERON:0000465 | material anatomical entity |
-| muscle | UBERON:0002385 | muscle tissue |
-| skeletal muscle | UBERON:0001134 | skeletal muscle tissue |
-| human breast | UBERON:0005200 | thoracic mammary gland |
-| skin | UBERON:0000014 | zone of skin |
-| whole organism adult or whole body adult | UBERON:0007023 | adult organism |
-| Broca's area | UBERON:0001870 | frontal cortex |
-| hippocampus | UBERON:0001954 | Ammon's horn |
-| unfertilized egg | CL:0000025 | egg cell |
+
+| Term                                     | Uberon ID      | Uberon Name                |
+| :--------------------------------------- | :------------- | :------------------------- |
+| missing organ, embryo stage              | UBERON:0000922 | embryo                     |
+| missing organ, adult stage               | UBERON:0007023 | adult organism             |
+| missing organ, unknown stage             | UBERON:0000465 | material anatomical entity |
+| muscle                                   | UBERON:0002385 | muscle tissue              |
+| skeletal muscle                          | UBERON:0001134 | skeletal muscle tissue     |
+| human breast                             | UBERON:0005200 | thoracic mammary gland     |
+| skin                                     | UBERON:0000014 | zone of skin               |
+| whole organism adult or whole body adult | UBERON:0007023 | adult organism             |
+| Broca's area                             | UBERON:0001870 | frontal cortex             |
+| hippocampus                              | UBERON:0001954 | Ammon's horn               |
+| unfertilized egg                         | CL:0000025     | egg cell                   |
 
 ### Developmental Stage
 
 We use species-specific developmental stage ontologies when available for the species. When a species does not have a dedicated developmental stage ontology, we report the developmental stages directly by using the metastages of Uberon. Alternatively, we create species-specific developmental stage ontologies when none exist for a given species. For species-to-species comparisons, all developmental stage ontologies are mapped back to the metastages of Uberon.
 
 The following species-specific developmental stage ontologies are used in Bgee:
-| Species | Ontology |
-|:--|:--|
-| human | hsapdv.obo |
-| mouse | mmusdv.obo |
-| fly | fbdv.obo |
-| zebrafish | zfs.obo |
-| worm (c. elegans) | wbls.obo |
-| frog | xao.obo |
-| rat | rnordv.obo |
-| cow | btaudv.obo |
-| lizard | acardv.obo |
-| chicken | ggaldv.obo |
-| gorilla | ggordv.obo |
-| opossum | mdomdv.obo |
-| rhesus macaque | mmuldv.obo |
-| platypus | oanadv.obo |
-| bonobo | ppandv.obo |
-| orangutan | ppygdv.obo |
-| chimpanzee | ptrodv.obo |
-| pig | sscrdv.obo |
-| medaka | olatdv.obo |
-| platynereis | pdumdv.obo |
+
+| Species           | Ontology   |
+| :---------------- | :--------- |
+| human             | hsapdv.obo |
+| mouse             | mmusdv.obo |
+| fly               | fbdv.obo   |
+| zebrafish         | zfs.obo    |
+| worm (c. elegans) | wbls.obo   |
+| frog              | xao.obo    |
+| rat               | rnordv.obo |
+| cow               | btaudv.obo |
+| lizard            | acardv.obo |
+| chicken           | ggaldv.obo |
+| gorilla           | ggordv.obo |
+| opossum           | mdomdv.obo |
+| rhesus macaque    | mmuldv.obo |
+| platypus          | oanadv.obo |
+| bonobo            | ppandv.obo |
+| orangutan         | ppygdv.obo |
+| chimpanzee        | ptrodv.obo |
+| pig               | sscrdv.obo |
+| medaka            | olatdv.obo |
+| platynereis       | pdumdv.obo |
 
 ### Cell Type
 

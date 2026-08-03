@@ -31,11 +31,115 @@ const collaborations = [
   },
   {
     type: 'section',
+    title: 'EOSC Data Commons',
+    children: [
+      {
+        type: 'link_image',
+        src: imagePath('/collab/eosc-data-commons-logo.webp'),
+        path: 'https://www.eosc-data-commons.eu/',
+        alt: 'EOSC Data Commons',
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'link_external',
+            path: 'https://www.eosc-data-commons.eu/',
+            text: 'EOSC Data Commons',
+          },
+          {
+            type: 'text',
+            content:
+              ' contributes to establishing EOSC as the European Research Commons, a global trusted ecosystem that provides seamless access to high-quality interoperable research outputs and services, enabling European researchers to collaborate more easily, be more productive and achieve higher levels of excellence.',
+          },
+        ],
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'text',
+            content: 'The ',
+          },
+          {
+            type: 'link_internal',
+            path: '/analysis/top-anat',
+            text: 'TopAnat',
+          },
+          {
+            type: 'text',
+            content: ' tool will be integrated with ',
+          },
+          {
+            type: 'link_external',
+            path: 'https://www.eosc-data-commons.eu/use-case/gene-expression-enrichment-with-the-topanat-tool',
+            text: 'EOSC Data Commons',
+          },
+          {
+            type: 'text',
+            content: ' Services and Components.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'section',
+    title: 'Galaxy SWISS',
+    children: [
+      {
+        type: 'link_image',
+        src: imagePath('/collab/galaxy-swiss-logo.webp'),
+        path: 'https://usegalaxy.ch/',
+        alt: 'Galaxy SWISS',
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'link_external',
+            path: 'https://usegalaxy.ch/',
+            text: 'Galaxy SWISS',
+          },
+          {
+            type: 'text',
+            content:
+              ' empowers Swiss researchers with an accessible, transdisciplinary computational ecosystem built on ',
+          },
+          {
+            type: 'link_external',
+            path: 'https://usegalaxy.org/',
+            text: 'Galaxy',
+          },
+          {
+            type: 'text',
+            content: '.',
+          },
+        ],
+      },
+      {
+        type: 'rich_text',
+        content: [
+          {
+            type: 'text',
+            content: 'The Galaxy SWISS project is funded by ',
+          },
+          {
+            type: 'link_external',
+            path: 'https://www.swissuniversities.ch/',
+            text: 'swissuniversities',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'section',
     title: 'gget',
     children: [
       {
         type: 'link_image',
-        src: imagePath('/gget-logo.png'),
+        src: imagePath('/collab/gget-logo.webp'),
         path: 'https://github.com/pachterlab/gget',
         alt: 'gget',
       },
@@ -76,7 +180,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/oma-logo.png'),
+        src: imagePath('/collab/oma-logo.webp'),
         path: 'https://omabrowser.org/',
         alt: 'OMA',
       },
@@ -130,7 +234,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/Salmobase.png'),
+        src: imagePath('/collab/Salmobase.webp'),
         path: 'https://salmobase.org/',
         alt: 'Salmobase',
       },
@@ -175,7 +279,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/sc-fair-logo.png'),
+        src: imagePath('/collab/sc-fair-logo.webp'),
         path: 'https://sc-fair.org/',
         alt: 'scFAIR',
       },
@@ -238,7 +342,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/logo/sib-emblem.png'),
+        src: imagePath('/logo/sib-emblem.webp'),
         path: 'https://www.sib.swiss/use-of-ai-to-increase-the-impact-of-sib-resources',
         alt: 'SIB AI',
       },
@@ -303,7 +407,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/biosoda-logo.png'),
+        src: imagePath('/collab/biosoda-logo.webp'),
         path: 'https://www.zhaw.ch/en/research/research-database/project-detailview/projektid/1493/',
         alt: 'Bio-SODA',
       },
@@ -399,7 +503,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/INODE-Logo.png'),
+        src: imagePath('/collab/INODE-Logo.webp'),
         path: 'https://www.inode-project.eu/',
         alt: 'INODE',
         style: {
@@ -447,7 +551,7 @@ const collaborations = [
     children: [
       {
         type: 'link_image',
-        src: imagePath('/ONCOMX-logo.png'),
+        src: imagePath('/collab/ONCOMX-logo.webp'),
         path: 'https://www.oncomx.org/',
         alt: 'OncoMX',
       },

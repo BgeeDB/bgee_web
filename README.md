@@ -83,6 +83,12 @@ Upgrade dependencies to their latest available version in the `package.json` fil
 npm run upgrade
 ```
 
+Check libraries to update
+
+```sh
+npm outdated
+```
+
 > [!WARNING]
 >
 > `bulma` breaks when upgraded to v1+, the rest can be usually upgraded without problem. It has been excluded from the upgrade script.

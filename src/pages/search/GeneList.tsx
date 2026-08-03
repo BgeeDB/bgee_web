@@ -17,7 +17,7 @@ export function loader({ request }) {
   return { search: searchParams.get('search') };
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   return getMetadata({
     title: `${data.search ? `${data.search} - ` : ''}Gene search`,
     description: data.search ? `${data.search} gene search` : 'Search for a gene in Bgee',
@@ -187,10 +187,7 @@ const GeneList = () => {
         </GeneSearch>
       </div>
 
-      {/* TODO: keep results check? added to remove small bug when we do a search, click again on Gene Expression in top bar, and we get `No data`
-      It prevents the loading state from doing its job, but the response speed for the Gene search is fast enough it's almost instant */}
-      {/* {search && results && ( */}
-      {search && (
+      {search && results && (
         <div>
           {typeof count === 'number' && (
             <p className="has-text-centered my-5 has-text-weight-semibold">

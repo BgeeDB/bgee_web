@@ -7,7 +7,7 @@ The [Anatomical Homology tool](https://www.bgee.org/search/anatomical-homology) 
 - [How to use the Anatomical Homology tool](#how-to-use-the-anatomical-homology-tool)
 - [Description of Results](#description-of-results)
 
-![](../img/doc/anatomical-homology/anatomical-homology-header.png#tutoimgborder)
+![](../img/doc/anatomical-homology/anatomical-homology-header.webp#tutoimgborder)
 
 ## Quick start
 
@@ -17,7 +17,7 @@ In this example, we will retrieve homologous entities for the human lung in zebr
 2. Select your species of interest by clicking the corresponding checkbox. Here we will select _Homo sapiens_ for human and _Danio rerio_ for zebrafish.
 3. Click **Search** to run the anatomical homology tool.
 
-![](../img/doc/anatomical-homology/complete-form.png#tutoimgborder)
+![](../img/doc/anatomical-homology/complete-form.webp#tutoimgborder)
 
 After your request finishes loading, the results table will be displayed. It has three important columns:
 
@@ -27,7 +27,7 @@ After your request finishes loading, the results table will be displayed. It has
 
 Additionally, the top of the results table displays the least common ancestral clade of the species you selected. In this example, the least common ancestor is _Euteleostomi_.
 
-![](../img/doc/anatomical-homology/results-table.png#tutoimgborder)
+![](../img/doc/anatomical-homology/results-table.webp#tutoimgborder)
 
 You can filter the results table using the filter free-text box on the top left of the results table. You can also change the number of entries using the _Show N entries_ box on the top right of the results table.
 
@@ -50,7 +50,7 @@ Currently, the list of available species only includes species with expression d
 
 ## Description of Results
 
-![](../img/doc/anatomical-homology/full-results-table-numbered.png#tutoimgborder)
+![](../img/doc/anatomical-homology/full-results-table-numbered.webp#tutoimgborder)
 
 1. **Least common ancestor of provided species**: gives the clade to which species you selected belongs.
 2. **Anatomical entities**: the homologous anatomical entities with their common names and Uberon IDs. Clicking on an anatomical entity will bring you to the corresponding Uberon page, where you can learn more about the anatomical entity.

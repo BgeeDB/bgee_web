@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-import assets, { heroCounts } from '../assets';
+import assets from '../assets';
 import PATHS from '../paths/paths';
 import Bulma from '../components/Bulma';
 import config from '../config.json';
@@ -15,12 +15,19 @@ import { getMetadata } from '~/helpers/metadata';
 
 export async function loader() {
   try {
-    const res = await api.search.species.list();
-    return res.data;
+    // Run both calls in parallel for better performance
+    const [speciesRes, assayRes] = await Promise.all([api.search.species.list(), api.search.rawData.getAssayCount()]);
+
+    return {
+      species: speciesRes.data?.species ?? [],
+      assays: assayRes.resp?.data?.resultCount ?? {},
+    };
   } catch (error) {
-    console.warn('Error loading species list:', error);
-    // throw new Response(error.data.message || error.message || 'Failed to load data from API', { status: 404 });
-    return [];
+    console.warn('Error loading species list and/or assay counts:', error);
+    return {
+      species: [],
+      assays: {},
+    };
   }
 }
 
@@ -57,7 +64,7 @@ const HomeCard = (props) => {
 };
 
 export default function Home({ loaderData }) {
-  const { species: speciesList } = loaderData;
+  const { species: speciesList, assays: resultCount } = loaderData;
 
   React.useEffect(() => {
     // Add the class to the body element when the component mounts
@@ -94,36 +101,48 @@ export default function Home({ loaderData }) {
                 </Link>
               </div>
               <Bulma.Columns className="has-text-uppercase has-text-weight-bold is-size-6 has-text-white my-3 is-desktop hero-data-columns">
-                <Bulma.C size={3}>
-                  <div className="inner-hero-data-column">
-                    <span>
-                      comparable
-                      <br />
-                      species
-                    </span>
-                    <p className="is-size-2">{heroCounts.speciesCount}</p>
-                  </div>
-                </Bulma.C>
-                <Bulma.C size={4}>
-                  <div className="inner-hero-data-column">
-                    <span>
-                      bulk and single-cell
-                      <br />
-                      RNA-Seq libraries
-                    </span>
-                    <p className="is-size-2">{heroCounts.libraryCount}</p>
-                  </div>
-                </Bulma.C>
-                <Bulma.C size={4}>
-                  <div className="inner-hero-data-column">
-                    <span>
-                      unique annotated
-                      <br />
-                      conditions
-                    </span>
-                    <p className="is-size-2">{heroCounts.conditionCount}</p>
-                  </div>
-                </Bulma.C>
+                <Link to={PATHS.SEARCH.SPECIES} style={{ color: '#fff' }}>
+                  <Bulma.C size={3}>
+                    <div className="inner-hero-data-column">
+                      <span>
+                        comparable
+                        <br />
+                        species
+                      </span>
+                      <p className="is-size-2">{speciesList.length}</p>
+                    </div>
+                  </Bulma.C>
+                </Link>
+                <Link
+                  to={`${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=raw_data_annots&data_type=RNA_SEQ`}
+                  style={{ color: '#fff' }}
+                >
+                  <Bulma.C size={4}>
+                    <div className="inner-hero-data-column">
+                      <span>
+                        Bulk RNA-Seq
+                        <br />
+                        libraries
+                      </span>
+                      <p className="is-size-2">{resultCount?.RNA_SEQ?.assayCount}</p>
+                    </div>
+                  </Bulma.C>
+                </Link>
+                <Link
+                  to={`${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?pageType=raw_data_annots&data_type=SC_RNA_SEQ`}
+                  style={{ color: '#fff' }}
+                >
+                  <Bulma.C size={4}>
+                    <div className="inner-hero-data-column">
+                      <span>
+                        Single-cell cell
+                        <br />
+                        types &#119909; libraries
+                      </span>
+                      <p className="is-size-2">{resultCount?.SC_RNA_SEQ?.assayCount}</p>
+                    </div>
+                  </Bulma.C>
+                </Link>
               </Bulma.Columns>
             </Bulma.C>
 
@@ -212,9 +231,9 @@ export default function Home({ loaderData }) {
                   <Link to={PATHS.RESOURCES.R_PACKAGES} className="home-card-link">
                     R packages
                   </Link>
-                  <a href={PATHS.SEARCH.SPARQL} target="_blank" rel="noopener noreferrer" className="home-card-link">
-                    SPARQL endpoint
-                  </a>
+                  <Link to={PATHS.SEARCH.SPARQL} className="home-card-link">
+                    SPARQL editor
+                  </Link>
                 </div>
               </Bulma.Card.Body>
               <div className="home-card-footer">
@@ -247,11 +266,27 @@ export default function Home({ loaderData }) {
                 to="https://globalbiodata.org/scientific-activities/global-core-biodata-resources"
               >
                 <img
-                  src={imagePath(`/logo/GCBR-Logo.png`)}
+                  src={imagePath(`/logo/GCBR-Logo.webp`)}
                   alt="Global Core Biodata Resource Logo"
                   width="165"
                   height="70"
                 />
+              </LinkExternal>
+              <LinkExternal
+                className="ext-as-int-link"
+                to="https://elixir-europe.org/platforms/data/core-data-resources"
+              >
+                <img
+                  src={imagePath(`/logo/ELIXIR-core-data-resources-logo.webp`)}
+                  alt="ELIXIR Core Data Resources"
+                  width="96"
+                  height="70"
+                />
+              </LinkExternal>
+            </div>
+            <div className="resource-logos">
+              <LinkExternal className="ext-as-int-link" to="https://sc-fair.org/">
+                <img src={imagePath(`/logo/sc-fair-logo.webp`)} alt="scFAIR" width="62" height="70" />
               </LinkExternal>
               <LinkExternal className="ext-as-int-link" to="https://elixir-europe.org/platforms/interoperability/rirs">
                 <img
@@ -270,10 +305,47 @@ export default function Home({ loaderData }) {
               >
                 Global Core Biodata Resource
               </LinkExternal>
-              and an&nbsp;
+              , an&nbsp;
+              <LinkExternal
+                className="ext-as-int-link"
+                to="https://elixir-europe.org/platforms/data/core-data-resources"
+              >
+                ELIXIR Core Data Resource
+              </LinkExternal>
+              &nbsp;and an&nbsp;
               <LinkExternal className="ext-as-int-link" to="https://elixir-europe.org/platforms/interoperability/rirs">
                 ELIXIR Recommended Interoperability Resource
               </LinkExternal>
+              .
+            </div>
+            <div className="resource-links">
+              Bgee is part of the&nbsp;
+              <LinkExternal
+                className="ext-as-int-link"
+                to="https://elixir-europe.org/platforms/data/core-data-resources"
+              >
+                scFAIR
+              </LinkExternal>
+              &nbsp;initiative to standardize single-cell genomics data and promote findable, accessible, interoperable,
+              and reusable single-cell data.
+            </div>
+            <div className="resource-logos">
+              <LinkExternal
+                className="ext-as-int-link"
+                to="https://www.sib.swiss/activities/open-software-and-databases"
+              >
+                <img src={imagePath(`/logo/logo-sib-emblem-new.svg`)} alt="SIB's portfolio" width="70" height="42" />
+              </LinkExternal>
+              <div>
+                Bgee is part of&nbsp;
+                <LinkExternal
+                  className="ext-as-int-link"
+                  to="https://www.sib.swiss/activities/open-software-and-databases"
+                >
+                  SIB's portfolio
+                </LinkExternal>
+                of open databases and software tools
+              </div>
             </div>
           </Bulma.C>
           <Bulma.C size={6}>

@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 
+import axios from 'axios';
 import api from '../../../api';
 import { getGeneLabel } from '../../../helpers/gene';
 import { getIdAndNameLabel, getOptionsForFilter } from '../../../helpers/selects';
@@ -9,6 +10,7 @@ import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
 import { URL_ROOT } from '~/helpers/constants';
+import { ensureDrilldownAndTermProps } from './buildDrilldownFromCalls';
 // DEBUG: remove in PROD
 // import maxExpScoreCsv from '../../../assets/maxExpScore.csv'
 
@@ -50,9 +52,9 @@ export const TAB_PAGE = [
 
 export const TAB_PAGE_EXPR_CALL = {
   id: EXPR_CALLS,
-  label: 'Gene expression matrix',
+  label: 'Expression graph',
   searchLabel: 'Search for expression calls',
-  resultLabel: 'Expression matrix',
+  resultLabel: 'Expression graph',
 };
 
 // building dataTypes depending on config.json
@@ -199,173 +201,55 @@ const useLogic = (isExprCalls) => {
 
   // results
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingChildren, setIsLoadingChildren] = useState(false);
   const [show, setShow] = useState(true);
   const [searchResult, setSearchResult] = useState(null);
+  const searchResultRef = useRef(searchResult);
+  searchResultRef.current = searchResult;
   // const [maxExpScore, setMaxExpScore] = useState({});
   const maxExpScore = [];
 
   // filters
   const [filters, setFilters] = useState({});
 
-  // HD: howto keep state about anatomical hierarchy?
-  const [anatomicalTerms, setAnatomicalTerms] = useState([]);
-  const [anatomicalTermsProps, setAnatomicalTermsProps] = useState({});
-
-  // flatten anatomical terms' props
-  useEffect(() => {
-    const newAnatTermsProps = {};
-
-    function traverse(term) {
-      newAnatTermsProps[term.id] = {
-        label: term.label,
-        isTopLevelTerm: term.isTopLevelTerm,
-        isExpanded: term.isExpanded,
-        isPopulated: term.isExpanded,
-        hasBeenQueried: term.hasBeenQueried,
-      };
-      term.children.forEach(traverse);
-    }
-
-    anatomicalTerms.forEach((item) => traverse(item));
-    setAnatomicalTermsProps(newAnatTermsProps);
-  }, [anatomicalTerms]);
-
-  // prepare term hierarchy from gene expression call data
-  const prepTermHierarchy = (expressionCalls) => {
-    const termProps = {
-      'UBERON:0001062-GO:0005575': {
-        label: 'anatomical entity',
-        anatEntityId: 'UBERON:0001062',
-        anatEntityLabel: 'anatomical entity',
-        cellTypeId: 'GO:0005575',
-        cellTypeLabel: 'cellular component',
-        isTopLevelTerm: true,
-        isExpanded: true,
-        isPopulated: false,
-        hasBeenQueried: true,
-        isSingleCell: false,
-      },
-    };
-    const parents = { [ROOT_TERM_ANAT_ENTITY]: [] };
-    const children = { [ROOT_TERM_ANAT_ENTITY]: [] };
-    // console.log(`[useLogic.triggerInitialSearch] prepTermHierarchy()`);
-    expressionCalls.forEach((exprCall) => {
-      const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
-      const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
-      const termIsSingleCell = cellTypeId !== 'GO:0005575';
-      const termId = `${anatEntityId}-${cellTypeId}`;
-      const termLabel = termIsSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
-      if (!(termId in termProps)) {
-        termProps[termId] = {
-          label: termLabel,
-          anatEntityId,
-          anatEntityLabel: anatEntityName,
-          cellTypeId,
-          cellTypeLabel: cellTypeName,
-          isTopLevelTerm: true,
-          isExpanded: true,
-          isPopulated: false,
-          hasBeenQueried: true,
-          isSingleCell: termIsSingleCell,
-        };
-
-        if (termId !== ROOT_TERM_ANAT_ENTITY) {
-          parents[termId] = [ROOT_TERM_ANAT_ENTITY];
-          children[ROOT_TERM_ANAT_ENTITY].push(termId);
+  const getSexesAndDevStageForSpecies = useCallback(
+    (speciesId = selectedSpecies.value) => {
+      api.search.species.speciesDevelopmentSexe(speciesId).then((resp) => {
+        if (resp.code === 200) {
+          setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
+          setDevStages(resp.data?.requestDetails?.requestedSpeciesDevStageOntology);
+        } else {
+          setSpeciesSexes([]);
         }
-      }
-    });
+      });
+    },
+    [selectedSpecies.value]
+  );
 
-    // identify root terms
-    const roots = Object.keys(parents).filter((id) => parents[id].length === 0);
-
-    function createNestedStructure(termId, depth = 0) {
-      // console.log(`[createNestedStructure] ${termId} - ${depth}`);
-      // Get the term's properties
-      const term = termProps[termId];
-      if (!term) {
-        console.error(`[useLogic.prepTermHierarchy] term not found: ${termId}`);
-      }
-      // Initialize the nested structure
-      const nestedTerm = {
-        id: termId,
-        label: term.isSingleCell ? `${term.label} : ${term.cellTypeLabel}` : term.label,
-        anatEntityId: term.anatEntityId,
-        anatEntityLabel: term.anatEntityLabel,
-        cellTypeId: term.cellTypeId,
-        cellTypeLabel: term.cellTypeLabel,
-        depth,
-        isTopLevelTerm: true,
-        isExpanded: depth === 0,
-        isPopulated: true,
-        hasBeenQueried: depth === 0,
-        isSingleCell: term.isSingleCell,
-        children: [],
-      };
-
-      // If the term has children, recursively create their nested structure
-      if (children[termId]) {
-        nestedTerm.children = children[termId].map((childId) => createNestedStructure(childId, depth + 1));
-      }
-
-      return nestedTerm;
+  const resetForm = useCallback((isSpeciesChange = false, preserveGenes = false) => {
+    // console.log(`[useLogic.resetForm] resetForm called with:`, {isSpeciesChange, preserveGenes});
+    if (!preserveGenes) {
+      // console.log(`[useLogic.resetForm] Clearing genes in resetForm`);
+      setSelectedGene([]);
     }
-
-    // Create the nested structure for each root term
-    const anatTerms = roots.map((root) => createNestedStructure(root));
-
-    return { anatTerms, termProps };
-  };
-
-  // add lower level ontology terms to existing hierarchy based on exression call data
-  const addLowLevelTerms = (parentId, nestedStructure, terms, expressionCalls) => {
-    // Make a copy of termProps to avoid reassigning the parameter directly
-    const newTerms = {};
-
-    // Helper function to recursively find the term by id and add children
-    const addChildren = (term) => {
-      // Check if the current term's id matches the parentId
-      if (term.id === parentId) {
-        // Loop through each expressionCall and add children to the term
-        expressionCalls.forEach((call) => {
-          const { anatEntity, cellType } = call.condition;
-          if (!(anatEntity.id in terms) && !(anatEntity.id in newTerms)) {
-            const newChild = {
-              id: `${anatEntity.id}-${cellType.id}`,
-              label: anatEntity.name,
-              anatEntityId: anatEntity.id,
-              anatEntityLabel: anatEntity.name,
-              cellTypeId: cellType.id,
-              cellTypeLabel: cellType.name,
-              depth: term.depth + 1,
-              isTopLevelTerm: false,
-              children: [],
-            };
-            term.children.push(newChild);
-            // Add the new term to termProps
-            newTerms[anatEntity.id] = {
-              label: anatEntity.name,
-              isTopLevel: false,
-            };
-          }
-        });
-      } else {
-        // If not the matching term, recurse into its children
-        term.children.forEach((child) => addChildren(child));
-      }
-    };
-
-    // Start the recursive search from each root term in the nested structure
-    nestedStructure.forEach((root) => addChildren(root, root.depth));
-
-    // Return the updated termProps
-    return newTerms;
-  };
+    setSelectedCellTypes([]);
+    setSelectedStrain([]);
+    setSelectedTissue([]);
+    setSelectedSexes([]);
+    setSelectedDevStages([]);
+    setHasCellTypeSubStructure(true);
+    setHasTissueSubStructure(true);
+    setDevStageSubStructure(true);
+    if (!isSpeciesChange) {
+      setSelectedSpecies(EMPTY_SPECIES_VALUE);
+      setSelectedExpOrAssay([]);
+    }
+  }, []);
 
   const updateSelectedSpecies = (newSpecies, preserveGenes = false) => {
     setSelectedSpecies(newSpecies);
     if (newSpecies.value !== EMPTY_SPECIES_VALUE.value) {
-      getSexesAndDevStageForSpecies();
+      getSexesAndDevStageForSpecies(newSpecies.value);
       resetForm(true, preserveGenes); // Pass preserveGenes flag to resetForm
     }
   };
@@ -624,22 +508,14 @@ const useLogic = (isExprCalls) => {
         // console.log(JSON.stringify(resp1));
         // console.log(JSON.stringify(resp2));
 
-        const { anatTerms, termProps } = prepTermHierarchy(resp1.data.expressionData.expressionCalls);
-        // console.log(`[useLogic.triggerInitialSearch] anatTerms:\n${JSON.stringify(anatTerms)}`);
-        setAnatomicalTerms(anatTerms);
-        // console.log(`[useLogic.triggerInitialSearch] termProps:\n${JSON.stringify(termProps)}`);
-        const newTermProps = addLowLevelTerms(
-          ROOT_TERM_ANAT_ENTITY,
-          anatTerms,
-          termProps,
-          resp2?.data?.expressionData?.expressionCalls || []
-        );
-        Object.assign(termProps, newTermProps);
-        setAnatomicalTermsProps(termProps);
-
         const { data } = resp1;
+        // Mark orphan terms from complementary search and combine with initial calls
         if (resp2?.code === 200) {
-          data.expressionData.expressionCalls.push(...resp2.data.expressionData.expressionCalls);
+          const orphanCalls = resp2.data.expressionData.expressionCalls.map((call) => ({
+            ...call,
+            isOrphan: true,
+          }));
+          data.expressionData.expressionCalls.push(...orphanCalls);
         }
 
         // After First search we update the filters via detailed_rp
@@ -713,12 +589,16 @@ const useLogic = (isExprCalls) => {
         }
 
         setIsLoading(false);
-        setSearchResult(data);
+        setSearchResult(ensureDrilldownAndTermProps(data));
       }
     } catch (error) {
-      console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
-      navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
-      setIsLoading(false);
+      if (axios.isCancel(error)) {
+        setIsLoading(false);
+      } else {
+        console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
+        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
+        setIsLoading(false);
+      }
     } finally {
       // console.log(`[useLogic.triggerInitialSearch] finally.`)
       setIsFirstSearch(false);
@@ -859,8 +739,9 @@ const useLogic = (isExprCalls) => {
 
         // Finally, we set the values we are interested in
         setIsLoading(false);
-        // TODO: CONTINUE - how to handle initial view?
-        setSearchResult(resp?.data);
+        if (resp?.code === 200 && resp.data) {
+          setSearchResult(ensureDrilldownAndTermProps(resp.data));
+        }
 
         // TODO: add result count to previous one?
         // setLocalCount(
@@ -869,8 +750,11 @@ const useLogic = (isExprCalls) => {
         //     : resp?.data?.resultCount?.[dataType]
         // );
       })
-      .catch(() => {
-        // We remove all the parameters that we may have sent
+      .catch((error) => {
+        if (axios.isCancel(error)) {
+          setIsLoading(false);
+          return;
+        }
         navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
         setIsLoading(false);
       })
@@ -882,178 +766,171 @@ const useLogic = (isExprCalls) => {
   };
 
   // HD: perform API data request for subordinate terms
+  // Returns only the expression calls, letting GeneExpressionHeatmap handle hierarchy management
   const triggerSearchChildren = async (parentId, selectedTissueId) => {
-    // DEBUG: remove console log in prod
-    // console.log(`[useLogic] triggerSearchChildren:\n${parentId}`);
-
     const params = getSearchParams();
 
     // Set parent anatomical term as selected tissue
     params.selectedTissue = [selectedTissueId];
-    // Fix other condition params to top-level terms (overrides form fields!)
-    // params.selectedCellTypes = ['SUMMARY']; // top-level terms
+    // Fix other condition params to top-level terms
     if (params.selectedCellTypes?.length === 0) {
       params.selectedCellTypes = ['GO:0005575']; // "cellular_component"
     }
-    // params.selectedDevStages = ['UBERON:0000104']; // "life cycle"
-    // params.selectedSexes = ['any'];
-    // params.selectedStrain = ['wild-type'];
-    // params.hasCellTypeSubStructure = 0;
     params.hasTissueSubStructure = 1; // we want children of parent term!
-    // params.hasDevStageSubStructure = 0;
     params.conditionalParam2 = ['anat_entity']; // HD: restrict to anatomical terms
+    // Child fetch must use explicit anat/cell params — never merge initSearch (hash) while
+    // isFirstSearch is true, or SUMMARY from the top-level query is sent and the API returns 400.
+    params.isFirstSearch = false;
     // HD: discard top-level terms from search results
-    // NOTE: use only when we want to get children of "multicellular organism"
     if (parentId === 'UBERON:0000468-GO:0005575') {
       params.discardAnatEntityAndChildrenId = 'SUMMARY';
     }
 
-    setIsLoading(true);
+    setIsLoadingChildren(true);
     // DEBUG: remove console log in prod
     // console.log(`[useLogic] triggerSearchChildren - triggered!`);
-    return (
-      api.search.geneExpressionMatrix
-        .search(params, false)
-        .then(({ resp, paramsURLCalled }) => {
-          // DEBUG: remove in prod
-          // console.log(`[useLogic] triggerSearchChildren - response:\n${JSON.stringify(resp)}`);
-          if (resp.code === 200) {
-            // DEBUG: remove console log in prod
-            // console.log(`[useLogic] triggerSearchChildren - resp.data:\n${JSON.stringify(resp.data)}`);
-            // console.log(`[useLogic] triggerSearchChildren - params:\n${JSON.stringify(params)}`)
-
-            // TODO: make sure, URL reflects current query state
-            // "Mirroring" management in URL's parameter (with & without hash)
-            const searchParams = new URLSearchParams(paramsURLCalled);
-            // If there is a hash we put it in the URL
-            // And as all next data are "coded" in the Hash...
-            // We can clear the URL from those (aka storableParams)
-            const newHash = resp?.requestParameters?.data;
-            if (newHash) {
-              // We delete the potential old hash
-              searchParams.delete('data');
-
-              resp?.requestParameters?.storableParameters?.forEach((key) => {
-                if (key !== 'data_type') {
-                  searchParams.delete(key);
-                }
-              });
-
-              // Adding Hash (in "data" key)
-              searchParams.append('data', newHash);
-            }
-
-            // We can always clean those "tech" parameters from the URL
-            searchParams.delete('display_type');
-            searchParams.delete('page');
-            searchParams.delete('action');
-            searchParams.delete('get_results');
-            searchParams.delete('get_column_definition');
-            searchParams.delete('get_filters');
-            searchParams.delete('display_rp');
-            searchParams.delete('detailed_rp');
-            searchParams.delete('offset');
-            searchParams.delete('get_result_count');
-            searchParams.delete('filters_for_all');
-
-            // The following code clean the url of any default value
-            if (searchParams.get('pageType') === 'experiments') {
-              searchParams.delete('pageType');
-            }
-            if (searchParams.get('sex') === 'all') {
-              searchParams.delete('sex');
-            }
-            if (searchParams.get('cell_type_descendant') === 'true') {
-              searchParams.delete('cell_type_descendant');
-            }
-            if (searchParams.get('stage_descendant') === 'true') {
-              searchParams.delete('stage_descendant');
-            }
-            if (searchParams.get('anat_entity_descendant') === 'true') {
-              searchParams.delete('anat_entity_descendant');
-            }
-          }
-
-          // update anatomical terms
-          const newChildTerms = new Set();
-          resp?.data.expressionData.expressionCalls.forEach((exprCall) => {
-            const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
-            const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
-            const isSingleCell = cellTypeId !== 'GO:0005575';
-            // if (!(anatEntityId === selectedTissueId && cellTypeId === 'GO:0005575')) {
-            if (!(anatEntityId === selectedTissueId) || isSingleCell) {
-              newChildTerms.add(
-                JSON.stringify({
-                  id: `${parentId}--${anatEntityId}-${cellTypeId}`,
-                  // label: cellTypeId !== '' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
-                  label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
-                  anatEntityId,
-                  anatEntityLabel: anatEntityName,
-                  cellTypeId,
-                  cellTypeLabel: cellTypeName,
-                  isTopLevelTerm: false,
-                  isExpanded: false,
-                  isPopulated: false,
-                  hasBeenQueried: false,
-                  isSingleCell,
-                })
-              );
-            }
-          });
+    return api.search.geneExpressionMatrix
+      .search(params, false, true)
+      .then(({ resp, paramsURLCalled }) => {
+        // DEBUG: remove in prod
+        // console.log(`[useLogic] triggerSearchChildren - response:\n${JSON.stringify(resp)}`);
+        if (resp.code === 200) {
           // DEBUG: remove console log in prod
-          // console.log(`[useLogic] triggerSearchChildren newChildTerms:\n${JSON.stringify([...newChildTerms])}`);
-          function addChildren(hierarchy, termId, children) {
-            // Helper function to recursively traverse the array
-            function traverse(node) {
-              if (!node || !Array.isArray(node)) return []; // break condition
+          // console.log(`[useLogic] triggerSearchChildren - resp.data:\n${JSON.stringify(resp.data)}`);
+          // console.log(`[useLogic] triggerSearchChildren - params:\n${JSON.stringify(params)}`)
 
-              // Add property to each element in the current level
-              return node.map((item) => {
-                const newItem = { ...item };
-                if (item.id === termId) {
-                  // add children
-                  // console.log(`[Heatmap useLogic] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
-                  children.forEach((childStr) => {
-                    const child = JSON.parse(childStr);
-                    if (child.id !== newItem.id)
-                      newItem.children.push({
-                        id: child.id,
-                        label: child.label,
-                        anatEntityId: child.anatEntityId,
-                        anatEntityLabel: child.anatEntityLabel,
-                        cellTypeId: child.cellTypeId,
-                        cellTypeLabel: child.cellTypeLabel,
-                        depth: newItem.depth + 1,
-                        isTopLevelTerm: false,
-                        isExpanded: false,
-                        isPopulated: false,
-                        hasBeenQueried: false,
-                        isSingleCell: child.isSingleCell,
-                        children: [],
-                      });
-                  });
-                  newItem.isExpanded = true;
-                  newItem.hasBeenQueried = true;
-                }
-                newItem.children = traverse(newItem.children); // Recursively traverse children
-                return newItem;
-              });
-            }
-            // Start traversal from the root
-            return traverse(hierarchy);
+          // TODO: make sure, URL reflects current query state
+          // "Mirroring" management in URL's parameter (with & without hash)
+          const searchParams = new URLSearchParams(paramsURLCalled);
+          // If there is a hash we put it in the URL
+          // And as all next data are "coded" in the Hash...
+          // We can clear the URL from those (aka storableParams)
+          const newHash = resp?.requestParameters?.data;
+          if (newHash) {
+            // We delete the potential old hash
+            searchParams.delete('data');
+
+            resp?.requestParameters?.storableParameters?.forEach((key) => {
+              if (key !== 'data_type') {
+                searchParams.delete(key);
+              }
+            });
+
+            // Adding Hash (in "data" key)
+            searchParams.append('data', newHash);
           }
+
+          // We can always clean those "tech" parameters from the URL
+          searchParams.delete('display_type');
+          searchParams.delete('page');
+          searchParams.delete('action');
+          searchParams.delete('get_results');
+          searchParams.delete('get_column_definition');
+          searchParams.delete('get_filters');
+          searchParams.delete('display_rp');
+          searchParams.delete('detailed_rp');
+          searchParams.delete('offset');
+          searchParams.delete('get_result_count');
+          searchParams.delete('filters_for_all');
+
+          // The following code clean the url of any default value
+          if (searchParams.get('pageType') === 'experiments') {
+            searchParams.delete('pageType');
+          }
+          if (searchParams.get('sex') === 'all') {
+            searchParams.delete('sex');
+          }
+          if (searchParams.get('cell_type_descendant') === 'true') {
+            searchParams.delete('cell_type_descendant');
+          }
+          if (searchParams.get('stage_descendant') === 'true') {
+            searchParams.delete('stage_descendant');
+          }
+          if (searchParams.get('anat_entity_descendant') === 'true') {
+            searchParams.delete('anat_entity_descendant');
+          }
+        }
+
+        // update anatomical terms
+        const newChildTerms = new Set();
+        resp?.data?.expressionData?.expressionCalls?.forEach((exprCall) => {
+          const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
+          const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
+          const isSingleCell = cellTypeId !== 'GO:0005575';
+          // if (!(anatEntityId === selectedTissueId && cellTypeId === 'GO:0005575')) {
+          if (!(anatEntityId === selectedTissueId) || isSingleCell) {
+            newChildTerms.add(
+              JSON.stringify({
+                id: `${anatEntityId}-${cellTypeId}`,
+                // label: cellTypeId !== '' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
+                label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
+                anatEntityId,
+                anatEntityLabel: anatEntityName,
+                cellTypeId,
+                cellTypeLabel: cellTypeName,
+                isTopLevelTerm: false,
+                isExpanded: false,
+                isPopulated: false,
+                hasBeenQueried: false,
+                isSingleCell,
+              })
+            );
+          }
+        });
+        // DEBUG: remove console log in prod
+        // console.log(`[useLogic] triggerSearchChildren newChildTerms:\n${JSON.stringify([...newChildTerms])}`);
+        function addChildren(hierarchy, termId, children) {
+          // Helper function to recursively traverse the array
+          function traverse(node) {
+            if (!node || !Array.isArray(node)) return []; // break condition
+
+            // Add property to each element in the current level
+            return node.map((item) => {
+              const newItem = { ...item, children: [...(item.children || [])] };
+              if (item.id === termId) {
+                // add children
+                // console.log(`[Heatmap useLogic] adding children for:\n${termId} -> ${JSON.stringify([...children])}`);
+                children.forEach((childStr) => {
+                  const child = JSON.parse(childStr);
+                  if (child.id !== newItem.id)
+                    newItem.children.push({
+                      id: child.id,
+                      label: child.label,
+                      anatEntityId: child.anatEntityId,
+                      anatEntityLabel: child.anatEntityLabel,
+                      cellTypeId: child.cellTypeId,
+                      cellTypeLabel: child.cellTypeLabel,
+                      depth: newItem.depth + 1,
+                      isTopLevelTerm: false,
+                      isExpanded: false,
+                      isPopulated: false,
+                      hasBeenQueried: false,
+                      isSingleCell: child.isSingleCell,
+                      children: [],
+                    });
+                });
+                newItem.isExpanded = true;
+                newItem.hasBeenQueried = true;
+              }
+              newItem.children = traverse(newItem.children); // Recursively traverse children
+              return newItem;
+            });
+          }
+          // Start traversal from the root
+          return traverse(hierarchy);
+        }
+        // add additional data to previous ones (drilldown / termProps + expression calls)
+        setSearchResult((prevResult) => {
+          if (!prevResult?.expressionData?.expressionCalls) return prevResult;
+          const newCalls = resp?.data?.expressionData?.expressionCalls || [];
+          let nextDrilldown = prevResult.expressionData.drilldown ?? [];
+          const nextTermProps = { ...(prevResult.expressionData.termProps ?? {}) };
           if (newChildTerms.size > 0) {
-            const newAnatTerms = addChildren(anatomicalTerms, parentId, [...newChildTerms]);
-            // DEBUG: remove console log in prod
-            // console.log(`[useLogic] triggerSearchChildren anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
-            // console.log(`[useLogic] triggerSearchChildren newAnatTerms:\n${JSON.stringify(newAnatTerms)}`);
-            // console.log(`[useLogic] CALL setAnatomicalTerms`);
-            setAnatomicalTerms(newAnatTerms);
-            // add term props for new terms
-            const newAnatTermsProps = { ...anatomicalTermsProps };
-            newChildTerms.forEach((child) => {
-              if (!(child.id in newAnatTermsProps)) {
-                newAnatTermsProps[child.id] = {
+            nextDrilldown = addChildren(nextDrilldown, parentId, [...newChildTerms]);
+            newChildTerms.forEach((childStr) => {
+              const child = JSON.parse(childStr);
+              if (!(child.id in nextTermProps)) {
+                nextTermProps[child.id] = {
                   isTopLevel: child.isTopLevelTerm,
                   isExpanded: child.isExpanded,
                   isPopulated: child.isPopulated,
@@ -1062,48 +939,32 @@ const useLogic = (isExprCalls) => {
                 };
               }
             });
-            setAnatomicalTermsProps(newAnatTermsProps);
           }
+          return {
+            ...prevResult,
+            expressionData: {
+              ...prevResult.expressionData,
+              drilldown: nextDrilldown,
+              termProps: nextTermProps,
+              expressionCalls: [...prevResult.expressionData.expressionCalls, ...newCalls],
+            },
+          };
+        });
 
-          // add additional data to previous ones
-          const exprData = searchResult;
-          if (resp) {
-            // Prefix anatEntity.id with termId for each expression call
-            resp.data.expressionData.expressionCalls.forEach((exprCall) => {
-              exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
-            });
-            // add new expression calls to previous ones
-            exprData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
-          }
-          setSearchResult(exprData);
-
-          // Finally, we set the values we are interested in
-          setIsLoading(false);
-        })
-        /* .catch(() => {
-        // DEBUG: remove console log in prod
-        console.log(`[useLogic] triggerSearchChildren - Whoops! Something went wrong...`);
-        // We remove all the parameters that we may have sent
-        navigate(`${URL_ROOT}${loc.pathname}`, {replace: true});
+        // Finally, we set the values we are interested in
         setIsLoading(false);
-      }) */
-        .finally(() => {
-          // The next searches will not be considered as the first
-          // --> Filters will now be used for the next requests
-          setIsFirstSearch(false);
-        })
-    );
-  };
-
-  const getSexesAndDevStageForSpecies = () => {
-    api.search.species.speciesDevelopmentSexe(selectedSpecies.value).then((resp) => {
-      if (resp.code === 200) {
-        setSpeciesSexes(resp.data?.requestDetails?.requestedSpeciesSexes);
-        setDevStages(resp.data?.requestDetails?.requestedSpeciesDevStageOntology);
-      } else {
-        setSpeciesSexes([]);
-      }
-    });
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          // keep behavior consistent: ignore non-cancel errors here
+        }
+      })
+      .finally(() => {
+        setIsLoadingChildren(false);
+        // The next searches will not be considered as the first
+        // --> Filters will now be used for the next requests
+        setIsFirstSearch(false);
+      });
   };
 
   const AutoCompleteByType = (type, mappingFn) =>
@@ -1113,8 +974,8 @@ const useLogic = (isExprCalls) => {
           return api.search.genes.AutoCompleteByType(type, query, selectedSpecies.value).then((resp) => {
             if (resp.code === 200) {
               const results = resp.data.result.searchMatches || resp.data.result.geneMatches;
-              let list = [];
-              list = results.map(mappingFn);
+              // let list = [];
+              const list = results.map(mappingFn);
               return list;
             }
             return [];
@@ -1152,12 +1013,58 @@ const useLogic = (isExprCalls) => {
   const setSelectedSpeciesFromUrl = (species) => {
     setSelectedSpecies(species);
     if (species.value !== EMPTY_SPECIES_VALUE.value) {
-      getSexesAndDevStageForSpecies();
+      getSexesAndDevStageForSpecies(species.value);
       resetForm(true, true); // Always preserve genes during URL init
     }
   };
 
+  const processGeneList = useCallback(
+    async (geneListParam) => {
+      if (!geneListParam) return;
+
+      setIsProcessingGeneList(true);
+      const geneIds = geneListParam.split(/[\r\n]+/);
+
+      try {
+        // Get search results for all genes
+        const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
+
+        // Process results
+        const validResults = searchResults.filter(
+          (result) => result.code === 200 && result.data.result.totalMatchCount === 1
+        );
+
+        // Set species
+        const firstSpecies = validResults[0].data.result.geneMatches[0].gene.species;
+        const speciesValue = {
+          label: getSpeciesLabel(firstSpecies),
+          value: firstSpecies.id,
+        };
+
+        // Set genes
+        const genes = validResults.map((result) => {
+          const { gene } = result.data.result.geneMatches[0];
+          return {
+            label: getGeneLabel(gene),
+            value: gene.geneId,
+          };
+        });
+
+        // Update state with species and genes
+        setIsInitializingFromUrl(true);
+        setSelectedSpeciesFromUrl(speciesValue);
+        setSelectedGene(genes);
+      } catch (error) {
+        console.error('Error processing gene list:', error);
+      } finally {
+        setIsProcessingGeneList(false);
+      }
+    },
+    [getSpeciesLabel, setSelectedSpeciesFromUrl]
+  );
+
   const initFromUrlParams = async () => {
+    let shouldResetInitializationFlag = true;
     const params = {
       hash: initHash,
       isFirstSearch: true,
@@ -1179,10 +1086,13 @@ const useLogic = (isExprCalls) => {
           // Join array items with newlines and encode for URL
           const encodedGeneList = simpleParams.gene_list.join('%0A');
           // Redirect to same page with gene_list parameter
-          history.replace({
-            pathname: loc.pathname,
-            search: `?gene_list=${encodedGeneList}`,
-          });
+          navigate(
+            {
+              pathname: loc.pathname,
+              search: `?gene_list=${encodedGeneList}`,
+            },
+            { replace: true, preventScrollReset: true }
+          );
           return; // Exit the entire function
         }
 
@@ -1238,26 +1148,30 @@ const useLogic = (isExprCalls) => {
                 value: gene.geneId,
               }))
             );
+            // Keep the flag set so the follow-up effect can trigger the initial search.
+            shouldResetInitializationFlag = false;
           }
         }
       }
     } catch (error) {
       console.error('[initFromUrlParams] Error:', error);
     } finally {
-      // setIsInitializingFromUrl(false);
+      if (shouldResetInitializationFlag) {
+        setIsInitializingFromUrl(false);
+      }
     }
   };
 
   // Add useEffect to trigger search when initialization is complete
   useEffect(() => {
-    console.log(
-      '[useEffect] Triggering search from URL params',
-      isFirstSearch,
-      isInitializingFromUrl,
-      selectedGene,
-      selectedSpecies,
-      EMPTY_SPECIES_VALUE
-    );
+    // console.log(
+    //   '[useEffect] Triggering search from URL params',
+    //   isFirstSearch,
+    //   isInitializingFromUrl,
+    //   selectedGene,
+    //   selectedSpecies,
+    //   EMPTY_SPECIES_VALUE
+    // );
     if (
       isFirstSearch &&
       isInitializingFromUrl &&
@@ -1272,7 +1186,7 @@ const useLogic = (isExprCalls) => {
 
   // URL change handler
   useEffect(() => {
-    console.log(`[useLogic.js] loc.search CHANGED:`, loc.search);
+    //  console.log(`[useLogic.js] loc.search CHANGED:`, loc.search);
 
     const searchParams = new URLSearchParams(loc.search);
     const geneList = searchParams.get('gene_list');
@@ -1282,34 +1196,18 @@ const useLogic = (isExprCalls) => {
       console.log(`[useLogic.js] reset form...`);
       resetForm(false, true);
     } else if (loc.search?.length > 0 && !isInitializingFromUrl && !isProcessingGeneList) {
-      console.log(`[useLogic.js] init from url params...`);
+      // console.log(`[useLogic.js] init from url params...`);
       initFromUrlParams();
     }
   }, [loc.search]);
 
-  const resetForm = (isSpeciesChange = false, preserveGenes = false) => {
-    // console.log(`[useLogic.resetForm] resetForm called with:`, {isSpeciesChange, preserveGenes});
-    if (!preserveGenes) {
-      // console.log(`[useLogic.resetForm] Clearing genes in resetForm`);
-      setSelectedGene([]);
-    }
-    setSelectedCellTypes([]);
-    setSelectedStrain([]);
-    setSelectedTissue([]);
-    setSelectedSexes([]);
-    setSelectedDevStages([]);
-    setHasCellTypeSubStructure(true);
-    setHasTissueSubStructure(true);
-    setDevStageSubStructure(true);
-    if (!isSpeciesChange) {
-      setSelectedSpecies(EMPTY_SPECIES_VALUE);
-      setSelectedExpOrAssay([]);
-    }
-  };
-
   // Expand or collapse a term
   const onToggleExpandCollapse = (term) => {
     // console.log(`[useLogic] onToggleExpandCollapse:\n${JSON.stringify(term)}`);
+    const prev = searchResultRef.current;
+    if (!prev?.expressionData) return;
+    const anatomicalTerms = prev.expressionData.drilldown ?? [];
+    const anatomicalTermsProps = prev.expressionData.termProps ?? {};
 
     function updateExpandedStateHierarchically(terms) {
       const newTermProps = { ...anatomicalTermsProps };
@@ -1350,61 +1248,23 @@ const useLogic = (isExprCalls) => {
 
     const { newDrilldown, newTermProps } = updateExpandedStateHierarchically(anatomicalTerms);
 
-    // Update anatomical terms state
-    // console.log(`[useLogic] CALL setAnatomicalTermsProps...`);
-    setAnatomicalTermsProps(newTermProps);
-    // console.log(`[useLogic] CALL setAnatomicalTerms...`);
-    setAnatomicalTerms(newDrilldown);
+    setSearchResult((latest) => {
+      if (!latest?.expressionData) return latest;
+      return {
+        ...latest,
+        expressionData: {
+          ...latest.expressionData,
+          drilldown: newDrilldown,
+          termProps: newTermProps,
+        },
+      };
+    });
 
     // console.log(`[useLogic] DONE onToggleExpandCollapse.`);
   };
 
-  // Add function to process gene list
-  const processGeneList = async (geneListParam) => {
-    if (!geneListParam) return;
-
-    setIsProcessingGeneList(true);
-    const geneIds = geneListParam.split(/[\r\n]+/);
-
-    try {
-      // Get search results for all genes
-      const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
-
-      // Process results
-      const validResults = searchResults.filter(
-        (result) => result.code === 200 && result.data.result.totalMatchCount === 1
-      );
-
-      // Set species
-      const speciesValue = {
-        label: getSpeciesLabel(firstSpecies),
-        value: firstSpecies.id,
-      };
-
-      // Set genes
-      const genes = validResults.map((result) => {
-        const { gene } = result.data.result.geneMatches[0];
-        return {
-          label: getGeneLabel(gene),
-          value: gene.geneId,
-        };
-      });
-
-      // Update state with species and genes
-      setIsInitializingFromUrl(true);
-      setSelectedSpeciesFromUrl(speciesValue);
-      setSelectedGene(genes);
-    } catch (error) {
-      console.error('Error processing gene list:', error);
-    } finally {
-      setIsProcessingGeneList(false);
-    }
-  };
-
   return {
     searchResult,
-    anatomicalTerms,
-    anatomicalTermsProps,
     maxExpScore,
     dataType,
     show,
@@ -1422,15 +1282,15 @@ const useLogic = (isExprCalls) => {
     speciesSexes,
     selectedSexes,
     isLoading,
+    isLoadingChildren,
     isFirstSearch,
+    isInitializingFromUrl,
     filters,
     dataTypesExpCalls,
     dataQuality,
     conditionalParam2,
     callTypes,
     condObserved,
-    setAnatomicalTerms,
-    setAnatomicalTermsProps,
     setCondObserved,
     setCallTypes,
     setConditionalParam2,
@@ -1456,6 +1316,7 @@ const useLogic = (isExprCalls) => {
     onSubmit,
     resetForm,
     triggerSearch,
+    triggerSearchChildren,
     addConditionalParam,
     getSearchParams,
     onToggleExpandCollapse,

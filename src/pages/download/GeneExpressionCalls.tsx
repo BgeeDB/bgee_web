@@ -53,7 +53,7 @@ export async function loader() {
   }
 }
 
-export function meta({ data }) {
+export function meta({ loaderData: data }) {
   return getMetadata({
     title: 'Bgee Gene expression calls download page',
     description: 'Download TSV files containing present/absent gene expression calls from Bgee',
@@ -295,11 +295,13 @@ const GeneExpressionCalls = ({ loaderData }) => {
           </div>
         </Bulma.Card.Body>
       </Bulma.Card>
-      <Bulma.Columns className="mt-4">
-        <Bulma.C size={12}>
-          <CreativeCommons />
-        </Bulma.C>
-      </Bulma.Columns>
+      <Bulma.Section>
+        <Bulma.Columns>
+          <Bulma.C size={12} className="has-text-centered">
+            <CreativeCommons />
+          </Bulma.C>
+        </Bulma.Columns>
+      </Bulma.Section>
     </>
   );
 };

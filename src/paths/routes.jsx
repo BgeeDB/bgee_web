@@ -99,6 +99,9 @@ const SEARCH = {
     // component: SpeciesList,
     title: 'Species',
   },
+  [PATHS.SEARCH.SPECIES_ANATOMY_OVERVIEW]: {
+    title: 'Species ⨯ anatomy overview',
+  },
   [PATHS.SEARCH.SPECIES_ITEM]: {
     // component: Species,
     title: 'Species',
@@ -127,7 +130,7 @@ const SEARCH = {
   },
   [PATHS.SEARCH.EXPRESSION_MATRIX]: {
     // component: () => <GeneExpressionMatrix isExprCalls />,
-    title: 'Gene expression matrix (beta)',
+    title: 'Expression graph',
   },
   [PATHS.SEARCH.EXPERIMENT]: {
     // component: Experiment,
@@ -379,6 +382,15 @@ const ABOUT = {
     //   title: 'About Bgee',
     //   description: 'General information about Bgee and the team developing it.',
     //   keywords: 'About, license, CC0',
+    // },
+  },
+  [PATHS.ABOUT.CONTACT]: {
+    // component: NewsPage,
+    title: 'Bgee Contact',
+    // meta: {
+    //   title: 'Bgee news',
+    //   description: 'Bgee news describing each new releases',
+    //   keywords: 'News, latest, information, releases',
     // },
   },
   [PATHS.ABOUT.NEWS]: {

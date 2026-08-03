@@ -2,9 +2,10 @@ import axios from 'axios';
 import { getAxiosAddNotif } from './prod/constant';
 import random from '../helpers/random';
 
-const errorHandler = (error: any) => {
+const errorHandler = (error) => {
+  // Intentional cancellation (new search superseded the old one): do not log or notify.
   if (axios.isCancel(error)) {
-    console.error(error.message);
+    return;
   }
   if (error?.response) {
     getAxiosAddNotif()({

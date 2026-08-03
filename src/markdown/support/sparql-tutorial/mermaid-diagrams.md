@@ -253,7 +253,7 @@ These query triple patterns are more accurate because we can now precisely defin
 When defining the condition to assess a gene expression, the [genex:hasAnatomicalEntity](https://biosoda.github.io/genex/#hasAnatomicalEntity) property is used to state cell types too
 since a cell type is also considered as an anatomical entity. For example, to define that a gene is expressed in lung, the graph below is built where we can interpret as the gene is
 expressed in a cellular component located in lung, in other words, in lung. Therefore, when the cell type is unspecified, we assert with `genex:hasAnatomicalEntity` property the
-value [obo:GO_0005575 (cellular_component)](http://purl.obolibrary.org/obo/GO_0005575), this [Gene Ontology]() term is the root of all cell types.
+value [obo:GO_0005575 (cellular_component)](http://purl.obolibrary.org/obo/GO_0005575), this [Gene Ontology](<>) term is the root of all cell types.
 
 ```mermaid
     graph TD
@@ -896,7 +896,7 @@ All direct attributes of a given gene in the Bgee knowledge graph are listed bel
 
 #### Q14:
 
-> _Question_: What is all the metadata related to the `ENSG00000130208` gene, where `ENSG00000130208` is the identifier of the "APOC1" human gene.
+> _Question_: What are all the metadata related to the `ENSG00000130208` gene, where `ENSG00000130208` is the identifier of the "APOC1" human gene?
 > _SPARQL query_ (see [Q14 graphical representation](#Q14-graphical-representation:)):
 
 ```sparql

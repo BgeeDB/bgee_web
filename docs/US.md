@@ -40,7 +40,7 @@ As a <role>, I want <feature> so that <reason>
 >
 > As a user, I want to do **\_ because \_\_**.
 >
-> Given that I'm doing **_, I should be able to _** in order to \_\_\_.
+> Given that I'm doing **\_, I should be able to _** in order to \_\_\_.
 
 A simple example:
 

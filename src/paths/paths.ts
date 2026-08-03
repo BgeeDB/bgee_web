@@ -15,7 +15,7 @@ const PATHS = {
     GENE_ITEM: `${URL_ROOT}/gene/:geneId`,
     GENE_ITEM_BY_SPECIES: `${URL_ROOT}/gene/:geneId/:speciesId`,
     ANATOMICAL_HOMOLOGY: `${URL_ROOT}/search/anatomical-homology`,
-    SPARQL: `/sparql${SPARQL_ARCH}/`,
+    SPARQL: `/sparql-editor${SPARQL_ARCH}/`,
     SPECIES: `${URL_ROOT}/search/species`,
     SPECIES_ITEM: `${URL_ROOT}/species/:id`,
     GENE_LIST_ITEM: `${URL_ROOT}/gene-list/:speciesId`,
@@ -23,6 +23,7 @@ const PATHS = {
     RAW_DATA_ANNOTATIONS: `${URL_ROOT}/search/raw-data`,
     EXPRESSION_CALLS: `${URL_ROOT}/search/expression-calls`,
     EXPRESSION_MATRIX: `${URL_ROOT}/search/expression-matrix`,
+    SPECIES_ANATOMY_OVERVIEW: `${URL_ROOT}/search/species-anatomy-overview`,
     EXPERIMENT: `${URL_ROOT}/experiment/:id`,
   },
   DOWNLOAD: {
@@ -44,6 +45,7 @@ const PATHS = {
     TUTORIAL_GENE_PAGE: `${URL_ROOT}/support/tutorial-gene-page`,
     TUTORIAL_TOPANAT: `${URL_ROOT}/support/tutorial-TopAnat`,
     TUTORIAL_EXPRESSION_CALLS: `${URL_ROOT}/support/tutorial-expression-calls`,
+    TUTORIAL_EXPRESSION_GRAPH: `${URL_ROOT}/support/tutorial-expression-graph`,
     TUTORIAL_SPARQL: `${URL_ROOT}/support/tutorial-query-bgee-knowledge-graph-sparql`,
     TUTORIAL_CURATION: `${URL_ROOT}/support/tutorial-data-curation`,
     TUTORIAL_EXPRESSION_COMPARISON: `${URL_ROOT}/support/tutorial-expression-comparison`,
@@ -59,6 +61,7 @@ const PATHS = {
   },
   ABOUT: {
     ABOUT: `${URL_ROOT}/about/`,
+    CONTACT: `${URL_ROOT}/about/contact`,
     NEWS: `${URL_ROOT}/about/news`,
     COLLABORATIONS: `${URL_ROOT}/about/collaborations`,
     PUBLICATION: `${URL_ROOT}/about/publications`,
