@@ -3,7 +3,7 @@
 [ ] topanat examples
 	Maybe because examples are missing on the API server?
 	Getting a recent topanat job works!
-[ ] heatmap +/-
+[x] heatmap +/-
 	Maybe an issue in Harry's side
 [x] schema.org not detected
 	look to be protected with \
