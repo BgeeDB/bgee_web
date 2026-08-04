@@ -30,3 +30,4 @@ Disallow: /bgee14_1/*
 Disallow: /bgee14_2/*
 Disallow: /bgee15_0/*
 Disallow: /bgee15_1/*
+Disallow: /bgee15_2/*

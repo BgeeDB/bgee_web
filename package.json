@@ -24,7 +24,9 @@
     "postinstall": "npx playwright install --with-deps",
     "prepare": "husky",
     "upgrade": "npx npm-check-updates -u -x bulma && npm i",
-    "archive": "node scripts/archiveCreation.js"
+    "build_archive": "node scripts/archiveCreation.cjs",
+    "start_archive": "INTERNAL_API_DOMAIN=http://127.0.0.1:8080/api_15_2  pm2 start 'npx react-router-serve ./archives/15.2-archived/server/index.js' --name bgee-web15_2 -i 12",
+    "stop_archive": "pm2 stop bgee-web15_2"
   },
   "dependencies": {
     "@react-router/fs-routes": "^8.3.0",
