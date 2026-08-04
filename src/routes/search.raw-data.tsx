@@ -36,7 +36,6 @@ export async function loader({ request }) {
       hasCellTypeSubStructure: true,
       hasDevStageSubStructure: true,
       hasTissueSubStructure: true,
-      onlyPropagated: true,
       pageNumber: '1',
       limit: url.searchParams.get('limit') || '50',
     });
