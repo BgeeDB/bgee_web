@@ -562,7 +562,7 @@ website](https://www.ncbi.nlm.nih.gov/taxonomy). For example, human ID is `9606`
 Currently, Bgee mostly reuses either Ensembl or NCBI Gene database identifiers depending on the genome source. These identifiers are stated for each gene with the
 [dcterms:identifier](http://purl.org/dc/terms/identifier) relation. The genome source for each species in Bgee can be verified at each Bgee species page accessible at
 [https://www.bgee.org/species](https://bgee.org/species) such as [human page](https://bgee.org/species/9606) states the genome source as being
-[Ensembl](https://nov2020.archive.ensembl.org/Homo_sapiens/Info/Index) in the "General information" section. To fetch the corresponding main gene identifier to a given gene in Bgee,
+[Ensembl](https://oct2024.archive.ensembl.org/Homo_sapiens/Info/Index) in the "General information" section. To fetch the corresponding main gene identifier to a given gene in Bgee,
 we can rely on the [Bgee's gene search tool](https://bgee.org/search/genes). For example, if we search for the APOC1 gene with the [Bgee's gene search
 tool](https://bgee.org/search/genes), the first row result refers to the human APOC1 gene and the first column shows the correspoding Ensembl id: `ENSG00000130208` and its full
 IRI is `http://rdf.ebi.ac.uk/resource/ensembl/ENSG00000130208` as defined in the Bgee knowledge graph. The IRI is composed of the prefix `http://rdf.ebi.ac.uk/resource/ensembl/` and

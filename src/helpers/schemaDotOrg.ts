@@ -445,7 +445,7 @@ export const speciesToLdJSON = ({
     sameAs: [
       obolibraryNCBITaxonLinkFromID(id),
       `https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?lvl=0&id=${id}`,
-      `https://nov2020.archive.ensembl.org/${genus}_${speciesName}`,
+      `https://oct2024.archive.ensembl.org/${genus}_${speciesName}`,
     ],
     taxonRank: [
       'https://rs.tdwg.org/ontology/voc/TaxonRank#Species',
