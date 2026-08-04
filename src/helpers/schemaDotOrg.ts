@@ -522,6 +522,43 @@ export const speciesToLdJSON = ({
     ],
   };
 
+  let callFile = downloadFiles.find((d) => d.category === 'expr_simple' && d.conditionParameters.length === 1);
+  if (callFile) {
+    json.subjectOf[0].hasPart.push({
+      ...fileDownloadProps(callFile),
+      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression simple`,
+      description: 'Anatomical entities only, file without advanced columns.',
+      url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-anat-simple`,
+    });
+  }
+  callFile = downloadFiles.find((d) => d.category === 'expr_advanced' && d.conditionParameters.length === 1);
+  if (callFile) {
+    json.subjectOf[0].hasPart.push({
+      ...fileDownloadProps(callFile),
+      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression advanced`,
+      description: 'Anatomical entities only, file with advanced columns.',
+      url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-anat-advanced`,
+    });
+  }
+  callFile = downloadFiles.find((d) => d.category === 'expr_simple' && d.conditionParameters.length > 1);
+  if (callFile) {
+    json.subjectOf[0].hasPart.push({
+      ...fileDownloadProps(callFile),
+      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression simple with all conditions`,
+      description: `Anatomical entities, developmental stages, sexes and ${id === 9606 ? 'ethnicities' : 'strains'}. File without advanced columns.`,
+      url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-cond-simple`,
+    });
+  }
+  callFile = downloadFiles.find((d) => d.category === 'expr_advanced' && d.conditionParameters.length > 1);
+  if (callFile) {
+    json.subjectOf[0].hasPart.push({
+      ...fileDownloadProps(callFile),
+      name: `${genus} ${speciesName}${name ? ` (${name})` : ''} gene expression advanced with all conditions`,
+      description: `Anatomical entities, developmental stages, sexes and ${id === 9606 ? 'ethnicities' : 'strains'}. File with advanced columns.`,
+      url: `${config.genericDomain + PATHS.SEARCH.SPECIES_ITEM.replace(':id', id)}#expr-calls-cond-advanced`,
+    });
+  }
+
   let file = downloadFiles.find((d) => d.category === 'rnaseq_annot');
   if (file) {
     json.subjectOf[1].hasPart.push({
