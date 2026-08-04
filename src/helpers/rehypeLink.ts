@@ -1,6 +1,6 @@
 import { visit } from 'unist-util-visit';
 
-import { URL_ROOT } from './constants';
+import { URL_ROOT } from './constants/index.ts';
 
 const rehypeLink = () => (tree) => {
   visit(tree, 'element', (node) => {
