@@ -369,6 +369,27 @@ const RawDataAnnotations = ({ isExprCalls = false, initSearchResult = {} }) => {
                 {show ? 'Hide Form' : 'Show Form'}
               </button>
             </div>
+
+            {isExprCalls && (
+              <p>
+                Examples:
+                <br />
+                <a
+                  className="internal-link"
+                  href={`${URL_ROOT}/search/expression-calls?species_id=9606&gene_id=ENSG00000134058`}
+                >
+                  The <strong>CDK7</strong> gene (<i>Homo sapiens</i>)
+                </a>
+                <br />
+                <a
+                  className="internal-link"
+                  href={`${URL_ROOT}/search/expression-calls?species_id=7227&gene_id=FBgn0004644`}
+                >
+                  The <strong>hedgehog</strong> gene (<i>Drosophila melanogaster</i>)
+                </a>
+              </p>
+            )}
+
             <h2 className="gradient-underline title is-size-5 has-text-primary">{detailedData?.resultLabel}</h2>
             {!isExprCalls && (
               <ResultTabs
@@ -394,11 +415,11 @@ const RawDataAnnotations = ({ isExprCalls = false, initSearchResult = {} }) => {
                 </div>
               ) : (
                 <div className="resultCounts">
-                  {isExprCalls ? (
-                    <>{`${formatLargeNumber(localCount?.assayCount)} expression calls`}</>
-                  ) : (
-                    resultCountLabel
-                  )}
+                  {isExprCalls
+                    ? searchResult
+                      ? `${formatLargeNumber(localCount?.assayCount)} expression calls`
+                      : 'Please select search criteria above to display result'
+                    : resultCountLabel}
                 </div>
               )}
               {!!searchResult && dataType && (
@@ -421,7 +442,7 @@ const RawDataAnnotations = ({ isExprCalls = false, initSearchResult = {} }) => {
                     }}
                   />
                 </div>
-              ) : (
+              ) : isExprCalls && !searchResult ? null : (
                 <RawDataAnnotationResults
                   results={results}
                   // resultCount={allCounts[dataType]}

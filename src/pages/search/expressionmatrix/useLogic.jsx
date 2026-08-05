@@ -208,7 +208,7 @@ const useLogic = (isExprCalls) => {
     [selectedSpecies.value]
   );
 
-  const resetForm = useCallback((isSpeciesChange = false, preserveGenes = false) => {
+  const resetForm = (isSpeciesChange = false, preserveGenes = false) => {
     // console.log(`[useLogic.resetForm] resetForm called with:`, {isSpeciesChange, preserveGenes});
     if (!preserveGenes) {
       // console.log(`[useLogic.resetForm] Clearing genes in resetForm`);
@@ -225,8 +225,13 @@ const useLogic = (isExprCalls) => {
     if (!isSpeciesChange) {
       setSelectedSpecies(EMPTY_SPECIES_VALUE);
       setSelectedExpOrAssay([]);
+      // Reinitialize (and navigate-back reset): also clear the generated matrix
+      // and return to the "Please select search criteria..." first-search state,
+      // instead of leaving the previous results on screen.
+      setSearchResult(null);
+      setIsFirstSearch(true);
     }
-  }, []);
+  };
 
   const updateSelectedSpecies = (newSpecies, preserveGenes = false) => {
     setSelectedSpecies(newSpecies);

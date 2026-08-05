@@ -589,27 +589,35 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     [selectedSpecies.value]
   );
 
-  const resetForm = useCallback(
-    (isSpeciesChange = false, pageWillBeReset = false) => {
-      setSelectedCellTypes([]);
-      setSelectedGene([]);
-      setSelectedStrain([]);
-      setSelectedTissue([]);
-      setSelectedSexes([]);
-      setSelectedDevStages([]);
-      setHasCellTypeSubStructure(true);
-      setHasTissueSubStructure(true);
-      setDevStageSubStructure(true);
-      if (!isSpeciesChange) {
-        setSelectedSpecies(EMPTY_SPECIES_VALUE);
-        setSelectedExpOrAssay([]);
-      }
-      if (pageWillBeReset) {
-        setNeedToResetThePage(true);
-      }
-    },
-    [isExprCalls]
-  );
+  const resetForm = (isSpeciesChange = false, pageWillBeReset = false) => {
+    setSelectedCellTypes([]);
+    setSelectedGene([]);
+    setSelectedStrain([]);
+    setSelectedTissue([]);
+    setSelectedSexes([]);
+    setSelectedDevStages([]);
+    setHasCellTypeSubStructure(true);
+    setHasTissueSubStructure(true);
+    setDevStageSubStructure(true);
+    if (!isSpeciesChange) {
+      setSelectedSpecies(EMPTY_SPECIES_VALUE);
+      setSelectedExpOrAssay([]);
+    }
+    if (pageWillBeReset || !isExprCalls) {
+      // Page-navigation reset, and the raw-data Reinitialize button: re-run the
+      // default search so the default results are loaded (raw-data auto-loads
+      // default results, so an empty state would be wrong there).
+      setNeedToResetThePage(true);
+    } else {
+      // Expression-calls Reinitialize: clear the result section back to the clean
+      // state so the "Please select search criteria..." prompt shows again,
+      // instead of leaving the previous results (and their count) on screen.
+      setSearchResult(null);
+      setLocalCount({});
+      setAllCounts({});
+      setIsFirstSearch(true);
+    }
+  };
 
   useEffect(() => {
     const sp = new URLSearchParams(loc.search);
@@ -684,6 +692,14 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
     }
 
     mountedRef.current = true;
+
+    // On the expression-calls page, don't auto-run the search on a fresh load
+    // (no query string). Wait for the user to submit the form instead. A
+    // shared/bookmarked link that carries search params will still restore
+    // and run its search, since loc.search is non-empty in that case.
+    if (isExprCalls && !loc.search) {
+      return;
+    }
 
     triggerSearch();
     setIsCountLoading(true);

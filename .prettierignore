@@ -1,1 +1,4 @@
 doc-api/
+.git/
+.github/
+.vscode/

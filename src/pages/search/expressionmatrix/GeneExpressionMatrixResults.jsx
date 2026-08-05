@@ -73,11 +73,11 @@ const GeneExpressionMatrixResults = ({
       )}
       {isFirstSearch && (
         <div className="is-flex is-justify-content-center mt-3">
-          Please select search criteria above to display results.
+          Please select search criteria above to display results
         </div>
       )}
       {!isFirstSearch && results?.length === 0 && (
-        <div className="is-flex is-justify-content-center mt-3">No results found.</div>
+        <div className="is-flex is-justify-content-center mt-3">No results found</div>
       )}
     </>
   );
