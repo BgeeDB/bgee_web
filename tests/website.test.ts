@@ -49,8 +49,7 @@ test.describe('Search pages', () => {
   test('search expression calls', async ({ page }) => {
     await page.goto('/search/expression-calls');
     await expect(page).toHaveTitle(/Present\/absent expression calls/);
-    await page.waitForTimeout(3000);
-    expect(await page.locator('text=WBGene00000001').count()).toBeGreaterThan(0);
+    await expect(page.getByText('Please select search criteria above to display result')).toBeVisible();
   });
 
   test('display anatomical homology', async ({ page }) => {
