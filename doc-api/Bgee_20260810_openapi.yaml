@@ -1412,9 +1412,7 @@ components:
             - all
             - RNA_SEQ
             - SC_RNA_SEQ
-            - AFFYMETRIX
             - IN_SITU
-            - EST
         default:
           - all
       explode: true
@@ -1422,9 +1420,8 @@ components:
       description: >-
         Specifies the type of data to be retrieved, with 'all' as the default
         option covering all data types. Available data types include "RNA_SEQ" (for bulk RNA-Seq),
-        "SC_RNA_SEQ" (for single-cell RNA-Seq), "AFFYMETRIX", "IN_SITU" (in situ
-        hybridization), "EST" (Expressed Sequence Tag). Multiple data types can
-        be selected using cmd + click. 
+        "SC_RNA_SEQ" (for single-cell RNA-Seq), "IN_SITU" (in situ hybridization). Multiple data
+        types can be selected using cmd + click. 
     data_type_calls:
       name: data_type
       in: query
@@ -1435,23 +1432,19 @@ components:
           enum:
             - RNA_SEQ
             - SC_RNA_SEQ
-            - AFFYMETRIX
             - IN_SITU
-            - EST
         default:
           - RNA_SEQ
           - SC_RNA_SEQ
-          - AFFYMETRIX
           - IN_SITU
-          - EST
       explode: true
       required: false
       description: >-
         Restricts expression call support to specific data types, with the
         default setting encompassing all available data types. Available data
-        types include "RNA_SEQ", "SC_RNA_SEQ" (single-cell), "AFFYMETRIX",
-        "IN_SITU" (in situ hybridization), "EST" (Expressed Sequence Tag).
-        Multiple data types can be selected using cmd + click. 
+        types include "RNA_SEQ", "SC_RNA_SEQ" (single-cell), "IN_SITU" (in
+        situ hybridization). Multiple data types can be selected using
+        cmd + click. 
     display_type_json:
       name: display_type
       in: query

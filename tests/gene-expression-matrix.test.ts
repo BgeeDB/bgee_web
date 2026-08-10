@@ -128,7 +128,7 @@ test.describe('Gene Expression Matrix Page', () => {
           await page.waitForTimeout(2000);
 
           // Now check that data type checkbox options are present
-          const dataTypeLabels = ['bulk RNA-Seq', 'scRNA-Seq', 'Affymetrix data', 'In situ hybridization', 'EST'];
+          const dataTypeLabels = ['bulk RNA-Seq', 'scRNA-Seq', 'In situ hybridization'];
           for (const label of dataTypeLabels) {
             await expect(page.locator('label.checkbox').filter({ hasText: label })).toBeVisible();
           }

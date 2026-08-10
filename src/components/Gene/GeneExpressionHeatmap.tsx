@@ -27,8 +27,6 @@ export interface ExpressionCall {
   expressionScore: { expressionScore: number };
   expressionState: string;
   dataTypesWithData: {
-    AFFYMETRIX: boolean;
-    EST: boolean;
     IN_SITU: boolean;
     RNA_SEQ: boolean;
     SC_RNA_SEQ: boolean;
@@ -385,8 +383,6 @@ const GeneExpressionHeatmap = ({
         cellTypeName,
         value: expScore,
         isExpressed,
-        hasDataAffy: result.dataTypesWithData.AFFYMETRIX,
-        hasDataEst: result.dataTypesWithData.EST,
         hasDataInSitu: result.dataTypesWithData.IN_SITU,
         hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
         hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
