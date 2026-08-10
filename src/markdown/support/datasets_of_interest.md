@@ -33,9 +33,15 @@ Example of a TopAnat analysis, which leverages the power of abundant data integr
     allGenes <- unique(row.names(myTopAnatData$gene2anatomy))
     # Define the list of genes of interest
     genesOfInterest <- c(...) # your real Ensembl IDs
+    # Show gene(s) not in background, if any
+    missing <- setdiff(genesOfInterest, allGenes)
+    if (length(missing) > 0)
+        warning(length(missing), " gene(s) not in background and will be dropped: ",
+                paste(missing, collapse = ", "))
     # Build the gene vector for the analysis
-    geneList <- factor(as.integer(unique(allGenes) %in% genesOfInterest))
-    names(geneList) <- unique(allGenes)
+    geneList <- factor(as.integer(allGenes %in% genesOfInterest), levels = c(0, 1))
+    stopifnot(sum(geneList == 1) > 0)  # bail early if foreground is empty
+    names(geneList) <- allGenes
     # Run the test
     myTopAnatObject <- topAnat(myTopAnatData, geneList)
     resFis <- runTest(myTopAnatObject, algorithm ="elim", statistic ="fisher")
@@ -74,7 +80,7 @@ All corresponding RNA-seq were reanalyzed in the Bgee pipeline, consistently wit
   ```R
       bgee <- Bgee$new(species = "Homo_sapiens", dataType = "rna_seq")
       # This step can take a lot of time as Bgee data have to be downloaded and uncompressed.
-      data <- getData(bgee, experimentId = "SRP012682")
+      data <- getSampleProcessedData(bgee, experimentId = "SRP012682")
   ```
 
 ## Fly Cell Atlas in Bgee
@@ -103,5 +109,5 @@ All corresponding scRNA-seq data were reanalyzed in the Bgee pipeline. These dat
   ```R
       bgee <- Bgee$new(species = "Drosophila_melanogaster", dataType = "sc_droplet_based")
       # This step can take a lot of time as Bgee data have to be downloaded and uncompressed.
-      data <- getData(bgee, experimentId = "ERP129698")
+      data <- getSampleProcessedData(bgee, experimentId = "ERP129698")
   ```
