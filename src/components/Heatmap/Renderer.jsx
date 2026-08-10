@@ -1,5 +1,5 @@
 import { useMemo, forwardRef } from 'react';
-import * as d3 from 'd3';
+import * as d3 from 'd3-scale';
 import { Tree } from './TreeSvg';
 import { ColorLegendSvg } from './ColorLegendSvg';
 // import { Tooltip } from "../../../Tooltip";

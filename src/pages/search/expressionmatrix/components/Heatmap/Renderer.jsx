@@ -1,6 +1,6 @@
 import { useMemo, forwardRef } from 'react';
 // import { useMemo, forwardRef, useRef, useState, useEffect } from "react";
-import * as d3 from 'd3';
+import * as d3 from 'd3-scale';
 // import { INITIAL_VALUE, ReactSVGPanZoom, TOOL_NONE, fitSelection, zoomOnViewerCenter, fitToViewer } from 'react-svg-pan-zoom';
 
 import { Tree } from './TreeSvg';

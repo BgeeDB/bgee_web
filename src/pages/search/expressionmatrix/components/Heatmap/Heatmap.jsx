@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import * as d3 from 'd3';
+import * as d3 from 'd3-scale';
 import { Download } from 'lucide-react';
 
 import Bulma from '../../../../../components/Bulma';
