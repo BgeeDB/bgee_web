@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
+import { Download } from 'lucide-react';
+import config from '../../config.json';
 
 import Bulma from '../Bulma';
 import api from '../../api';
@@ -183,6 +185,81 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
     return oldQuery === (hashExpr || 'anat') && JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
   }, [cFields, hashExpr, dataType, dataTypeExpr]);
 
+  // Build the download once, from the COMPLETE result set (data.calls), not from
+  // the render loop. The table only renders the current page (TableBody slices
+  // data to `currentPage`), so anything built inside onRenderCell would contain
+  // that page only. Deriving the TSV here guarantees the full result is exported,
+  // and keeps the exported columns aligned with the actual returned data.
+  const sourceDataUrl = React.useCallback(
+    (call, params) => {
+      let searchParams = `pageType=${PROC_EXPR_VALUES}&gene_id=${geneId}&species_id=${speciesId}&cell_type_descendant=true&stage_descendant=true&anat_entity_descendant=true`;
+      if (params.includes('Anat. entity')) searchParams += `&anat_entity_id=${call?.condition?.anatEntity?.id}`;
+      if (params.includes('Dev. stage')) searchParams += `&stage_id=${call?.condition?.devStage?.id}`;
+      if (params.includes('Sex')) searchParams += `&sex=${call?.condition?.sex}`;
+      if (params.includes('Strain')) searchParams += `&strain=${call?.condition?.strain}`;
+      if (params.includes('Cell type') && call?.condition?.cellType?.id) {
+        searchParams += `&cell_type_id=${call?.condition?.cellType?.id}`;
+      }
+      return `${config.prodDomain}${PATHS.SEARCH.RAW_DATA_ANNOTATIONS}?${searchParams}`;
+    },
+    [geneId, speciesId]
+  );
+
+  const sourceList = (call) => {
+    const wanted = ['in situ hybridization', 'RNA-Seq', 'single-cell RNA-Seq', 'full length single cell RNA-Seq'];
+    return (call?.dataTypesWithData || []).filter((dt) => wanted.includes(dt)).join(', ');
+  };
+
+  const TSV = React.useMemo(() => {
+    if (!data || !data.calls) return undefined;
+    const params = data.requestedConditionParameters || [];
+
+    // Column definitions are driven by the returned data (requestedConditionParameters),
+    // exactly like the visible table columns, so header and rows stay in sync.
+    const cols: { header: string[]; value: (call: any) => any[] }[] = [];
+    if (params.includes('Anat. entity')) {
+      cols.push({
+        header: ['Anat. entity and cell types ID', 'Anat. entity and cell types name'],
+        // Mirror the on-screen AnatEntityCell: when a cell type is present it reads
+        // "<cell type> in <anat. entity>", otherwise just the anat. entity.
+        value: (call) => {
+          const anat = call?.condition?.anatEntity;
+          const cellType = call?.condition?.cellType;
+          const id = cellType?.id ? `${cellType.id} in ${anat?.id}` : anat?.id;
+          const name = cellType?.name ? `${cellType.name} in ${anat?.name}` : anat?.name;
+          return [id, name];
+        },
+      });
+    }
+    if (params.includes('Dev. stage')) {
+      cols.push({
+        header: ['Dev. stage ID', 'Dev. stage name'],
+        value: (call) => [call?.condition?.devStage?.id, call?.condition?.devStage?.name],
+      });
+    }
+    if (params.includes('Sex')) {
+      cols.push({ header: ['Sex'], value: (call) => [call?.condition?.sex] });
+    }
+    if (params.includes('Strain')) {
+      cols.push({ header: ['Strain'], value: (call) => [call?.condition?.strain] });
+    }
+    cols.push({ header: ['Expression score'], value: (call) => [call?.expressionScore?.expressionScore] });
+    cols.push({ header: ['FDR'], value: (call) => [call?.fdr] });
+    cols.push({ header: ['Link to source data'], value: (call) => [sourceDataUrl(call, params)] });
+    cols.push({ header: ['Sources'], value: (call) => [sourceList(call)] });
+
+    // Always emit every column (even when empty) so cells never shift, and strip
+    // tabs/newlines from values so they can't break the row/column structure.
+    const escape = (v) => (v === undefined || v === null ? '' : String(v).replace(/\t/g, ' ').replace(/\r?\n/g, ' '));
+
+    const lines = [cols.flatMap((c) => c.header).join('\t')];
+    data.calls.forEach((call) => {
+      lines.push(cols.flatMap((c) => c.value(call).map(escape)).join('\t'));
+    });
+
+    return `data:text/tab-separated-values;charset=utf-8,${encodeURIComponent(lines.join('\r\n'))}`;
+  }, [data, sourceDataUrl]);
+
   const customHeader = React.useCallback(
     (searchElement, pageSizeElement) => (
       <>
@@ -286,6 +363,20 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
           >
             Update
           </Bulma.Button>
+          <Bulma.Button
+            className="ml-2 py-0"
+            href={TSV}
+            disabled={!TSV}
+            renderAs="a"
+            download={`Bgee-${geneId}-${speciesId}-${notExpressed ? 'absence-of-expression' : 'presence-of-expression'}.tsv`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            TSV
+            <span className="icon is-small ml-1">
+              <Download size={15} />
+            </span>
+          </Bulma.Button>
         </div>
         <Bulma.Columns vCentered className="mt-0">
           <Bulma.C size={8}>
@@ -297,7 +388,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
         </Bulma.Columns>
       </>
     ),
-    [isLoading, cFields, dataType]
+    [isLoading, cFields, dataType, TSV]
   );
   const onRenderCell = React.useCallback(
     ({ cell, key }, defaultRender) => {
