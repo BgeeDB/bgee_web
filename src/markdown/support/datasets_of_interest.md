@@ -79,7 +79,7 @@ All corresponding RNA-seq were reanalyzed in the Bgee pipeline, consistently wit
 - Annotations can be retrieved from RNA-Seq human experiments/libraries information. The experiment ID for GTEx is `SRP012682`. And quantitative expression data and presence calls can be loaded.
   ```R
       bgee <- Bgee$new(species = "Homo_sapiens", dataType = "rna_seq")
-      # This step can take a lot of time as Bgee data have to be downloaded and uncompressed.
+      # This step can take a lot of time and memory as Bgee data have to be downloaded and uncompressed.
       data <- getSampleProcessedData(bgee, experimentId = "SRP012682")
   ```
 
@@ -108,6 +108,6 @@ All corresponding scRNA-seq data were reanalyzed in the Bgee pipeline. These dat
 - Annotations can be retrieved from scRNA-Seq _D. melanogaster_ experiments/libraries information. The experiment ID for Fly Cell Atlas is `ERP129698`. And quantitative expression data and presence calls can be loaded.
   ```R
       bgee <- Bgee$new(species = "Drosophila_melanogaster", dataType = "sc_droplet_based")
-      # This step can take a lot of time as Bgee data have to be downloaded and uncompressed.
+      # This step can take a lot of time and memory as Bgee data have to be downloaded and uncompressed.
       data <- getSampleProcessedData(bgee, experimentId = "ERP129698")
   ```
