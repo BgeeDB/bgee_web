@@ -59,8 +59,12 @@ const NAVBAR_RIGHT = [
 const Footer = () => {
   const { addNotification } = React.useContext(NotificationContext);
   const loc = useLocation();
-  const pathname = `${config.archive ? loc.pathname.replace(/[\\/][^\\/]*/, '') : loc.pathname}`;
-  const permanentLink = React.useMemo(() => config.permanentVersionedDomain + pathname, [loc]);
+  const pathname = config.archive ? loc.pathname.replace(/[\\/][^\\/]*/, '') : loc.pathname;
+
+  const permanentLink = React.useMemo(
+    () => config.permanentVersionedDomain + pathname + loc.search + loc.hash,
+    [loc.pathname, loc.search, loc.hash]
+  );
 
   return (
     <Bulma.Footer>
@@ -186,7 +190,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href={permanentLink}
                   onClick={(event) => {
                     event.preventDefault();
                     copyToClipboard(permanentLink);
