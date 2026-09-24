@@ -678,6 +678,8 @@ const search = {
         if (form.discardAnatEntityAndChildrenId) {
           params.append('discard_anat_entity_and_children_id', form.discardAnatEntityAndChildrenId);
         }
+        // Child expansion (request 3): same observed-data filter as the complementary search.
+        params.append('observed_data', '1');
         form.selectedCellTypes?.forEach((ct) => params.append('cell_type_id', ct));
         if (form.hasCellTypeSubStructure && form.selectedCellTypes?.length > 0) {
           params.append('cell_type_descendant', '1');
@@ -916,6 +918,10 @@ const search = {
 
         if (form.discardAnatEntityAndChildrenId) {
           params.append('discard_anat_entity_and_children_id', form.discardAnatEntityAndChildrenId);
+        }
+        // Child expansion (request 3) on the single-gene graph and the single-species matrix fallback.
+        if (form.observedData) {
+          params.append('observed_data', '1');
         }
 
         if (isOnlyCounts) {

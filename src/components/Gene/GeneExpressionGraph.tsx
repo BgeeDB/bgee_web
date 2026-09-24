@@ -306,6 +306,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
     params.limit = BASE_LIMIT;
     params.conditionalParam2 = ['anat_entity']; // restrict to anatomical terms
     params.condObserved = 1;
+    params.observedData = true;
     // Partition the SUMMARY forest: punch out other top-level organ subtrees.
     // The backend ignores discard seeds that are ancestors of the include term, so this
     // is safe for nested SUMMARY organs (e.g. CNS) as well as the residual bucket.

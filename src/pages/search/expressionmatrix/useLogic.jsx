@@ -850,6 +850,7 @@ const useLogic = (options = {}) => {
     // The backend ignores discard seeds that are ancestors of the include term, so this
     // is safe for nested SUMMARY organs (e.g. CNS) as well as the residual bucket.
     baseParams.discardAnatEntityAndChildrenId = 'SUMMARY';
+    baseParams.observedData = true;
 
     try {
       if (multiSpeciesGenes && multiSpeciesGenes.length > 0) {
