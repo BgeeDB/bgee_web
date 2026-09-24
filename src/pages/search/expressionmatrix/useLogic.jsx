@@ -960,11 +960,11 @@ const useLogic = (options = {}) => {
         const simpleParams = resp1.resp.requestParameters;
         // console.log(`[useLogic.initFromUrlParams] simpleParams:\n${JSON.stringify(simpleParams)}`);
 
-        // Check for gene_list first before processing other parameters
-        if (simpleParams.gene_list && simpleParams.species_id) {
-          // Join array items with newlines and encode for URL
-          const encodedGeneList = simpleParams.gene_list.join('%0A');
-          // Redirect to same page with gene_list parameter
+        // A stored gene_list is enough to restore the search, including multi-species
+        // queries that have no species_id. Hand off to the gene_list URL flow.
+        const geneListValues = [].concat(simpleParams.gene_list || []).filter(Boolean);
+        if (geneListValues.length > 0) {
+          const encodedGeneList = geneListValues.join('%0A');
           navigate(
             {
               pathname: loc.pathname,
@@ -972,7 +972,7 @@ const useLogic = (options = {}) => {
             },
             { replace: true, preventScrollReset: true }
           );
-          return; // Exit the entire function
+          return;
         }
 
         const searchParamsNew = new URLSearchParams();
@@ -1000,8 +1000,11 @@ const useLogic = (options = {}) => {
         const resp2 = await api.search.geneExpressionMatrix.getRequestParams(params, true);
         if (resp2.resp.code === 200) {
           // console.log(`[useLogic.initFromUrlParams] detailed RP resp:\n${JSON.stringify(resp2, null, 2)}`);
-          const { requestDetails } = resp2.resp.data;
-          //const { requestedSpecies, requestedGenes, requestedAnatEntitesAndCellTypes } = requestDetails;
+          const requestDetails = resp2.resp.data?.requestDetails;
+          if (!requestDetails) {
+            setIsInitializingFromUrl(false);
+            return;
+          }
           const { requestedSpecies, requestedGenes } = requestDetails;
           // const { anat_entity_id: anatEntityId, cell_type_id: cellTypeId } = resp2.resp.requestParameters;
           // Find the requestedAnatEntitesAndCellTypes that matches the anatEntityId
