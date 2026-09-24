@@ -18,6 +18,25 @@ import { URL_ROOT } from '~/helpers/constants';
 
 // TODO: create an API endpoint to query root terms for condition params?
 export const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
+const CELL_TYPE_ROOT_ID = 'GO:0005575';
+
+const getCallAnatIds = (call) => {
+  const anats = call.multiSpeciesCondition?.anatEntities;
+  if (Array.isArray(anats) && anats.length > 0) {
+    return anats.map((a) => a.id).filter(Boolean);
+  }
+  const id = call.condition?.anatEntity?.id;
+  return id ? [id] : [];
+};
+
+const isCellTypeRootCall = (call) => {
+  const cellTypes = call.multiSpeciesCondition?.cellTypes;
+  if (Array.isArray(cellTypes)) {
+    return cellTypes.length === 0 || cellTypes.every((ct) => !ct?.id || ct.id === CELL_TYPE_ROOT_ID);
+  }
+  const cellTypeId = call.condition?.cellType?.id;
+  return !cellTypeId || cellTypeId === CELL_TYPE_ROOT_ID;
+};
 
 // building the page_type array depending on config.json
 // TODO: in future, adapt for display of different condition params?
@@ -151,7 +170,7 @@ export const ALL_CALL_TYPE = [
 
 // Temporary kill-switch: multispecies complementary call currently has performance issues.
 // Set to `true` to re-enable orphan/complementary expression retrieval.
-const ENABLE_MULTISPEC_COMPLEMENTARY_FETCH = false;
+const ENABLE_MULTISPEC_COMPLEMENTARY_FETCH = true;
 
 const useLogic = (options = {}) => {
   const { setMultiSpeciesGenes, multiSpeciesGenes } = options;
@@ -475,10 +494,21 @@ const useLogic = (options = {}) => {
           paramsURLCalled1 = paramsURLCalled;
 
           if (shouldFetchMultispecComplementary && complementaryResult?.resp?.code === 200) {
-            const orphanCalls = complementaryResult.resp.data.expressionData.expressionCalls.map((call) => ({
-              ...call,
-              isOrphan: true,
-            }));
+            const initialCellTypeRootAnatIds = new Set(
+              combinedData.expressionData.expressionCalls.filter(isCellTypeRootCall).flatMap(getCallAnatIds)
+            );
+            const orphanCalls = complementaryResult.resp.data.expressionData.expressionCalls
+              .filter((call) => {
+                // Leftover organs at the cell-type root only — not a global cell-type list.
+                if (!isCellTypeRootCall(call)) return false;
+                // Hide a duplicate GO:0005575 / empty-cellTypes row already shown by request 1.
+                const anatIds = getCallAnatIds(call);
+                return anatIds.length > 0 && !anatIds.some((id) => initialCellTypeRootAnatIds.has(id));
+              })
+              .map((call) => ({
+                ...call,
+                isOrphan: true,
+              }));
             combinedData.expressionData.expressionCalls.push(...orphanCalls);
           }
         }
@@ -782,27 +812,22 @@ const useLogic = (options = {}) => {
       });
   };
 
-  const aggregateTerms = (terms, fallbackTerm) => {
+  const primaryTerm = (terms, fallbackTerm) => {
     if (!Array.isArray(terms) || terms.length === 0) return fallbackTerm;
-
-    const validTerms = terms.filter((term) => term?.id && term?.name);
-    if (validTerms.length === 0) return fallbackTerm;
-
-    return {
-      id: validTerms.map((term) => term.id).join(','),
-      name: validTerms.map((term) => term.name).join(', '),
-    };
+    const first = terms.find((term) => term?.id && term?.name);
+    return first ? { id: first.id, name: first.name } : fallbackTerm;
   };
 
   // Transform multispec multiSpeciesCondition to condition format for heatmap
   const transformMultispecCall = (call) => {
     if (call.condition) return call;
     const msc = call.multiSpeciesCondition;
-    const anatEntity = aggregateTerms(msc?.anatEntities, {
+    const anatEntity = primaryTerm(msc?.anatEntities, {
       id: 'UBERON:0001062',
       name: 'anatomical entity',
     });
-    const cellType = aggregateTerms(msc?.cellTypes, {
+    // Empty cellTypes means cell-type root (organ-only row); GO:0005575 is omitted in JSON.
+    const cellType = primaryTerm(msc?.cellTypes, {
       id: 'GO:0005575',
       name: 'cellular component',
     });
@@ -816,15 +841,15 @@ const useLogic = (options = {}) => {
 
     // Set parent anatomical term as selected tissue
     baseParams.selectedTissue = [selectedTissueId];
-    if (baseParams.selectedCellTypes?.length === 0) {
-      baseParams.selectedCellTypes = ['GO:0005575']; // "cellular_component"
-    }
     baseParams.hasTissueSubStructure = 1;
     baseParams.conditionalParam2 = ['anat_entity'];
-
-    if (parentId === 'UBERON:0000468-GO:0005575') {
-      baseParams.discardAnatEntityAndChildrenId = 'SUMMARY';
-    }
+    // Do not send cell_type_id — child expansion is anatomical terms only.
+    baseParams.selectedCellTypes = [];
+    baseParams.hasCellTypeSubStructure = false;
+    // Partition the SUMMARY forest: punch out other top-level organ subtrees.
+    // The backend ignores discard seeds that are ancestors of the include term, so this
+    // is safe for nested SUMMARY organs (e.g. CNS) as well as the residual bucket.
+    baseParams.discardAnatEntityAndChildrenId = 'SUMMARY';
 
     try {
       if (multiSpeciesGenes && multiSpeciesGenes.length > 0) {

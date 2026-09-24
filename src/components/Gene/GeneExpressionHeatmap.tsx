@@ -273,7 +273,7 @@ const GeneExpressionHeatmap = ({
         newChildTerms.add(
           JSON.stringify({
             id: `${parentId}--${anatEntityId}-${cellTypeId}`,
-            label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
+            label: isSingleCell ? `${cellTypeName} in ${anatEntityName}` : anatEntityName,
             anatEntityId,
             anatEntityLabel: anatEntityName,
             cellTypeId,

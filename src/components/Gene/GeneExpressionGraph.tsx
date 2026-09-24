@@ -301,20 +301,15 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }) => {
     params.isFirstSearch = false;
     // Set parent anatomical term as selected tissue
     params.selectedTissue = [selectedTissueId];
-    // Fix other condition params to top-level terms (overrides form fields!)
-    if (params.selectedCellTypes?.length === 0) {
-      params.selectedCellTypes = ['GO:0005575']; // "cellular_component"
-    }
+    // Do not send cell_type_id — child expansion is anatomical terms only.
     params.hasTissueSubStructure = 1; // we want children of parent term!
     params.limit = BASE_LIMIT;
     params.conditionalParam2 = ['anat_entity']; // restrict to anatomical terms
     params.condObserved = 1;
-    // HD: discard top-level terms from search results
-    // NOTE: use only when we want to get children of "multicellular organism"
-    if (parentId === 'UBERON:0000468-GO:0005575') {
-      console.log(`[GeneExpressionGraph] !use discardAnatEntityAndChildrenId: SUMMARY!`);
-      params.discardAnatEntityAndChildrenId = 'SUMMARY';
-    }
+    // Partition the SUMMARY forest: punch out other top-level organ subtrees.
+    // The backend ignores discard seeds that are ancestors of the include term, so this
+    // is safe for nested SUMMARY organs (e.g. CNS) as well as the residual bucket.
+    params.discardAnatEntityAndChildrenId = 'SUMMARY';
 
     setIsLoading(true);
     // DEBUG: remove console log in prod

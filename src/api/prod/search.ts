@@ -610,7 +610,7 @@ const search = {
           });
       }),
 
-    // Multispec: complementary search (orphan terms)
+    // Multispec: complementary search (leftover organs at the cell-type root)
     multispecInitialSearchComplementary: (form, multiSpeciesGenes): any =>
       new Promise((resolve, reject) => {
         const geneList = buildGeneList(multiSpeciesGenes);
@@ -628,10 +628,10 @@ const search = {
         params.append('cond_param2', 'anat_entity');
         params.append('discard_anat_entity_and_children_id', 'SUMMARY');
         params.append('observed_data', '1');
-        if (form.hasTissueSubStructure && form.selectedTissue?.length > 0) {
-          params.append('anat_entity_descendant', '1');
-        }
+        // NOTE: must be set for this call to work
+        params.append('anat_entity_descendant', '1');
         params.append('exclude_non_informative', '1');
+        // Do not send cell_type_descendant — complementary is leftover organs only.
         if (form.dataType?.length > 0) {
           form.dataType.forEach((type) => params.append('data_type', type));
         }
@@ -666,16 +666,21 @@ const search = {
         params.append('get_results', '1');
         params.append('limit', '10000');
         params.append('gene_list', geneList);
-        if (form.discardAnatEntityAndChildrenId) {
-          params.append('discard_anat_entity_and_children_id', form.discardAnatEntityAndChildrenId);
-        }
         if (form.dataType?.length > 0) {
           form.dataType.forEach((type) => params.append('data_type', type));
         }
-        form.selectedCellTypes?.forEach((ct) => params.append('cell_type_id', ct));
+        // Expand one organ: children of that term, with SUMMARY forest partition.
+        // Do not send cell_type_id unless the caller selected concrete cell types.
         form.selectedTissue?.forEach((t) => params.append('anat_entity_id', t));
-        if (form.hasTissueSubStructure && form.selectedTissue?.length > 0) {
+        if (form.selectedTissue?.length > 0) {
           params.append('anat_entity_descendant', '1');
+        }
+        if (form.discardAnatEntityAndChildrenId) {
+          params.append('discard_anat_entity_and_children_id', form.discardAnatEntityAndChildrenId);
+        }
+        form.selectedCellTypes?.forEach((ct) => params.append('cell_type_id', ct));
+        if (form.hasCellTypeSubStructure && form.selectedCellTypes?.length > 0) {
+          params.append('cell_type_descendant', '1');
         }
         if (form.conditionalParam2?.length > 0) {
           form.conditionalParam2.forEach((cp) => params.append('cond_param2', cp));
