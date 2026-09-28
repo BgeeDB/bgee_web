@@ -34,6 +34,33 @@ const parseGeneListIds = (text: string): string[] =>
     .map((line) => line.trim())
     .filter(Boolean);
 
+type AxisSpecies = {
+  id?: string;
+  name?: string;
+  genus?: string;
+  speciesName?: string;
+};
+
+// speciesLabel is "Genus species" or "Genus species - common name".
+const speciesFromLabel = (speciesId: string, speciesLabel: string): AxisSpecies => {
+  const separator = ' - ';
+  const separatorIndex = speciesLabel.indexOf(separator);
+  const scientific = (separatorIndex === -1 ? speciesLabel : speciesLabel.slice(0, separatorIndex)).trim();
+  const commonName = separatorIndex === -1 ? '' : speciesLabel.slice(separatorIndex + separator.length).trim();
+  const [genus, ...epithet] = scientific.split(/\s+/).filter(Boolean);
+  return {
+    id: speciesId != null ? String(speciesId) : undefined,
+    genus: genus || undefined,
+    speciesName: epithet.join(' ') || undefined,
+    name: commonName || undefined,
+  };
+};
+
+const geneNameFromLabel = (geneId: string, geneLabel: string): string | undefined => {
+  const prefix = `${geneId} - `;
+  return geneLabel.startsWith(prefix) ? geneLabel.slice(prefix.length) : undefined;
+};
+
 export function meta() {
   return getMetadata({
     title: 'Expression graph (beta)',
@@ -446,24 +473,35 @@ const GeneExpressionMatrix = () => {
   // const columnDescExprsCall = searchResult?.columnDescriptions || [];
   // const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
 
-  // Extract unique genes from search results - only show genes that have been searched
+  // Columns follow the requested gene list. A gene with no calls still gets a column
+  // (empty cells) so a narrow filter does not drop it from the graph.
   const searchedGenes = useMemo(() => {
     if (results.length === 0) return [];
 
-    // Get unique genes from expression calls
-    const geneMap = new Map<string, { label: string; value: string }>();
+    const geneMap = new Map<string, { label: string; value: string; name?: string; species?: AxisSpecies }>();
+
+    multiSpeciesGenes.forEach((gene) => {
+      if (geneMap.has(gene.geneId)) return;
+      geneMap.set(gene.geneId, {
+        label: gene.geneLabel,
+        value: gene.geneId,
+        name: geneNameFromLabel(gene.geneId, gene.geneLabel),
+        species: speciesFromLabel(gene.speciesId, gene.speciesLabel),
+      });
+    });
+
     results.forEach((result) => {
       const geneId = result.gene.geneId;
+      if (geneMap.has(geneId)) return;
       const geneName = result.gene.name;
-      if (!geneMap.has(geneId)) {
-        // Try to find matching gene from multiSpeciesGenes for label
-        const multiSpeciesGene = multiSpeciesGenes.find((g) => g.geneId === geneId);
-        geneMap.set(geneId, {
-          label: multiSpeciesGene?.geneLabel || (geneName ? `${geneId} - ${geneName}` : geneId),
-          value: geneId,
-        });
-      }
+      geneMap.set(geneId, {
+        label: geneName ? `${geneId} - ${geneName}` : geneId,
+        value: geneId,
+        name: geneName || undefined,
+        species: result.gene.species,
+      });
     });
+
     return Array.from(geneMap.values());
   }, [results, multiSpeciesGenes]);
 

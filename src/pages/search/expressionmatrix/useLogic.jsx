@@ -827,22 +827,28 @@ const useLogic = (options = {}) => {
       });
   };
 
-  const primaryTerm = (terms, fallbackTerm) => {
+  // Homologous organs arrive as several terms on one condition (e.g. lung + swim bladder).
+  // Keep every id and name so the row label and detail view show the full set.
+  const aggregateTerms = (terms, fallbackTerm) => {
     if (!Array.isArray(terms) || terms.length === 0) return fallbackTerm;
-    const first = terms.find((term) => term?.id && term?.name);
-    return first ? { id: first.id, name: first.name } : fallbackTerm;
+    const validTerms = terms.filter((term) => term?.id && term?.name);
+    if (validTerms.length === 0) return fallbackTerm;
+    return {
+      id: validTerms.map((term) => term.id).join(','),
+      name: validTerms.map((term) => term.name).join(', '),
+    };
   };
 
   // Transform multispec multiSpeciesCondition to condition format for heatmap
   const transformMultispecCall = (call) => {
     if (call.condition) return call;
     const msc = call.multiSpeciesCondition;
-    const anatEntity = primaryTerm(msc?.anatEntities, {
+    const anatEntity = aggregateTerms(msc?.anatEntities, {
       id: 'UBERON:0001062',
       name: 'anatomical entity',
     });
     // Empty cellTypes means cell-type root (organ-only row); GO:0005575 is omitted in JSON.
-    const cellType = primaryTerm(msc?.cellTypes, {
+    const cellType = aggregateTerms(msc?.cellTypes, {
       id: 'GO:0005575',
       name: 'cellular component',
     });

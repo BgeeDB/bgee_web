@@ -48,6 +48,12 @@ export interface Gene {
   label: string;
   name?: string;
   value?: string;
+  species?: {
+    id?: string | number;
+    name?: string;
+    genus?: string;
+    speciesName?: string;
+  };
 }
 
 export interface ExpressionCall {
@@ -402,21 +408,34 @@ const GeneExpressionHeatmap = ({
     }
   };
 
-  // Build geneId -> species map from expression calls (for multispecies x-axis labels)
+  // Species for axis labels. Requested genes supply a fallback so a gene with no
+  // calls still shows its species when the search spans more than one species.
   const geneIdToSpecies = useMemo(() => {
     const map = new Map<string, { name?: string; genus?: string; speciesName?: string }>();
+    genes.forEach((gene) => {
+      const geneId = gene.id || gene.value;
+      if (geneId && gene.species) {
+        map.set(geneId, gene.species);
+      }
+    });
     allExpressionCalls.forEach((result) => {
-      if (!map.has(result.gene.geneId)) {
+      if (result.gene?.geneId && result.gene.species) {
         map.set(result.gene.geneId, result.gene.species);
       }
     });
     return map;
-  }, [allExpressionCalls]);
+  }, [allExpressionCalls, genes]);
 
   const isMultispecies = useMemo(() => {
-    const speciesIds = new Set(allExpressionCalls.map((r) => r.gene.species.id));
+    const speciesIds = new Set<string>();
+    const addSpeciesId = (id?: string | number | null) => {
+      if (id === undefined || id === null || String(id) === '') return;
+      speciesIds.add(String(id));
+    };
+    allExpressionCalls.forEach((result) => addSpeciesId(result.gene?.species?.id));
+    genes.forEach((gene) => addSpeciesId(gene.species?.id));
     return speciesIds.size > 1;
-  }, [allExpressionCalls]);
+  }, [allExpressionCalls, genes]);
 
   // Transform expression calls to heatmap data format
   const heatmapData = useMemo(() => {
