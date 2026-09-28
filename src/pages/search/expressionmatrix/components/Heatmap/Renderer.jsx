@@ -171,7 +171,7 @@ export const Renderer = forwardRef(
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
-        geneUrlBgee: `https://www.bgee.org/gene/${d.geneId}`,
+        geneUrlBgee: `/gene/${d.geneId}`,
         speciesId: d.speciesId,
         anatEntityId: d.anatEntityId,
         anatEntityName: d.anatEntityName,
