@@ -172,6 +172,114 @@ export const ALL_CALL_TYPE = [
 // Set to `true` to re-enable orphan/complementary expression retrieval.
 const ENABLE_MULTISPEC_COMPLEMENTARY_FETCH = true;
 
+// URL params kept only when they differ from the form defaults.
+const DEFAULT_ANAT_ENTITY_ID = 'SUMMARY';
+const DEFAULT_CELL_TYPE_ID = 'SUMMARY';
+const FILTER_URL_KEYS = ['anat_entity_id', 'cell_type_id', 'data_qual', 'data_type'];
+const TECHNICAL_URL_KEYS = [
+  'display_type',
+  'page',
+  'action',
+  'limit',
+  'get_results',
+  'get_column_definition',
+  'get_filters',
+  'display_rp',
+  'detailed_rp',
+  'offset',
+  'get_result_count',
+  'filters_for_all',
+];
+
+const paramValues = (source, key) => {
+  if (!source) return [];
+  if (typeof source.getAll === 'function') return source.getAll(key).filter(Boolean);
+  const value = source[key];
+  if (value == null || value === '') return [];
+  return (Array.isArray(value) ? value : [value]).map(String).filter(Boolean);
+};
+
+const isSameIdSet = (left, right) => {
+  if (left.length !== right.length) return false;
+  const a = [...left].sort();
+  const b = [...right].sort();
+  return a.every((id, index) => id === b[index]);
+};
+
+const isDefaultFilterParam = (key, values) => {
+  if (key === 'anat_entity_id') {
+    return values.length === 0 || values.every((id) => id === DEFAULT_ANAT_ENTITY_ID);
+  }
+  if (key === 'cell_type_id') {
+    return values.length === 0 || values.every((id) => id === DEFAULT_CELL_TYPE_ID);
+  }
+  if (key === 'data_qual') {
+    return values.length === 0 || values[0] === SILVER;
+  }
+  if (key === 'data_type') {
+    return values.length === 0 || isSameIdSet(values, ALL_DATA_TYPES_ID);
+  }
+  return false;
+};
+
+const concreteFilterValues = (key, values) => {
+  if (key === 'anat_entity_id') return values.filter((id) => id !== DEFAULT_ANAT_ENTITY_ID);
+  if (key === 'cell_type_id') return values.filter((id) => id !== DEFAULT_CELL_TYPE_ID);
+  return values;
+};
+
+const appendNonDefaultFilters = (target, source) => {
+  FILTER_URL_KEYS.forEach((key) => {
+    const values = concreteFilterValues(key, paramValues(source, key));
+    if (isDefaultFilterParam(key, values)) return;
+    values.forEach((value) => target.append(key, value));
+  });
+};
+
+// Mirror the API request into the page URL. A stored hash replaces storable
+// parameters, except filter values that differ from the defaults.
+const buildExpressionMatrixUrlParams = (paramsURLCalled, requestParameters) => {
+  const searchParams = new URLSearchParams(paramsURLCalled || '');
+  const newHash = requestParameters?.data;
+  const storableParameters = requestParameters?.storableParameters;
+
+  if (newHash && storableParameters) {
+    searchParams.delete('data');
+    storableParameters.forEach((key) => {
+      const values = concreteFilterValues(key, searchParams.getAll(key));
+      if (FILTER_URL_KEYS.includes(key) && !isDefaultFilterParam(key, values)) return;
+      searchParams.delete(key);
+    });
+    searchParams.append('data', newHash);
+  }
+
+  TECHNICAL_URL_KEYS.forEach((key) => searchParams.delete(key));
+
+  if (searchParams.get('pageType') === 'experiments') searchParams.delete('pageType');
+  if (searchParams.get('sex') === 'all') searchParams.delete('sex');
+  if (searchParams.get('cell_type_descendant') === 'true') searchParams.delete('cell_type_descendant');
+  if (searchParams.get('stage_descendant') === 'true') searchParams.delete('stage_descendant');
+  if (searchParams.get('anat_entity_descendant') === 'true') searchParams.delete('anat_entity_descendant');
+
+  FILTER_URL_KEYS.forEach((key) => {
+    const values = concreteFilterValues(key, searchParams.getAll(key));
+    searchParams.delete(key);
+    if (isDefaultFilterParam(key, values)) return;
+    values.forEach((value) => searchParams.append(key, value));
+  });
+
+  return searchParams;
+};
+
+const termOptionsFromIds = (ids, details) =>
+  ids.map((id) => {
+    const found = (details || []).find((term) => term.id === id);
+    return {
+      label: found ? getIdAndNameLabel(found) : id,
+      value: id,
+    };
+  });
+
 const useLogic = (options = {}) => {
   const { setMultiSpeciesGenes, multiSpeciesGenes } = options;
   const navigate = useNavigate();
@@ -182,7 +290,8 @@ const useLogic = (options = {}) => {
   const [isFirstSearch, setIsFirstSearch] = useState(true);
 
   const initDataType = initSearch.get('data_type') || DATA_TYPES[0].id;
-  const initDataTypeExpCalls = initSearch.getAll('data_type') || ALL_DATA_TYPES_ID;
+  const initDataTypeFromUrl = initSearch.getAll('data_type');
+  const initDataTypeExpCalls = initDataTypeFromUrl.length === 0 ? ALL_DATA_TYPES_ID : initDataTypeFromUrl;
 
   // Page Type / Data Type
   // Page type = data in search params !
@@ -201,9 +310,19 @@ const useLogic = (options = {}) => {
 
   // Form
   const [selectedSpecies, setSelectedSpecies] = useState(EMPTY_SPECIES_VALUE);
-  const [selectedTissue, setSelectedTissue] = useState([]);
+  const [selectedTissue, setSelectedTissue] = useState(() =>
+    termOptionsFromIds(
+      initSearch.getAll('anat_entity_id').filter((id) => id && id !== DEFAULT_ANAT_ENTITY_ID),
+      []
+    )
+  );
   const [selectedStrain, setSelectedStrain] = useState([]);
-  const [selectedCellTypes, setSelectedCellTypes] = useState([]);
+  const [selectedCellTypes, setSelectedCellTypes] = useState(() =>
+    termOptionsFromIds(
+      initSearch.getAll('cell_type_id').filter((id) => id && id !== DEFAULT_CELL_TYPE_ID),
+      []
+    )
+  );
   const [selectedGene, setSelectedGene] = useState([]);
   const [selectedSexes, setSelectedSexes] = useState([]);
   const [selectedExpOrAssay, setSelectedExpOrAssay] = useState([]);
@@ -211,7 +330,7 @@ const useLogic = (options = {}) => {
   const [hasCellTypeSubStructure, setHasCellTypeSubStructure] = useState(true);
   const [hasTissueSubStructure, setHasTissueSubStructure] = useState(true);
   const [hasDevStageSubStructure, setDevStageSubStructure] = useState(true);
-  const [dataQuality, setDataQuality] = useState(SILVER);
+  const [dataQuality, setDataQuality] = useState(initSearch.get('data_qual') || SILVER);
   const [callTypes, setCallTypes] = useState([NOT_EXPRESSED, EXPRESSED]);
   const [condObserved, setCondObserved] = useState(false);
   const [conditionalParam2, setConditionalParam2] = useState([
@@ -293,37 +412,17 @@ const useLogic = (options = {}) => {
       setSelectedGene(initGenes);
     }
 
-    // Tissues (anatEntities)
+    // Tissues and cell types. Replace rather than append so a repeated init
+    // does not duplicate chips, and drop the SUMMARY placeholder.
     const cellTypesAndTissues = requestDetails?.requestedAnatEntitesAndCellTypes || [];
-    if (requestParameters?.anat_entity_id?.length > 0) {
-      const initTissues = selectedTissue;
-      // HD: add top-level anatomical terms
-
-      requestParameters?.anat_entity_id.forEach((tissueId) => {
-        const foundTissue = cellTypesAndTissues.find((t) => t.id === tissueId);
-        if (foundTissue) {
-          initTissues.push({
-            label: getIdAndNameLabel(foundTissue),
-            value: tissueId,
-          });
-        }
-      });
-      setSelectedTissue(initTissues);
+    if (requestParameters?.anat_entity_id) {
+      const tissueIds = paramValues(requestParameters, 'anat_entity_id').filter((id) => id !== DEFAULT_ANAT_ENTITY_ID);
+      setSelectedTissue(termOptionsFromIds(tissueIds, cellTypesAndTissues));
     }
 
-    // Cell types
-    if (requestParameters?.cell_type_id?.length > 0) {
-      const initCelleTypes = selectedCellTypes;
-      requestParameters?.cell_type_id.forEach((cellTypeId) => {
-        const foundCellType = cellTypesAndTissues.find((t) => t.id === cellTypeId);
-        if (foundCellType) {
-          initCelleTypes.push({
-            label: getIdAndNameLabel(foundCellType),
-            value: cellTypeId,
-          });
-        }
-      });
-      setSelectedCellTypes(initCelleTypes);
+    if (requestParameters?.cell_type_id) {
+      const cellTypeIds = paramValues(requestParameters, 'cell_type_id').filter((id) => id !== DEFAULT_CELL_TYPE_ID);
+      setSelectedCellTypes(termOptionsFromIds(cellTypeIds, cellTypesAndTissues));
     }
 
     // Dev Stage
@@ -412,9 +511,10 @@ const useLogic = (options = {}) => {
       setDataTypesExpCalls(requestParameters?.data_type);
     }
 
-    // Data quality
-    if (requestParameters?.data_qual?.length > 0) {
-      setDataQuality(requestParameters?.data_qual);
+    // Data quality (API may return a string or a one-element list)
+    const dataQualValues = paramValues(requestParameters, 'data_qual');
+    if (dataQualValues.length > 0) {
+      setDataQuality(dataQualValues[0]);
     }
 
     // Conditional parameter 2
@@ -587,45 +687,8 @@ const useLogic = (options = {}) => {
           }
         }
 
-        // "Mirroring" management in URL's parameter (multispec API may not return requestParameters)
-        const searchParams = new URLSearchParams(paramsURLCalled1);
-        const newHash = resp1?.requestParameters?.data;
-        if (newHash && resp1?.requestParameters?.storableParameters) {
-          searchParams.delete('data');
-          resp1.requestParameters.storableParameters.forEach((key) => {
-            if (key !== 'data_type') {
-              searchParams.delete(key);
-            }
-          });
-          searchParams.append('data', newHash);
-        }
-
-        // Clean URL parameters
-        searchParams.delete('display_type');
-        searchParams.delete('page');
-        searchParams.delete('action');
-        searchParams.delete('limit');
-        searchParams.delete('get_results');
-        searchParams.delete('get_column_definition');
-        searchParams.delete('get_filters');
-        searchParams.delete('display_rp');
-        searchParams.delete('detailed_rp');
-        searchParams.delete('offset');
-        searchParams.delete('get_result_count');
-        searchParams.delete('filters_for_all');
-
-        if (searchParams.get('pageType') === 'experiments') {
-          searchParams.delete('pageType');
-        }
-        if (searchParams.get('sex') === 'all') {
-          searchParams.delete('sex');
-        }
-        if (searchParams.get('cell_type_descendant') === 'true') {
-          searchParams.delete('cell_type_descendant');
-        }
-        if (searchParams.get('stage_descendant') === 'true') {
-          searchParams.delete('stage_descendant');
-        }
+        // Keep non-default filters in the URL; the hash still stores the full query.
+        const searchParams = buildExpressionMatrixUrlParams(paramsURLCalled1, resp1?.requestParameters);
 
         if (isFirstSearch) {
           navigate(
@@ -721,55 +784,7 @@ const useLogic = (options = {}) => {
             }
           }
 
-          // "Mirroring" management in URL's parameter (with & without hash)
-          const searchParams = new URLSearchParams(paramsURLCalled);
-          // If there is a hash we put it in the URL
-          // And as all next data are "coded" in the Hash...
-          // We can clear the URL from those (aka storableParams)
-          const newHash = resp?.requestParameters?.data;
-          if (newHash) {
-            // We delete the potential old hash
-            searchParams.delete('data');
-
-            resp?.requestParameters?.storableParameters?.forEach((key) => {
-              if (key !== 'data_type') {
-                searchParams.delete(key);
-              }
-            });
-
-            // Adding Hash (in "data" key)
-            searchParams.append('data', newHash);
-          }
-
-          // We can always clean those "tech" parameters from the URL
-          searchParams.delete('display_type');
-          searchParams.delete('page');
-          searchParams.delete('action');
-          searchParams.delete('get_results');
-          searchParams.delete('get_column_definition');
-          searchParams.delete('get_filters');
-          searchParams.delete('display_rp');
-          searchParams.delete('detailed_rp');
-          searchParams.delete('offset');
-          searchParams.delete('get_result_count');
-          searchParams.delete('filters_for_all');
-
-          // The following code clean the url of any default value
-          if (searchParams.get('pageType') === 'experiments') {
-            searchParams.delete('pageType');
-          }
-          if (searchParams.get('sex') === 'all') {
-            searchParams.delete('sex');
-          }
-          if (searchParams.get('cell_type_descendant') === 'true') {
-            searchParams.delete('cell_type_descendant');
-          }
-          if (searchParams.get('stage_descendant') === 'true') {
-            searchParams.delete('stage_descendant');
-          }
-          if (searchParams.get('anat_entity_descendant') === 'true') {
-            searchParams.delete('anat_entity_descendant');
-          }
+          const searchParams = buildExpressionMatrixUrlParams(paramsURLCalled, resp?.requestParameters);
           if (isFirstSearch) {
             navigate(
               {
@@ -964,11 +979,13 @@ const useLogic = (options = {}) => {
         // queries that have no species_id. Hand off to the gene_list URL flow.
         const geneListValues = [].concat(simpleParams.gene_list || []).filter(Boolean);
         if (geneListValues.length > 0) {
-          const encodedGeneList = geneListValues.join('%0A');
+          const nextSearch = new URLSearchParams();
+          nextSearch.set('gene_list', geneListValues.join('\n'));
+          appendNonDefaultFilters(nextSearch, simpleParams);
           navigate(
             {
               pathname: loc.pathname,
-              search: `?gene_list=${encodedGeneList}`,
+              search: `?${nextSearch.toString()}`,
             },
             { replace: true, preventScrollReset: true }
           );
@@ -1143,6 +1160,24 @@ const useLogic = (options = {}) => {
         label: getSpeciesLabel(validResults[0].data.result.geneMatches[0].gene.species),
         value: validResults[0].data.result.geneMatches[0].gene.species.id,
       });
+      // resetForm inside setSelectedSpeciesFromUrl clears tissue and cell type.
+      // Re-apply URL filters afterwards so a shared link restores them.
+      const urlFilters = new URLSearchParams(loc.search);
+      setSelectedTissue(
+        termOptionsFromIds(
+          urlFilters.getAll('anat_entity_id').filter((id) => id && id !== DEFAULT_ANAT_ENTITY_ID),
+          []
+        )
+      );
+      setSelectedCellTypes(
+        termOptionsFromIds(
+          urlFilters.getAll('cell_type_id').filter((id) => id && id !== DEFAULT_CELL_TYPE_ID),
+          []
+        )
+      );
+      setDataQuality(urlFilters.get('data_qual') || SILVER);
+      const typesFromUrl = urlFilters.getAll('data_type');
+      setDataTypesExpCalls(typesFromUrl.length === 0 ? ALL_DATA_TYPES_ID : typesFromUrl);
       setIsInitializingFromUrl(true);
     } catch (error) {
       console.error('Error processing gene list:', error);
