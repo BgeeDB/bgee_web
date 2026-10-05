@@ -43,6 +43,7 @@ export const Tooltip = ({ interactionData, width, height }) => {
           top: tooltipY,
         }}
       >
+        {interactionData.speciesLabel ? <TooltipRow label="species" value={interactionData.speciesLabel} /> : null}
         <TooltipRow label="gene" value={interactionData.xLabel} />
         <TooltipRow label="anatomy" value={interactionData.yLabel} />
         <TooltipRow label="value" value={String(interactionData.value)} />

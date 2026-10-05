@@ -184,4 +184,209 @@
     font-weight: bold;
     color: black;
   }
+
+  .selected-genes-table {
+    table-layout: fixed;
+    width: 100%;
+
+    th,
+    td {
+      vertical-align: middle;
+    }
+  }
+
+  .selected-genes-col-species,
+  .selected-genes-col-gene {
+    width: 30%;
+  }
+
+  th.selected-genes-col-actions {
+    width: 40%;
+    min-width: 20rem;
+    text-align: right;
+  }
+
+  .selected-genes-cell-actions {
+    text-align: right;
+  }
+
+  .selected-genes-primary-cell {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .selected-genes-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .selected-genes-remove-btn {
+    flex: 0 0 auto;
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+  }
+
+  .selected-genes-ortholog-controls {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 0 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap;
+  }
+
+  .selected-genes-taxon-select {
+    flex: 0 1 11rem;
+    min-width: 11rem;
+  }
+
+  .selected-genes-taxon-select select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .selected-genes-add-btn {
+    flex: 0 0 auto;
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .selected-genes-col-species,
+    .selected-genes-col-gene {
+      width: 28%;
+    }
+
+    .selected-genes-col-actions {
+      width: 44%;
+      min-width: 17rem;
+    }
+  }
+
+  @media screen and (max-width: 900px) {
+    .selected-genes-table {
+      min-width: 46rem;
+    }
+  }
+
+  // Header for the Selected Genes card: title + filter tabs + collapse toggle
+  .selected-genes-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .selected-genes-header-label {
+    margin: 0;
+    flex: 0 0 auto;
+  }
+
+  .selected-genes-header-toggle {
+    margin-left: auto;
+    flex: 0 0 auto;
+  }
+
+  // Filter tabs inside the Selected Genes header (All / With data / No data)
+  .selected-genes-filter-tabs {
+    margin-bottom: 0;
+    flex: 0 1 auto;
+    // Bulma toggle tabs set z-index: 1 on the active tab (border overlap). Without a
+    // local stacking context that competes with react-select menus (also z-index: 1)
+    // and wins by DOM order when the dropdown overlaps this card.
+    isolation: isolate;
+
+    ul {
+      border-bottom: none;
+    }
+
+    li a {
+      padding: 0.2rem 0.65rem;
+      line-height: 1.2;
+    }
+
+    .selected-genes-filter-count {
+      margin-left: 0.35rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    li.is-disabled a {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+
+  // Input-mode tabs (switch between per-species controls and pasted gene list)
+  .gene-input-mode-tabs {
+    margin-top: 0.25rem;
+    isolation: isolate;
+
+    ul {
+      border-bottom: none;
+    }
+
+    li a {
+      padding: 0.4rem 0.9rem;
+    }
+  }
+
+  .multispec-gene-list {
+    .multispec-gene-list-textarea {
+      font-size: 0.85rem;
+      line-height: 1.3;
+      resize: vertical;
+      min-height: 8rem;
+    }
+
+    .multispec-gene-list-summary {
+      margin-top: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .multispec-gene-list-statuses {
+      margin-top: 0.25rem;
+      max-height: 18rem;
+      overflow-y: auto;
+    }
+
+    .multispec-gene-list-table {
+      th,
+      td {
+        vertical-align: middle;
+        padding: 0.35rem 0.5rem;
+      }
+    }
+
+    .multispec-gene-list-status-cell {
+      text-align: center;
+      padding-left: 0.25rem !important;
+      padding-right: 0.25rem !important;
+    }
+
+    .multispec-gene-list-icon {
+      vertical-align: middle;
+
+      &.is-spinning {
+        animation: multispec-spin 1s linear infinite;
+      }
+    }
+  }
+
+  @keyframes multispec-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }

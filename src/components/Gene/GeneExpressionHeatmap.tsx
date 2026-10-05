@@ -1,18 +1,67 @@
 import { useState, useEffect, useMemo } from 'react';
 
+import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
 import Heatmap from '../Heatmap/Heatmap';
 
 const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
+
+const getSpeciesDisplayName = (species?: { name?: string; genus?: string; speciesName?: string }) => {
+  const commonName = species?.name?.trim();
+  if (commonName) {
+    return commonName;
+  }
+  const genus = species?.genus?.trim();
+  const speciesName = species?.speciesName?.trim();
+  if (genus && speciesName) {
+    return `${genus} ${speciesName}`;
+  }
+  return 'Unknown species';
+};
+
+const getAxisLabels = ({
+  geneId,
+  geneName,
+  species,
+  isMultispecies,
+}: {
+  geneId: string;
+  geneName?: string | null;
+  species?: { name?: string; genus?: string; speciesName?: string };
+  isMultispecies: boolean;
+}) => {
+  const displayGeneName = geneName || geneId;
+  const bottomLabel = `${displayGeneName}\n${geneId}`;
+  if (!isMultispecies) {
+    return {
+      topLabel: '',
+      bottomLabel,
+    };
+  }
+  return {
+    topLabel: getSpeciesDisplayName(species),
+    bottomLabel,
+  };
+};
 
 export interface Gene {
   id: string;
   label: string;
   name?: string;
   value?: string;
+  species?: {
+    id?: string | number;
+    name?: string;
+    genus?: string;
+    speciesName?: string;
+  };
 }
 
 export interface ExpressionCall {
-  gene: { geneId: string; name: string; species: { id: string } };
+  gene: {
+    geneId: string;
+    name: string;
+    species: { id: string; name?: string; genus?: string; speciesName?: string };
+  };
   condition: {
     anatEntity: {
       id: string;
@@ -228,7 +277,7 @@ const GeneExpressionHeatmap = ({
         newChildTerms.add(
           JSON.stringify({
             id: `${parentId}--${anatEntityId}-${cellTypeId}`,
-            label: isSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName,
+            label: isSingleCell ? `${cellTypeName} in ${anatEntityName}` : anatEntityName,
             anatEntityId,
             anatEntityLabel: anatEntityName,
             cellTypeId,
@@ -357,6 +406,35 @@ const GeneExpressionHeatmap = ({
     }
   };
 
+  // Species for axis labels. Requested genes supply a fallback so a gene with no
+  // calls still shows its species when the search spans more than one species.
+  const geneIdToSpecies = useMemo(() => {
+    const map = new Map<string, { name?: string; genus?: string; speciesName?: string }>();
+    genes.forEach((gene) => {
+      const geneId = gene.id || gene.value;
+      if (geneId && gene.species) {
+        map.set(geneId, gene.species);
+      }
+    });
+    allExpressionCalls.forEach((result) => {
+      if (result.gene?.geneId && result.gene.species) {
+        map.set(result.gene.geneId, result.gene.species);
+      }
+    });
+    return map;
+  }, [allExpressionCalls, genes]);
+
+  const isMultispecies = useMemo(() => {
+    const speciesIds = new Set<string>();
+    const addSpeciesId = (id?: string | number | null) => {
+      if (id === undefined || id === null || String(id) === '') return;
+      speciesIds.add(String(id));
+    };
+    allExpressionCalls.forEach((result) => addSpeciesId(result.gene?.species?.id));
+    genes.forEach((gene) => addSpeciesId(gene.species?.id));
+    return speciesIds.size > 1;
+  }, [allExpressionCalls, genes]);
+
   // Transform expression calls to heatmap data format
   const heatmapData = useMemo(() => {
     return allExpressionCalls.map((result) => {
@@ -370,13 +448,16 @@ const GeneExpressionHeatmap = ({
       const isExpressed = result.expressionState === 'expressed';
 
       return {
-        x: gName?.length > 0 ? gName : gId,
+        // Use geneId as x-domain key so columns are unique even when species prefix
+        // and gene name collide (renderer reads top/bottom labels separately for display).
+        x: gId,
         y: termId,
         termId,
         termName,
         geneId: gId,
         geneName: gName,
         speciesId: specId,
+        speciesLabel: getSpeciesLabel(result.gene.species),
         anatEntityId,
         anatEntityName,
         cellTypeId,
@@ -391,19 +472,24 @@ const GeneExpressionHeatmap = ({
     });
   }, [allExpressionCalls]);
 
-  // Generate xTerms from genes
+  // Generate xTerms from genes (value = unique key for scale, label = display text)
   const xTerms = useMemo(() => {
     return genes.map((gene) => {
       // Handle both {id, name} format (from GeneExpressionGraph) and {label, value} format (from useLogic)
-      const geneId = gene.id || gene.value;
+      const geneId = gene.id || gene.value || 'Unknown';
       const geneName = gene.name || (gene.label && gene.label.includes(' - ') ? gene.label.split(' - ')[1] : null);
+      const species = geneIdToSpecies.get(geneId);
+      const axisLabels = getAxisLabels({ geneId, geneName, species, isMultispecies });
 
       return {
-        label: geneName ? `${geneId} - ${geneName}` : geneId,
+        // Use geneId as the x-domain key (unique per gene); renderer reads top/bottom labels separately for display.
         value: geneId,
+        label: axisLabels.bottomLabel,
+        topLabel: axisLabels.topLabel,
+        bottomLabel: axisLabels.bottomLabel,
       };
     });
-  }, [genes]);
+  }, [genes, isMultispecies, geneIdToSpecies]);
 
   if (allExpressionCalls.length === 0) {
     return (

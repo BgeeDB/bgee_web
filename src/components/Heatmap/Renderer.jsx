@@ -33,8 +33,47 @@ function reorderAnatomyTree(nodes, rowOrdering, scoreMap) {
   return sortSiblingTerms(withSubtrees, rowOrdering, scoreMap);
 }
 
-const MARGIN = { top: 50, right: 10, bottom: 50, left: 200 };
+const DEFAULT_MARGIN = { top: 50, right: 10, bottom: 50, left: 200 };
 const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
+
+// X-axis label geometry constants (must match the <text> elements below)
+const X_LABEL_FONT_SIZE = 15;
+// Empirical average glyph width for 15px sans-serif (Open Sans); slight over-estimate is safer.
+const X_LABEL_CHAR_WIDTH = 8.5;
+// Extra breathing room added on top of the projected label extent.
+const X_LABEL_PADDING = 15;
+// Minimum gap between the bottom of the heatmap and the color legend.
+const DEFAULT_BOTTOM_LABEL_GAP = 40;
+
+// Estimate the vertical SVG extent (in px) of a label when rotated by `rotationDeg`.
+// Projects the text bounding box onto the y-axis using sin/cos of the rotation angle.
+const estimateLabelVerticalExtent = (text, rotationDeg) => {
+  if (!text) return 0;
+  const lines = text.split('\n');
+  const rotRad = (rotationDeg * Math.PI) / 180;
+  const sinAbs = Math.abs(Math.sin(rotRad));
+  const cosAbs = Math.abs(Math.cos(rotRad));
+  const maxLineLength = Math.max(...lines.map((line) => line.length));
+  const textWidth = maxLineLength * X_LABEL_CHAR_WIDTH;
+  const lineHeight = X_LABEL_FONT_SIZE * 1.2;
+  const textHeight = lines.length === 1 ? X_LABEL_FONT_SIZE : (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE;
+  return sinAbs * textWidth + cosAbs * textHeight;
+};
+
+const X_LABEL_LINE_HEIGHT = 1.2;
+
+const renderSvgTextLines = (text, keyPrefix) => {
+  const lines = text.split('\n');
+  if (lines.length === 1) {
+    return text;
+  }
+
+  return lines.map((line, lineIdx) => (
+    <tspan key={`${keyPrefix}-line-${lineIdx}`} x={0} dy={lineIdx === 0 ? 0 : `${X_LABEL_LINE_HEIGHT}em`}>
+      {line}
+    </tspan>
+  ));
+};
 
 export const Renderer = forwardRef(
   (
@@ -42,6 +81,7 @@ export const Renderer = forwardRef(
       width,
       height,
       data,
+      xTerms,
       drilldown,
       termProps,
       hoveredCell,
@@ -60,16 +100,46 @@ export const Renderer = forwardRef(
       maxCellWidth,
       minCellWidth = 20,
       minCellHeight = 10,
-      maxGraphWidth = 1000,
-      setGraphWidth,
       rowOrdering = 'alphabetical',
       rowAggFn = 'mean',
+      defaultCellHeight = 15,
+      maxGraphWidth = 800,
+      setGraphWidth,
+      setGraphHeight,
+      scaleSvg = false,
+      rendererMargins,
     },
     ref
   ) => {
+    // Use provided margins or fall back to default
+    const MARGIN = rendererMargins || DEFAULT_MARGIN;
     // The bounds (=area inside the axis) is calculated by substracting the margins
     const boundsWidth = width - MARGIN.right - marginLeft;
-    const boundsHeight = height - MARGIN.top - MARGIN.bottom;
+
+    // Determine how much vertical space the rotated x-axis labels need so that
+    // top labels are not clipped and bottom labels don't overlap the legend.
+    const { topLabelSpace, bottomLabelSpace } = useMemo(() => {
+      let maxTopText = '';
+      let maxBottomText = '';
+      xTerms.forEach((t) => {
+        const top = t?.topLabel ?? t?.label ?? t?.value ?? '';
+        const bottom = t?.bottomLabel ?? t?.label ?? t?.value ?? '';
+        if (top.length > maxTopText.length) maxTopText = top;
+        if (bottom.length > maxBottomText.length) maxBottomText = bottom;
+      });
+      return {
+        topLabelSpace: estimateLabelVerticalExtent(maxTopText, xLabelRotation) + X_LABEL_PADDING,
+        bottomLabelSpace: estimateLabelVerticalExtent(maxBottomText, xLabelRotation) + X_LABEL_PADDING,
+      };
+    }, [xTerms, xLabelRotation]);
+
+    const effectiveMarginTop = Math.max(MARGIN.top, topLabelSpace);
+    const bottomLabelGap = Math.max(DEFAULT_BOTTOM_LABEL_GAP, bottomLabelSpace);
+
+    // Separate main heatmap height from total height (which includes legend)
+    const mainHeatmapHeight = height - colorLegendHeight;
+    // Reserve vertical room for the bottom labels between the cells and the legend.
+    const boundsHeight = mainHeatmapHeight - effectiveMarginTop - bottomLabelGap - MARGIN.bottom;
     const colorLegendBoundsHeight = colorLegendHeight - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
 
     // show only selected and top-level data points
@@ -133,8 +203,8 @@ export const Renderer = forwardRef(
     const yTermsOrderedCopy = JSON.parse(JSON.stringify(yTermsOrdered));
     const yLblOrdered = yTermsOrderedCopy;
 
-    // const allYGroups = useMemo(() => [...new Set(dataShow.map((d) => d.y))], [dataShow]);
-    const allXGroups = useMemo(() => [...new Set(dataShow.map((d) => d.x))], [dataShow]);
+    // Use xTerms.value for scale domain (unique key per column), xTerms.label for display
+    const allXGroups = useMemo(() => xTerms.map((d) => d.value ?? d.label ?? 'Unknown'), [xTerms]);
     // const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.label))], [yLblOrdered]);
     const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 
@@ -155,8 +225,30 @@ export const Renderer = forwardRef(
       const requiredHeight = allYGroups.length * (minCellHeight + 4);
       const actualHeight = Math.max(boundsHeight, requiredHeight);
 
+      // Grow the SVG height if the current `height` cannot fit the desired cell
+      // height plus the label margins and the legend. Uses `defaultCellHeight` so
+      // it does not depend on the current `height` (avoids a resize feedback loop).
+      const desiredCellsHeight = allYGroups.length * defaultCellHeight;
+      const requiredTotalHeight =
+        effectiveMarginTop + desiredCellsHeight + bottomLabelGap + colorLegendHeight + MARGIN.bottom;
+      if (requiredTotalHeight > height && setGraphHeight) {
+        setGraphHeight(requiredTotalHeight);
+      }
+
       return d3.scaleBand().range([0, actualHeight]).domain(allYGroups).padding(0.01);
-    }, [dataShow, height, minCellHeight, allYGroups, boundsHeight]);
+    }, [
+      dataShow,
+      height,
+      minCellHeight,
+      allYGroups,
+      boundsHeight,
+      defaultCellHeight,
+      effectiveMarginTop,
+      bottomLabelGap,
+      colorLegendHeight,
+      MARGIN.bottom,
+      setGraphHeight,
+    ]);
 
     // Build the rectangles
     const allShapes = dataShow.map((d, i) => {
@@ -177,8 +269,10 @@ export const Renderer = forwardRef(
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
-        geneUrlBgee: `https://www.bgee.org/gene/${d.geneId}`,
+        geneUrlBgee: `/gene/${d.geneId}`,
         speciesId: d.speciesId,
+        speciesLabel: d.speciesLabel,
+        speciesUrl: d.speciesId ? `/species/${d.speciesId}` : undefined,
         anatEntityId: d.anatEntityId,
         anatEntityName: d.anatEntityName,
         anatEntityUrlOls: `http://purl.obolibrary.org/obo/${d.anatEntityId.replace(':', '_')}`,
@@ -196,6 +290,16 @@ export const Renderer = forwardRef(
         hasDataRnaSeq: d.hasDataRnaSeq,
         hasDataScRnaSeq: d.hasDataScRnaSeq,
       };
+      const getHoverData = (e, yLabel = `${d.termId} - ${d.termName}`) => ({
+        speciesLabel: d.speciesLabel,
+        xLabel: `${d.geneId} - ${d.geneName}`,
+        yLabel,
+        value: Math.round(d.value * 100) / 100,
+        isExpressed: d.isExpressed,
+        ...(d.maxExp != null && { maxExpScore: d.maxExp.toFixed(2) }),
+        clientX: e.clientX + 10,
+        clientY: e.clientY - 10,
+      });
 
       // for central circle
       const r = (Math.min(cellWidth, cellHeight) / 2) * 0.9;
@@ -259,15 +363,7 @@ export const Renderer = forwardRef(
               stroke={strokeColour}
               strokeWidth={4}
               onMouseEnter={(e) => {
-                setHoveredCell({
-                  xLabel: `${d.geneId} - ${d.geneName}`,
-                  yLabel: `${d.termId} - ${d.termName}`,
-                  value: Math.round(d.value * 100) / 100,
-                  isExpressed: d.isExpressed,
-                  maxExpScore: d.maxExp.toFixed(2),
-                  clientX: e.clientX + 10,
-                  clientY: e.clientY - 10,
-                });
+                setHoveredCell(getHoverData(e));
               }}
               onMouseLeave={() => setHoveredCell(null)}
               onClick={() => setClickedCell(cellData)}
@@ -290,15 +386,7 @@ export const Renderer = forwardRef(
                 rx={5}
                 strokeWidth={1}
                 onMouseEnter={(e) => {
-                  setHoveredCell({
-                    xLabel: `${d.geneId} - ${d.geneName}`,
-                    yLabel: `${d.termId} - ${d.termName}`,
-                    value: Math.round(d.value * 100) / 100,
-                    isExpressed: d.isExpressed,
-                    maxExpScore: d.maxExp.toFixed(2),
-                    clientX: e.clientX + 10,
-                    clientY: e.clientY - 10,
-                  });
+                  setHoveredCell(getHoverData(e));
                 }}
                 onMouseLeave={() => setHoveredCell(null)}
                 onClick={() => setClickedCell(cellData)}
@@ -322,8 +410,8 @@ export const Renderer = forwardRef(
                 opacity={1}
                 fill={fillColour}
                 strokeWidth={4}
-                onMouseEnter={() => {
-                  setHoveredCell(cellData);
+                onMouseEnter={(e) => {
+                  setHoveredCell({ ...cellData, clientX: e.clientX + 10, clientY: e.clientY - 10 });
                 }}
                 onMouseLeave={() => setHoveredCell(null)}
                 onClick={() => setClickedCell(cellData)}
@@ -339,8 +427,8 @@ export const Renderer = forwardRef(
                 opacity={1}
                 fill={strokeColour}
                 strokeWidth={4}
-                onMouseEnter={() => {
-                  setHoveredCell(cellData);
+                onMouseEnter={(e) => {
+                  setHoveredCell({ ...cellData, clientX: e.clientX + 10, clientY: e.clientY - 10 });
                 }}
                 onMouseLeave={() => setHoveredCell(null)}
                 onClick={() => setClickedCell(cellData)}
@@ -365,15 +453,7 @@ export const Renderer = forwardRef(
               stroke="white"
               strokeWidth={2}
               onMouseEnter={(e) => {
-                setHoveredCell({
-                  xLabel: `${d.geneId} - ${d.geneName}`,
-                  yLabel: `${d.termId} - ${d.termName}`,
-                  value: Math.round(d.value * 100) / 100,
-                  isExpressed: d.isExpressed,
-                  // maxExpScore: d.maxExp.toFixed(2),
-                  clientX: e.clientX + 10,
-                  clientY: e.clientY - 10,
-                });
+                setHoveredCell(getHoverData(e, `${d.termName}`));
               }}
               onMouseLeave={() => setHoveredCell(null)}
               onClick={() => setClickedCell(cellData)}
@@ -383,56 +463,53 @@ export const Renderer = forwardRef(
       }
     });
 
-    const xLabelsTop = allXGroups.map((name, i) => {
-      const x = xScale(name);
+    const xLabelsTop = xTerms.map((term, i) => {
+      const x = xScale(term.value ?? term.label);
       const xCoord = x + xScale.bandwidth() / 2;
       const yCoord = -10;
-      // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
+      const displayLabel = term.topLabel ?? term.label ?? term.value ?? 'Unknown';
 
-      if (!x) {
+      if (x === undefined) {
         return null;
       }
 
-      const idx = i;
       return (
         <text
-          key={`heatMapXLabel-${idx}`}
+          key={`heatMapXLabel-${i}`}
           x={xLabelRotation === 0 ? xCoord : null}
           y={xLabelRotation === 0 ? yCoord : null}
           transform={xLabelRotation !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotation})` : null}
           textAnchor={xLabelRotation === 0 ? 'middle' : 'start'}
           dominantBaseline="middle"
           fontSize={15}
-          // transform="`rotate(-10) translate(${xCoord}, ${yCoord})`"
         >
-          {name}
+          {renderSvgTextLines(displayLabel, `heatMapXLabel-${i}`)}
         </text>
       );
     });
 
-    const xLabelsBottom = allXGroups.map((name, i) => {
-      const x = xScale(name);
+    const xLabelsBottom = xTerms.map((term, i) => {
+      const x = xScale(term.value ?? term.label);
       const xCoord = x + xScale.bandwidth() / 2;
-      const yCoord = boundsHeight + 10;
-      // const yCoord = boundsHeight + 10 + (i % 2) * 20; // stagger labels
+      const actualHeatmapHeight = yScale.range()[1] || 0;
+      const yCoord = actualHeatmapHeight + 10;
+      const displayLabel = term.bottomLabel ?? term.label ?? term.value ?? 'Unknown';
 
-      if (!x) {
+      if (x === undefined) {
         return null;
       }
 
-      const idx = i;
       return (
         <text
-          key={`heatMapXLabel-${idx}`}
+          key={`heatMapXLabelBottom-${i}`}
           x={xLabelRotation === 0 ? xCoord : null}
           y={xLabelRotation === 0 ? yCoord : null}
           transform={xLabelRotation !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotation})` : null}
           textAnchor={xLabelRotation === 0 ? 'middle' : 'end'}
           dominantBaseline="middle"
           fontSize={15}
-          // transform="`rotate(-10) translate(${xCoord}, ${yCoord})`"
         >
-          {name}
+          {renderSvgTextLines(displayLabel, `heatMapXLabelBottom-${i}`)}
         </text>
       );
     });
@@ -449,7 +526,12 @@ export const Renderer = forwardRef(
       <stop key={`colorLegendStop-${idx}`} stopColor={colorScale((max * idx) / 100)} offset={`${idx}%`} />
     ));
     const colorLegendPosX = 0;
-    const colorLegendPosY = height;
+    // Position legend after the main heatmap
+    // Calculate the actual heatmap content height (yScale range height)
+    const actualHeatmapHeight = yScale.range()[1] || 0;
+    // Position legend just below the heatmap, with enough gap to clear the
+    // (possibly rotated and long) bottom x-axis labels.
+    const colorLegendPosY = actualHeatmapHeight + bottomLabelGap;
 
     return (
       <svg
@@ -458,7 +540,7 @@ export const Renderer = forwardRef(
         height={height + colorLegendHeight}
         style={{ backgroundColor }}
         viewBox={`0 0 ${width} ${height + colorLegendHeight}`}
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio={scaleSvg ? 'xMidYMid meet' : 'none'}
       >
         <defs>
           <style>{`
@@ -477,13 +559,18 @@ export const Renderer = forwardRef(
         `}</style>
           <linearGradient id="colorLegendGradient">{colorLegendStops}</linearGradient>
         </defs>
-        <g width={boundsWidth} height={boundsHeight} transform={`translate(${[marginLeft, MARGIN.top].join(',')})`}>
-          {allShapes}
-          {xLabelsTop}
-          {xLabelsBottom}
-
-          <g transform={`translate(-${marginLeft - 10}, 5)`}>
-            <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+        <g
+          width={boundsWidth}
+          height={boundsHeight}
+          transform={`translate(${[marginLeft, effectiveMarginTop].join(',')})`}
+        >
+          <g>
+            <g>{allShapes}</g>
+            <g>{xLabelsTop}</g>
+            <g>{xLabelsBottom}</g>
+            <g transform={`translate(-${marginLeft - 10}, 5)`}>
+              <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+            </g>
           </g>
 
           <g transform={`translate(-${marginLeft - 50}, 0)`}>

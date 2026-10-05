@@ -17,7 +17,17 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
     return null;
   }
 
-  console.log(`[DetailView] data:\n${JSON.stringify(data)}`);
+  const toTermIds = (value) =>
+    String(value || '')
+      .split(',')
+      .map((term) => term.trim())
+      .filter(Boolean);
+  const anatEntityIds = toTermIds(data.anatEntityId);
+  const cellTypeIds = toTermIds(data.cellTypeId);
+  const anatEntityUrlsOls = anatEntityIds.map((id) => `http://purl.obolibrary.org/obo/${id.replace(':', '_')}`);
+  const cellTypeUrlsOls = cellTypeIds.map((id) => `http://purl.obolibrary.org/obo/${id.replace(':', '_')}`);
+  const anatEntityQueryParams = anatEntityIds.map((id) => `&anat_entity_id=${encodeURIComponent(id)}`).join('');
+  const cellTypeQueryParams = cellTypeIds.map((id) => `&cell_type_id=${encodeURIComponent(id)}`).join('');
 
   return (
     <div
@@ -47,6 +57,20 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           ✕
         </button>
 
+        {data.speciesId ? (
+          <>
+            <div className="card-content">
+              <p className="title">Species</p>
+              <div className="content">
+                <DetailRow label="ID" value={data.speciesId} url={data.speciesUrl} />
+                <DetailRow label="name" value={data.speciesLabel} />
+              </div>
+            </div>
+
+            <hr style={{ margin: '0px' }} />
+          </>
+        ) : null}
+
         <div className="card-content">
           <p className="title">Gene</p>
           <div className="content">
@@ -61,13 +85,13 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           <p className="title">Condition</p>
           <div className="content">
             <h5>Anatomical Entity</h5>
-            <DetailRow label="ID" value={data.anatEntityId} url={data.anatEntityUrlOls} />
+            <DetailRow label="ID" value={anatEntityIds} url={anatEntityUrlsOls} />
             <DetailRow label="name" value={data.anatEntityName} />
 
             <br />
 
             <h5>Cell Type</h5>
-            <DetailRow label="ID" value={data.cellTypeId} url={data.cellTypeUrlOls} />
+            <DetailRow label="ID" value={cellTypeIds} url={cellTypeUrlsOls} />
             <DetailRow label="name" value={data.cellTypeName} />
           </div>
         </div>
@@ -114,7 +138,16 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           <DetailRow label="expression score" value={String(data.value)} />
           <br />
           <a
-            href={`/search/raw-data?pageType=proc_expr_values&gene_id=${data.geneId}&species_id=${data.speciesId}&cell_type_id=${data.cellTypeId}&cell_type_descendant=true&stage_descendant=true&anat_entity_descendant=true&anat_entity_id=${data.anatEntityId}`}
+            href={
+              `/search/raw-data?pageType=proc_expr_values` +
+              `&gene_id=${data.geneId}` +
+              `&species_id=${data.speciesId}` +
+              cellTypeQueryParams +
+              anatEntityQueryParams +
+              `&cell_type_descendant=true` +
+              `&stage_descendant=true` +
+              `&anat_entity_descendant=true`
+            }
           >
             See source data
           </a>
@@ -141,7 +174,20 @@ const DetailRow = ({ label, value, url }) => (
   >
     <b>{label}</b>
     <span>: </span>
-    {url ? (
+    {Array.isArray(value) ? (
+      value.map((item, index) => (
+        <span key={`${label}-${item}`}>
+          {index > 0 && ', '}
+          {Array.isArray(url) && url[index] ? (
+            <a href={url[index]} target="_blank" rel="noopener noreferrer">
+              {item}
+            </a>
+          ) : (
+            <span>{item}</span>
+          )}
+        </span>
+      ))
+    ) : url ? (
       <a href={url} target="_blank" rel="noopener noreferrer">
         {value}
       </a>

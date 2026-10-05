@@ -132,6 +132,8 @@ test.describe('Gene Expression Matrix Page', () => {
           for (const label of dataTypeLabels) {
             await expect(page.locator('label.checkbox').filter({ hasText: label })).toBeVisible();
           }
+          await expect(page.locator('label.checkbox').filter({ hasText: 'Affymetrix data' })).toHaveCount(0);
+          await expect(page.locator('label.checkbox').filter({ hasText: /^EST$/ })).toHaveCount(0);
 
           // Check that data quality checkbox options are present
           const qualityLabels = ['Bronze', 'Silver', 'Gold'];

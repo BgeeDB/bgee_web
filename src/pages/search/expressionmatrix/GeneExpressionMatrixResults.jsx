@@ -1,83 +1,64 @@
-import { useMemo } from 'react';
-import { Heatmap } from './components/Heatmap/Heatmap';
+import GeneExpressionHeatmap from '../../../components/Gene/GeneExpressionHeatmap';
 
-const GeneExpressionMatrixResults = ({
-  results = [],
-  genes,
-  anatomicalTerms,
-  anatomicalTermsProps,
-  maxExpScore,
-  onToggleExpandCollapse,
-  isLoading,
-  isFirstSearch,
-}) => {
-  // console.log(`[GeneExpressionMatrixResults] results:\n${JSON.stringify(results, null, 2)}`);
-  // console.log(`[GeneExpressionMatrixResults] anatomicalTerms:\n${JSON.stringify(anatomicalTerms, null, 2)}`);
-  // console.log(`[GeneExpressionMatrixResults] anatomicalTerms:\n${JSON.stringify(anatomicalTerms)}`);
-  const heatmapData = useMemo(
-    () =>
-      results.map((result) => {
-        const { geneId, name: geneName } = result.gene;
-        const speciesId = result.gene.species.id;
-        const { id: anatEntityId, name: anatEntityName } = result.condition.anatEntity;
-        const { id: cellTypeId, name: cellTypeName } = result.condition.cellType;
-        const termId = `${anatEntityId}-${cellTypeId}`;
-        const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
-        const expScore = result.expressionScore.expressionScore;
-        const maxExp = geneId in maxExpScore && termId in maxExpScore[geneId] ? maxExpScore[geneId][termId] : 0;
-        const isExpressed = result.expressionState === 'expressed';
+// Transform multispec API format (multiSpeciesCondition) to heatmap format (condition)
+const DEFAULT_ANAT_ENTITY = { id: 'UBERON:0001062', name: 'anatomical entity' };
+const DEFAULT_CELL_TYPE = { id: 'GO:0005575', name: 'cellular component' };
 
-        const row = {
-          x: geneName?.length > 0 ? geneName : geneId,
-          y: termId,
-          termId,
-          termName,
-          geneId,
-          geneName,
-          speciesId,
-          anatEntityId,
-          anatEntityName,
-          cellTypeId,
-          cellTypeName,
-          // termIsTopLevel: anatomicalTerms.filter(item => item.id === result.condition.anatEntity.id)?.isTopLevelTerm,
-          value: expScore,
-          // TODO: use actual number from API response
-          maxExp,
-          isExpressed,
-          hasDataInSitu: result.dataTypesWithData.IN_SITU,
-          hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
-          hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
-          ylvl: 0,
-        };
-        return row;
-      }),
-    [results, maxExpScore]
-  );
+const aggregateTerms = (terms, fallbackTerm) => {
+  if (!Array.isArray(terms) || terms.length === 0) return fallbackTerm;
+
+  const validTerms = terms.filter((term) => term?.id && term?.name);
+  if (validTerms.length === 0) return fallbackTerm;
+
+  return {
+    id: validTerms.map((term) => term.id).join(','),
+    name: validTerms.map((term) => term.name).join(', '),
+  };
+};
+
+const transformToExpressionCall = (result) => {
+  let condition = result.condition;
+  if (result.multiSpeciesCondition) {
+    const msc = result.multiSpeciesCondition;
+    const anatEntity = aggregateTerms(msc.anatEntities, DEFAULT_ANAT_ENTITY);
+    const cellType = aggregateTerms(msc.cellTypes, DEFAULT_CELL_TYPE);
+    condition = { anatEntity, cellType };
+  }
+  return {
+    gene: result.gene,
+    condition,
+    expressionScore: result.expressionScore,
+    expressionState: result.expressionState,
+    dataTypesWithData: result.dataTypesWithData,
+    isOrphan: result.isOrphan,
+  };
+};
+
+const GeneExpressionMatrixResults = ({ results = [], genes, isLoading, isFirstSearch, onFetchChildren }) => {
+  const expressionCalls = results.map(transformToExpressionCall);
 
   return (
     <>
       {results?.length > 0 && (
-        <Heatmap
-          data={heatmapData}
-          xTerms={genes}
-          yTerms={anatomicalTerms}
-          // setYTerms={setAnatomicalTerms}
-          termProps={anatomicalTermsProps}
-          // setTermProps={setAnatomicalTermsProps}
-          onToggleExpandCollapse={onToggleExpandCollapse}
-          width={800}
-          height={800}
-          backgroundColor="white"
+        <GeneExpressionHeatmap
+          expressionCalls={expressionCalls}
+          genes={genes}
+          onFetchChildren={onFetchChildren}
           isLoading={isLoading}
+          xLabelRotation={325}
+          maxGraphWidth={1500}
+          cellHeight={30}
+          showResetButton={true}
+          rendererMargins={{ top: 60, right: 60, bottom: 50, left: 200 }}
         />
       )}
       {isFirstSearch && (
         <div className="is-flex is-justify-content-center mt-3">
-          Please select search criteria above to display results
+          Please select search criteria above to display results.
         </div>
       )}
       {!isFirstSearch && results?.length === 0 && (
-        <div className="is-flex is-justify-content-center mt-3">No results found</div>
+        <div className="is-flex is-justify-content-center mt-3">No results found.</div>
       )}
     </>
   );

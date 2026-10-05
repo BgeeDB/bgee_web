@@ -23,7 +23,10 @@ export type RendererProps = {
   minCellWidth?: number;
   minCellHeight?: number;
   maxGraphWidth?: number;
+  defaultCellHeight?: number;
   setGraphWidth: React.Dispatch<React.SetStateAction<any>>;
+  setGraphHeight?: React.Dispatch<React.SetStateAction<any>>;
+  rendererMargins?: { top: number; right: number; bottom: number; left: number };
   rowOrdering: string;
   rowAggFn: string;
   getChildData?: unknown;

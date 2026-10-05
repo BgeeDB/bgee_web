@@ -4,6 +4,7 @@ import Bulma from '../Bulma';
 import api from '../../api';
 import Heatmap from '../Heatmap/Heatmap';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
+import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
 import useQuery from '../../hooks/useQuery';
 import config from '../../config.json';
 
@@ -42,6 +43,12 @@ const DATA_TYPES = [
   },
 ];
 export const ALL_DATA_TYPES = DATA_TYPES.map((data) => data.key);
+
+const dataTypesFromQuery = (queryValue) => {
+  const allowed = new Set(ALL_DATA_TYPES);
+  const selected = (queryValue?.toString().split(',') || []).filter((key) => allowed.has(key));
+  return selected.length > 0 ? selected : null;
+};
 export const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
 export const BASE_LIMIT = '10000';
 export const EXPR_CALLS = 'expr_calls';
@@ -65,6 +72,7 @@ type ExpressionSearchParams = {
   limit?: string;
   conditionalParam2?: string[];
   condObserved?: number;
+  observedData?: boolean;
   discardAnatEntityAndChildrenId?: string;
 };
 
@@ -90,7 +98,7 @@ type GeneExpressionGraphProps = {
   geneName?: string;
 };
 
-const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) => {
+const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGraphProps) => {
   // Init from URL
   const location = useLocation();
   const initSearch = new URLSearchParams(location.search);
@@ -99,6 +107,12 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingChildren, setIsLoadingChildren] = useState(false);
   const [searchResult, setSearchResult] = useState<any>();
+  const geneTerms = [
+    {
+      label: geneName ? `${geneId} - ${geneName}` : geneId,
+      value: geneId,
+    },
+  ];
   const [anatomicalTerms, setAnatomicalTerms] = useState<AnatomicalTermNode[]>([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState<Record<string, any>>({});
   const [dataType, setDataTypes] = useState<string[]>(ALL_DATA_TYPES);
@@ -107,16 +121,12 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
 
   // Sync local state with URL parameter
   useEffect(() => {
-    if (dataTypeExpr) {
-      setDataTypes(dataTypeExpr.split(','));
-    } else {
-      setDataTypes(ALL_DATA_TYPES);
-    }
+    setDataTypes(dataTypesFromQuery(dataTypeExpr) || ALL_DATA_TYPES);
   }, [dataTypeExpr]);
 
   // In order to disable the search button if the search has already been made
   const formSearchButtonIsDisabled = useMemo(() => {
-    const oldDataType = (dataTypeExpr?.split(',') || DATA_TYPES.map((d) => d.key)).sort();
+    const oldDataType = (dataTypesFromQuery(dataTypeExpr) || DATA_TYPES.map((d) => d.key)).sort();
 
     return JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
   }, [dataType, dataTypeExpr]);
@@ -127,7 +137,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
       isFirstSearch: true,
       initSearch,
       pageType: EXPR_CALLS,
-      dataType: dataTypeExpr?.split(',') || dataType,
+      dataType: dataTypesFromQuery(dataTypeExpr) || ALL_DATA_TYPES,
       dataQuality: 'SILVER',
       selectedExpOrAssay: [],
       selectedSpecies: speciesId,
@@ -346,17 +356,16 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
     params.isFirstSearch = false;
     // Set parent anatomical term as selected tissue
     params.selectedTissue = [selectedTissueId];
-    // Fix other condition params to top-level terms (overrides form fields!)
+    // Do not send cell_type_id — child expansion is anatomical terms only.
     params.hasTissueSubStructure = 1; // we want children of parent term!
     params.limit = BASE_LIMIT;
     params.conditionalParam2 = ['anat_entity']; // restrict to anatomical terms
     params.condObserved = 1;
-    // HD: discard top-level terms from search results
-    // NOTE: use only when we want to get children of "multicellular organism"
-    if (parentId === 'UBERON:0000468-GO:0005575') {
-      console.log(`[GeneExpressionGraph] !use discardAnatEntityAndChildrenId: SUMMARY!`);
-      params.discardAnatEntityAndChildrenId = 'SUMMARY';
-    }
+    params.observedData = true;
+    // Partition the SUMMARY forest: punch out other top-level organ subtrees.
+    // The backend ignores discard seeds that are ancestors of the include term, so this
+    // is safe for nested SUMMARY organs (e.g. CNS) as well as the residual bucket.
+    params.discardAnatEntityAndChildrenId = 'SUMMARY';
 
     setIsLoadingChildren(true);
     // DEBUG: remove console log in prod
@@ -581,13 +590,14 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
       const isExpressed = result.expressionState === 'expressed';
 
       return {
-        x: gName?.length > 0 ? gName : gId,
+        x: gId, // Use geneId for x coordinate (matches xTerms.value for scale domain)
         y: termId,
         termId,
         termName,
         geneId: gId,
         geneName: gName,
         speciesId: specId,
+        speciesLabel: getSpeciesLabel(result.gene.species),
         anatEntityId,
         anatEntityName,
         cellTypeId,
@@ -674,6 +684,7 @@ const GeneExpressionGraph = ({ geneId, speciesId }: GeneExpressionGraphProps) =>
           <Heatmap
             data={heatmapData}
             getChildData={triggerSearchChildren}
+            xTerms={geneTerms}
             yTerms={anatomicalTerms}
             termProps={anatomicalTermsProps}
             onToggleExpandCollapse={onToggleExpandCollapse}

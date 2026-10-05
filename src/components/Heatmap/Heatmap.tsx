@@ -51,11 +51,11 @@ export type HeatmapProps = {
   onToggleExpandCollapse: any;
   isLoading?: boolean;
   isInitializingFromUrl?: boolean;
-  defaultXLabelRotation?: unknown;
-  defaultMaxGraphWidth?: unknown;
-  defaultCellHeight?: unknown;
-  showResetButton?: unknown;
-  rendererMargins?: unknown;
+  defaultXLabelRotation?: number;
+  defaultMaxGraphWidth?: number;
+  defaultCellHeight?: number;
+  showResetButton?: boolean;
+  rendererMargins?: { top: number; right: number; bottom: number; left: number };
 };
 
 const Heatmap = ({
@@ -63,23 +63,29 @@ const Heatmap = ({
   height = 800,
   backgroundColor = '#ffffff',
   data,
+  getChildData,
+  xTerms,
   yTerms,
   termProps,
   yLabelJustify = 'right',
   onToggleExpandCollapse,
-  ..._heatmapMatrixOnlyOpts
+  defaultXLabelRotation = 0,
+  defaultMaxGraphWidth = 800,
+  defaultCellHeight = 30,
+  rendererMargins,
 }: HeatmapProps) => {
-  void _heatmapMatrixOnlyOpts;
   // COMPONENT STATE
   const [hoveredCell, setHoveredCell] = useState(null);
   const [clickedCell, setClickedCell] = useState(null);
   const [showLegend, setShowLegend] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_LEGEND, true));
-  const [xLabelRotation, setXLabelRotation] = useState(() => getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, 0));
+  const [xLabelRotation, setXLabelRotation] = useState(() =>
+    getStoredValue(STORAGE_KEYS.X_LABEL_ROTATION, defaultXLabelRotation)
+  );
   const [yLabelAlign, setYLabelAlign] = useState(() => getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
   const [graphWidth, setGraphWidth] = useState(width);
   const [graphHeight, setGraphHeight] = useState(height);
   // outer width, if graphWidth > maxGraphWidth -> scale SVG down
-  const [maxGraphWidth, setMaxGraphWidth] = useState(800);
+  const [maxGraphWidth, setMaxGraphWidth] = useState(defaultMaxGraphWidth);
   const [cellWidth, setCellWidth] = useState(() => getStoredValue(STORAGE_KEYS.CELL_WIDTH, 50));
   const [colorPalette, setColorPalette] = useState(() => getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
   const [bgColor, setBgColor] = useState(() => getStoredValue(STORAGE_KEYS.BACKGROUND_COLOR, backgroundColor));
@@ -254,13 +260,13 @@ const Heatmap = ({
     const { count: numVisibleTerms, maxLabelLength } = countVisibleTerms(yTerms);
     // console.log(`[Heatmap] ${numVisibleTerms} visible terms`);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
-    const flexHeight = Math.max(numVisibleTerms * 30 + COLOR_LEGEND_HEIGHT, 250);
+    const flexHeight = Math.max(numVisibleTerms * defaultCellHeight + COLOR_LEGEND_HEIGHT, 250);
     const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
     const flexWidth = Math.max(flexMarginLeft + 50, graphWidth);
     setGraphHeight(flexHeight);
     setGraphWidth(flexWidth);
     setMarginLeft(flexMarginLeft);
-  }, [yTerms]);
+  }, [yTerms, defaultCellHeight]);
 
   const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
 
@@ -391,8 +397,13 @@ const Heatmap = ({
             maxCellWidth={cellWidth}
             maxGraphWidth={maxGraphWidth}
             setGraphWidth={setGraphWidth}
+            getChildData={getChildData}
+            xTerms={xTerms}
+            defaultCellHeight={defaultCellHeight}
             rowOrdering={rowOrdering}
             rowAggFn={rowAggFn}
+            setGraphHeight={setGraphHeight}
+            rendererMargins={rendererMargins}
           />
 
           <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />

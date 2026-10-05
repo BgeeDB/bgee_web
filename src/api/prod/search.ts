@@ -4,6 +4,8 @@ import errorHandler from '../errorHandler';
 import PATHS from '../../paths/paths';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 
+const getMultispecRequestUrl = (paramsString: string) => `/?${paramsString}`;
+
 export const SEARCH_CANCEL_API: any = {
   genes: {
     autoComplete: null,
@@ -39,6 +41,22 @@ const DEFAULT_PARAMETERS: any = (page: string, action: string | undefined = unde
   if (action) params.append('action', action);
 
   return params;
+};
+
+// Build gene_list param from multiSpeciesGenes for multispec API.
+// Deduplicates gene IDs as a safety net so callers that did not pre-dedup
+// (or that merged lists from multiple sources) do not blow up the URL.
+const buildGeneList = (multiSpeciesGenes: Array<{ geneId: string }> | null | undefined): string | null => {
+  if (!multiSpeciesGenes || multiSpeciesGenes.length === 0) return null;
+  const seen = new Set<string>();
+  const ids: string[] = [];
+  multiSpeciesGenes.forEach((g) => {
+    const id = g?.geneId;
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    ids.push(id);
+  });
+  return ids.length === 0 ? null : ids.join('\n');
 };
 
 // TODO: improve the functions return types. They are the source of all data in the app.
@@ -533,6 +551,197 @@ const search = {
       }),
   },
   geneExpressionMatrix: {
+    // Multispec: get request params (for URL init with gene_list)
+    multispecGetRequestParams: (form, multiSpeciesGenes, detailedRP = false) =>
+      new Promise((resolve, reject) => {
+        const geneList = buildGeneList(multiSpeciesGenes);
+        if (!geneList) {
+          resolve({ resp: { code: 400 }, paramsURLCalled: '' });
+          return;
+        }
+        const params = DEFAULT_PARAMETERS('data', 'multispec_expr_calls');
+        params.append('get_results', '0');
+        params.append('display_rp', '1');
+        params.append('detailed_rp', detailedRP ? '1' : '0');
+        params.append('limit', '10000');
+        params.append('gene_list', geneList);
+        if (form?.initSearch) {
+          for (const [key, val] of form.initSearch) {
+            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
+              params.append(key, val);
+            }
+          }
+        }
+        if (form?.dataQuality) params.append('data_qual', form.dataQuality);
+        const paramsURLCalled = params.toString();
+        const typeToken = 'search';
+        axiosInstance
+          .get(getMultispecRequestUrl(paramsURLCalled), {
+            cancelToken: new axios.CancelToken((c) => {
+              SEARCH_CANCEL_API.rawData[typeToken] = c;
+            }),
+          })
+          .then(({ data }) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            return resolve({ resp: data, paramsURLCalled });
+          })
+          .catch((error) => {
+            errorHandler(error);
+            reject(error?.response || error?.message);
+          });
+      }),
+
+    // Multispec: initial search (top-level terms)
+    multispecInitialSearch: (form, multiSpeciesGenes): any =>
+      new Promise((resolve, reject) => {
+        const geneList = buildGeneList(multiSpeciesGenes);
+        if (!geneList) {
+          reject(new Error('No genes in gene_list'));
+          return;
+        }
+        const params = DEFAULT_PARAMETERS('data', 'multispec_expr_calls');
+        params.append('get_results', '1');
+        params.append('display_rp', '1');
+        params.append('offset', '0');
+        params.append('limit', '10000');
+        params.append('gene_list', geneList);
+        if (form.selectedTissue?.length > 0) {
+          form.selectedTissue.forEach((t) => params.append('anat_entity_id', t));
+        } else {
+          params.append('anat_entity_id', 'SUMMARY');
+        }
+        if (form.selectedCellTypes?.length > 0) {
+          form.selectedCellTypes.forEach((ct) => params.append('cell_type_id', ct));
+        } else {
+          params.append('cell_type_id', 'SUMMARY');
+        }
+        params.append('cond_param2', 'anat_entity');
+        // Only request descendant expansion when the user selected a concrete tissue/cell type
+        // AND explicitly enabled the corresponding "sub-structure" checkbox.
+        if (form.hasTissueSubStructure && form.selectedTissue?.length > 0) {
+          params.append('anat_entity_descendant', '1');
+        }
+        if (form.hasCellTypeSubStructure && form.selectedCellTypes?.length > 0) {
+          params.append('cell_type_descendant', '1');
+        }
+        if (form.dataType?.length > 0) {
+          form.dataType.forEach((type) => params.append('data_type', type));
+        }
+        if (form?.dataQuality) params.append('data_qual', form.dataQuality);
+        const paramsURLCalled = params.toString();
+        const typeToken = 'search';
+        axiosInstance
+          .get(getMultispecRequestUrl(paramsURLCalled), {
+            cancelToken: new axios.CancelToken((c) => {
+              SEARCH_CANCEL_API.rawData[typeToken] = c;
+            }),
+          })
+          .then(({ data }) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            return resolve({ resp: data, paramsURLCalled });
+          })
+          .catch((error) => {
+            errorHandler(error);
+            reject(error?.response || error?.message);
+          });
+      }),
+
+    // Multispec: complementary search (leftover organs at the cell-type root)
+    multispecInitialSearchComplementary: (form, multiSpeciesGenes): any =>
+      new Promise((resolve, reject) => {
+        const geneList = buildGeneList(multiSpeciesGenes);
+        if (!geneList) {
+          reject(new Error('No genes in gene_list'));
+          return;
+        }
+        const params = DEFAULT_PARAMETERS('data', 'multispec_expr_calls');
+        params.append('get_results', '1');
+        params.append('offset', '0');
+        params.append('limit', '10000');
+        params.append('gene_list', geneList);
+        params.append('anat_entity_id', 'SUMMARY');
+        params.append('cell_type_id', 'SUMMARY');
+        params.append('cond_param2', 'anat_entity');
+        params.append('discard_anat_entity_and_children_id', 'SUMMARY');
+        params.append('observed_data', '1');
+        // NOTE: must be set for this call to work
+        params.append('anat_entity_descendant', '1');
+        params.append('exclude_non_informative', '1');
+        // Do not send cell_type_descendant — complementary is leftover organs only.
+        if (form.dataType?.length > 0) {
+          form.dataType.forEach((type) => params.append('data_type', type));
+        }
+        if (form?.dataQuality) params.append('data_qual', form.dataQuality);
+        const paramsURLCalled = params.toString();
+        const typeToken = 'search';
+        axiosInstance
+          .get(getMultispecRequestUrl(paramsURLCalled), {
+            cancelToken: new axios.CancelToken((c) => {
+              SEARCH_CANCEL_API.rawData[typeToken] = c;
+            }),
+          })
+          .then(({ data }) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            return resolve({ resp: data, paramsURLCalled });
+          })
+          .catch((error) => {
+            errorHandler(error);
+            reject(error?.response || error?.message);
+          });
+      }),
+
+    // Multispec: search for child terms (expand hierarchy)
+    multispecSearch: (form, multiSpeciesGenes): any =>
+      new Promise((resolve, reject) => {
+        const geneList = buildGeneList(multiSpeciesGenes);
+        if (!geneList) {
+          reject(new Error('No genes in gene_list'));
+          return;
+        }
+        const params = DEFAULT_PARAMETERS('data', 'multispec_expr_calls');
+        params.append('get_results', '1');
+        params.append('limit', '10000');
+        params.append('gene_list', geneList);
+        if (form.dataType?.length > 0) {
+          form.dataType.forEach((type) => params.append('data_type', type));
+        }
+        // Expand one organ: children of that term, with SUMMARY forest partition.
+        // Do not send cell_type_id unless the caller selected concrete cell types.
+        form.selectedTissue?.forEach((t) => params.append('anat_entity_id', t));
+        if (form.selectedTissue?.length > 0) {
+          params.append('anat_entity_descendant', '1');
+        }
+        if (form.discardAnatEntityAndChildrenId) {
+          params.append('discard_anat_entity_and_children_id', form.discardAnatEntityAndChildrenId);
+        }
+        // Child expansion (request 3): same observed-data filter as the complementary search.
+        params.append('observed_data', '1');
+        form.selectedCellTypes?.forEach((ct) => params.append('cell_type_id', ct));
+        if (form.hasCellTypeSubStructure && form.selectedCellTypes?.length > 0) {
+          params.append('cell_type_descendant', '1');
+        }
+        if (form.conditionalParam2?.length > 0) {
+          form.conditionalParam2.forEach((cp) => params.append('cond_param2', cp));
+        }
+        if (form?.dataQuality) params.append('data_qual', form.dataQuality);
+        const paramsURLCalled = params.toString();
+        const typeToken = 'search';
+        axiosInstance
+          .get(getMultispecRequestUrl(paramsURLCalled), {
+            cancelToken: new axios.CancelToken((c) => {
+              SEARCH_CANCEL_API.rawData[typeToken] = c;
+            }),
+          })
+          .then(({ data }) => {
+            SEARCH_CANCEL_API.rawData[typeToken] = null;
+            return resolve({ resp: data, paramsURLCalled });
+          })
+          .catch((error) => {
+            errorHandler(error);
+            reject(error?.response || error?.message);
+          });
+      }),
+
     // get request parameters from previous search
     getRequestParams: (form, detailedRP = false) =>
       new Promise((resolve, reject) => {
@@ -768,6 +977,10 @@ const search = {
 
         if (form.discardAnatEntityAndChildrenId) {
           params.append('discard_anat_entity_and_children_id', form.discardAnatEntityAndChildrenId);
+        }
+        // Child expansion (request 3) on the single-gene graph and the single-species matrix fallback.
+        if (form.observedData) {
+          params.append('observed_data', '1');
         }
 
         if (isOnlyCounts) {

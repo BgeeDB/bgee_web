@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "react-router build && sh scripts/fix_symlinks.sh",
-    "dev": "react-router dev",
+    "dev": "CHOKIDAR_USEPOLLING=true react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "cluster": "INTERNAL_API_DOMAIN=http://127.0.0.1:8080/api_16_0  pm2 start 'npx react-router-serve ./build/server/index.js' --name bgee-web -i 62",
     "stop": "pm2 stop bgee-web",
@@ -84,7 +84,9 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md,mdx,html,yml}": [
-      "prettier --write",
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
     ]
   },
