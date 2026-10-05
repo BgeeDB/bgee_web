@@ -20,10 +20,10 @@ test.describe('Gene Expression Graph Component', () => {
 
     // Check that data type checkboxes are available
     await expect(dataTypeWrapper.getByText('RNA Seq', { exact: true })).toBeVisible();
-    await expect(dataTypeWrapper.getByText('Affymetrix', { exact: true })).toBeVisible();
     await expect(dataTypeWrapper.getByText('In Situ', { exact: true })).toBeVisible();
-    await expect(dataTypeWrapper.getByText('EST', { exact: true })).toBeVisible();
     await expect(dataTypeWrapper.getByText('scRNA-Seq', { exact: true })).toBeVisible();
+    await expect(dataTypeWrapper.getByText('Affymetrix', { exact: true })).toHaveCount(0);
+    await expect(dataTypeWrapper.getByText('EST', { exact: true })).toHaveCount(0);
   });
 
   test('should allow selecting different data types', async ({ page }) => {
@@ -36,14 +36,14 @@ test.describe('Gene Expression Graph Component', () => {
       .getByText('RNA Seq', { exact: true })
       .locator('..')
       .locator('input[type="checkbox"]');
-    const affymetrixCheckbox = dataTypeWrapper
-      .getByText('Affymetrix', { exact: true })
+    const inSituCheckbox = dataTypeWrapper
+      .getByText('In Situ', { exact: true })
       .locator('..')
       .locator('input[type="checkbox"]');
 
     // Check initial state - all should be selected by default
     await expect(rnaSeqCheckbox).toBeChecked();
-    await expect(affymetrixCheckbox).toBeChecked();
+    await expect(inSituCheckbox).toBeChecked();
 
     // Uncheck RNA-Seq
     await rnaSeqCheckbox.uncheck();
@@ -197,8 +197,10 @@ test.describe('Gene Expression Graph Component', () => {
 
     // Should contain the remaining data types (all except RNA_SEQ)
     const dataTypes = dataTypeParam!.split(',');
-    expect(dataTypes).toContain('AFFYMETRIX');
+    expect(dataTypes).toContain('IN_SITU');
     expect(dataTypes).toContain('SC_RNA_SEQ');
+    expect(dataTypes).not.toContain('AFFYMETRIX');
+    expect(dataTypes).not.toContain('EST');
     expect(dataTypes).not.toContain('RNA_SEQ'); // RNA_SEQ (without SC_ prefix) should not be present
   });
 

@@ -99,27 +99,11 @@ const dataTypeConf = [
     },
   },
   {
-    position: config.dataType_AFFYMETRIX,
-    type: {
-      id: AFFYMETRIX,
-      label: 'Affymetrix data',
-      sourceLetter: 'A',
-    },
-  },
-  {
     position: config.dataType_IN_SITU,
     type: {
       id: IN_SITU,
       label: 'In situ hybridization',
       sourceLetter: 'I',
-    },
-  },
-  {
-    position: config.dataType_EST,
-    type: {
-      id: EST,
-      label: 'EST',
-      sourceLetter: 'E',
     },
   },
 ];
@@ -130,6 +114,12 @@ const sortedDataTypes = dataTypeConf
 export const DATA_TYPES = sortedDataTypes;
 export const ALL_DATA_TYPES = dataTypeConf.map((data) => data.type);
 export const ALL_DATA_TYPES_ID = ALL_DATA_TYPES.map((d) => d.id);
+
+const expressionCallDataTypes = (ids) => {
+  const allowed = new Set(ALL_DATA_TYPES_ID);
+  const selected = (ids || []).filter((id) => allowed.has(id));
+  return selected.length > 0 ? selected : ALL_DATA_TYPES_ID;
+};
 const BRONZE = 'BRONZE';
 const SILVER = 'SILVER';
 const GOLD = 'GOLD';
@@ -291,7 +281,8 @@ const useLogic = (options = {}) => {
 
   const initDataType = initSearch.get('data_type') || DATA_TYPES[0].id;
   const initDataTypeFromUrl = initSearch.getAll('data_type');
-  const initDataTypeExpCalls = initDataTypeFromUrl.length === 0 ? ALL_DATA_TYPES_ID : initDataTypeFromUrl;
+  const initDataTypeExpCalls =
+    initDataTypeFromUrl.length === 0 ? ALL_DATA_TYPES_ID : expressionCallDataTypes(initDataTypeFromUrl);
 
   // Page Type / Data Type
   // Page type = data in search params !
@@ -508,7 +499,7 @@ const useLogic = (options = {}) => {
 
     // data_type expres calls
     if (requestParameters?.data_type?.length > 0) {
-      setDataTypesExpCalls(requestParameters?.data_type);
+      setDataTypesExpCalls(expressionCallDataTypes(requestParameters.data_type));
     }
 
     // Data quality (API may return a string or a one-element list)
@@ -551,8 +542,7 @@ const useLogic = (options = {}) => {
       queryGenes: [],
     };
 
-    const dataTypeForExpCalls = dataTypesExpCalls.length === 0 ? ALL_DATA_TYPES_ID : dataTypesExpCalls;
-    params.dataType = dataTypeForExpCalls;
+    params.dataType = expressionCallDataTypes(dataTypesExpCalls);
     params = {
       ...params,
       dataQuality,
@@ -1183,7 +1173,7 @@ const useLogic = (options = {}) => {
       );
       setDataQuality(urlFilters.get('data_qual') || SILVER);
       const typesFromUrl = urlFilters.getAll('data_type');
-      setDataTypesExpCalls(typesFromUrl.length === 0 ? ALL_DATA_TYPES_ID : typesFromUrl);
+      setDataTypesExpCalls(typesFromUrl.length === 0 ? ALL_DATA_TYPES_ID : expressionCallDataTypes(typesFromUrl));
       setIsInitializingFromUrl(true);
     } catch (error) {
       console.error('Error processing gene list:', error);
