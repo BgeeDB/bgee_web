@@ -138,6 +138,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
       initSearch,
       pageType: EXPR_CALLS,
       dataType: dataTypesFromQuery(dataTypeExpr) || ALL_DATA_TYPES,
+      // SUMMARY calls ignore this and request bronze. Complementary calls and expansion use it.
       dataQuality: 'SILVER',
       selectedExpOrAssay: [],
       selectedSpecies: speciesId,

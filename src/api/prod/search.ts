@@ -43,6 +43,10 @@ const DEFAULT_PARAMETERS: any = (page: string, action: string | undefined = unde
   return params;
 };
 
+// Top-level SUMMARY expression calls always use bronze.
+// Complementary calls and term expansion keep the data quality selected in the form.
+const SUMMARY_EXPRESSION_DATA_QUAL = 'BRONZE';
+
 // Build gene_list param from multiSpeciesGenes for multispec API.
 // Deduplicates gene IDs as a safety net so callers that did not pre-dedup
 // (or that merged lists from multiple sources) do not blow up the URL.
@@ -627,7 +631,7 @@ const search = {
         if (form.dataType?.length > 0) {
           form.dataType.forEach((type) => params.append('data_type', type));
         }
-        if (form?.dataQuality) params.append('data_qual', form.dataQuality);
+        params.append('data_qual', SUMMARY_EXPRESSION_DATA_QUAL);
         const paramsURLCalled = params.toString();
         const typeToken = 'search';
         axiosInstance
@@ -814,7 +818,13 @@ const search = {
           // -> use initSearch params
 
           for (const [key, val] of form.initSearch) {
-            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
+            if (
+              key !== 'data_type' &&
+              key !== 'data_qual' &&
+              key !== 'offset' &&
+              key !== 'limit' &&
+              key !== 'pageType'
+            ) {
               params.append(key, val);
             }
           }
@@ -867,12 +877,10 @@ const search = {
             params.append('species_id', form.selectedSpecies);
           }
           form.selectedGene.forEach((g) => params.append('gene_id', g));
-
-          if (form?.dataQuality) {
-            params.append('data_qual', form?.dataQuality);
-          }
           // [...]
         }
+
+        params.append('data_qual', SUMMARY_EXPRESSION_DATA_QUAL);
 
         const paramsURLCalled = params.toString();
 
@@ -922,7 +930,13 @@ const search = {
           params.append('display_rp', '1');
 
           for (const [key, val] of form.initSearch) {
-            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
+            if (
+              key !== 'data_type' &&
+              key !== 'data_qual' &&
+              key !== 'offset' &&
+              key !== 'limit' &&
+              key !== 'pageType'
+            ) {
               params.append(key, val);
             }
           }
@@ -935,9 +949,9 @@ const search = {
             params.append('species_id', form.selectedSpecies);
           }
           form.selectedGene.forEach((g) => params.append('gene_id', g));
-          if (form?.dataQuality) {
-            params.append('data_qual', form?.dataQuality);
-          }
+        }
+        if (form?.dataQuality) {
+          params.append('data_qual', form.dataQuality);
         }
 
         // [...]
