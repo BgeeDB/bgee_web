@@ -28,6 +28,13 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
   const cellTypeUrlsOls = cellTypeIds.map((id) => `http://purl.obolibrary.org/obo/${id.replace(':', '_')}`);
   const anatEntityQueryParams = anatEntityIds.map((id) => `&anat_entity_id=${encodeURIComponent(id)}`).join('');
   const cellTypeQueryParams = cellTypeIds.map((id) => `&cell_type_id=${encodeURIComponent(id)}`).join('');
+  const formatExpressionQuality = (value) => {
+    const text = String(value || '')
+      .trim()
+      .toLowerCase();
+    if (!text) return '';
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
 
   return (
     <div
@@ -135,6 +142,7 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
             </div>
           </div>
           <DetailRow label="expressed" value={String(data.isExpressed)} />
+          <DetailRow label="data quality" value={formatExpressionQuality(data.expressionQuality)} />
           <DetailRow label="expression score" value={String(data.value)} />
           <br />
           <a

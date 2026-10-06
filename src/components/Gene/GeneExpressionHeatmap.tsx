@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 
 import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
+import { appendOthersBucket } from '../../helpers/othersAnatomicalBucket';
 import Heatmap from '../Heatmap/Heatmap';
 
 const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
@@ -75,12 +76,12 @@ export interface ExpressionCall {
   };
   expressionScore: { expressionScore: number };
   expressionState: string;
+  expressionQuality?: string;
   dataTypesWithData: {
     IN_SITU: boolean;
     RNA_SEQ: boolean;
     SC_RNA_SEQ: boolean;
   };
-  isOrphan?: boolean;
 }
 
 export interface GeneExpressionHeatmapProps {
@@ -109,6 +110,8 @@ export interface GeneExpressionHeatmapProps {
   cellHeight?: number;
   showResetButton?: boolean;
   rendererMargins?: { top: number; right: number; bottom: number; left: number };
+  // Default SUMMARY view: show the expandable "others" bucket under the anatomical root.
+  showOthersBucket?: boolean;
 }
 
 const GeneExpressionHeatmap = ({
@@ -125,6 +128,7 @@ const GeneExpressionHeatmap = ({
   cellHeight = 15,
   showResetButton = false,
   rendererMargins,
+  showOthersBucket = true,
 }: GeneExpressionHeatmapProps) => {
   const [anatomicalTerms, setAnatomicalTerms] = useState<any[]>([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState<Record<string, any>>({});
@@ -156,7 +160,6 @@ const GeneExpressionHeatmap = ({
       const termIsSingleCell = cellTypeId !== 'GO:0005575';
       const termId = `${anatEntityId}-${cellTypeId}`;
       const termLabel = termIsSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
-      const isOrphan = exprCall.isOrphan || false;
 
       if (!(termId in termProps)) {
         termProps[termId] = {
@@ -165,7 +168,7 @@ const GeneExpressionHeatmap = ({
           anatEntityLabel: anatEntityName,
           cellTypeId,
           cellTypeLabel: cellTypeName,
-          isTopLevelTerm: !isOrphan, // Orphans are not expandable
+          isTopLevelTerm: true,
           isExpanded: true,
           isPopulated: false,
           hasBeenQueried: true,
@@ -176,9 +179,6 @@ const GeneExpressionHeatmap = ({
           parents[termId] = [ROOT_TERM_ANAT_ENTITY];
           children[ROOT_TERM_ANAT_ENTITY].push(termId);
         }
-      } else if (isOrphan) {
-        // If we see an orphan duplicate, ensure isTopLevelTerm is false
-        termProps[termId].isTopLevelTerm = false;
       }
     });
 
@@ -215,46 +215,32 @@ const GeneExpressionHeatmap = ({
       return nestedTerm;
     }
 
-    const anatTerms = roots.map((root) => createNestedStructure(root));
+    const anatTerms = roots.map((root) => createNestedStructure(root)).filter(Boolean);
     return { anatTerms, termProps };
-  };
-
-  // Sort children: orphans (isTopLevelTerm === false) first, then normal terms (isTopLevelTerm === true)
-  const sortChildrenRecursively = (terms: any[]): any[] => {
-    return terms.map((term) => {
-      if (term.children && term.children.length > 0) {
-        // Sort children: orphans first, then normal terms
-        term.children.sort((a, b) => {
-          if (a.isTopLevelTerm === b.isTopLevelTerm) return 0;
-          return a.isTopLevelTerm ? 1 : -1;
-        });
-        // Recursively sort children
-        term.children = sortChildrenRecursively(term.children);
-      }
-      return term;
-    });
   };
 
   // Sync allExpressionCalls when expressionCalls prop changes
   useEffect(() => {
-    if (expressionCalls && expressionCalls.length > 0) {
+    if (expressionCalls) {
       setAllExpressionCalls(expressionCalls);
     }
   }, [expressionCalls]);
 
   // Initialize hierarchy only from initial expressionCalls (ignore expanded children)
   useEffect(() => {
-    if (expressionCalls && expressionCalls.length > 0) {
-      // Build hierarchy from expressionCalls (which now contains isOrphan flag)
-      // Only use calls without dataId (initial calls), not expanded children
-      const initialCalls = expressionCalls.filter((call) => !call.condition.anatEntity.dataId);
-      const { anatTerms, termProps } = prepTermHierarchy(initialCalls);
-      // Sort to ensure orphans appear before normal terms
-      const sortedAnatTerms = sortChildrenRecursively(anatTerms);
-      setAnatomicalTerms(sortedAnatTerms);
-      setAnatomicalTermsProps(termProps);
+    const hasCalls = expressionCalls && expressionCalls.length > 0;
+    if (!hasCalls && !showOthersBucket) {
+      setAnatomicalTerms([]);
+      setAnatomicalTermsProps({});
+      return;
     }
-  }, [expressionCalls]);
+    // Only use calls without dataId (initial calls), not expanded children
+    const initialCalls = (expressionCalls || []).filter((call) => !call.condition.anatEntity.dataId);
+    const { anatTerms, termProps } = prepTermHierarchy(initialCalls);
+    if (showOthersBucket) appendOthersBucket(anatTerms, termProps);
+    setAnatomicalTerms(anatTerms);
+    setAnatomicalTermsProps(termProps);
+  }, [expressionCalls, showOthersBucket]);
 
   // Handle fetching children data
   const triggerSearchChildren = async (parentId: string, selectedTissueId: string) => {
@@ -273,6 +259,7 @@ const GeneExpressionHeatmap = ({
       const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
       const isSingleCell = cellTypeId !== 'GO:0005575';
 
+      if (anatEntityId === 'SUMMARY') return;
       if (!(anatEntityId === selectedTissueId) || isSingleCell) {
         newChildTerms.add(
           JSON.stringify({
@@ -464,6 +451,7 @@ const GeneExpressionHeatmap = ({
         cellTypeName,
         value: expScore,
         isExpressed,
+        expressionQuality: result.expressionQuality,
         hasDataInSitu: result.dataTypesWithData.IN_SITU,
         hasDataRnaSeq: result.dataTypesWithData.RNA_SEQ,
         hasDataScRnaSeq: result.dataTypesWithData.SC_RNA_SEQ,
@@ -491,7 +479,7 @@ const GeneExpressionHeatmap = ({
     });
   }, [genes, isMultispecies, geneIdToSpecies]);
 
-  if (allExpressionCalls.length === 0) {
+  if (allExpressionCalls.length === 0 && anatomicalTerms.length === 0) {
     return (
       <div className="is-flex is-justify-content-center is-align-items-center">
         <p className="is-size-4">No data found</p>

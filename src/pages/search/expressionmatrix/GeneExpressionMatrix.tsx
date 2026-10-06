@@ -98,6 +98,7 @@ const GeneExpressionMatrix = () => {
   const {
     searchResult,
     setSearchResult,
+    showOthersBucket,
     show,
     selectedSpecies,
     selectedCellTypes,
@@ -854,6 +855,7 @@ const GeneExpressionMatrix = () => {
               genes={searchedGenes}
               isLoading={isLoading}
               isFirstSearch={isFirstSearch}
+              showOthersBucket={showOthersBucket}
               onFetchChildren={(parentId, selectedTissueId) =>
                 triggerSearchChildren(parentId, selectedTissueId, multiSpeciesGenes)
               }

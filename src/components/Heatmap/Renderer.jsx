@@ -6,11 +6,15 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
 import { computeTermAggregates } from './heatmapAggregates';
+import { isOthersBucket } from '../../helpers/othersAnatomicalBucket';
 
 function sortSiblingTerms(children, rowOrdering, scoreMap) {
   if (!children?.length) return children;
-  const low = children.filter((c) => !c.isTopLevelTerm);
-  const high = children.filter((c) => c.isTopLevelTerm);
+  // The synthetic "others" bucket has no expression score and stays last in every ordering.
+  const pinnedBottom = children.filter((c) => isOthersBucket(c));
+  const sortable = children.filter((c) => !isOthersBucket(c));
+  const low = sortable.filter((c) => !c.isTopLevelTerm);
+  const high = sortable.filter((c) => c.isTopLevelTerm);
   const cmpAlpha = (a, b) => a.label.localeCompare(b.label);
   const cmpExpr = (a, b) => {
     const sa = scoreMap.has(a.id) ? scoreMap.get(a.id) : -Infinity;
@@ -21,7 +25,7 @@ function sortSiblingTerms(children, rowOrdering, scoreMap) {
   const cmp = rowOrdering === 'expression' ? cmpExpr : cmpAlpha;
   low.sort(cmp);
   high.sort(cmp);
-  return [...low, ...high];
+  return [...low, ...high, ...pinnedBottom];
 }
 
 function reorderAnatomyTree(nodes, rowOrdering, scoreMap) {
@@ -326,6 +330,7 @@ export const Renderer = forwardRef(
         yPos: y + xScale.bandwidth() / 2 + MARGIN.bottom,
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
+        expressionQuality: d.expressionQuality,
         // maxExpScore: d.maxExp.toFixed(2),
         hasDataInSitu: d.hasDataInSitu,
         hasDataRnaSeq: d.hasDataRnaSeq,

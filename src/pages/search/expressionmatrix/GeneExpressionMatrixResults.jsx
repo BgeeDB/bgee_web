@@ -29,17 +29,25 @@ const transformToExpressionCall = (result) => {
     condition,
     expressionScore: result.expressionScore,
     expressionState: result.expressionState,
+    expressionQuality: result.expressionQuality,
     dataTypesWithData: result.dataTypesWithData,
-    isOrphan: result.isOrphan,
   };
 };
 
-const GeneExpressionMatrixResults = ({ results = [], genes, isLoading, isFirstSearch, onFetchChildren }) => {
+const GeneExpressionMatrixResults = ({
+  results = [],
+  genes,
+  isLoading,
+  isFirstSearch,
+  onFetchChildren,
+  showOthersBucket = true,
+}) => {
   const expressionCalls = results.map(transformToExpressionCall);
+  const showGraph = results.length > 0 || (!isFirstSearch && showOthersBucket);
 
   return (
     <>
-      {results?.length > 0 && (
+      {showGraph && (
         <GeneExpressionHeatmap
           expressionCalls={expressionCalls}
           genes={genes}
@@ -49,6 +57,7 @@ const GeneExpressionMatrixResults = ({ results = [], genes, isLoading, isFirstSe
           maxGraphWidth={1500}
           cellHeight={30}
           showResetButton={true}
+          showOthersBucket={showOthersBucket}
           rendererMargins={{ top: 60, right: 60, bottom: 50, left: 200 }}
         />
       )}
@@ -57,9 +66,7 @@ const GeneExpressionMatrixResults = ({ results = [], genes, isLoading, isFirstSe
           Please select search criteria above to display results.
         </div>
       )}
-      {!isFirstSearch && results?.length === 0 && (
-        <div className="is-flex is-justify-content-center mt-3">No results found.</div>
-      )}
+      {!isFirstSearch && !showGraph && <div className="is-flex is-justify-content-center mt-3">No results found.</div>}
     </>
   );
 };
