@@ -511,11 +511,8 @@ const useLogic = (options = {}) => {
       setDataTypesExpCalls(requestParameters?.data_type);
     }
 
-    // Data quality (API may return a string or a one-element list)
-    const dataQualValues = paramValues(requestParameters, 'data_qual');
-    if (dataQualValues.length > 0) {
-      setDataQuality(dataQualValues[0]);
-    }
+    // Leave data quality as selected in the form. The SUMMARY response echoes bronze
+    // because that request ignores the form value.
 
     // Conditional parameter 2
     if (requestParameters?.cond_param2?.length > 0) {
@@ -688,7 +685,10 @@ const useLogic = (options = {}) => {
         }
 
         // Keep non-default filters in the URL; the hash still stores the full query.
+        // The SUMMARY request is bronze. The URL keeps the quality selected in the form.
         const searchParams = buildExpressionMatrixUrlParams(paramsURLCalled1, resp1?.requestParameters);
+        searchParams.delete('data_qual');
+        if (baseParams.dataQuality) searchParams.set('data_qual', baseParams.dataQuality);
 
         if (isFirstSearch) {
           navigate(
@@ -980,6 +980,14 @@ const useLogic = (options = {}) => {
 
         const simpleParams = resp1.resp.requestParameters;
         // console.log(`[useLogic.initFromUrlParams] simpleParams:\n${JSON.stringify(simpleParams)}`);
+        // Prefer an explicit data_qual in the URL. Otherwise restore the quality stored with the hash.
+        const explicitDataQual = initSearch.get('data_qual');
+        if (explicitDataQual) {
+          setDataQuality(explicitDataQual);
+        } else {
+          const storedDataQual = paramValues(simpleParams, 'data_qual')[0];
+          if (storedDataQual) setDataQuality(storedDataQual);
+        }
 
         // A stored gene_list is enough to restore the search, including multi-species
         // queries that have no species_id. Hand off to the gene_list URL flow.
@@ -988,6 +996,11 @@ const useLogic = (options = {}) => {
           const nextSearch = new URLSearchParams();
           nextSearch.set('gene_list', geneListValues.join('\n'));
           appendNonDefaultFilters(nextSearch, simpleParams);
+          // The SUMMARY request hash records bronze. Keep the quality from the page URL.
+          if (explicitDataQual) {
+            nextSearch.delete('data_qual');
+            nextSearch.set('data_qual', explicitDataQual);
+          }
           navigate(
             {
               pathname: loc.pathname,
