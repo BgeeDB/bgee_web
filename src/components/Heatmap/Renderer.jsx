@@ -7,19 +7,49 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 import fonts from './fonts';
 
 const DEFAULT_MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
-const COLOR_LEGEND_MARGIN = { top: 0, right: 0, bottom: 50, left: 0 };
 
 // X-axis label geometry constants (must match the <text> elements below)
 const X_LABEL_FONT_SIZE = 15;
+const X_LABEL_LINE_HEIGHT = 1.2;
 // Empirical average glyph width for 15px sans-serif (Open Sans); slight over-estimate is safer.
 const X_LABEL_CHAR_WIDTH = 8.5;
 // Extra breathing room added on top of the projected label extent.
 const X_LABEL_PADDING = 15;
-// Minimum gap between the bottom of the heatmap and the color legend.
+// Bottom labels are anchored this far below the cells (see xLabelsBottom).
+const X_LABEL_ANCHOR_OFFSET = 10;
+// Minimum gap between the bottom of the heatmap cells and the color legend.
 const DEFAULT_BOTTOM_LABEL_GAP = 40;
+// ColorLegendSvg draws its title and help badge above posY (badge top is at posY - 23).
+const COLOR_LEGEND_OVERFLOW_TOP = 25;
+// Baseline of the "Not expressed" / "No data" row in ColorLegendSvg (posY + 48).
+const COLOR_LEGEND_SWATCH_BASELINE = 48;
 
-// Estimate the vertical SVG extent (in px) of a label when rotated by `rotationDeg`.
-// Projects the text bounding box onto the y-axis using sin/cos of the rotation angle.
+// Estimate how far a bottom x-axis label hangs below its anchor when rotated.
+// Bottom labels use textAnchor="end" and dominantBaseline="middle", so the
+// string extends to the left of the anchor before rotation.
+const estimateLabelExtentBelowAnchor = (text, rotationDeg) => {
+  if (!text) return 0;
+  const lines = text.split('\n');
+  const rotRad = (rotationDeg * Math.PI) / 180;
+  const sin = Math.sin(rotRad);
+  const cos = Math.cos(rotRad);
+  const maxLineLength = Math.max(...lines.map((line) => line.length));
+  const textWidth = maxLineLength * X_LABEL_CHAR_WIDTH;
+  const lineHeight = X_LABEL_FONT_SIZE * X_LABEL_LINE_HEIGHT;
+  const yMin = -X_LABEL_FONT_SIZE / 2;
+  const yMax = (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE / 2;
+  const corners = [
+    [-textWidth, yMin],
+    [0, yMin],
+    [-textWidth, yMax],
+    [0, yMax],
+  ];
+  const maxY = Math.max(...corners.map(([x, y]) => x * sin + y * cos));
+  return Math.max(0, maxY);
+};
+
+// Full axis-aligned height of a label. Used for the top margin, where labels
+// grow upward and clipping the top of the SVG is the failure mode.
 const estimateLabelVerticalExtent = (text, rotationDeg) => {
   if (!text) return 0;
   const lines = text.split('\n');
@@ -28,12 +58,10 @@ const estimateLabelVerticalExtent = (text, rotationDeg) => {
   const cosAbs = Math.abs(Math.cos(rotRad));
   const maxLineLength = Math.max(...lines.map((line) => line.length));
   const textWidth = maxLineLength * X_LABEL_CHAR_WIDTH;
-  const lineHeight = X_LABEL_FONT_SIZE * 1.2;
+  const lineHeight = X_LABEL_FONT_SIZE * X_LABEL_LINE_HEIGHT;
   const textHeight = lines.length === 1 ? X_LABEL_FONT_SIZE : (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE;
   return sinAbs * textWidth + cosAbs * textHeight;
 };
-
-const X_LABEL_LINE_HEIGHT = 1.2;
 
 const renderSvgTextLines = (text, keyPrefix) => {
   const lines = text.split('\n');
@@ -95,12 +123,26 @@ export const Renderer = forwardRef(
       xTerms.forEach((t) => {
         const top = t?.topLabel ?? t?.label ?? t?.value ?? '';
         const bottom = t?.bottomLabel ?? t?.label ?? t?.value ?? '';
-        if (top.length > maxTopText.length) maxTopText = top;
-        if (bottom.length > maxBottomText.length) maxBottomText = bottom;
+        if (
+          estimateLabelVerticalExtent(top, xLabelRotation) > estimateLabelVerticalExtent(maxTopText, xLabelRotation)
+        ) {
+          maxTopText = top;
+        }
+        if (
+          estimateLabelExtentBelowAnchor(bottom, xLabelRotation) >
+          estimateLabelExtentBelowAnchor(maxBottomText, xLabelRotation)
+        ) {
+          maxBottomText = bottom;
+        }
       });
       return {
         topLabelSpace: estimateLabelVerticalExtent(maxTopText, xLabelRotation) + X_LABEL_PADDING,
-        bottomLabelSpace: estimateLabelVerticalExtent(maxBottomText, xLabelRotation) + X_LABEL_PADDING,
+        // Hang below the anchor, then leave room for the legend title drawn above posY.
+        bottomLabelSpace:
+          X_LABEL_ANCHOR_OFFSET +
+          estimateLabelExtentBelowAnchor(maxBottomText, xLabelRotation) +
+          COLOR_LEGEND_OVERFLOW_TOP +
+          X_LABEL_PADDING,
       };
     }, [xTerms, xLabelRotation]);
 
@@ -111,7 +153,6 @@ export const Renderer = forwardRef(
     const mainHeatmapHeight = height - colorLegendHeight;
     // Reserve vertical room for the bottom labels between the cells and the legend.
     const boundsHeight = mainHeatmapHeight - effectiveMarginTop - bottomLabelGap - MARGIN.bottom;
-    const colorLegendBoundsHeight = colorLegendHeight - COLOR_LEGEND_MARGIN.top - COLOR_LEGEND_MARGIN.bottom;
 
     // show only selected and top-level data points
     // const dataShow = data.filter((d) => (
@@ -439,7 +480,7 @@ export const Renderer = forwardRef(
       const x = xScale(term.value ?? term.label);
       const xCoord = x + xScale.bandwidth() / 2;
       const actualHeatmapHeight = yScale.range()[1] || 0;
-      const yCoord = actualHeatmapHeight + 10;
+      const yCoord = actualHeatmapHeight + X_LABEL_ANCHOR_OFFSET;
       const displayLabel = term.bottomLabel ?? term.label ?? term.value ?? 'Unknown';
 
       if (x === undefined) {
@@ -539,7 +580,7 @@ export const Renderer = forwardRef(
                 <text
                   id="txtSecondaryLegend"
                   x={colorLegendPosX + colorLegendWidth + 25}
-                  y={colorLegendPosY + colorLegendBoundsHeight}
+                  y={colorLegendPosY + COLOR_LEGEND_SWATCH_BASELINE}
                   dominantBaseline="middle"
                   fontSize={15}
                   fontFamily="sans"
