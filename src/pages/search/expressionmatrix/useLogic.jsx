@@ -18,25 +18,6 @@ import { URL_ROOT } from '~/helpers/constants';
 
 // TODO: create an API endpoint to query root terms for condition params?
 export const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
-const CELL_TYPE_ROOT_ID = 'GO:0005575';
-
-const getCallAnatIds = (call) => {
-  const anats = call.multiSpeciesCondition?.anatEntities;
-  if (Array.isArray(anats) && anats.length > 0) {
-    return anats.map((a) => a.id).filter(Boolean);
-  }
-  const id = call.condition?.anatEntity?.id;
-  return id ? [id] : [];
-};
-
-const isCellTypeRootCall = (call) => {
-  const cellTypes = call.multiSpeciesCondition?.cellTypes;
-  if (Array.isArray(cellTypes)) {
-    return cellTypes.length === 0 || cellTypes.every((ct) => !ct?.id || ct.id === CELL_TYPE_ROOT_ID);
-  }
-  const cellTypeId = call.condition?.cellType?.id;
-  return !cellTypeId || cellTypeId === CELL_TYPE_ROOT_ID;
-};
 
 // building the page_type array depending on config.json
 // TODO: in future, adapt for display of different condition params?
@@ -167,10 +148,6 @@ export const ALL_CALL_TYPE = [
   { id: EXPRESSED, label: 'Present' },
   { id: NOT_EXPRESSED, label: 'Absent' },
 ];
-
-// Temporary kill-switch: multispecies complementary call currently has performance issues.
-// Set to `true` to re-enable orphan/complementary expression retrieval.
-const ENABLE_MULTISPEC_COMPLEMENTARY_FETCH = true;
 
 // URL params kept only when they differ from the form defaults.
 const DEFAULT_ANAT_ENTITY_ID = 'SUMMARY';
@@ -344,6 +321,8 @@ const useLogic = (options = {}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(true);
   const [searchResult, setSearchResult] = useState(null);
+  // True when the submitted search is the default SUMMARY anatomy view.
+  const [showOthersBucket, setShowOthersBucket] = useState(true);
   // const [maxExpScore, setMaxExpScore] = useState({});
   const maxExpScore = [];
 
@@ -565,8 +544,6 @@ const useLogic = (options = {}) => {
   // Uses multispec_expr_calls API when multiSpeciesGenes is provided, else expr_calls per species
   const triggerInitialSearch = async (initParams, multiSpeciesGenes = null) => {
     const baseParams = initParams || getSearchParams();
-    const doComplementarySearch = baseParams.selectedTissue.length === 0 && baseParams.selectedCellTypes.length === 0;
-    const shouldFetchMultispecComplementary = ENABLE_MULTISPEC_COMPLEMENTARY_FETCH && doComplementarySearch;
 
     setIsLoading(true);
 
@@ -577,37 +554,14 @@ const useLogic = (options = {}) => {
 
       if (multiSpeciesGenes && multiSpeciesGenes.length > 0) {
         // Use multispec API: single call for all genes across species
-        const [initialResult, complementaryResult] = await Promise.all([
-          api.search.geneExpressionMatrix.multispecInitialSearch(baseParams, multiSpeciesGenes),
-          shouldFetchMultispecComplementary
-            ? api.search.geneExpressionMatrix.multispecInitialSearchComplementary(baseParams, multiSpeciesGenes)
-            : Promise.resolve(null),
-        ]);
-
-        const { resp, paramsURLCalled } = initialResult;
+        const { resp, paramsURLCalled } = await api.search.geneExpressionMatrix.multispecInitialSearch(
+          baseParams,
+          multiSpeciesGenes
+        );
         firstResultResp = resp;
         if (resp.code === 200) {
           combinedData = { ...resp.data };
           paramsURLCalled1 = paramsURLCalled;
-
-          if (shouldFetchMultispecComplementary && complementaryResult?.resp?.code === 200) {
-            const initialCellTypeRootAnatIds = new Set(
-              combinedData.expressionData.expressionCalls.filter(isCellTypeRootCall).flatMap(getCallAnatIds)
-            );
-            const orphanCalls = complementaryResult.resp.data.expressionData.expressionCalls
-              .filter((call) => {
-                // Leftover organs at the cell-type root only — not a global cell-type list.
-                if (!isCellTypeRootCall(call)) return false;
-                // Hide a duplicate GO:0005575 / empty-cellTypes row already shown by request 1.
-                const anatIds = getCallAnatIds(call);
-                return anatIds.length > 0 && !anatIds.some((id) => initialCellTypeRootAnatIds.has(id));
-              })
-              .map((call) => ({
-                ...call,
-                isOrphan: true,
-              }));
-            combinedData.expressionData.expressionCalls.push(...orphanCalls);
-          }
         }
       } else {
         // Fallback: original multi-call per species
@@ -626,18 +580,7 @@ const useLogic = (options = {}) => {
           return api.search.geneExpressionMatrix.initialSearch(params);
         });
 
-        const complementaryPromises = doComplementarySearch
-          ? speciesGroups.map((group) => {
-              const params = { ...baseParams };
-              params.selectedSpecies = group.speciesId;
-              params.selectedGene = group.genes;
-              return api.search.geneExpressionMatrix.initialSearchComplementary(params);
-            })
-          : [];
-
-        const allResults = await Promise.all([...searchPromises, ...complementaryPromises]);
-        const initialResults = allResults.slice(0, speciesGroups.length);
-        const complementaryResults = allResults.slice(speciesGroups.length);
+        const initialResults = await Promise.all(searchPromises);
 
         initialResults.forEach((result, idx) => {
           const { resp, paramsURLCalled } = result;
@@ -651,19 +594,6 @@ const useLogic = (options = {}) => {
             }
           }
         });
-
-        if (doComplementarySearch) {
-          complementaryResults.forEach((result) => {
-            const { resp } = result;
-            if (resp?.code === 200) {
-              const orphanCalls = resp.data.expressionData.expressionCalls.map((call) => ({
-                ...call,
-                isOrphan: true,
-              }));
-              combinedData.expressionData.expressionCalls.push(...orphanCalls);
-            }
-          });
-        }
       }
 
       if (combinedData) {
@@ -710,6 +640,7 @@ const useLogic = (options = {}) => {
         // panel collapses separately to direct attention to the Expression Graph.
 
         setIsLoading(false);
+        setShowOthersBucket(baseParams.selectedTissue.length === 0 && baseParams.selectedCellTypes.length === 0);
         setSearchResult(combinedData);
       }
     } catch (error) {
@@ -874,8 +805,8 @@ const useLogic = (options = {}) => {
     baseParams.observedData = true;
 
     try {
-      if (multiSpeciesGenes && multiSpeciesGenes.length > 0) {
-        // Use multispec API
+      // multispec_expr_calls rejects a gene_list of one id, so a single gene uses expr_calls.
+      if (multiSpeciesGenes && multiSpeciesGenes.length > 1) {
         const { resp } = await api.search.geneExpressionMatrix.multispecSearch(baseParams, multiSpeciesGenes);
         if (resp.code !== 200) return [];
         const calls = resp.data.expressionData.expressionCalls.map(transformMultispecCall);
@@ -1208,6 +1139,7 @@ const useLogic = (options = {}) => {
   return {
     searchResult,
     setSearchResult,
+    showOthersBucket,
     maxExpScore,
     dataType,
     show,

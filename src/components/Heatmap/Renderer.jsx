@@ -5,6 +5,7 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import { Tooltip } from "../../../Tooltip";
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
+import { isOthersBucket } from '../../helpers/othersAnatomicalBucket';
 
 const DEFAULT_MARGIN = { top: 20, right: 10, bottom: 0, left: 200 };
 
@@ -172,12 +173,15 @@ export const Renderer = forwardRef(
       function traverse(children, depth, visible, embedLvls) {
         if (!children || !Array.isArray(children)) return;
 
+        // The synthetic "others" bucket stays last in every ordering.
+        const pinnedBottom = children.filter((child) => isOthersBucket(child));
+        const sortable = children.filter((child) => !isOthersBucket(child));
         // collect low-level children
-        const childrenLowLvl = children
+        const childrenLowLvl = sortable
           .filter((child) => !child.isTopLevelTerm)
           .sort((a, b) => a.label.localeCompare(b.label));
         // collect high-level children
-        const childrenHighLvl = children
+        const childrenHighLvl = sortable
           .filter((child) => child.isTopLevelTerm)
           .sort((a, b) => a.label.localeCompare(b.label));
 
@@ -185,7 +189,7 @@ export const Renderer = forwardRef(
         children.sort((a, b) => a.label.localeCompare(b.label));
 
         // Push the labels at the current depth
-        [...childrenLowLvl, ...childrenHighLvl].forEach((child, idx, arr) => {
+        [...childrenLowLvl, ...childrenHighLvl, ...pinnedBottom].forEach((child, idx, arr) => {
           // children.forEach((child, idx, arr) => {
           if (visible && (child.isPopulated || showMissingData)) {
             const newLabel = {
@@ -310,6 +314,7 @@ export const Renderer = forwardRef(
         maxExpScore: d.maxExp?.toFixed(2),
         hasDataAffy: d.hasDataAffy,
         hasDataEst: d.hasDataEst,
+        expressionQuality: d.expressionQuality,
         hasDataInSitu: d.hasDataInSitu,
         hasDataRnaSeq: d.hasDataRnaSeq,
         hasDataScRnaSeq: d.hasDataScRnaSeq,

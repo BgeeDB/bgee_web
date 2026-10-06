@@ -614,50 +614,6 @@ const search = {
           });
       }),
 
-    // Multispec: complementary search (leftover organs at the cell-type root)
-    multispecInitialSearchComplementary: (form, multiSpeciesGenes): any =>
-      new Promise((resolve, reject) => {
-        const geneList = buildGeneList(multiSpeciesGenes);
-        if (!geneList) {
-          reject(new Error('No genes in gene_list'));
-          return;
-        }
-        const params = DEFAULT_PARAMETERS('data', 'multispec_expr_calls');
-        params.append('get_results', '1');
-        params.append('offset', '0');
-        params.append('limit', '10000');
-        params.append('gene_list', geneList);
-        params.append('anat_entity_id', 'SUMMARY');
-        params.append('cell_type_id', 'SUMMARY');
-        params.append('cond_param2', 'anat_entity');
-        params.append('discard_anat_entity_and_children_id', 'SUMMARY');
-        params.append('observed_data', '1');
-        // NOTE: must be set for this call to work
-        params.append('anat_entity_descendant', '1');
-        params.append('exclude_non_informative', '1');
-        // Do not send cell_type_descendant — complementary is leftover organs only.
-        if (form.dataType?.length > 0) {
-          form.dataType.forEach((type) => params.append('data_type', type));
-        }
-        if (form?.dataQuality) params.append('data_qual', form.dataQuality);
-        const paramsURLCalled = params.toString();
-        const typeToken = 'search';
-        axiosInstance
-          .get(getMultispecRequestUrl(paramsURLCalled), {
-            cancelToken: new axios.CancelToken((c) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = c;
-            }),
-          })
-          .then(({ data }) => {
-            SEARCH_CANCEL_API.rawData[typeToken] = null;
-            return resolve({ resp: data, paramsURLCalled });
-          })
-          .catch((error) => {
-            errorHandler(error);
-            reject(error?.response || error?.message);
-          });
-      }),
-
     // Multispec: search for child terms (expand hierarchy)
     multispecSearch: (form, multiSpeciesGenes): any =>
       new Promise((resolve, reject) => {
@@ -682,7 +638,7 @@ const search = {
         if (form.discardAnatEntityAndChildrenId) {
           params.append('discard_anat_entity_and_children_id', form.discardAnatEntityAndChildrenId);
         }
-        // Child expansion (request 3): same observed-data filter as the complementary search.
+        // Child expansion: observed calls only, with the SUMMARY forest punched out.
         params.append('observed_data', '1');
         form.selectedCellTypes?.forEach((ct) => params.append('cell_type_id', ct));
         if (form.hasCellTypeSubStructure && form.selectedCellTypes?.length > 0) {
@@ -833,74 +789,6 @@ const search = {
 
         params.append('data_qual', SUMMARY_EXPRESSION_DATA_QUAL);
 
-        const paramsURLCalled = params.toString();
-
-        const typeToken = 'search'; // alternatives: 'count'
-        axiosInstance
-          .get(`/?${paramsURLCalled}`, {
-            cancelToken: new axios.CancelToken((c) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = c;
-            }),
-          })
-          .then(({ data }) => {
-            SEARCH_CANCEL_API.rawData[typeToken] = null;
-            return resolve({ resp: data, paramsURLCalled });
-          })
-          .catch((error) => {
-            errorHandler(error);
-            reject(error?.response || error?.message);
-          });
-      }),
-
-    initialSearchComplementary: (form): any =>
-      new Promise((resolve, reject) => {
-        // populate request params
-        const params = DEFAULT_PARAMETERS('data', 'expr_calls');
-        params.append('get_results', '1');
-        params.append('offset', '0');
-        params.append('limit', '10000');
-
-        // specific to this call
-        params.append('anat_entity_id', 'SUMMARY');
-        params.append('cell_type_id', 'SUMMARY');
-        params.append('cond_param2', 'anat_entity');
-        params.append('discard_anat_entity_and_children_id', 'SUMMARY');
-        params.append('observed_data', '1');
-        // NOTE: must be set for this call to work
-        params.append('anat_entity_descendant', '1');
-        params.append('exclude_non_informative', '1');
-
-        // are we using a dataHash?
-        if (form.initSearch && form.initSearch.length > 0) {
-          // -> use initSearch params
-          params.append('display_rp', '1');
-
-          for (const [key, val] of form.initSearch) {
-            if (
-              key !== 'data_type' &&
-              key !== 'data_qual' &&
-              key !== 'offset' &&
-              key !== 'limit' &&
-              key !== 'pageType'
-            ) {
-              params.append(key, val);
-            }
-          }
-        } else {
-          // -> use form params
-          if (form.dataType?.length > 0) {
-            form.dataType.forEach((type) => params.append('data_type', type));
-          }
-          if (form.selectedSpecies) {
-            params.append('species_id', form.selectedSpecies);
-          }
-          form.selectedGene.forEach((g) => params.append('gene_id', g));
-        }
-        if (form?.dataQuality) {
-          params.append('data_qual', form.dataQuality);
-        }
-
-        // [...]
         const paramsURLCalled = params.toString();
 
         const typeToken = 'search'; // alternatives: 'count'
