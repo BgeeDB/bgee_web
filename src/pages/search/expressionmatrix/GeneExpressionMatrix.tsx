@@ -21,7 +21,7 @@ import { URL_ROOT } from '~/helpers/constants';
 import './rawDataAnnotations.scss';
 import Bulma from '~/components/Bulma';
 import api from '~/api';
-import { getGeneLabel } from '~/helpers/gene';
+import { getGeneLabel, pickGeneFromSearchResult } from '~/helpers/gene';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 type InputMode = 'species' | 'list';
@@ -391,13 +391,9 @@ const GeneExpressionMatrix = () => {
       geneIds.map(async (geneId): Promise<[string, GeneResolutionStatus, GeneWithSpecies | null]> => {
         try {
           const result: any = await api.search.genes.geneSearchResult(geneId);
-          if (result?.code !== 200) {
-            return [geneId, { state: 'error' }, null];
-          }
-          const matchCount = result.data?.result?.totalMatchCount ?? 0;
-          const matches = result.data?.result?.geneMatches || [];
-          if (matchCount === 1 && matches[0]?.gene) {
-            const gene = matches[0].gene;
+          const picked = pickGeneFromSearchResult(geneId, result);
+          if (picked.state === 'found') {
+            const { gene } = picked;
             const speciesLabel = `${gene.species.genus} ${gene.species.speciesName}${
               gene.species.name ? ` - ${gene.species.name}` : ''
             }`;
@@ -409,10 +405,13 @@ const GeneExpressionMatrix = () => {
             };
             return [geneId, { state: 'found', speciesLabel, geneLabel: geneEntry.geneLabel }, geneEntry];
           }
-          if (matchCount > 1) {
-            return [geneId, { state: 'ambiguous', matchCount }, null];
+          if (picked.state === 'ambiguous') {
+            return [geneId, { state: 'ambiguous', matchCount: picked.matchCount }, null];
           }
-          return [geneId, { state: 'not_found' }, null];
+          if (picked.state === 'not_found') {
+            return [geneId, { state: 'not_found' }, null];
+          }
+          return [geneId, { state: 'error' }, null];
         } catch (err) {
           console.error(`[GeneExpressionMatrix.resolveGeneList] error for ${geneId}:`, err);
           return [geneId, { state: 'error' }, null];
