@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 
 import api from '../../../api';
-import { getGeneLabel } from '../../../helpers/gene';
+import { getGeneLabel, pickGeneFromSearchResult } from '../../../helpers/gene';
 import { getIdAndNameLabel, getOptionsForFilter } from '../../../helpers/selects';
 import { flattenDevStagesList } from './components/filters/DevelopmentalAndLifeStages/useLogic';
 import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
@@ -1076,39 +1076,39 @@ const useLogic = (options = {}) => {
     try {
       const searchResults = await Promise.all(geneIds.map((geneId) => api.search.genes.geneSearchResult(geneId)));
 
-      const validResults = searchResults.filter(
-        (result) => result.code === 200 && result.data.result.totalMatchCount === 1
-      );
-
-      if (validResults.length === 0) return;
-
-      // Build multiSpeciesGenes with correct species per gene (supports multi-species)
-      // Also guard against the (unlikely) case where two distinct input IDs resolve
-      // to the same speciesId:geneId pair.
+      // Build multiSpeciesGenes with correct species per gene (supports multi-species).
+      // An exact geneId match is kept even when synonyms make totalMatchCount greater than 1.
+      // Also guard against two input IDs resolving to the same speciesId:geneId pair.
       const seenKeys = new Set();
-      const multiSpeciesGenes = [];
-      validResults.forEach((result) => {
-        const { gene } = result.data.result.geneMatches[0];
+      const resolvedGenes = [];
+      geneIds.forEach((geneId, index) => {
+        const picked = pickGeneFromSearchResult(geneId, searchResults[index]);
+        if (picked.state !== 'found') return;
+        const { gene } = picked;
         const key = `${gene.species.id}:${gene.geneId}`;
         if (seenKeys.has(key)) return;
         seenKeys.add(key);
-        multiSpeciesGenes.push({
-          speciesId: gene.species.id,
-          speciesLabel: `${gene.species.genus} ${gene.species.speciesName}${
-            gene.species.name ? ` - ${gene.species.name}` : ''
-          }`,
-          geneId: gene.geneId,
-          geneLabel: getGeneLabel(gene),
-        });
+        resolvedGenes.push(gene);
       });
+
+      if (resolvedGenes.length === 0) return;
+
+      const multiSpeciesGenes = resolvedGenes.map((gene) => ({
+        speciesId: gene.species.id,
+        speciesLabel: `${gene.species.genus} ${gene.species.speciesName}${
+          gene.species.name ? ` - ${gene.species.name}` : ''
+        }`,
+        geneId: gene.geneId,
+        geneLabel: getGeneLabel(gene),
+      }));
 
       if (setMultiSpeciesGenes) {
         setMultiSpeciesGenes(multiSpeciesGenes);
       }
 
       setSelectedSpeciesFromUrl({
-        label: getSpeciesLabel(validResults[0].data.result.geneMatches[0].gene.species),
-        value: validResults[0].data.result.geneMatches[0].gene.species.id,
+        label: getSpeciesLabel(resolvedGenes[0].species),
+        value: resolvedGenes[0].species.id,
       });
       // resetForm inside setSelectedSpeciesFromUrl clears tissue and cell type.
       // Re-apply URL filters afterwards so a shared link restores them.
