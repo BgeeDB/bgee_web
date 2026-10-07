@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import Bulma from '../Bulma';
 import api from '../../api';
@@ -44,6 +44,12 @@ const DATA_TYPES = [
   },
 ];
 export const ALL_DATA_TYPES = DATA_TYPES.map((data) => data.key);
+
+const sameDataTypeSelection = (left: string[], right: string[]) => {
+  if (left.length !== right.length) return false;
+  const rightKeys = new Set(right);
+  return left.every((key) => rightKeys.has(key));
+};
 
 const dataTypesFromQuery = (queryValue) => {
   const allowed = new Set(ALL_DATA_TYPES);
@@ -125,11 +131,22 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
     setDataTypes(dataTypesFromQuery(dataTypeExpr) || ALL_DATA_TYPES);
   }, [dataTypeExpr]);
 
+  const dataTypeFieldsRef = useRef<HTMLDivElement>(null);
+  // Checkboxes the user sees. Read at click time so Update is not stuck on a selection
+  // that React has not committed yet.
+  const selectedDataTypes = () => {
+    const inputs = dataTypeFieldsRef.current?.querySelectorAll<HTMLInputElement>('input[type="checkbox"][data-key]');
+    if (!inputs?.length) return dataType;
+    const checked = new Set(
+      [...inputs].filter((input) => input.checked && input.dataset.key).map((input) => input.dataset.key as string)
+    );
+    return DATA_TYPES.map((type) => type.key).filter((key) => checked.has(key));
+  };
+
   // In order to disable the search button if the search has already been made
   const formSearchButtonIsDisabled = useMemo(() => {
-    const oldDataType = (dataTypesFromQuery(dataTypeExpr) || DATA_TYPES.map((d) => d.key)).sort();
-
-    return JSON.stringify(dataType.sort()) === JSON.stringify(oldDataType);
+    const oldDataType = dataTypesFromQuery(dataTypeExpr) || ALL_DATA_TYPES;
+    return sameDataTypeSelection(dataType, oldDataType);
   }, [dataType, dataTypeExpr]);
 
   const getSearchParams = (): ExpressionSearchParams => {
@@ -559,11 +576,12 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
           </progress>
         )}
 
-        <div className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper mt-2">
+        <div ref={dataTypeFieldsRef} className="is-flex is-flex-wrap-wrap gene-expr-fields-wrapper mt-2">
           {DATA_TYPES.map((c) => (
             <label className="checkbox ml-2 is-size-7 is-flex is-align-items-center" key={c.key}>
               <input
                 type="checkbox"
+                data-key={c.key}
                 checked={!!dataType.find((d) => d === c.key)}
                 onChange={(e) => {
                   setDataTypes((prev) => {
@@ -583,7 +601,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
           ))}
           <Bulma.Button
             className="search-form"
-            disabled={JSON.stringify(dataType.sort()) === JSON.stringify(DATA_TYPES.map((d) => d.key).sort())}
+            disabled={sameDataTypeSelection(dataType, ALL_DATA_TYPES)}
             onClick={() => setDataTypes(DATA_TYPES.map((d) => d.key))}
           >
             Select All
@@ -597,12 +615,10 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
             className="search-form"
             disabled={formSearchButtonIsDisabled}
             onClick={() => {
+              const selected = selectedDataTypes();
               const queryParams = new URLSearchParams(window.location.search);
-              if (
-                JSON.stringify(dataType.sort()) !== JSON.stringify(DATA_TYPES.map((d) => d.key).sort()) &&
-                dataType.length > 0
-              )
-                queryParams.set(dataTypeKey, dataType.join(','));
+              if (!sameDataTypeSelection(selected, ALL_DATA_TYPES) && selected.length > 0)
+                queryParams.set(dataTypeKey, selected.join(','));
               else queryParams.delete(dataTypeKey);
 
               navigate(`${URL_ROOT}${location.pathname}?${queryParams.toString()}`, {
