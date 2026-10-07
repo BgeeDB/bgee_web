@@ -1,4 +1,4 @@
-import { useMemo, forwardRef } from 'react';
+import { useEffect, useMemo, forwardRef } from 'react';
 import * as d3 from 'd3';
 import { Tree } from './TreeSvg';
 import { ColorLegendSvg } from './ColorLegendSvg';
@@ -230,19 +230,20 @@ export const Renderer = forwardRef(
     // const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.label))], [yLblOrdered]);
     const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 
-    const xScale = useMemo(() => {
-      const cellWidth = Math.max(maxCellWidth, minCellWidth);
-      // Calculate required width based on minimum cell width, including 4px margin
-      const requiredWidth = allXGroups.length * (cellWidth + 4);
-      if (requiredWidth > boundsWidth) {
-        // console.log('[Renderer] requiredWidth:', requiredWidth);
-        // console.log('[Renderer] boundsWidth:', boundsWidth);
-        // Update graph width if needed
-        setGraphWidth(requiredWidth + MARGIN.right + marginLeft);
-      }
+    const xCellWidth = Math.max(maxCellWidth, minCellWidth);
+    // Required width based on minimum cell width, including 4px margin
+    const requiredXWidth = allXGroups.length * (xCellWidth + 4);
+    const xScale = useMemo(
+      () => d3.scaleBand().range([0, requiredXWidth]).domain(allXGroups).padding(0.01),
+      [requiredXWidth, allXGroups]
+    );
 
-      return d3.scaleBand().range([0, requiredWidth]).domain(allXGroups).padding(0.01);
-    }, [dataShow, width, maxCellWidth, minCellWidth, allXGroups, boundsWidth, marginLeft, setGraphWidth]);
+    // Grow the graph after render. Setting parent state inside useMemo updates Heatmap while Renderer renders.
+    useEffect(() => {
+      if (requiredXWidth > boundsWidth && setGraphWidth) {
+        setGraphWidth(requiredXWidth + MARGIN.right + marginLeft);
+      }
+    }, [requiredXWidth, boundsWidth, marginLeft, MARGIN.right, setGraphWidth]);
 
     const yScale = useMemo(() => {
       // console.log('[Renderer] allYGroups:', allYGroups);
@@ -250,27 +251,26 @@ export const Renderer = forwardRef(
       const requiredHeight = allYGroups.length * (minCellHeight + 4);
       const actualHeight = Math.max(boundsHeight, requiredHeight);
 
-      // Grow the SVG height if the current `height` cannot fit the desired cell
-      // height plus the label margins and the legend. Uses `defaultCellHeight` so
-      // it does not depend on the current `height` (avoids a resize feedback loop).
+      return d3.scaleBand().range([0, actualHeight]).domain(allYGroups).padding(0.01);
+    }, [minCellHeight, allYGroups, boundsHeight]);
+
+    // Grow the SVG height if the current `height` cannot fit the desired cell
+    // height plus the label margins and the legend. Uses `defaultCellHeight` so
+    // it does not depend on the current `height` (avoids a resize feedback loop).
+    useEffect(() => {
       const desiredCellsHeight = allYGroups.length * defaultCellHeight;
       const requiredTotalHeight =
         effectiveMarginTop + desiredCellsHeight + bottomLabelGap + colorLegendHeight + MARGIN.bottom;
       if (requiredTotalHeight > height && setGraphHeight) {
         setGraphHeight(requiredTotalHeight);
       }
-
-      return d3.scaleBand().range([0, actualHeight]).domain(allYGroups).padding(0.01);
     }, [
-      dataShow,
-      height,
-      minCellHeight,
       allYGroups,
-      boundsHeight,
       defaultCellHeight,
       effectiveMarginTop,
       bottomLabelGap,
       colorLegendHeight,
+      height,
       MARGIN.bottom,
       setGraphHeight,
     ]);

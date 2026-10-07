@@ -261,34 +261,23 @@ test.describe('Gene Expression Graph Component', () => {
   });
 
   test('should handle data type filtering correctly', async ({ page }) => {
-    // Wait for initial load
-    await page.waitForTimeout(3000);
+    // The expression graph panel follows its heading. Expression table controls share the same labels.
+    const graphPanel = page.getByRole('heading', { name: 'Expression graph' }).locator('xpath=following-sibling::*[1]');
+    const dataTypeWrapper = graphPanel.locator('.gene-expr-fields-wrapper').first();
+    const checkbox = (name: string) => dataTypeWrapper.getByRole('checkbox', { name, exact: true });
 
-    // Get initial state
-    const initialUrl = page.url();
+    await expect(checkbox('RNA Seq')).toBeChecked();
+    await dataTypeWrapper.getByRole('button', { name: 'Unselect All' }).click();
+    await expect(checkbox('In Situ')).not.toBeChecked();
+    await expect(checkbox('RNA Seq')).not.toBeChecked();
+    await expect(checkbox('scRNA-Seq')).not.toBeChecked();
 
-    // Uncheck all data types except one (first Unselect All is for Expression graph)
-    const unselectAllButton = page.getByRole('button', { name: 'Unselect All' }).first();
-    await unselectAllButton.click();
+    await checkbox('RNA Seq').check();
+    await expect(checkbox('RNA Seq')).toBeChecked();
+    await expect(checkbox('In Situ')).not.toBeChecked();
+    await expect(checkbox('scRNA-Seq')).not.toBeChecked();
 
-    // Select only RNA-Seq
-    const dataTypeWrapper = page.locator('.gene-expr-fields-wrapper').first();
-    const rnaSeqCheckbox = dataTypeWrapper
-      .getByText('RNA Seq', { exact: true })
-      .locator('..')
-      .locator('input[type="checkbox"]');
-    await rnaSeqCheckbox.check();
-
-    // Click Update (first one is for Expression graph)
-    await page.getByRole('button', { name: 'Update' }).first().click();
-
-    // Wait for update
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000);
-
-    // Check that URL changed
-    const newUrl = page.url();
-    expect(newUrl).not.toBe(initialUrl);
-    expect(newUrl).toContain('data_type=RNA_SEQ');
+    await graphPanel.getByRole('button', { name: 'Update' }).click();
+    await expect(page).toHaveURL(/[?&]data_type=RNA_SEQ(?:&|$)/);
   });
 });

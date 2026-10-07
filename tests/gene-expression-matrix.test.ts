@@ -410,18 +410,11 @@ test.describe('Gene Expression Matrix Page', () => {
     console.log(`Gene value: "${geneValue}"`);
   });
 
-  test('should display error message for invalid search', async ({ page }) => {
-    // Try to search without selecting a species
-    await page.getByRole('button', { name: 'Submit', exact: true }).click();
-
-    // Wait for any error messages or validation
-    await page.waitForTimeout(2000);
-
-    // Check if there are any validation messages
-    const errorMessages = page.locator('.notification.is-danger, .help.is-danger');
-    if ((await errorMessages.count()) > 0) {
-      await expect(errorMessages.first()).toBeVisible();
-    }
+  test('should keep submit disabled until a gene is selected', async ({ page }) => {
+    // An empty search cannot be submitted. The button stays disabled instead of showing an error.
+    const submit = page.getByRole('button', { name: 'Submit', exact: true });
+    await expect(submit).toBeDisabled();
+    await expect(page.getByText('Please select search criteria above to display results.')).toBeVisible();
   });
 
   test('should handle gene list parameter', async ({ page }) => {
@@ -429,31 +422,9 @@ test.describe('Gene Expression Matrix Page', () => {
     const geneList = 'ENSG00000130208%0AENSG00000012048';
     await page.goto(`/search/expression-matrix?gene_list=${geneList}`);
 
-    // Wait for the page to process the gene list
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(5000);
-
-    // Check that the form is populated with genes from the list
-    const geneInput = page.locator('#autocomplete-search-Gene').first();
-    const geneInputVisible = await geneInput.isVisible();
-    expect(geneInputVisible).toBeTruthy();
-
-    // Check that genes are populated in the multi-value display (not the input field)
-    const geneMultiValues = page.locator('.react-select-autoComplete__multi-value__label');
-    const geneCount = await geneMultiValues.count();
-    expect(geneCount).toBeGreaterThan(0);
-
-    // Verify at least one gene contains APOC1
-    let foundAPOC1 = false;
-    for (let i = 0; i < geneCount; i++) {
-      const geneValue = await geneMultiValues.nth(i).textContent();
-      if (geneValue && geneValue.includes('APOC1')) {
-        foundAPOC1 = true;
-        break;
-      }
-    }
-    expect(foundAPOC1).toBeTruthy();
-
-    console.log(`Gene list parameter processed: found ${geneCount} genes`);
+    // A gene_list URL resolves into the Selected Genes table, across species, without the
+    // single-species autocomplete.
+    await expect(page.getByRole('link', { name: /ENSG00000130208 - APOC1/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /ENSG00000012048 - BRCA1/ })).toBeVisible();
   });
 });
