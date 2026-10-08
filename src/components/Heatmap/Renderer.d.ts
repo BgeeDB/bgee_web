@@ -2,6 +2,7 @@ import type * as React from 'react';
 
 export type RendererProps = {
   width: number;
+  /** Caller height with the legend already removed. `0` sizes rows from `defaultCellHeight`. */
   height: number;
   backgroundColor?: string;
   data: unknown;

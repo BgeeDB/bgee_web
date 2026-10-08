@@ -84,6 +84,9 @@ const Heatmap = ({
   const [yLabelAlign, setYLabelAlign] = useState(() => getStoredValue(STORAGE_KEYS.Y_LABEL_ALIGN, yLabelJustify));
   const [graphWidth, setGraphWidth] = useState(width);
   const [graphHeight, setGraphHeight] = useState(height);
+  // Full SVG height requested from the settings field. Null keeps the row pitch
+  // at defaultCellHeight instead of stretching into the initial placeholder height.
+  const [minSvgHeight, setMinSvgHeight] = useState<number | null>(null);
   // outer width, if graphWidth > maxGraphWidth -> scale SVG down
   const [maxGraphWidth, setMaxGraphWidth] = useState(defaultMaxGraphWidth);
   const [cellWidth, setCellWidth] = useState(() => getStoredValue(STORAGE_KEYS.CELL_WIDTH, 50));
@@ -101,7 +104,7 @@ const Heatmap = ({
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
-  const [graphHeightInput, setGraphHeightInput] = useState(graphHeight);
+  const [graphHeightInput, setGraphHeightInput] = useState(String(graphHeight));
 
   // Update local input state without updating the actual graphWidth
   const handleGraphWidthChange = (event) => {
@@ -121,9 +124,15 @@ const Heatmap = ({
 
   // Update the actual graphHeight and localStorage on blur
   const handleGraphHeightBlur = (event) => {
-    const { value } = event.target;
+    const value = Number(event.target.value);
+    if (!Number.isFinite(value) || value <= 0) return;
+    setMinSvgHeight(value);
     setGraphHeight(value);
   };
+
+  useEffect(() => {
+    setGraphHeightInput(String(graphHeight));
+  }, [graphHeight]);
 
   // Move visibleTermIds before colorScale
   // Memoize the visible term IDs calculation
@@ -239,34 +248,27 @@ const Heatmap = ({
   useEffect(() => {
     // console.log(`[Heatmap] (Re)calculating graph height...`);
     // console.log(`[Heatmap] drilldown:\n${JSON.stringify(drilldown)}`);
-    function countVisibleTerms(terms) {
-      let count = 0;
+    function longestVisibleLabel(terms) {
       let maxLabelLength = 0;
 
       function traverse(item) {
-        count += 1;
-        maxLabelLength = Math.max(maxLabelLength, item.label.length);
-        if (item.isExpanded) {
-          if (item.children && item.children.length > 0) {
-            item.children.forEach(traverse);
-          }
+        maxLabelLength = Math.max(maxLabelLength, item.label?.length || 0);
+        if (item.isExpanded && item.children?.length) {
+          item.children.forEach(traverse);
         }
       }
 
       terms.forEach(traverse);
-      return { count, maxLabelLength };
+      return maxLabelLength;
     }
 
-    const { count: numVisibleTerms, maxLabelLength } = countVisibleTerms(yTerms);
-    // console.log(`[Heatmap] ${numVisibleTerms} visible terms`);
+    const maxLabelLength = longestVisibleLabel(yTerms);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
-    const flexHeight = Math.max(numVisibleTerms * defaultCellHeight + COLOR_LEGEND_HEIGHT, 250);
     const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
     const flexWidth = Math.max(flexMarginLeft + 50, graphWidth);
-    setGraphHeight(flexHeight);
     setGraphWidth(flexWidth);
     setMarginLeft(flexMarginLeft);
-  }, [yTerms, defaultCellHeight]);
+  }, [yTerms]);
 
   const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
 
@@ -376,7 +378,7 @@ const Heatmap = ({
           <Renderer
             ref={svgRef}
             width={graphWidth}
-            height={graphHeight - COLOR_LEGEND_HEIGHT}
+            height={minSvgHeight != null ? minSvgHeight - COLOR_LEGEND_HEIGHT : 0}
             backgroundColor={bgColor}
             data={displayData}
             drilldown={yTerms}
