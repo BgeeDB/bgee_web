@@ -563,7 +563,17 @@ const GeneExpressionMatrix = () => {
     <>
       <div className="rawDataAnnotation">
         <div className="columns is-8 ongletPageWrapper">
-          <h1 className="ongletPages pageActive">{TAB_PAGE_EXPR_CALL.label}</h1>
+          <h1>
+            <a
+              className="ongletPages pageActive"
+              href={`${URL_ROOT}/search/expression-matrix`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open this page in a new tab"
+            >
+              {TAB_PAGE_EXPR_CALL.label}
+            </a>
+          </h1>
         </div>
 
         <div>
