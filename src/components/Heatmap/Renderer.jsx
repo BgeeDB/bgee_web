@@ -1,4 +1,4 @@
-import { useEffect, useMemo, forwardRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, forwardRef } from 'react';
 import * as d3 from 'd3';
 import { Tree } from './TreeSvg';
 import { ColorLegendSvg } from './ColorLegendSvg';
@@ -150,11 +150,6 @@ export const Renderer = forwardRef(
     const effectiveMarginTop = Math.max(MARGIN.top, topLabelSpace);
     const bottomLabelGap = Math.max(DEFAULT_BOTTOM_LABEL_GAP, bottomLabelSpace);
 
-    // Separate main heatmap height from total height (which includes legend)
-    const mainHeatmapHeight = height - colorLegendHeight;
-    // Reserve vertical room for the bottom labels between the cells and the legend.
-    const boundsHeight = mainHeatmapHeight - effectiveMarginTop - bottomLabelGap - MARGIN.bottom;
-
     // show only selected and top-level data points
     // const dataShow = data.filter((d) => (
     //   d.ylvl === 0 || (drilldown && drilldown.expanded.has(d.y))
@@ -245,35 +240,25 @@ export const Renderer = forwardRef(
       }
     }, [requiredXWidth, boundsWidth, marginLeft, MARGIN.right, setGraphWidth]);
 
-    const yScale = useMemo(() => {
-      // console.log('[Renderer] allYGroups:', allYGroups);
-      // Calculate required height based on minimum cell height, including 4px margin
-      const requiredHeight = allYGroups.length * (minCellHeight + 4);
-      const actualHeight = Math.max(boundsHeight, requiredHeight);
+    // Size rows from the desired cell height during this render. `height` is the
+    // caller's requested size with the legend already removed; 0 means the rows
+    // alone decide. A larger request stretches the band. A smaller one does not
+    // collapse rows to minCellHeight (that fallback painted short cells until hover).
+    const desiredCellBand = allYGroups.length * defaultCellHeight;
+    const requestedCellBand = height - effectiveMarginTop - bottomLabelGap - MARGIN.bottom;
+    const cellBandHeight = Math.max(desiredCellBand, requestedCellBand, 0);
+    const svgHeight = effectiveMarginTop + cellBandHeight + bottomLabelGap + MARGIN.bottom + colorLegendHeight;
 
-      return d3.scaleBand().range([0, actualHeight]).domain(allYGroups).padding(0.01);
-    }, [minCellHeight, allYGroups, boundsHeight]);
+    const yScale = useMemo(
+      () => d3.scaleBand().range([0, cellBandHeight]).domain(allYGroups).padding(0.01),
+      [cellBandHeight, allYGroups]
+    );
 
-    // Grow the SVG height if the current `height` cannot fit the desired cell
-    // height plus the label margins and the legend. Uses `defaultCellHeight` so
-    // it does not depend on the current `height` (avoids a resize feedback loop).
-    useEffect(() => {
-      const desiredCellsHeight = allYGroups.length * defaultCellHeight;
-      const requiredTotalHeight =
-        effectiveMarginTop + desiredCellsHeight + bottomLabelGap + colorLegendHeight + MARGIN.bottom;
-      if (requiredTotalHeight > height && setGraphHeight) {
-        setGraphHeight(requiredTotalHeight);
-      }
-    }, [
-      allYGroups,
-      defaultCellHeight,
-      effectiveMarginTop,
-      bottomLabelGap,
-      colorLegendHeight,
-      height,
-      MARGIN.bottom,
-      setGraphHeight,
-    ]);
+    // Keep parent state aligned before paint so the tooltip uses the same height.
+    useLayoutEffect(() => {
+      if (!setGraphHeight) return;
+      setGraphHeight((current) => (Number(current) === svgHeight ? current : svgHeight));
+    }, [svgHeight, setGraphHeight]);
 
     // Build the rectangles
     const allShapes = dataShow.map((d, i) => {
@@ -530,9 +515,9 @@ export const Renderer = forwardRef(
       <svg
         ref={ref}
         width={Math.min(width, maxGraphWidth)}
-        height={height}
+        height={svgHeight}
         style={{ backgroundColor }}
-        viewBox={`0 0 ${width} ${height}`}
+        viewBox={`0 0 ${width} ${svgHeight}`}
         preserveAspectRatio={scaleSvg ? 'xMidYMid meet' : 'none'}
       >
         <defs>
@@ -554,7 +539,7 @@ export const Renderer = forwardRef(
         </defs>
         <g
           width={boundsWidth}
-          height={boundsHeight}
+          height={cellBandHeight}
           transform={`translate(${[marginLeft, effectiveMarginTop].join(',')})`}
         >
           <g>
