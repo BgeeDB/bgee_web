@@ -87,9 +87,29 @@ const GeneExpressionMatrix = () => {
   // Multi-species gene list input (alternative input mode)
   const [inputMode, setInputMode] = useState<InputMode>('species');
   const [geneListText, setGeneListText] = useState('');
+  // Until the user types in the paste box, it mirrors the Selected Genes list.
+  const [geneListEdited, setGeneListEdited] = useState(false);
   const [geneListStatuses, setGeneListStatuses] = useState<Record<string, GeneResolutionStatus>>({});
   const [hasResolvedGeneList, setHasResolvedGeneList] = useState(false);
   const [isResolvingGeneList, setIsResolvingGeneList] = useState(false);
+
+  const tracedGeneListText = useMemo(() => {
+    const seen = new Set<string>();
+    const ids: string[] = [];
+    multiSpeciesGenes.forEach((gene) => {
+      if (!gene.geneId || seen.has(gene.geneId)) return;
+      seen.add(gene.geneId);
+      ids.push(gene.geneId);
+    });
+    return ids.join('\n');
+  }, [multiSpeciesGenes]);
+
+  const effectiveGeneListText = geneListEdited ? geneListText : tracedGeneListText;
+
+  const handleGeneListChange = useCallback((next: string) => {
+    setGeneListEdited(true);
+    setGeneListText(next);
+  }, []);
 
   // TODO: remove this useless state
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -359,6 +379,7 @@ const GeneExpressionMatrix = () => {
     setMultiSpeciesGenes([]);
     clearGeneHomologsCache();
     setGeneListText('');
+    setGeneListEdited(false);
     setGeneListStatuses({});
     setHasResolvedGeneList(false);
     setSelectedGenesFilter('all');
@@ -446,7 +467,7 @@ const GeneExpressionMatrix = () => {
   const handleSubmit = useCallback(async () => {
     setSelectedGenesFilter('all');
     if (inputMode === 'list') {
-      const resolved = await resolveGeneList(geneListText);
+      const resolved = await resolveGeneList(effectiveGeneListText);
       if (resolved.length === 0) return;
       setIsGenesListExpanded(false);
       onSubmit(resolved);
@@ -455,16 +476,16 @@ const GeneExpressionMatrix = () => {
     if (multiSpeciesGenes.length === 0) return;
     setIsGenesListExpanded(false);
     onSubmit(multiSpeciesGenes);
-  }, [inputMode, geneListText, resolveGeneList, onSubmit, multiSpeciesGenes]);
+  }, [inputMode, effectiveGeneListText, resolveGeneList, onSubmit, multiSpeciesGenes]);
 
   // Whether the Submit button should be enabled
   const canSubmit = useMemo(() => {
     if (isLoading || isResolvingGeneList) return false;
     if (inputMode === 'list') {
-      return parseGeneListIds(geneListText).length > 0;
+      return parseGeneListIds(effectiveGeneListText).length > 0;
     }
     return multiSpeciesGenes.length > 0;
-  }, [isLoading, isResolvingGeneList, inputMode, geneListText, multiSpeciesGenes.length]);
+  }, [isLoading, isResolvingGeneList, inputMode, effectiveGeneListText, multiSpeciesGenes.length]);
 
   const resultExprsCall = searchResult?.expressionData?.expressionCalls || [];
   const results = resultExprsCall;
@@ -589,8 +610,8 @@ const GeneExpressionMatrix = () => {
                   ) : (
                     <div className="my-2 maxWidth50">
                       <MultiSpeciesGeneListInput
-                        value={geneListText}
-                        onChange={setGeneListText}
+                        value={effectiveGeneListText}
+                        onChange={handleGeneListChange}
                         statuses={geneListStatuses}
                         isResolving={isResolvingGeneList}
                         hasResolved={hasResolvedGeneList}
