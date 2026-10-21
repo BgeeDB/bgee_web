@@ -4,8 +4,6 @@ import errorHandler from '../errorHandler';
 import PATHS from '../../paths/paths';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 
-const getMultispecRequestUrl = (paramsString: string) => `/?${paramsString}`;
-
 export const SEARCH_CANCEL_API: any = {
   genes: {
     autoComplete: null,
@@ -61,6 +59,22 @@ const buildGeneList = (multiSpeciesGenes: Array<{ geneId: string }> | null | und
     ids.push(id);
   });
   return ids.length === 0 ? null : ids.join('\n');
+};
+
+// Expression-matrix queries are POSTed. A large gene_list in the query string
+// exceeds the server maxHttpHeaderSize and the container returns 400.
+const postExpressionMatrix = (params: URLSearchParams, typeToken: string) => {
+  const paramsURLCalled = params.toString();
+  return axiosInstance
+    .post('/', params, {
+      cancelToken: new axios.CancelToken((c) => {
+        SEARCH_CANCEL_API.rawData[typeToken] = c;
+      }),
+    })
+    .then(({ data }) => {
+      SEARCH_CANCEL_API.rawData[typeToken] = null;
+      return { resp: data, paramsURLCalled };
+    });
 };
 
 // TODO: improve the functions return types. They are the source of all data in the app.
@@ -577,18 +591,8 @@ const search = {
           }
         }
         if (form?.dataQuality) params.append('data_qual', form.dataQuality);
-        const paramsURLCalled = params.toString();
-        const typeToken = 'search';
-        axiosInstance
-          .get(getMultispecRequestUrl(paramsURLCalled), {
-            cancelToken: new axios.CancelToken((c) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = c;
-            }),
-          })
-          .then(({ data }) => {
-            SEARCH_CANCEL_API.rawData[typeToken] = null;
-            return resolve({ resp: data, paramsURLCalled });
-          })
+        postExpressionMatrix(params, 'search')
+          .then((result) => resolve(result))
           .catch((error) => {
             errorHandler(error);
             reject(error?.response || error?.message);
@@ -632,18 +636,8 @@ const search = {
           form.dataType.forEach((type) => params.append('data_type', type));
         }
         params.append('data_qual', SUMMARY_EXPRESSION_DATA_QUAL);
-        const paramsURLCalled = params.toString();
-        const typeToken = 'search';
-        axiosInstance
-          .get(getMultispecRequestUrl(paramsURLCalled), {
-            cancelToken: new axios.CancelToken((c) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = c;
-            }),
-          })
-          .then(({ data }) => {
-            SEARCH_CANCEL_API.rawData[typeToken] = null;
-            return resolve({ resp: data, paramsURLCalled });
-          })
+        postExpressionMatrix(params, 'search')
+          .then((result) => resolve(result))
           .catch((error) => {
             errorHandler(error);
             reject(error?.response || error?.message);
@@ -684,18 +678,8 @@ const search = {
           form.conditionalParam2.forEach((cp) => params.append('cond_param2', cp));
         }
         if (form?.dataQuality) params.append('data_qual', form.dataQuality);
-        const paramsURLCalled = params.toString();
-        const typeToken = 'search';
-        axiosInstance
-          .get(getMultispecRequestUrl(paramsURLCalled), {
-            cancelToken: new axios.CancelToken((c) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = c;
-            }),
-          })
-          .then(({ data }) => {
-            SEARCH_CANCEL_API.rawData[typeToken] = null;
-            return resolve({ resp: data, paramsURLCalled });
-          })
+        postExpressionMatrix(params, 'search')
+          .then((result) => resolve(result))
           .catch((error) => {
             errorHandler(error);
             reject(error?.response || error?.message);
@@ -729,22 +713,15 @@ const search = {
 
         const paramsURLCalled = params.toString();
 
+        // Keep this off the `search` token so a matrix search does not cancel URL init.
         const typeToken = 'requestParams';
         if (SEARCH_CANCEL_API?.rawData?.[typeToken] !== null) {
           SEARCH_CANCEL_API?.rawData?.[typeToken]?.(
             '-- Request-parameters fetch canceled because another was started --'
           );
         }
-        axiosInstance
-          .get(`/?${paramsURLCalled}`, {
-            cancelToken: new axios.CancelToken((c) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = c;
-            }),
-          })
-          .then(({ data }) => {
-            SEARCH_CANCEL_API.rawData[typeToken] = null;
-            return resolve({ resp: data, paramsURLCalled });
-          })
+        postExpressionMatrix(params, typeToken)
+          .then((result) => resolve(result))
           .catch((error) => {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             if (axios.isCancel(error)) {
@@ -838,19 +815,9 @@ const search = {
 
         params.append('data_qual', SUMMARY_EXPRESSION_DATA_QUAL);
 
-        const paramsURLCalled = params.toString();
-
-        const typeToken = 'search'; // alternatives: 'count'
-        axiosInstance
-          .get(`/?${paramsURLCalled}`, {
-            cancelToken: new axios.CancelToken((c) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = c;
-            }),
-          })
-          .then(({ data }) => {
-            SEARCH_CANCEL_API.rawData[typeToken] = null;
-            return resolve({ resp: data, paramsURLCalled });
-          })
+        const typeToken = 'search';
+        postExpressionMatrix(params, typeToken)
+          .then((result) => resolve(result))
           .catch((error) => {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             if (axios.isCancel(error)) {
@@ -963,17 +930,8 @@ const search = {
           SEARCH_CANCEL_API?.rawData?.[typeToken]?.('-- Search was canceled because another search was triggered --');
         }
 
-        const paramsURLCalled = params.toString();
-        axiosInstance
-          .get(`/?${paramsURLCalled}`, {
-            cancelToken: new axios.CancelToken((c) => {
-              SEARCH_CANCEL_API.rawData[typeToken] = c;
-            }),
-          })
-          .then(({ data }) => {
-            SEARCH_CANCEL_API.rawData[typeToken] = null;
-            return resolve({ resp: data, paramsURLCalled });
-          })
+        postExpressionMatrix(params, typeToken)
+          .then((result) => resolve(result))
           .catch((error) => {
             SEARCH_CANCEL_API.rawData[typeToken] = null;
             if (axios.isCancel(error)) {
