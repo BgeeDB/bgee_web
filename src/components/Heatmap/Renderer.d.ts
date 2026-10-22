@@ -21,6 +21,8 @@ export type RendererProps = {
   colorLegendWidth: number;
   colorLegendHeight: number;
   maxCellWidth: number;
+  /** Visible width of the graph area. Columns shrink to fit it, down to `minCellWidth`. */
+  availableWidth?: number;
   minCellWidth?: number;
   minCellHeight?: number;
   maxGraphWidth?: number;

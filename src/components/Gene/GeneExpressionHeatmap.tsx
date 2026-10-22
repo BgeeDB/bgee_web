@@ -30,8 +30,10 @@ const getAxisLabels = ({
   species?: { name?: string; genus?: string; speciesName?: string };
   isMultispecies: boolean;
 }) => {
-  const displayGeneName = geneName || geneId;
-  const bottomLabel = `${displayGeneName}\n${geneId}`;
+  const trimmedName = geneName?.trim();
+  // One line only. A second line (the gene id under the name) overlaps its neighbors
+  // once columns shrink to fit a long gene list.
+  const bottomLabel = trimmedName || geneId;
   if (!isMultispecies) {
     return {
       topLabel: '',

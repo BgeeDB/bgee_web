@@ -190,6 +190,37 @@ const measureTopLabelRightOverflow = (labelGroup, plotRight) => {
   return Math.max(0, maxX - plotRight);
 };
 
+// Extra pixels reserved beside each column when turning a cell size into plot width.
+const COLUMN_GAP = 4;
+// Keep the fitted drawing a hair inside the viewport so a scrollbar does not appear.
+const FIT_SLACK = 4;
+
+const contentWidthForCellSize = ({ cellSize, domain, xTerms, xLabelRotation, marginLeft, marginRight }) => {
+  const requiredXWidth = domain.length * (cellSize + COLUMN_GAP);
+  const xScale = d3.scaleBand().range([0, requiredXWidth]).domain(domain).padding(0.01);
+  const overflow = estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotation, requiredXWidth);
+  const right = Math.max(marginRight, overflow + X_LABEL_PADDING);
+  return (Number(marginLeft) || 0) + requiredXWidth + right;
+};
+
+// Preferred cell size when the drawing fits. Otherwise the largest size that fits
+// in the viewport, and never smaller than the minimum.
+const fitCellWidth = ({ preferred, minimum, availableWidth, ...rest }) => {
+  if (!(availableWidth > 0) || !rest.domain?.length) return preferred;
+  const budget = availableWidth - FIT_SLACK;
+  const widthAt = (cellSize) => contentWidthForCellSize({ cellSize, ...rest });
+  if (widthAt(preferred) <= budget) return preferred;
+  if (widthAt(minimum) > budget) return minimum;
+  let lo = minimum;
+  let hi = preferred;
+  for (let i = 0; i < 18; i += 1) {
+    const mid = (lo + hi) / 2;
+    if (widthAt(mid) <= budget) lo = mid;
+    else hi = mid;
+  }
+  return lo;
+};
+
 const renderSvgTextLines = (text, keyPrefix) => {
   const lines = text.split('\n');
   if (lines.length === 1) {
@@ -226,12 +257,12 @@ export const Renderer = forwardRef(
       colorLegendWidth,
       colorLegendHeight,
       maxCellWidth,
-      minCellWidth = 20,
+      minCellWidth = 10,
+      availableWidth = 0,
       minCellHeight = 10,
       rowOrdering = 'alphabetical',
       rowAggFn = 'mean',
       defaultCellHeight = 15,
-      maxGraphWidth = 800,
       setGraphWidth,
       setGraphHeight,
       scaleSvg = false,
@@ -344,9 +375,20 @@ export const Renderer = forwardRef(
     // const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.label))], [yLblOrdered]);
     const allYGroups = useMemo(() => [...new Set(yLblOrdered.map((d) => d.id))], [yLblOrdered]);
 
-    const xCellWidth = Math.max(maxCellWidth, minCellWidth);
-    // Required width based on minimum cell width, including 4px margin
-    const requiredXWidth = allXGroups.length * (xCellWidth + 4);
+    // Cell width from settings is the preferred size. Shrink it, down to minCellWidth,
+    // when that is what lets every column fit in the visible area.
+    const preferredCellWidth = Math.max(Number(maxCellWidth) || 0, minCellWidth);
+    const xCellWidth = fitCellWidth({
+      preferred: preferredCellWidth,
+      minimum: minCellWidth,
+      availableWidth,
+      domain: allXGroups,
+      xTerms,
+      xLabelRotation,
+      marginLeft,
+      marginRight: MARGIN.right,
+    });
+    const requiredXWidth = allXGroups.length * (xCellWidth + COLUMN_GAP);
     const xScale = useMemo(
       () => d3.scaleBand().range([0, requiredXWidth]).domain(allXGroups).padding(0.01),
       [requiredXWidth, allXGroups]
@@ -725,11 +767,11 @@ export const Renderer = forwardRef(
     return (
       <svg
         ref={ref}
-        width={Math.min(svgWidth, maxGraphWidth)}
+        width={svgWidth}
         height={svgHeight}
-        style={{ backgroundColor }}
+        style={{ backgroundColor, display: 'block' }}
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        preserveAspectRatio={scaleSvg ? 'xMidYMid meet' : 'none'}
+        preserveAspectRatio={scaleSvg ? 'xMidYMid meet' : 'xMinYMin meet'}
       >
         <defs>
           <style>{`

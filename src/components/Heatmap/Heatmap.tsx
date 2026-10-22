@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import * as d3 from 'd3-scale';
 import Bulma from '../Bulma';
 import { Renderer } from './Renderer';
@@ -87,7 +87,7 @@ const Heatmap = ({
   // Full SVG height requested from the settings field. Null keeps the row pitch
   // at defaultCellHeight instead of stretching into the initial placeholder height.
   const [minSvgHeight, setMinSvgHeight] = useState<number | null>(null);
-  // outer width, if graphWidth > maxGraphWidth -> scale SVG down
+  // Visible width of the graph area. A wider drawing scrolls inside it instead of being squashed.
   const [maxGraphWidth, setMaxGraphWidth] = useState(defaultMaxGraphWidth);
   const [cellWidth, setCellWidth] = useState(() => getStoredValue(STORAGE_KEYS.CELL_WIDTH, 50));
   const [colorPalette, setColorPalette] = useState(() => getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
@@ -372,44 +372,83 @@ const Heatmap = ({
     img.src = svgUrl;
   };
 
-  return (
-    <div className="heatmap-container" style={{ backgroundColor: bgColor }}>
-      <div className="columns is-gapless">
-        <div className="column">
-          <Renderer
-            ref={svgRef}
-            width={graphWidth}
-            height={minSvgHeight != null ? minSvgHeight - COLOR_LEGEND_HEIGHT : 0}
-            backgroundColor={bgColor}
-            data={displayData}
-            drilldown={yTerms}
-            termProps={termProps}
-            hoveredCell={hoveredCell}
-            setHoveredCell={setHoveredCell}
-            clickedCell={clickedCell}
-            setClickedCell={setClickedCell}
-            onToggleExpandCollapse={onToggleExpandCollapse}
-            colorScale={colorScale}
-            marginLeft={marginLeft}
-            xLabelRotation={xLabelRotation}
-            showLegend={showLegend}
-            showMissingData={showMissingData}
-            showDescMax={showDescMax}
-            colorLegendWidth={200}
-            colorLegendHeight={COLOR_LEGEND_HEIGHT}
-            maxCellWidth={cellWidth}
-            maxGraphWidth={maxGraphWidth}
-            setGraphWidth={setGraphWidth}
-            getChildData={getChildData}
-            xTerms={xTerms}
-            defaultCellHeight={defaultCellHeight}
-            rowOrdering={rowOrdering}
-            rowAggFn={rowAggFn}
-            setGraphHeight={setGraphHeight}
-            rendererMargins={rendererMargins}
-          />
+  const parsedMaxGraphWidth = Number(maxGraphWidth);
+  const scrollViewportMax =
+    Number.isFinite(parsedMaxGraphWidth) && parsedMaxGraphWidth > 0 ? parsedMaxGraphWidth : undefined;
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const [viewportWidth, setViewportWidth] = useState(0);
 
-          <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />
+  useLayoutEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return undefined;
+    const update = () => {
+      const next = el.clientWidth;
+      setViewportWidth((prev) => (Math.abs(prev - next) < 1 ? prev : next));
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="heatmap-container" style={{ backgroundColor: bgColor, maxWidth: '100%', minWidth: 0 }}>
+      <div className="columns is-gapless" style={{ maxWidth: '100%', minWidth: 0 }}>
+        <div className="column" style={{ minWidth: 0, maxWidth: '100%' }}>
+          <div
+            ref={viewportRef}
+            style={{
+              width: '100%',
+              maxWidth: scrollViewportMax != null ? `min(100%, ${scrollViewportMax}px)` : '100%',
+              minWidth: 0,
+            }}
+          >
+            <div
+              className="heatmap-scroll"
+              style={{
+                overflowX: 'auto',
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: 0,
+                position: 'relative',
+              }}
+            >
+              <Renderer
+                ref={svgRef}
+                width={graphWidth}
+                height={minSvgHeight != null ? minSvgHeight - COLOR_LEGEND_HEIGHT : 0}
+                backgroundColor={bgColor}
+                data={displayData}
+                drilldown={yTerms}
+                termProps={termProps}
+                hoveredCell={hoveredCell}
+                setHoveredCell={setHoveredCell}
+                clickedCell={clickedCell}
+                setClickedCell={setClickedCell}
+                onToggleExpandCollapse={onToggleExpandCollapse}
+                colorScale={colorScale}
+                marginLeft={marginLeft}
+                xLabelRotation={xLabelRotation}
+                showLegend={showLegend}
+                showMissingData={showMissingData}
+                showDescMax={showDescMax}
+                colorLegendWidth={200}
+                colorLegendHeight={COLOR_LEGEND_HEIGHT}
+                maxCellWidth={cellWidth}
+                availableWidth={viewportWidth}
+                setGraphWidth={setGraphWidth}
+                getChildData={getChildData}
+                xTerms={xTerms}
+                defaultCellHeight={defaultCellHeight}
+                rowOrdering={rowOrdering}
+                rowAggFn={rowAggFn}
+                setGraphHeight={setGraphHeight}
+                rendererMargins={rendererMargins}
+              />
+
+              <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />
+            </div>
+          </div>
         </div>
 
         {clickedCell && (
