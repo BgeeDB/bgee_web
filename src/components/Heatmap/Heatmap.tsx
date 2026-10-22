@@ -265,8 +265,9 @@ const Heatmap = ({
     const maxLabelLength = longestVisibleLabel(yTerms);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
     const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
-    const flexWidth = Math.max(flexMarginLeft + 50, graphWidth);
-    setGraphWidth(flexWidth);
+    // Functional update so a wider width just requested by the renderer (cells + slanted
+    // top labels) is not replaced by the graphWidth value captured in this effect.
+    setGraphWidth((current) => Math.max(flexMarginLeft + 50, current));
     setMarginLeft(flexMarginLeft);
   }, [yTerms]);
 

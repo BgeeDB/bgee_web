@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, forwardRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, forwardRef } from 'react';
 import * as d3 from 'd3-scale';
 import { Tree } from './TreeSvg';
 import { ColorLegendSvg } from './ColorLegendSvg';
@@ -92,6 +92,102 @@ const estimateLabelVerticalExtent = (text, rotationDeg) => {
   const lineHeight = X_LABEL_FONT_SIZE * X_LABEL_LINE_HEIGHT;
   const textHeight = lines.length === 1 ? X_LABEL_FONT_SIZE : (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE;
   return sinAbs * textWidth + cosAbs * textHeight;
+};
+
+// Local axis-aligned box of a label before rotation.
+// dominantBaseline="middle"; textAnchor selects where the anchor sits on that box.
+const labelLocalBox = (text, textAnchor) => {
+  const lines = String(text).split('\n');
+  const maxLineLength = Math.max(...lines.map((line) => line.length));
+  const textWidth = maxLineLength * X_LABEL_CHAR_WIDTH;
+  const lineHeight = X_LABEL_FONT_SIZE * X_LABEL_LINE_HEIGHT;
+  const yMin = -X_LABEL_FONT_SIZE / 2;
+  const yMax = (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE / 2;
+  const xMin = textAnchor === 'end' ? -textWidth : textAnchor === 'middle' ? -textWidth / 2 : 0;
+  const xMax = textAnchor === 'end' ? 0 : textAnchor === 'middle' ? textWidth / 2 : textWidth;
+  return { xMin, xMax, yMin, yMax };
+};
+
+// How far a label extends to the right of its anchor after SVG rotate(θ).
+// The SVG rotation matrix is [cos -sin; sin cos], so x' = x cos θ - y sin θ.
+// Top labels use textAnchor "start" when rotated (the string runs up and to the right
+// at the default 325°) and "middle" when horizontal.
+const estimateLabelExtentRightOfAnchor = (text, rotationDeg, textAnchor) => {
+  if (!text) return 0;
+  const rotRad = (rotationDeg * Math.PI) / 180;
+  const sin = Math.sin(rotRad);
+  const cos = Math.cos(rotRad);
+  const { xMin, xMax, yMin, yMax } = labelLocalBox(text, textAnchor);
+  const corners = [
+    [xMin, yMin],
+    [xMax, yMin],
+    [xMin, yMax],
+    [xMax, yMax],
+  ];
+  const maxX = Math.max(...corners.map(([x, y]) => x * cos - y * sin));
+  return Math.max(0, maxX);
+};
+
+// Distance by which slanted top labels pass the right edge of the cells.
+// Each label is anchored at the center of its column, so a long label on an
+// earlier column can stick out further than a short one on the last column.
+const estimateTopLabelRightOverflow = (xTerms, xScale, rotationDeg, plotRight) => {
+  const textAnchor = rotationDeg === 0 ? 'middle' : 'start';
+  let maxRight = 0;
+  xTerms.forEach((term) => {
+    const x = xScale(term.value ?? term.label);
+    if (x === undefined) return;
+    const xCoord = x + xScale.bandwidth() / 2;
+    const label = term.topLabel ?? term.label ?? term.value ?? '';
+    maxRight = Math.max(maxRight, xCoord + estimateLabelExtentRightOfAnchor(label, rotationDeg, textAnchor));
+  });
+  return Math.max(0, maxRight - plotRight);
+};
+
+// Same quantity from the painted glyphs, in the label group's coordinate system
+// (x = 0 at the left edge of the cells). Returns null when the glyphs cannot be
+// measured yet (font not applied, jsdom, detached SVG).
+const measureTopLabelRightOverflow = (labelGroup, plotRight) => {
+  const svg = labelGroup.ownerSVGElement;
+  if (!svg) return null;
+  const groupCtm = labelGroup.getScreenCTM();
+  if (!groupCtm) return null;
+  let toGroup;
+  try {
+    toGroup = groupCtm.inverse();
+  } catch {
+    return null;
+  }
+  let maxX = 0;
+  let sawGlyphs = false;
+  for (const node of labelGroup.querySelectorAll('text')) {
+    let box;
+    try {
+      box = node.getBBox();
+    } catch {
+      continue;
+    }
+    if (!(box.width > 0)) continue;
+    const nodeCtm = node.getScreenCTM();
+    if (!nodeCtm) continue;
+    sawGlyphs = true;
+    const matrix = toGroup.multiply(nodeCtm);
+    const corners = [
+      [box.x, box.y],
+      [box.x + box.width, box.y],
+      [box.x, box.y + box.height],
+      [box.x + box.width, box.y + box.height],
+    ];
+    for (const [x, y] of corners) {
+      const pt = svg.createSVGPoint();
+      pt.x = x;
+      pt.y = y;
+      const p = pt.matrixTransform(matrix);
+      if (Number.isFinite(p.x)) maxX = Math.max(maxX, p.x);
+    }
+  }
+  if (!sawGlyphs) return null;
+  return Math.max(0, maxX - plotRight);
 };
 
 const renderSvgTextLines = (text, keyPrefix) => {
@@ -256,12 +352,69 @@ export const Renderer = forwardRef(
       [requiredXWidth, allXGroups]
     );
 
-    // Grow the graph after render. Setting parent state inside useMemo updates Heatmap while Renderer renders.
+    // Slanted top labels are anchored at the column center and run up-right, so the
+    // right margin has to cover whatever sticks past the cells. The character-width
+    // estimate sizes the first frame; the layout effect replaces it with the painted
+    // glyph extent so wide letters are not clipped and narrow ones do not leave a gap.
+    const topLabelMeasureKey = `${xLabelRotation}|${requiredXWidth}|${xTerms
+      .map((term) => `${term.value ?? ''}\u0000${term.topLabel ?? term.label ?? ''}`)
+      .join('\u0001')}`;
+    const estimatedTopLabelRightOverflow = useMemo(
+      () => estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotation, requiredXWidth),
+      [xTerms, xScale, xLabelRotation, requiredXWidth]
+    );
+    const [measuredTopLabelRightOverflow, setMeasuredTopLabelRightOverflow] = useState(null);
+    const topLabelsRef = useRef(null);
+    const hasMeasuredTopLabelOverflow =
+      measuredTopLabelRightOverflow &&
+      measuredTopLabelRightOverflow.key === topLabelMeasureKey &&
+      measuredTopLabelRightOverflow.overflow != null;
+    const topLabelRightOverflow = hasMeasuredTopLabelOverflow
+      ? measuredTopLabelRightOverflow.overflow
+      : estimatedTopLabelRightOverflow;
+    const effectiveMarginRight = Math.max(MARGIN.right, topLabelRightOverflow + X_LABEL_PADDING);
+    // Cells plus the right margin. This is the width the download serializes.
+    const contentWidth = marginLeft + requiredXWidth + effectiveMarginRight;
+    // Before glyphs are measured, keep at least the width the parent asked for so an
+    // empty first render does not collapse the figure. Once measured, the glyph extent
+    // wins — including when it is a little smaller than the character-width estimate.
+    const svgWidth = hasMeasuredTopLabelOverflow ? contentWidth : Math.max(width, contentWidth);
+
+    useLayoutEffect(() => {
+      const labelGroup = topLabelsRef.current;
+      if (!labelGroup) return undefined;
+      let cancelled = false;
+      const measure = () => {
+        if (cancelled) return;
+        const overflow = measureTopLabelRightOverflow(labelGroup, requiredXWidth);
+        setMeasuredTopLabelRightOverflow((prev) => {
+          if (
+            prev &&
+            prev.key === topLabelMeasureKey &&
+            overflow != null &&
+            prev.overflow != null &&
+            Math.abs(prev.overflow - overflow) < 0.5
+          ) {
+            return prev;
+          }
+          if (prev && prev.key === topLabelMeasureKey && overflow == null && prev.overflow == null) return prev;
+          return { key: topLabelMeasureKey, overflow };
+        });
+      };
+      measure();
+      const fontsReady = typeof document !== 'undefined' ? document.fonts?.ready : undefined;
+      fontsReady?.then(() => measure());
+      return () => {
+        cancelled = true;
+      };
+    }, [topLabelMeasureKey, requiredXWidth]);
+
+    // Keep the parent width in sync so tooltips and later renders use the same size.
     useEffect(() => {
-      if (requiredXWidth > boundsWidth && setGraphWidth) {
-        setGraphWidth(requiredXWidth + MARGIN.right + marginLeft);
+      if (setGraphWidth && Math.abs(svgWidth - width) > 0.5) {
+        setGraphWidth(svgWidth);
       }
-    }, [requiredXWidth, boundsWidth, marginLeft, MARGIN.right, setGraphWidth]);
+    }, [svgWidth, width, setGraphWidth]);
 
     // Size rows from the desired cell height during this render. `height` is the
     // caller's requested size with the legend already removed; 0 means the rows
@@ -515,7 +668,8 @@ export const Renderer = forwardRef(
           transform={xLabelRotation !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotation})` : null}
           textAnchor={xLabelRotation === 0 ? 'middle' : 'start'}
           dominantBaseline="middle"
-          fontSize={15}
+          fontSize={X_LABEL_FONT_SIZE}
+          fontFamily="Open Sans, sans-serif"
         >
           {renderSvgTextLines(displayLabel, `heatMapXLabel-${i}`)}
         </text>
@@ -541,7 +695,8 @@ export const Renderer = forwardRef(
           transform={xLabelRotation !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotation})` : null}
           textAnchor={xLabelRotation === 0 ? 'middle' : 'end'}
           dominantBaseline="middle"
-          fontSize={15}
+          fontSize={X_LABEL_FONT_SIZE}
+          fontFamily="Open Sans, sans-serif"
         >
           {renderSvgTextLines(displayLabel, `heatMapXLabelBottom-${i}`)}
         </text>
@@ -570,10 +725,10 @@ export const Renderer = forwardRef(
     return (
       <svg
         ref={ref}
-        width={Math.min(width, maxGraphWidth)}
+        width={Math.min(svgWidth, maxGraphWidth)}
         height={svgHeight}
         style={{ backgroundColor }}
-        viewBox={`0 0 ${width} ${svgHeight}`}
+        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         preserveAspectRatio={scaleSvg ? 'xMidYMid meet' : 'none'}
       >
         <defs>
@@ -600,7 +755,7 @@ export const Renderer = forwardRef(
         >
           <g>
             <g>{allShapes}</g>
-            <g>{xLabelsTop}</g>
+            <g ref={topLabelsRef}>{xLabelsTop}</g>
             <g>{xLabelsBottom}</g>
             <g transform={`translate(-${marginLeft - 10}, 5)`}>
               <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
