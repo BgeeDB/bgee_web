@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import GeneExpressionHeatmap from '../../../components/Gene/GeneExpressionHeatmap';
 
 // Transform multispec API format (multiSpeciesCondition) to heatmap format (condition)
@@ -42,7 +44,9 @@ const GeneExpressionMatrixResults = ({
   onFetchChildren,
   showOthersBucket = true,
 }) => {
-  const expressionCalls = results.map(transformToExpressionCall);
+  // A fresh array on every render would look like a new search to the heatmap and
+  // rebuild the anatomical tree, collapsing any terms the user has expanded.
+  const expressionCalls = useMemo(() => results.map(transformToExpressionCall), [results]);
   const showGraph = results.length > 0 || (!isFirstSearch && showOthersBucket);
 
   return (

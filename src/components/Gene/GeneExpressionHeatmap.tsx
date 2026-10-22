@@ -6,6 +6,35 @@ import Heatmap from '../Heatmap/Heatmap';
 
 const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
 
+// Content signature for the calls that define the initial tree. Array identity is not
+// enough: parents often map the same results into a new array on an unrelated re-render.
+const expressionCallsContentKey = (calls: ExpressionCall[] | undefined): string => {
+  if (!calls?.length) return '';
+  return calls
+    .map((call) => {
+      const anat = call.condition?.anatEntity;
+      const cell = call.condition?.cellType;
+      const types = call.dataTypesWithData;
+      return [
+        call.gene?.geneId ?? '',
+        anat?.id ?? '',
+        anat?.name ?? '',
+        anat?.dataId ?? '',
+        cell?.id ?? '',
+        cell?.name ?? '',
+        call.expressionScore?.expressionScore ?? '',
+        call.expressionState ?? '',
+        call.expressionQuality ?? '',
+        types?.AFFYMETRIX ? 1 : 0,
+        types?.EST ? 1 : 0,
+        types?.IN_SITU ? 1 : 0,
+        types?.RNA_SEQ ? 1 : 0,
+        types?.SC_RNA_SEQ ? 1 : 0,
+      ].join('\u001f');
+    })
+    .join('\u001e');
+};
+
 const getSpeciesDisplayName = (species?: { name?: string; genus?: string; speciesName?: string }) => {
   const commonName = species?.name?.trim();
   if (commonName) {
@@ -221,14 +250,19 @@ const GeneExpressionHeatmap = ({
     return { anatTerms, termProps };
   };
 
-  // Sync allExpressionCalls when expressionCalls prop changes
+  // Same calls in a new array (for example the Selected Genes panel toggling) must not
+  // count as a new search. Rebuilding here sets isExpanded only on the root and drops
+  // children fetched by expanding a term.
+  const expressionCallsKey = useMemo(() => expressionCallsContentKey(expressionCalls), [expressionCalls]);
+
+  // Sync allExpressionCalls when the search results change.
   useEffect(() => {
     if (expressionCalls) {
       setAllExpressionCalls(expressionCalls);
     }
-  }, [expressionCalls]);
+  }, [expressionCallsKey]);
 
-  // Initialize hierarchy only from initial expressionCalls (ignore expanded children)
+  // Initialize hierarchy only from initial expressionCalls (ignore expanded children).
   useEffect(() => {
     const hasCalls = expressionCalls && expressionCalls.length > 0;
     if (!hasCalls && !showOthersBucket) {
@@ -242,7 +276,7 @@ const GeneExpressionHeatmap = ({
     if (showOthersBucket) appendOthersBucket(anatTerms, termProps);
     setAnatomicalTerms(anatTerms);
     setAnatomicalTermsProps(termProps);
-  }, [expressionCalls, showOthersBucket]);
+  }, [expressionCallsKey, showOthersBucket]);
 
   // Handle fetching children data
   const triggerSearchChildren = async (parentId: string, selectedTissueId: string) => {
