@@ -162,6 +162,7 @@ const GeneExpressionMatrix = () => {
     selectedTissue,
     isLoading,
     isFirstSearch,
+    setIsFirstSearch,
     dataTypesExpCalls,
     dataQuality,
     setDataQuality,
@@ -393,8 +394,8 @@ const GeneExpressionMatrix = () => {
   }, [selectedSpecies.value, multiSpeciesGenes, setSelectedGene]); // Sync when species changes
 
   // Handler for Reinitialize button - clears multiSpeciesGenes, resets form, and
-  // clears the previous search result so the "With data" / "No data" filters return
-  // to their inactive state and any stale heatmap is hidden.
+  // returns the results area to its initial state. isFirstSearch must be true again
+  // so the heatmap unmounts and the "select search criteria" message is shown.
   const handleReinitialize = useCallback(() => {
     setMultiSpeciesGenes([]);
     clearGeneHomologsCache();
@@ -406,8 +407,9 @@ const GeneExpressionMatrix = () => {
     setIsGenesListExpanded(true);
     setSearchResult(null);
     setSubmittedGeneKeys([]);
+    setIsFirstSearch(true);
     resetForm(false);
-  }, [clearGeneHomologsCache, resetForm, setSearchResult, setSubmittedGeneKeys]);
+  }, [clearGeneHomologsCache, resetForm, setSearchResult, setSubmittedGeneKeys, setIsFirstSearch]);
 
   // Resolve textarea content into multiSpeciesGenes; returns the resolved gene list.
   // Each line's resolution status is tracked in geneListStatuses for inline display.

@@ -1150,6 +1150,7 @@ const useLogic = (options = {}) => {
     selectedSexes,
     isLoading,
     isFirstSearch,
+    setIsFirstSearch,
     filters,
     dataTypesExpCalls,
     dataQuality,
