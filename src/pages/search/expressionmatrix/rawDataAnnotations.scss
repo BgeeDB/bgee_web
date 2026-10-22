@@ -223,41 +223,48 @@
     flex-wrap: wrap;
   }
 
-  .selected-genes-remove-btn {
-    flex: 0 0 auto;
-    min-width: 2rem;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-  }
-
-  .selected-genes-ortholog-controls {
-    display: flex;
+  // Add and remove stay in one nowrap group so a wider taxon <select>
+  // cannot change the space between them or push remove onto the next line.
+  .selected-genes-icon-buttons {
+    display: inline-flex;
     align-items: center;
-    gap: 0;
-    flex: 0 1 auto;
-    min-width: 0;
-    flex-wrap: nowrap;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+
+    .button {
+      margin: 0;
+    }
   }
 
-  .selected-genes-taxon-select {
-    flex: 0 1 11rem;
-    min-width: 11rem;
-  }
-
-  .selected-genes-taxon-select select {
-    width: 100%;
-    max-width: 100%;
-  }
-
+  .selected-genes-remove-btn,
   .selected-genes-add-btn {
     flex: 0 0 auto;
     min-width: 2rem;
     width: 2rem;
     height: 2rem;
     padding: 0;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+  }
+
+  .selected-genes-taxon-select {
+    flex: 0 0 11rem;
+    width: 11rem;
+    max-width: 11rem;
+
+    .select {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    select {
+      width: 100%;
+      max-width: 100%;
+      // The UA stylesheet sizes a <select> to its longest option. That min-content
+      // width otherwise expands the control and shifts the buttons on that row.
+      min-width: 0;
+      field-sizing: fixed;
+    }
   }
 
   @media screen and (max-width: 1200px) {

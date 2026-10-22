@@ -144,48 +144,48 @@ const SelectedGenesList = ({
                 </td>
                 <td className="selected-genes-cell-actions">
                   <div className="selected-genes-actions">
-                    <div className="selected-genes-ortholog-controls">
-                      {fetchingOrthologs[key] ? (
-                        <span className="is-size-7 has-text-grey">Loading taxa...</span>
-                      ) : (
-                        <>
-                          <div className="selected-genes-taxon-select">
-                            <Select
-                              title="Select taxon"
-                              defaultValue=""
-                              value={selectedTaxons[key] || ''}
-                              options={[{ value: '', text: 'Select taxon...' }, ...getTaxonOptions(key)]}
-                              onChange={(value) => {
-                                setSelectedTaxons((prev) => ({
-                                  ...prev,
-                                  [key]: value,
-                                }));
-                              }}
-                            />
-                          </div>
-                          <Button
-                            type="button"
-                            className="button is-small is-info is-outlined selected-genes-add-btn"
-                            onClick={() => handleAddOrthologs(gene.geneId, gene.speciesId, selectedTaxons[key])}
-                            disabled={isLoading || !selectedTaxons[key] || fetchingOrthologs[key]}
-                            loading={isLoading}
-                            aria-label="Add orthologs"
-                            title="Add orthologs"
-                          >
-                            {!isLoading && <Plus size={14} />}
-                          </Button>
-                        </>
+                    {fetchingOrthologs[key] ? (
+                      <span className="is-size-7 has-text-grey">Loading taxa...</span>
+                    ) : (
+                      <div className="selected-genes-taxon-select">
+                        <Select
+                          title="Select taxon"
+                          defaultValue=""
+                          value={selectedTaxons[key] || ''}
+                          options={[{ value: '', text: 'Select taxon...' }, ...getTaxonOptions(key)]}
+                          onChange={(value) => {
+                            setSelectedTaxons((prev) => ({
+                              ...prev,
+                              [key]: value,
+                            }));
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className="selected-genes-icon-buttons">
+                      {!fetchingOrthologs[key] && (
+                        <Button
+                          type="button"
+                          className="button is-small is-info is-outlined selected-genes-add-btn"
+                          onClick={() => handleAddOrthologs(gene.geneId, gene.speciesId, selectedTaxons[key])}
+                          disabled={isLoading || !selectedTaxons[key] || fetchingOrthologs[key]}
+                          loading={isLoading}
+                          aria-label="Add orthologs"
+                          title="Add orthologs"
+                        >
+                          {!isLoading && <Plus size={14} />}
+                        </Button>
                       )}
+                      <Button
+                        type="button"
+                        className="button is-small is-danger is-outlined selected-genes-remove-btn"
+                        onClick={() => removeGene(gene.speciesId, gene.geneId)}
+                        aria-label="Remove gene"
+                        title="Remove gene"
+                      >
+                        <Trash2 size={16} />
+                      </Button>
                     </div>
-                    <Button
-                      type="button"
-                      className="button is-small is-danger is-outlined selected-genes-remove-btn"
-                      onClick={() => removeGene(gene.speciesId, gene.geneId)}
-                      aria-label="Remove gene"
-                      title="Remove gene"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
                   </div>
                 </td>
               </tr>
