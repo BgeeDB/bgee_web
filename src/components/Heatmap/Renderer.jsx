@@ -6,9 +6,39 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
 import { computeTermAggregates } from './heatmapAggregates';
+import { hideLooseSingleCellRows } from './singleCellRows';
 import { isOthersBucket } from '../../helpers/othersAnatomicalBucket';
 
-function sortSiblingTerms(children, rowOrdering, scoreMap) {
+// A row with its own calls keeps that score. A header with none (a single-cell-only
+// organ) takes the same mean or max already used across genes.
+function expressionScoreForSort(node, scoreMap, aggFn) {
+  if (scoreMap.has(node.id)) return scoreMap.get(node.id);
+  const childScores = [];
+  (node.children || []).forEach((child) => {
+    const score = expressionScoreForSort(child, scoreMap, aggFn);
+    if (Number.isFinite(score)) childScores.push(score);
+  });
+  if (childScores.length === 0) return -Infinity;
+  if (aggFn === 'max') return Math.max(...childScores);
+  return childScores.reduce((sum, score) => sum + score, 0) / childScores.length;
+}
+
+function sortBlock(nodes, cmp) {
+  return [...nodes].sort(cmp);
+}
+
+// Expanded rows that group cell types under an organ keep those cell types in one
+// block, after the anatomical siblings, under either ordering.
+function keepsCellTypesTogether(nodes) {
+  return nodes.some(
+    (node) =>
+      node.groupedUnderAnatEntity ||
+      node.isSyntheticSingleCellGroup ||
+      (node.children || []).some((child) => child.groupedUnderAnatEntity)
+  );
+}
+
+function sortSiblingTerms(children, rowOrdering, scoreMap, aggFn) {
   if (!children?.length) return children;
   // The synthetic "others" bucket has no expression score and stays last in every ordering.
   const pinnedBottom = children.filter((c) => isOthersBucket(c));
@@ -17,24 +47,34 @@ function sortSiblingTerms(children, rowOrdering, scoreMap) {
   const high = sortable.filter((c) => c.isTopLevelTerm);
   const cmpAlpha = (a, b) => a.label.localeCompare(b.label);
   const cmpExpr = (a, b) => {
-    const sa = scoreMap.has(a.id) ? scoreMap.get(a.id) : -Infinity;
-    const sb = scoreMap.has(b.id) ? scoreMap.get(b.id) : -Infinity;
+    const sa = expressionScoreForSort(a, scoreMap, aggFn);
+    const sb = expressionScoreForSort(b, scoreMap, aggFn);
     if (sb !== sa) return sb - sa;
     return a.label.localeCompare(b.label);
   };
   const cmp = rowOrdering === 'expression' ? cmpExpr : cmpAlpha;
-  low.sort(cmp);
-  high.sort(cmp);
-  return [...low, ...high, ...pinnedBottom];
+  const orderedLow = keepsCellTypesTogether(low)
+    ? [
+        ...sortBlock(
+          low.filter((c) => !c.isSingleCell),
+          cmp
+        ),
+        ...sortBlock(
+          low.filter((c) => c.isSingleCell),
+          cmp
+        ),
+      ]
+    : sortBlock(low, cmp);
+  return [...orderedLow, ...sortBlock(high, cmp), ...pinnedBottom];
 }
 
-function reorderAnatomyTree(nodes, rowOrdering, scoreMap) {
+function reorderAnatomyTree(nodes, rowOrdering, scoreMap, aggFn) {
   if (!nodes?.length) return nodes;
   const withSubtrees = nodes.map((node) => ({
     ...node,
-    children: node.children?.length ? reorderAnatomyTree(node.children, rowOrdering, scoreMap) : node.children,
+    children: node.children?.length ? reorderAnatomyTree(node.children, rowOrdering, scoreMap, aggFn) : node.children,
   }));
-  return sortSiblingTerms(withSubtrees, rowOrdering, scoreMap);
+  return sortSiblingTerms(withSubtrees, rowOrdering, scoreMap, aggFn);
 }
 
 const DEFAULT_MARGIN = { top: 50, right: 10, bottom: 50, left: 200 };
@@ -262,6 +302,7 @@ export const Renderer = forwardRef(
       minCellHeight = 10,
       rowOrdering = 'alphabetical',
       rowAggFn = 'mean',
+      collapseSingleCell = false,
       defaultCellHeight = 15,
       setGraphWidth,
       setGraphHeight,
@@ -325,8 +366,9 @@ export const Renderer = forwardRef(
     const drilldownOrdered = useMemo(() => {
       if (!drilldown?.length) return drilldown;
       const clone = JSON.parse(JSON.stringify(drilldown));
-      return reorderAnatomyTree(clone, rowOrdering, termScoreById);
-    }, [drilldown, rowOrdering, termScoreById]);
+      const ordered = reorderAnatomyTree(clone, rowOrdering, termScoreById, rowAggFn);
+      return collapseSingleCell ? hideLooseSingleCellRows(ordered) : ordered;
+    }, [drilldown, rowOrdering, termScoreById, rowAggFn, collapseSingleCell]);
 
     // reorder y-axis terms according to hierarchy
     function orderLabelsHierarchically(objectList) {
@@ -800,7 +842,12 @@ export const Renderer = forwardRef(
             <g ref={topLabelsRef}>{xLabelsTop}</g>
             <g>{xLabelsBottom}</g>
             <g transform={`translate(-${marginLeft - 10}, 5)`}>
-              <Tree data={drilldown} yScale={yScale} toggleCollapse={onToggleExpandCollapse} labelFont="Open Sans" />
+              <Tree
+                data={drilldownOrdered}
+                yScale={yScale}
+                toggleCollapse={onToggleExpandCollapse}
+                labelFont="Open Sans"
+              />
             </g>
           </g>
 

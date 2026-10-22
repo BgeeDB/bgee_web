@@ -25,17 +25,23 @@ const TreeNode = ({ node, depth, index, yScale, toggleCollapse, labelFont }) => 
   };
 
   const hasChildren = node.children && node.children.length > 0;
+  const canToggle = hasChildren || node.isTopLevelTerm;
   let toggleIcon = '[ ]';
-  if (hasChildren || node.isTopLevelTerm) {
+  if (canToggle) {
     toggleIcon = node.isExpanded ? '[-]' : '[+]';
   }
+  // Deeper group headers (cell types nested under an organ) need a toggle too.
+  const showToggle = depth < 2 || canToggle;
 
   // const y = yScale(node.label);
   const y = yScale(node.id);
+  if (y == null || Number.isNaN(y)) return null;
   const yPos = y + yScale.bandwidth() / 2;
   const bandwidth = yScale.bandwidth();
+  const labelX = showToggle ? depth * 20 + 20 : depth * 20 + 10;
   // const lastChildYPos = Math.max(...node.children.map(n => yScale(n.label)));
-  const lastChildYPos = Math.max(...node.children.map((n) => yScale(n.id)));
+  const childYs = (node.children || []).map((n) => yScale(n.id)).filter((value) => Number.isFinite(value));
+  const lastChildYPos = childYs.length ? Math.max(...childYs) : yPos;
 
   return (
     // <g ref={gRef} id={node.id} transform={`translate(0, ${(index + depth) * 20})`}>
@@ -43,12 +49,12 @@ const TreeNode = ({ node, depth, index, yScale, toggleCollapse, labelFont }) => 
       {depth > 0 && (
         <line x1={(depth - 1) * 20 + 5} y1={yPos - 2} x2={(depth - 1) * 20 + 20} y2={yPos - 2} stroke="black" />
       )}
-      {depth < 2 ? (
+      {showToggle ? (
         <text
           x={depth * 20}
           y={yPos}
           fontSize="12"
-          {...(hasChildren || node.isTopLevelTerm
+          {...(canToggle
             ? {
                 onClick: (e) => onToggleClick(e, node),
                 style: { cursor: 'pointer' },
@@ -60,13 +66,17 @@ const TreeNode = ({ node, depth, index, yScale, toggleCollapse, labelFont }) => 
       ) : null}
 
       {/* {false && (
-        <text x={depth < 2 ? depth * 20 + 20 : depth * 20 + 10} y={yPos} fontSize="12">
+        <text x={labelX} y={yPos} fontSize="12">
           {node.label}
         </text>
       )} */}
 
-      {node.cellTypeLabel && node.cellTypeId !== 'GO:0005575' ? (
-        <text x={depth < 2 ? depth * 20 + 20 : depth * 20 + 10} y={yPos} fontSize="14" fontFamily={labelFont}>
+      {node.groupedUnderAnatEntity ? (
+        <text x={labelX} y={yPos} fontSize="14" fontFamily={labelFont}>
+          <tspan>{node.cellTypeLabel || node.label}</tspan>
+        </text>
+      ) : node.cellTypeLabel && node.cellTypeId !== 'GO:0005575' ? (
+        <text x={labelX} y={yPos} fontSize="14" fontFamily={labelFont}>
           <tspan>{node.cellTypeLabel}</tspan>
           <tspan fontStyle="italic" fill="gray">
             {' '}
@@ -75,7 +85,7 @@ const TreeNode = ({ node, depth, index, yScale, toggleCollapse, labelFont }) => 
           <tspan>{node.anatEntityLabel}</tspan>
         </text>
       ) : (
-        <text x={depth < 2 ? depth * 20 + 20 : depth * 20 + 10} y={yPos} fontSize="14" fontFamily={labelFont}>
+        <text x={labelX} y={yPos} fontSize="14" fontFamily={labelFont}>
           <tspan>{node.label}</tspan>
         </text>
       )}

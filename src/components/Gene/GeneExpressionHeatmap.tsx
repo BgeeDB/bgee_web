@@ -1,8 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 
 import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
 import { appendOthersBucket } from '../../helpers/othersAnatomicalBucket';
 import Heatmap from '../Heatmap/Heatmap';
+import { CELL_TYPE_ROOT_ID, groupExpandedConditionRows } from './groupExpandedConditionRows';
+import { cellTypeGroupIds, readCollapseSingleCell, setCellTypeGroupsExpanded } from '../Heatmap/singleCellRows';
+import type { ExpandedConditionRow } from './groupExpandedConditionRows';
 
 const ROOT_TERM_ANAT_ENTITY = 'UBERON:0001062-GO:0005575';
 
@@ -164,6 +167,7 @@ const GeneExpressionHeatmap = ({
   const [anatomicalTerms, setAnatomicalTerms] = useState<any[]>([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState<Record<string, any>>({});
   const [isExpanding, setIsExpanding] = useState(false);
+  const collapseSingleCellRef = useRef(readCollapseSingleCell());
   const [allExpressionCalls, setAllExpressionCalls] = useState<ExpressionCall[]>([]);
 
   // prepare term hierarchy from gene expression call data
@@ -288,60 +292,58 @@ const GeneExpressionHeatmap = ({
     // Add new calls to allExpressionCalls to populate heatmap data
     setAllExpressionCalls((prev) => [...prev, ...newCalls]);
 
-    // Extract child terms from new calls
-    const newChildTerms = new Set<any>();
+    // Extract child terms from new calls. Cell types of one organ are nested under that organ.
+    const flatRows: ExpandedConditionRow[] = [];
+    const seenRowIds = new Set<string>();
     newCalls.forEach((exprCall) => {
       const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
-      const isSingleCell = cellTypeId !== 'GO:0005575';
+      const isSingleCell = cellTypeId !== CELL_TYPE_ROOT_ID;
 
       if (anatEntityId === 'SUMMARY') return;
-      if (!(anatEntityId === selectedTissueId) || isSingleCell) {
-        newChildTerms.add(
-          JSON.stringify({
-            id: `${parentId}--${anatEntityId}-${cellTypeId}`,
-            label: isSingleCell ? `${cellTypeName} in ${anatEntityName}` : anatEntityName,
-            anatEntityId,
-            anatEntityLabel: anatEntityName,
-            cellTypeId,
-            cellTypeLabel: cellTypeName,
-            isTopLevelTerm: false,
-            isExpanded: false,
-            isPopulated: false,
-            hasBeenQueried: false,
-            isSingleCell,
-          })
-        );
-      }
+      // The expanded organ stays the parent row. Its own cell types are still children.
+      if (anatEntityId === selectedTissueId && !isSingleCell) return;
+
+      const id = `${parentId}--${anatEntityId}-${cellTypeId}`;
+      if (seenRowIds.has(id)) return;
+      seenRowIds.add(id);
+      flatRows.push({
+        id,
+        label: isSingleCell ? `${cellTypeName} in ${anatEntityName}` : anatEntityName,
+        anatEntityId,
+        anatEntityLabel: anatEntityName,
+        cellTypeId,
+        cellTypeLabel: cellTypeName,
+        depth: 0,
+        isTopLevelTerm: false,
+        isExpanded: false,
+        isPopulated: true,
+        hasBeenQueried: false,
+        isSingleCell,
+        children: [],
+      });
     });
 
+    function findNodeDepth(nodes: any[] | undefined, id: string): number | undefined {
+      if (!Array.isArray(nodes)) return undefined;
+      for (const node of nodes) {
+        if (node.id === id) return node.depth ?? 0;
+        const childDepth = findNodeDepth(node.children, id);
+        if (childDepth !== undefined) return childDepth;
+      }
+      return undefined;
+    }
+
     // Helper function to add children to hierarchy
-    function addChildren(hierarchy: any[], termId: string, children: string[]) {
+    function addChildren(hierarchy: any[], termId: string, children: ExpandedConditionRow[]) {
       function traverse(node: any): any[] {
         if (!node || !Array.isArray(node)) return [];
 
         return node.map((item: any) => {
-          const newItem = { ...item };
+          const newItem = { ...item, children: [...(item.children || [])] };
           if (item.id === termId) {
-            children.forEach((childStr) => {
-              const child = JSON.parse(childStr);
-              if (child.id !== newItem.id) {
-                newItem.children.push({
-                  id: child.id,
-                  label: child.label,
-                  anatEntityId: child.anatEntityId,
-                  anatEntityLabel: child.anatEntityLabel,
-                  cellTypeId: child.cellTypeId,
-                  cellTypeLabel: child.cellTypeLabel,
-                  depth: newItem.depth + 1,
-                  isTopLevelTerm: false,
-                  isExpanded: false,
-                  isPopulated: false,
-                  hasBeenQueried: false,
-                  isSingleCell: child.isSingleCell,
-                  children: [],
-                });
-              }
+            children.forEach((child) => {
+              if (child.id !== newItem.id) newItem.children.push(child);
             });
             newItem.isExpanded = true;
             newItem.hasBeenQueried = true;
@@ -355,14 +357,29 @@ const GeneExpressionHeatmap = ({
     }
 
     // Update hierarchy if there are new children
-    if (newChildTerms.size > 0) {
-      const newAnatTerms = addChildren(anatomicalTerms, parentId, [...newChildTerms]);
+    if (flatRows.length > 0) {
+      const parentDepth = findNodeDepth(anatomicalTerms, parentId) ?? 0;
+      const grouped = groupExpandedConditionRows(flatRows, {
+        parentId,
+        parentDepth,
+        parentAnatEntityId: selectedTissueId,
+        cellTypesExpanded: !collapseSingleCellRef.current,
+      });
+      const newAnatTerms = addChildren(anatomicalTerms, parentId, grouped);
       setAnatomicalTerms(newAnatTerms);
+
+      const propsNodes: ExpandedConditionRow[] = [];
+      const walk = (nodes: ExpandedConditionRow[]) => {
+        nodes.forEach((node) => {
+          propsNodes.push(node);
+          if (node.children?.length) walk(node.children);
+        });
+      };
+      walk(grouped);
 
       // Update term props
       const newAnatTermsProps = { ...anatomicalTermsProps };
-      newChildTerms.forEach((childStr) => {
-        const child = JSON.parse(childStr);
+      propsNodes.forEach((child) => {
         if (!(child.id in newAnatTermsProps)) {
           newAnatTermsProps[child.id] = {
             label: child.label,
@@ -375,6 +392,8 @@ const GeneExpressionHeatmap = ({
             isPopulated: child.isPopulated,
             hasBeenQueried: child.hasBeenQueried,
             isSingleCell: child.isSingleCell,
+            groupedUnderAnatEntity: child.groupedUnderAnatEntity,
+            isSyntheticSingleCellGroup: child.isSyntheticSingleCellGroup,
           };
         }
       });
@@ -401,12 +420,16 @@ const GeneExpressionHeatmap = ({
               });
               newItem.hasBeenQueried = true;
               newItem.isExpanded = true;
-              newTermProps[term.id].hasBeenQueried = true;
-              newTermProps[term.id].isExpanded = true;
+              if (newTermProps[term.id]) {
+                newTermProps[term.id].hasBeenQueried = true;
+                newTermProps[term.id].isExpanded = true;
+              }
             } else {
               // Toggle expansion state
               newItem.isExpanded = !item.isExpanded;
-              newTermProps[term.id].isExpanded = !item.isExpanded;
+              if (newTermProps[term.id]) {
+                newTermProps[term.id].isExpanded = !item.isExpanded;
+              }
             }
           }
           newItem.children = traverse(newItem.children);
@@ -427,6 +450,22 @@ const GeneExpressionHeatmap = ({
     if (onToggleExpandCollapse) {
       onToggleExpandCollapse(term);
     }
+  };
+
+  // Collapse hides cell types and leaves [+] on each group. Opening one group
+  // does not turn the option off.
+  const handleCollapseSingleCellChange = (collapsed: boolean) => {
+    collapseSingleCellRef.current = collapsed;
+    const expanded = !collapsed;
+    setAnatomicalTerms((prev) => setCellTypeGroupsExpanded(prev, expanded));
+    setAnatomicalTermsProps((prev) => {
+      const next = { ...prev };
+      cellTypeGroupIds(anatomicalTerms).forEach((id) => {
+        if (!next[id]) return;
+        next[id] = { ...next[id], isExpanded: expanded };
+      });
+      return next;
+    });
   };
 
   // Species for axis labels. Requested genes supply a fallback so a gene with no
@@ -532,6 +571,7 @@ const GeneExpressionHeatmap = ({
         yTerms={anatomicalTerms}
         termProps={anatomicalTermsProps}
         onToggleExpandCollapse={handleToggleExpandCollapse}
+        onCollapseSingleCellChange={handleCollapseSingleCellChange}
         width={width}
         height={height}
         backgroundColor={backgroundColor}

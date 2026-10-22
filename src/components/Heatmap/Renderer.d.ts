@@ -32,6 +32,7 @@ export type RendererProps = {
   rendererMargins?: { top: number; right: number; bottom: number; left: number };
   rowOrdering: string;
   rowAggFn: string;
+  collapseSingleCell?: boolean;
   getChildData?: unknown;
   yTerms?: unknown;
   xTerms?: unknown;

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import * as d3 from 'd3-scale';
 import Bulma from '../Bulma';
 import { Renderer } from './Renderer';
+import { COLLAPSE_SINGLE_CELL_STORAGE_KEY, isCellTypeGroup, readCollapseSingleCell } from './singleCellRows';
 import { Tooltip } from './Tooltip';
 import { DetailView } from './DetailView';
 import { COLORS, THRESHOLDS, COLOR_LEGEND_HEIGHT } from './constants';
@@ -23,6 +24,7 @@ const STORAGE_KEYS = {
   SHOW_SETTINGS: 'bgee-heatmap-show-settings',
   ROW_ORDERING: 'bgee-heatmap-row-ordering',
   ROW_AGG_FN: 'bgee-heatmap-row-agg-fn',
+  COLLAPSE_SINGLE_CELL: COLLAPSE_SINGLE_CELL_STORAGE_KEY,
 };
 
 // Add helper function
@@ -49,6 +51,7 @@ export type HeatmapProps = {
   termProps: any;
   yLabelJustify?: string;
   onToggleExpandCollapse: any;
+  onCollapseSingleCellChange?: (collapsed: boolean) => void;
   isLoading?: boolean;
   isInitializingFromUrl?: boolean;
   defaultXLabelRotation?: number;
@@ -69,6 +72,7 @@ const Heatmap = ({
   termProps,
   yLabelJustify = 'right',
   onToggleExpandCollapse,
+  onCollapseSingleCellChange,
   defaultXLabelRotation = 0,
   defaultMaxGraphWidth = 800,
   defaultCellHeight = 30,
@@ -104,6 +108,7 @@ const Heatmap = ({
   );
   const [rowOrdering, setRowOrdering] = useState(() => getStoredValue(STORAGE_KEYS.ROW_ORDERING, 'alphabetical'));
   const [rowAggFn, setRowAggFn] = useState(() => getStoredValue(STORAGE_KEYS.ROW_AGG_FN, 'mean'));
+  const [collapseSingleCell, setCollapseSingleCell] = useState(() => readCollapseSingleCell());
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
@@ -236,6 +241,12 @@ const Heatmap = ({
     setRowAggFn(value);
     localStorage.setItem(STORAGE_KEYS.ROW_AGG_FN, value);
   };
+  const updateCollapseSingleCell = () => {
+    const value = !collapseSingleCell;
+    setCollapseSingleCell(value);
+    localStorage.setItem(STORAGE_KEYS.COLLAPSE_SINGLE_CELL, JSON.stringify(value));
+    onCollapseSingleCellChange?.(value);
+  };
 
   // Add handler for adaptive scale toggle
   const updateUseAdaptiveScale = () => {
@@ -253,30 +264,35 @@ const Heatmap = ({
     // console.log(`[Heatmap] (Re)calculating graph height...`);
     // console.log(`[Heatmap] drilldown:\n${JSON.stringify(drilldown)}`);
     function longestVisibleLabel(terms) {
-      let maxLabelLength = 0;
+      let maxExtent = 0;
 
-      function traverse(item) {
-        maxLabelLength = Math.max(maxLabelLength, item.label?.length || 0);
+      function traverse(item, depth, inCellTypeGroup) {
+        // Loose cell-type rows are hidden while single-cell data is collapsed.
+        // Cell types under an expanded group still take label space.
+        if (collapseSingleCell && item.isSingleCell && !inCellTypeGroup) return;
+        const extent = (item.label?.length || 0) * 7.5 + depth * 20;
+        maxExtent = Math.max(maxExtent, extent);
         if (item.isExpanded && item.children?.length) {
-          item.children.forEach(traverse);
+          const childInGroup = isCellTypeGroup(item);
+          item.children.forEach((child) => traverse(child, depth + 1, childInGroup));
         }
       }
 
-      terms.forEach(traverse);
-      return maxLabelLength;
+      terms.forEach((term) => traverse(term, 0, false));
+      return maxExtent;
     }
 
-    const maxLabelLength = longestVisibleLabel(yTerms);
+    const maxLabelExtent = longestVisibleLabel(yTerms);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
     // Floor at the user's width, not the current margin. The current margin has already
     // been grown to fit a longer expanded label, so using it here would never shrink.
     const floor = Number(yLabelWidthFloorRef.current);
-    const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, Number.isFinite(floor) ? floor : 0);
+    const flexMarginLeft = Math.max(maxLabelExtent + 50, Number.isFinite(floor) ? floor : 0);
     // Functional update so a wider width just requested by the renderer (cells + slanted
     // top labels) is not replaced by the graphWidth value captured in this effect.
     setGraphWidth((current) => Math.max(flexMarginLeft + 50, current));
     setMarginLeft(flexMarginLeft);
-  }, [yTerms]);
+  }, [yTerms, collapseSingleCell]);
 
   const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
 
@@ -449,6 +465,7 @@ const Heatmap = ({
                 defaultCellHeight={defaultCellHeight}
                 rowOrdering={rowOrdering}
                 rowAggFn={rowAggFn}
+                collapseSingleCell={collapseSingleCell}
                 setGraphHeight={setGraphHeight}
                 rendererMargins={rendererMargins}
               />
@@ -663,6 +680,18 @@ const Heatmap = ({
                             </td>
                           </tr>
                         ) : null}
+                        <tr>
+                          <td>Collapse single-cell data:</td>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={collapseSingleCell}
+                              onChange={updateCollapseSingleCell}
+                              title="Collapse cell-type groups. Use [+] on a group to open it again."
+                              aria-label="Collapse single-cell data"
+                            />
+                          </td>
+                        </tr>
                         <tr>
                           <td>Row ordering:</td>
                           <td>
