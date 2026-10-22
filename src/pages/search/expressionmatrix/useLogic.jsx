@@ -6,6 +6,7 @@ import api from '../../../api';
 import { getGeneLabel, pickGeneFromSearchResult } from '../../../helpers/gene';
 import { getIdAndNameLabel, getOptionsForFilter } from '../../../helpers/selects';
 import { flattenDevStagesList } from './components/filters/DevelopmentalAndLifeStages/useLogic';
+import { getSelectedGeneKey } from './components/SelectedGenesList';
 import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
@@ -311,6 +312,9 @@ const useLogic = (options = {}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(true);
   const [searchResult, setSearchResult] = useState(null);
+  // Gene keys (`speciesId:geneId`) included in the last completed search.
+  // Genes added after that search stay out of this set until the next submit.
+  const [submittedGeneKeys, setSubmittedGeneKeys] = useState([]);
   // True when the submitted search is the default SUMMARY anatomy view.
   const [showOthersBucket, setShowOthersBucket] = useState(true);
   // const [maxExpScore, setMaxExpScore] = useState({});
@@ -662,6 +666,18 @@ const useLogic = (options = {}) => {
         // and re-submit without having to re-open the form. The "Selected Genes"
         // panel collapses separately to direct attention to the Expression Graph.
 
+        // Snapshot the genes that were actually queried. A gene added while this
+        // request was in flight is not in the argument list, so it stays unclassified
+        // until the next submit.
+        const queriedGenes =
+          multiSpeciesGenes && multiSpeciesGenes.length > 0
+            ? multiSpeciesGenes
+            : (baseParams.selectedGene || []).map((geneId) => ({
+                speciesId: baseParams.selectedSpecies,
+                geneId,
+              }));
+        setSubmittedGeneKeys(queriedGenes.map((gene) => getSelectedGeneKey(gene.speciesId, gene.geneId)));
+
         setIsLoading(false);
         setShowOthersBucket(baseParams.selectedTissue.length === 0 && baseParams.selectedCellTypes.length === 0);
         setSearchResult(combinedData);
@@ -835,6 +851,10 @@ const useLogic = (options = {}) => {
     baseParams.observedData = true;
 
     try {
+      // An explicit list is the genes still on the graph. Pending additions are omitted
+      // so expanding a row does not pull them in before the next submit.
+      if (multiSpeciesGenes && multiSpeciesGenes.length === 0) return [];
+
       // multispec_expr_calls rejects a gene_list of one id, so a single gene uses expr_calls.
       if (multiSpeciesGenes && multiSpeciesGenes.length > 1) {
         const { resp } = await api.search.geneExpressionMatrix.multispecSearch(baseParams, multiSpeciesGenes);
@@ -846,10 +866,16 @@ const useLogic = (options = {}) => {
         return calls;
       }
 
-      // Fallback: single species
+      // Fallback: single species. Honor an explicit one-gene list so a gene removed
+      // from the selection, or added but not yet submitted, is not queried here.
       const params = { ...baseParams };
-      params.selectedSpecies = baseParams.selectedSpecies;
-      params.selectedGene = baseParams.selectedGene;
+      if (multiSpeciesGenes && multiSpeciesGenes.length === 1) {
+        params.selectedSpecies = multiSpeciesGenes[0].speciesId;
+        params.selectedGene = [multiSpeciesGenes[0].geneId];
+      } else {
+        params.selectedSpecies = baseParams.selectedSpecies;
+        params.selectedGene = baseParams.selectedGene;
+      }
       const { resp } = await api.search.geneExpressionMatrix.search(params, false);
       if (resp.code !== 200) return [];
       const calls = resp.data.expressionData.expressionCalls;
@@ -1136,6 +1162,8 @@ const useLogic = (options = {}) => {
   return {
     searchResult,
     setSearchResult,
+    submittedGeneKeys,
+    setSubmittedGeneKeys,
     showOthersBucket,
     maxExpScore,
     dataType,

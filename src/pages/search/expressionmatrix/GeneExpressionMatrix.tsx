@@ -118,6 +118,8 @@ const GeneExpressionMatrix = () => {
   const {
     searchResult,
     setSearchResult,
+    submittedGeneKeys,
+    setSubmittedGeneKeys,
     showOthersBucket,
     show,
     selectedSpecies,
@@ -385,8 +387,9 @@ const GeneExpressionMatrix = () => {
     setSelectedGenesFilter('all');
     setIsGenesListExpanded(true);
     setSearchResult(null);
+    setSubmittedGeneKeys([]);
     resetForm(false);
-  }, [clearGeneHomologsCache, resetForm, setSearchResult]);
+  }, [clearGeneHomologsCache, resetForm, setSearchResult, setSubmittedGeneKeys]);
 
   // Resolve textarea content into multiSpeciesGenes; returns the resolved gene list.
   // Each line's resolution status is tracked in geneListStatuses for inline display.
@@ -493,14 +496,24 @@ const GeneExpressionMatrix = () => {
   // const columnDescExprsCall = searchResult?.columnDescriptions || [];
   // const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
 
-  // Columns follow the requested gene list. A gene with no calls still gets a column
-  // (empty cells) so a narrow filter does not drop it from the graph.
+  const submittedGeneKeySet = useMemo(() => new Set<string>(submittedGeneKeys), [submittedGeneKeys]);
+
+  // Genes from the last completed search that are still selected. A gene added
+  // since that search is excluded until the next submit. A gene removed from the
+  // selection drops out immediately, even while the previous calls are still loaded.
+  const genesInLastSearch = useMemo(
+    () => multiSpeciesGenes.filter((gene) => submittedGeneKeySet.has(getSelectedGeneKey(gene.speciesId, gene.geneId))),
+    [multiSpeciesGenes, submittedGeneKeySet]
+  );
+
+  // Columns follow genesInLastSearch. A submitted gene with no calls still gets a
+  // column (empty cells) so a narrow filter does not drop it from the graph.
   const searchedGenes = useMemo(() => {
     if (results.length === 0) return [];
 
     const geneMap = new Map<string, { label: string; value: string; name?: string; species?: AxisSpecies }>();
 
-    multiSpeciesGenes.forEach((gene) => {
+    genesInLastSearch.forEach((gene) => {
       if (geneMap.has(gene.geneId)) return;
       geneMap.set(gene.geneId, {
         label: gene.geneLabel,
@@ -510,20 +523,8 @@ const GeneExpressionMatrix = () => {
       });
     });
 
-    results.forEach((result) => {
-      const geneId = result.gene.geneId;
-      if (geneMap.has(geneId)) return;
-      const geneName = result.gene.name;
-      geneMap.set(geneId, {
-        label: geneName ? `${geneId} - ${geneName}` : geneId,
-        value: geneId,
-        name: geneName || undefined,
-        species: result.gene.species,
-      });
-    });
-
     return Array.from(geneMap.values());
-  }, [results, multiSpeciesGenes]);
+  }, [results, genesInLastSearch]);
 
   // Set of geneIds that returned at least one expression call in the current search results
   const geneIdsWithData = useMemo<Set<string>>(() => new Set(results.map((r: any) => r.gene.geneId)), [results]);
@@ -531,21 +532,25 @@ const GeneExpressionMatrix = () => {
   // Whether a search has been run (so we can show with/without data filters)
   const hasSearchResults = searchResult !== null;
 
-  // Counts for the Selected Genes header filter tabs
+  // Counts for the Selected Genes header filter tabs. Genes added since the last
+  // search are counted only under All; they are not yet known to have data or not.
   const genesWithDataCount = useMemo(
-    () => multiSpeciesGenes.filter((g) => geneIdsWithData.has(g.geneId)).length,
-    [multiSpeciesGenes, geneIdsWithData]
+    () => genesInLastSearch.filter((g) => geneIdsWithData.has(g.geneId)).length,
+    [genesInLastSearch, geneIdsWithData]
   );
-  const genesWithoutDataCount = multiSpeciesGenes.length - genesWithDataCount;
+  const genesWithoutDataCount = genesInLastSearch.length - genesWithDataCount;
+  const hasGenesAddedSinceSearch = hasSearchResults && genesInLastSearch.length < multiSpeciesGenes.length;
 
-  // Apply the active filter to the gene list shown in the SelectedGenesList table
+  // Apply the active filter to the gene list shown in the SelectedGenesList table.
+  // "All" includes genes added since the last search. "With data" and "No data"
+  // include only genes from that search.
   const filteredSelectedGenes = useMemo(() => {
     if (!hasSearchResults || selectedGenesFilter === 'all') return multiSpeciesGenes;
     if (selectedGenesFilter === 'with') {
-      return multiSpeciesGenes.filter((g) => geneIdsWithData.has(g.geneId));
+      return genesInLastSearch.filter((g) => geneIdsWithData.has(g.geneId));
     }
-    return multiSpeciesGenes.filter((g) => !geneIdsWithData.has(g.geneId));
-  }, [hasSearchResults, multiSpeciesGenes, geneIdsWithData, selectedGenesFilter]);
+    return genesInLastSearch.filter((g) => !geneIdsWithData.has(g.geneId));
+  }, [hasSearchResults, multiSpeciesGenes, genesInLastSearch, geneIdsWithData, selectedGenesFilter]);
 
   const detailedData = TAB_PAGE_EXPR_CALL;
 
@@ -713,7 +718,9 @@ const GeneExpressionMatrix = () => {
                                 <p className="has-text-grey is-italic is-size-7 mt-2">
                                   {selectedGenesFilter === 'with'
                                     ? 'No selected gene has expression data in the current search.'
-                                    : 'All selected genes have expression data in the current search.'}
+                                    : hasGenesAddedSinceSearch
+                                      ? 'Genes added since the last search are listed under All until you submit.'
+                                      : 'All selected genes have expression data in the current search.'}
                                 </p>
                               ))}
                           </div>
@@ -887,7 +894,7 @@ const GeneExpressionMatrix = () => {
               isFirstSearch={isFirstSearch}
               showOthersBucket={showOthersBucket}
               onFetchChildren={(parentId, selectedTissueId) =>
-                triggerSearchChildren(parentId, selectedTissueId, multiSpeciesGenes)
+                triggerSearchChildren(parentId, selectedTissueId, genesInLastSearch)
               }
             />
           </div>
