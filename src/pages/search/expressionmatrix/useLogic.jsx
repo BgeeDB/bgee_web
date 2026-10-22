@@ -567,10 +567,21 @@ const useLogic = (options = {}) => {
     return params;
   };
 
-  // API QUERY 1: Get gene expression data for top-level anatomical terms
-  // Uses multispec_expr_calls API when multiSpeciesGenes is provided, else expr_calls per species
+  // Genes for a multispec_expr_calls request. speciesId stays on the client object
+  // for the selected-gene key and is not sent: the endpoint rejects species_id.
+  const genesForMultispecSearch = (explicitGenes, baseParams) => {
+    if (explicitGenes && explicitGenes.length > 0) return explicitGenes;
+    return (baseParams.selectedGene || []).filter(Boolean).map((geneId) => ({
+      speciesId: baseParams.selectedSpecies,
+      geneId,
+    }));
+  };
+
+  // API QUERY 1: Get gene expression data for top-level anatomical terms.
+  // Always multispec_expr_calls. A species_id on the page URL is not forwarded.
   const triggerInitialSearch = async (initParams, multiSpeciesGenes = null) => {
     const baseParams = initParams || getSearchParams();
+    const genesForSearch = genesForMultispecSearch(multiSpeciesGenes, baseParams);
 
     setIsLoading(true);
 
@@ -579,48 +590,19 @@ const useLogic = (options = {}) => {
       let paramsURLCalled1 = null;
       let firstResultResp = null;
 
-      if (multiSpeciesGenes && multiSpeciesGenes.length > 0) {
-        // Use multispec API: single call for all genes across species
-        const { resp, paramsURLCalled } = await api.search.geneExpressionMatrix.multispecInitialSearch(
-          baseParams,
-          multiSpeciesGenes
-        );
-        firstResultResp = resp;
-        if (resp.code === 200) {
-          combinedData = { ...resp.data };
-          paramsURLCalled1 = paramsURLCalled;
-        }
-      } else {
-        // Fallback: original multi-call per species
-        const speciesGroups = [
-          {
-            speciesId: baseParams.selectedSpecies,
-            speciesLabel: selectedSpecies.label || '',
-            genes: baseParams.selectedGene,
-          },
-        ];
+      if (genesForSearch.length === 0) {
+        setIsLoading(false);
+        return;
+      }
 
-        const searchPromises = speciesGroups.map((group) => {
-          const params = { ...baseParams };
-          params.selectedSpecies = group.speciesId;
-          params.selectedGene = group.genes;
-          return api.search.geneExpressionMatrix.initialSearch(params);
-        });
-
-        const initialResults = await Promise.all(searchPromises);
-
-        initialResults.forEach((result, idx) => {
-          const { resp, paramsURLCalled } = result;
-          if (resp.code === 200) {
-            if (idx === 0) firstResultResp = resp;
-            if (!combinedData) {
-              combinedData = { ...resp.data };
-              paramsURLCalled1 = paramsURLCalled;
-            } else {
-              combinedData.expressionData.expressionCalls.push(...resp.data.expressionData.expressionCalls);
-            }
-          }
-        });
+      const { resp, paramsURLCalled } = await api.search.geneExpressionMatrix.multispecInitialSearch(
+        baseParams,
+        genesForSearch
+      );
+      firstResultResp = resp;
+      if (resp.code === 200) {
+        combinedData = { ...resp.data };
+        paramsURLCalled1 = paramsURLCalled;
       }
 
       if (combinedData) {
@@ -669,18 +651,13 @@ const useLogic = (options = {}) => {
         // Snapshot the genes that were actually queried. A gene added while this
         // request was in flight is not in the argument list, so it stays unclassified
         // until the next submit.
-        const queriedGenes =
-          multiSpeciesGenes && multiSpeciesGenes.length > 0
-            ? multiSpeciesGenes
-            : (baseParams.selectedGene || []).map((geneId) => ({
-                speciesId: baseParams.selectedSpecies,
-                geneId,
-              }));
-        setSubmittedGeneKeys(queriedGenes.map((gene) => getSelectedGeneKey(gene.speciesId, gene.geneId)));
+        setSubmittedGeneKeys(genesForSearch.map((gene) => getSelectedGeneKey(gene.speciesId, gene.geneId)));
 
         setIsLoading(false);
         setShowOthersBucket(baseParams.selectedTissue.length === 0 && baseParams.selectedCellTypes.length === 0);
         setSearchResult(combinedData);
+      } else {
+        setIsLoading(false);
       }
     } catch (error) {
       if (axios.isCancel(error)) {
@@ -742,8 +719,9 @@ const useLogic = (options = {}) => {
     params.hasDevStageSubStructure = 0;
 
     setIsLoading(true);
+    const genesForSearch = genesForMultispecSearch(null, params);
     return api.search.geneExpressionMatrix
-      .search(params, false)
+      .multispecInitialSearch(params, genesForSearch)
       .then(({ resp, paramsURLCalled }) => {
         if (resp.code === 200) {
           // HD
@@ -853,32 +831,15 @@ const useLogic = (options = {}) => {
     try {
       // An explicit list is the genes still on the graph. Pending additions are omitted
       // so expanding a row does not pull them in before the next submit.
+      // An empty list means "query these genes" with none left, not "fall back to the form".
       if (multiSpeciesGenes && multiSpeciesGenes.length === 0) return [];
 
-      // multispec_expr_calls rejects a gene_list of one id, so a single gene uses expr_calls.
-      if (multiSpeciesGenes && multiSpeciesGenes.length > 1) {
-        const { resp } = await api.search.geneExpressionMatrix.multispecSearch(baseParams, multiSpeciesGenes);
-        if (resp.code !== 200) return [];
-        const calls = resp.data.expressionData.expressionCalls.map(transformMultispecCall);
-        calls.forEach((exprCall) => {
-          exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
-        });
-        return calls;
-      }
+      const genesForSearch = genesForMultispecSearch(multiSpeciesGenes, baseParams);
+      if (genesForSearch.length === 0) return [];
 
-      // Fallback: single species. Honor an explicit one-gene list so a gene removed
-      // from the selection, or added but not yet submitted, is not queried here.
-      const params = { ...baseParams };
-      if (multiSpeciesGenes && multiSpeciesGenes.length === 1) {
-        params.selectedSpecies = multiSpeciesGenes[0].speciesId;
-        params.selectedGene = [multiSpeciesGenes[0].geneId];
-      } else {
-        params.selectedSpecies = baseParams.selectedSpecies;
-        params.selectedGene = baseParams.selectedGene;
-      }
-      const { resp } = await api.search.geneExpressionMatrix.search(params, false);
+      const { resp } = await api.search.geneExpressionMatrix.multispecSearch(baseParams, genesForSearch);
       if (resp.code !== 200) return [];
-      const calls = resp.data.expressionData.expressionCalls;
+      const calls = resp.data.expressionData.expressionCalls.map(transformMultispecCall);
       calls.forEach((exprCall) => {
         exprCall.condition.anatEntity.dataId = `${parentId}--${exprCall.condition.anatEntity.id}`;
       });
@@ -963,12 +924,14 @@ const useLogic = (options = {}) => {
           if (storedDataQual) setDataQuality(storedDataQual);
         }
 
-        // A stored gene_list is enough to restore the search, including multi-species
-        // queries that have no species_id. Hand off to the gene_list URL flow.
-        const geneListValues = [].concat(simpleParams.gene_list || []).filter(Boolean);
-        if (geneListValues.length > 0) {
+        // A stored gene_list, or gene_id values from an older link, is enough to restore
+        // the search. species_id is not forwarded: multispec_expr_calls rejects it.
+        const geneListValues = paramValues(simpleParams, 'gene_list');
+        const geneIdValues = paramValues(simpleParams, 'gene_id');
+        const genesToRestore = geneListValues.length > 0 ? geneListValues : geneIdValues;
+        if (genesToRestore.length > 0) {
           const nextSearch = new URLSearchParams();
-          nextSearch.set('gene_list', geneListValues.join('\n'));
+          nextSearch.set('gene_list', genesToRestore.join('\n'));
           appendNonDefaultFilters(nextSearch, simpleParams);
           // The SUMMARY request hash records bronze. Keep the quality from the page URL.
           if (explicitDataQual) {
@@ -1000,9 +963,8 @@ const useLogic = (options = {}) => {
                 searchParamsNew.append(key, id);
               }
             });
-          } else if (key === 'species_id') {
-            searchParamsNew.append(key, value);
           }
+          // species_id is intentionally omitted. multispec_expr_calls does not accept it.
         });
         params.initSearch = searchParamsNew;
 
@@ -1148,8 +1110,13 @@ const useLogic = (options = {}) => {
 
     const searchParams = new URLSearchParams(loc.search);
     const geneList = searchParams.get('gene_list');
+    // Older links pass species_id plus gene_id. Resolve the gene ids and search through
+    // multispec_expr_calls; do not send species_id to that endpoint.
+    const geneIdsFromUrl = searchParams.get('data') ? [] : searchParams.getAll('gene_id').filter(Boolean);
     if (geneList) {
       processGeneList(geneList);
+    } else if (geneIdsFromUrl.length > 0) {
+      processGeneList(geneIdsFromUrl.join('\n'));
     } else if (!loc.search && !isFirstSearch && !isLoading) {
       console.log(`[useLogic.js] reset form...`);
       resetForm(false, true);

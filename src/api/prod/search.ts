@@ -45,6 +45,38 @@ const DEFAULT_PARAMETERS: any = (page: string, action: string | undefined = unde
 // Complementary calls and term expansion keep the data quality selected in the form.
 const SUMMARY_EXPRESSION_DATA_QUAL = 'BRONZE';
 
+// multispec_expr_calls does not accept species_id or gene_id.
+const MULTISPEC_EXPR_CALLS = 'multispec_expr_calls';
+const MULTISPEC_OMITTED_PARAMS = new Set(['species_id', 'gene_id', 'data_type', 'offset', 'limit', 'pageType']);
+
+// Copy a previous query onto a multispec request. species_id is dropped because
+// the endpoint rejects it. gene_id is collected so the caller can send gene_list.
+const appendMultispecParams = (params: URLSearchParams, source: URLSearchParams | null | undefined): string[] => {
+  const geneIds: string[] = [];
+  if (!source) return geneIds;
+  for (const [key, val] of source) {
+    if (key === 'gene_id') {
+      if (val) geneIds.push(val);
+      continue;
+    }
+    if (MULTISPEC_OMITTED_PARAMS.has(key) || key === 'gene_list') continue;
+    params.append(key, val);
+  }
+  return geneIds;
+};
+
+const appendGeneList = (params: URLSearchParams, geneIds: string[]) => {
+  if (params.has('gene_list') || geneIds.length === 0) return;
+  const seen = new Set<string>();
+  const ids: string[] = [];
+  geneIds.forEach((id) => {
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    ids.push(id);
+  });
+  if (ids.length > 0) params.append('gene_list', ids.join('\n'));
+};
+
 // Build gene_list param from multiSpeciesGenes for multispec API.
 // Deduplicates gene IDs as a safety net so callers that did not pre-dedup
 // (or that merged lists from multiple sources) do not blow up the URL.
@@ -577,19 +609,13 @@ const search = {
           resolve({ resp: { code: 400 }, paramsURLCalled: '' });
           return;
         }
-        const params = DEFAULT_PARAMETERS('data', 'multispec_expr_calls');
+        const params = DEFAULT_PARAMETERS('data', MULTISPEC_EXPR_CALLS);
         params.append('get_results', '0');
         params.append('display_rp', '1');
         params.append('detailed_rp', detailedRP ? '1' : '0');
         params.append('limit', '10000');
         params.append('gene_list', geneList);
-        if (form?.initSearch) {
-          for (const [key, val] of form.initSearch) {
-            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
-              params.append(key, val);
-            }
-          }
-        }
+        appendMultispecParams(params, form?.initSearch);
         if (form?.dataQuality) params.append('data_qual', form.dataQuality);
         postExpressionMatrix(params, 'search')
           .then((result) => resolve(result))
@@ -607,7 +633,7 @@ const search = {
           reject(new Error('No genes in gene_list'));
           return;
         }
-        const params = DEFAULT_PARAMETERS('data', 'multispec_expr_calls');
+        const params = DEFAULT_PARAMETERS('data', MULTISPEC_EXPR_CALLS);
         params.append('get_results', '1');
         params.append('display_rp', '1');
         params.append('offset', '0');
@@ -652,7 +678,7 @@ const search = {
           reject(new Error('No genes in gene_list'));
           return;
         }
-        const params = DEFAULT_PARAMETERS('data', 'multispec_expr_calls');
+        const params = DEFAULT_PARAMETERS('data', MULTISPEC_EXPR_CALLS);
         params.append('get_results', '1');
         params.append('limit', '10000');
         params.append('gene_list', geneList);
@@ -689,26 +715,22 @@ const search = {
     // get request parameters from previous search
     getRequestParams: (form, detailedRP = false) =>
       new Promise((resolve, reject) => {
-        // populate request params
-        const params = DEFAULT_PARAMETERS('data', 'expr_calls');
+        // Stored searches are replayed on multispec_expr_calls. species_id is not
+        // accepted there; gene_id from an older link is sent as gene_list instead,
+        // unless a data hash already identifies the query.
+        const params = DEFAULT_PARAMETERS('data', MULTISPEC_EXPR_CALLS);
         params.append('get_results', '0');
         params.append('display_rp', '1');
         // request detailed response parameters
         params.append('detailed_rp', detailedRP ? '1' : '0');
         params.append('limit', '10000');
 
-        // are we using a dataHash?
-        if (form?.initSearch) {
-          // -> use initSearch params
-
-          for (const [key, val] of form.initSearch) {
-            if (key !== 'data_type' && key !== 'offset' && key !== 'limit' && key !== 'pageType') {
-              params.append(key, val);
-            }
-          }
-        }
+        const geneIds = appendMultispecParams(params, form?.initSearch);
         if (form?.selectedGene) {
-          form.selectedGene.forEach((g) => params.append('gene_id', g));
+          form.selectedGene.forEach((g: string) => geneIds.push(g));
+        }
+        if (!form?.initSearch?.get?.('data')) {
+          appendGeneList(params, geneIds);
         }
 
         const paramsURLCalled = params.toString();
@@ -842,7 +864,7 @@ const search = {
         if (form.discardAnatEntityAndChildrenId) {
           params.append('discard_anat_entity_and_children_id', form.discardAnatEntityAndChildrenId);
         }
-        // Child expansion (request 3) on the single-gene graph and the single-species matrix fallback.
+        // Child expansion (request 3) on the single-gene graph. The expression matrix uses multispecSearch.
         if (form.observedData) {
           params.append('observed_data', '1');
         }
