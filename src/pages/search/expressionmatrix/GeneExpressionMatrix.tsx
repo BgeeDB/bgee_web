@@ -13,7 +13,12 @@ import DataQualityParameter from './components/filters/DataQualityParameter';
 // import Strain from './components/filters/Strain/Strain';
 // import CallType from './components/filters/CallType';
 import GeneExpressionMatrixResults from './GeneExpressionMatrixResults';
-import SelectedGenesList, { getSelectedGeneKey, type OrthologData } from './components/SelectedGenesList';
+import SelectedGenesList, {
+  getSelectedGeneKey,
+  type HomologData,
+  type HomologSelection,
+  type HomologTaxonGroup,
+} from './components/SelectedGenesList';
 import MultiSpeciesGeneListInput from './components/MultiSpeciesGeneListInput';
 import type { GeneResolutionStatus } from './components/MultiSpeciesGeneListInput';
 import { getMetadata } from '~/helpers/metadata';
@@ -76,13 +81,40 @@ interface GeneWithSpecies {
 
 type SelectedGenesFilter = 'all' | 'with' | 'without';
 
+const findHomologGroup = (groups: HomologTaxonGroup[] | undefined, taxonId?: string) => {
+  if (!taxonId || !groups) return null;
+  return groups.find((entry) => String(entry.taxon.id) === String(taxonId)) || null;
+};
+
+const genesFromHomologGroup = (entry: HomologTaxonGroup | null): GeneWithSpecies[] => {
+  const seen = new Set<string>();
+  const genes: GeneWithSpecies[] = [];
+  (entry?.genes || []).forEach((gene) => {
+    const speciesId = gene?.species?.id;
+    const geneId = gene?.geneId;
+    if (speciesId == null || !geneId) return;
+    const key = getSelectedGeneKey(String(speciesId), geneId);
+    if (seen.has(key)) return;
+    seen.add(key);
+    genes.push({
+      speciesId: String(speciesId),
+      speciesLabel: `${gene.species.genus || ''} ${gene.species.speciesName || ''}${
+        gene.species.name ? ` - ${gene.species.name}` : ''
+      }`.trim(),
+      geneId,
+      geneLabel: getGeneLabel(gene),
+    });
+  });
+  return genes;
+};
+
 const GeneExpressionMatrix = () => {
   const [multiSpeciesGenes, setMultiSpeciesGenes] = useState<GeneWithSpecies[]>([]);
   const [isGenesListExpanded, setIsGenesListExpanded] = useState(true);
   const [selectedGenesFilter, setSelectedGenesFilter] = useState<SelectedGenesFilter>('all');
-  const [geneHomologsData, setGeneHomologsData] = useState<Record<string, OrthologData>>({});
+  const [geneHomologsData, setGeneHomologsData] = useState<Record<string, HomologData>>({});
   const [fetchingGeneHomologs, setFetchingGeneHomologs] = useState<Record<string, boolean>>({});
-  const fetchedGeneHomologsRef = useRef<Set<string>>(new Set());
+  const homologRequestsRef = useRef<Map<string, Promise<HomologData | null>>>(new Map());
 
   // Multi-species gene list input (alternative input mode)
   const [inputMode, setInputMode] = useState<InputMode>('species');
@@ -201,50 +233,60 @@ const GeneExpressionMatrix = () => {
     [selectedSpecies.value, setSelectedGene]
   );
 
-  const fetchGeneHomologs = useCallback((geneId: string, speciesId: string) => {
+  // Loaded on demand from the row's add button, then reused for that gene.
+  const loadGeneHomologs = useCallback((geneId: string, speciesId: string): Promise<HomologData | null> => {
     const key = getSelectedGeneKey(speciesId, geneId);
-    if (fetchedGeneHomologsRef.current.has(key)) {
-      return;
-    }
-    fetchedGeneHomologsRef.current.add(key);
+    const existing = homologRequestsRef.current.get(key);
+    if (existing) return existing;
+
     setFetchingGeneHomologs((prev) => ({ ...prev, [key]: true }));
-    api.search.genes
+    const request = api.search.genes
       .homologs(geneId, speciesId)
       .then((result) => {
+        const data = result?.data as HomologData | undefined;
+        if (!homologRequestsRef.current.has(key)) return null;
+        if (!data) {
+          homologRequestsRef.current.delete(key);
+          return null;
+        }
         setGeneHomologsData((prev) => ({
           ...prev,
-          [key]: result.data,
+          [key]: data,
         }));
+        return data;
       })
       .catch((error) => {
         console.error(`Error fetching homologs for ${key}:`, error);
-        fetchedGeneHomologsRef.current.delete(key);
+        homologRequestsRef.current.delete(key);
+        return null;
       })
       .finally(() => {
         setFetchingGeneHomologs((prev) => ({ ...prev, [key]: false }));
       });
-  }, []);
 
-  // Fetch homologs when the genes list is expanded; cache survives collapse.
-  useEffect(() => {
-    if (!isGenesListExpanded) {
-      return;
-    }
-    multiSpeciesGenes.forEach((gene) => {
-      fetchGeneHomologs(gene.geneId, gene.speciesId);
-    });
-  }, [isGenesListExpanded, multiSpeciesGenes, fetchGeneHomologs]);
+    homologRequestsRef.current.set(key, request);
+    return request;
+  }, []);
 
   // Drop cached homolog data for genes no longer selected.
   useEffect(() => {
     const currentKeys = new Set(multiSpeciesGenes.map((g) => getSelectedGeneKey(g.speciesId, g.geneId)));
-    fetchedGeneHomologsRef.current.forEach((key) => {
+    [...homologRequestsRef.current.keys()].forEach((key) => {
       if (!currentKeys.has(key)) {
-        fetchedGeneHomologsRef.current.delete(key);
+        homologRequestsRef.current.delete(key);
       }
     });
     setGeneHomologsData((prev) => {
-      const filtered: Record<string, OrthologData> = {};
+      const filtered: Record<string, HomologData> = {};
+      Object.keys(prev).forEach((key) => {
+        if (currentKeys.has(key)) {
+          filtered[key] = prev[key];
+        }
+      });
+      return filtered;
+    });
+    setFetchingGeneHomologs((prev) => {
+      const filtered: Record<string, boolean> = {};
       Object.keys(prev).forEach((key) => {
         if (currentKeys.has(key)) {
           filtered[key] = prev[key];
@@ -255,75 +297,51 @@ const GeneExpressionMatrix = () => {
   }, [multiSpeciesGenes]);
 
   const clearGeneHomologsCache = useCallback(() => {
-    fetchedGeneHomologsRef.current.clear();
+    homologRequestsRef.current.clear();
     setGeneHomologsData({});
     setFetchingGeneHomologs({});
   }, []);
 
-  // Add orthologs for a gene.
+  // Add orthologs, paralogs, or both for one gene.
   //
-  // The /homologs API returns orthologsByTaxon ordered from most specific (highest "level")
-  // to most general (lowest "level"). Each entry's `genes` array is ALREADY cumulative for
-  // that taxon, i.e. it contains every ortholog at or below that taxonomic level. So when
-  // the user picks a taxon, we just take that single entry's genes -- iterating across
-  // multiple levels would re-add the same genes several times (Bilateria already contains
-  // every Chordate gene, which already contains every Clupeocephala gene, etc.).
-  const addOrthologs = useCallback(
-    async (geneId: string, speciesId: string, taxonId?: string) => {
+  // The /homologs API returns orthologsByTaxon and paralogsByTaxon ordered from most
+  // specific to most general. Each entry's `genes` array is already cumulative for that
+  // taxon, so the chosen entry is the full set for that depth. Taking more than one
+  // level from the same list would add the same genes again.
+  const addHomologs = useCallback(
+    async (geneId: string, speciesId: string, selection: HomologSelection) => {
       try {
-        const key = getSelectedGeneKey(speciesId, geneId);
-        let taxa = geneHomologsData[key]?.orthologsByTaxon;
-        if (!taxa) {
-          const result = await api.search.genes.homologs(geneId, speciesId);
-          taxa = result?.data?.orthologsByTaxon || [];
-          setGeneHomologsData((prev) => ({
-            ...prev,
-            [key]: result.data,
-          }));
-          fetchedGeneHomologsRef.current.add(key);
+        const data = await loadGeneHomologs(geneId, speciesId);
+        if (!data) {
+          throw new Error('Homologs response was empty');
         }
 
-        let sourceEntry: any = null;
-        if (taxonId) {
-          sourceEntry = taxa.find(
-            (entry: any) => entry.taxon.id === taxonId || entry.taxon.id?.toString() === taxonId.toString()
-          );
-        } else {
-          // No explicit taxon -> take the most general (last) entry, which already includes
-          // every ortholog returned by the API.
-          sourceEntry = taxa[taxa.length - 1] || null;
-        }
-        if (!sourceEntry) return;
-
-        // Build orthologs with an intra-batch dedup safety net (in case the API ever
-        // returns duplicate entries within a single taxon's genes array).
         const seenInBatch = new Set<string>();
-        const orthologs: GeneWithSpecies[] = [];
-        (sourceEntry.genes || []).forEach((gene: any) => {
-          const key = `${gene.species.id}:${gene.geneId}`;
-          if (seenInBatch.has(key)) return;
-          seenInBatch.add(key);
-          orthologs.push({
-            speciesId: gene.species.id,
-            speciesLabel: `${gene.species.genus} ${gene.species.speciesName}${
-              gene.species.name ? ` - ${gene.species.name}` : ''
-            }`,
-            geneId: gene.geneId,
-            geneLabel: getGeneLabel(gene),
+        const homologs: GeneWithSpecies[] = [];
+        const groups = [
+          findHomologGroup(data.orthologsByTaxon, selection.orthologTaxonId),
+          findHomologGroup(data.paralogsByTaxon, selection.paralogTaxonId),
+        ];
+        groups.forEach((group) => {
+          genesFromHomologGroup(group).forEach((gene) => {
+            const geneKey = getSelectedGeneKey(gene.speciesId, gene.geneId);
+            if (seenInBatch.has(geneKey)) return;
+            seenInBatch.add(geneKey);
+            homologs.push(gene);
           });
         });
 
-        // Merge into multiSpeciesGenes, skipping any orthologs already present.
         setMultiSpeciesGenes((prev) => {
-          const existingKeys = new Set(prev.map((g) => `${g.speciesId}:${g.geneId}`));
-          const newOrthologs = orthologs.filter((orth) => !existingKeys.has(`${orth.speciesId}:${orth.geneId}`));
-          return [...prev, ...newOrthologs];
+          const existingKeys = new Set(prev.map((gene) => getSelectedGeneKey(gene.speciesId, gene.geneId)));
+          const added = homologs.filter((gene) => !existingKeys.has(getSelectedGeneKey(gene.speciesId, gene.geneId)));
+          return added.length === 0 ? prev : [...prev, ...added];
         });
       } catch (error) {
-        console.error('Error fetching orthologs:', error);
+        console.error('Error fetching homologs:', error);
+        throw error;
       }
     },
-    [geneHomologsData]
+    [loadGeneHomologs]
   );
 
   // Sync selectedGene from useLogic into multiSpeciesGenes (handles URL params initialization)
@@ -710,10 +728,12 @@ const GeneExpressionMatrix = () => {
                               (filteredSelectedGenes.length > 0 ? (
                                 <SelectedGenesList
                                   selectedGenes={filteredSelectedGenes}
+                                  trackedGenes={multiSpeciesGenes}
                                   removeGene={removeGene}
-                                  addOrthologs={addOrthologs}
-                                  orthologData={geneHomologsData}
-                                  fetchingOrthologs={fetchingGeneHomologs}
+                                  addHomologs={addHomologs}
+                                  loadHomologs={loadGeneHomologs}
+                                  homologData={geneHomologsData}
+                                  fetchingHomologs={fetchingGeneHomologs}
                                 />
                               ) : (
                                 <p className="has-text-grey is-italic is-size-7 mt-2">
