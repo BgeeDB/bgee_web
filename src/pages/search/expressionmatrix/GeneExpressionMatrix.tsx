@@ -22,7 +22,7 @@ import './rawDataAnnotations.scss';
 import Bulma from '~/components/Bulma';
 import api from '~/api';
 import { getGeneLabel, pickGeneFromSearchResult } from '~/helpers/gene';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, SquarePlus } from 'lucide-react';
 
 type InputMode = 'species' | 'list';
 
@@ -567,18 +567,19 @@ const GeneExpressionMatrix = () => {
   return (
     <>
       <div className="rawDataAnnotation">
-        <div className="columns is-8 ongletPageWrapper">
-          <h1>
-            <a
-              className="ongletPages pageActive"
-              href={`${URL_ROOT}/search/expression-matrix`}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Open this page in a new tab"
-            >
-              {TAB_PAGE_EXPR_CALL.label}
-            </a>
-          </h1>
+        <div className="columns is-8 ongletPageWrapper expression-graph-heading">
+          <h1 className="ongletPages pageActive">{TAB_PAGE_EXPR_CALL.label}</h1>
+          <Button
+            renderAs="a"
+            href={`${URL_ROOT}/search/expression-matrix`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="is-small new-expression-graph-btn"
+            title="New expression graph (opens in a new tab)"
+            aria-label="New expression graph (opens in a new tab)"
+          >
+            <SquarePlus size={18} aria-hidden="true" />
+          </Button>
         </div>
 
         <div>

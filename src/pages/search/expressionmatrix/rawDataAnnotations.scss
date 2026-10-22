@@ -103,6 +103,24 @@
   .ongletPageWrapper {
     border-bottom: 1px solid grey;
   }
+  .expression-graph-heading {
+    align-items: center;
+
+    h1.ongletPages {
+      cursor: default;
+      margin-bottom: 0;
+      padding-right: 0.5rem;
+    }
+
+    .new-expression-graph-btn {
+      flex: 0 0 auto;
+      width: 2rem;
+      height: 2rem;
+      min-width: 2rem;
+      margin: 0;
+      padding: 0;
+    }
+  }
   .ongletPages {
     padding-right: 1rem;
     padding-left: 1rem;
