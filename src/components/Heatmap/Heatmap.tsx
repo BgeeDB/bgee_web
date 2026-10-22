@@ -93,6 +93,9 @@ const Heatmap = ({
   const [colorPalette, setColorPalette] = useState(() => getStoredValue(STORAGE_KEYS.COLOR_PALETTE, 'viridis'));
   const [bgColor, setBgColor] = useState(() => getStoredValue(STORAGE_KEYS.BACKGROUND_COLOR, backgroundColor));
   const [marginLeft, setMarginLeft] = useState(() => getStoredValue(STORAGE_KEYS.MARGIN_LEFT, 200));
+  // Settings (and the stored default) are a floor. Auto-sizing may grow past it to fit
+  // a long expanded label, and must be able to shrink back to it on collapse.
+  const yLabelWidthFloorRef = useRef(marginLeft);
   const [showDescMax, setShowDescMax] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
   const [showMissingData, setShowMissingData] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
   const [showSettings, setShowSettings] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_SETTINGS, false));
@@ -179,6 +182,7 @@ const Heatmap = ({
   };
 
   const updateYLabelWidth = ({ target: { value } }) => {
+    yLabelWidthFloorRef.current = value;
     setMarginLeft(value);
     localStorage.setItem(STORAGE_KEYS.MARGIN_LEFT, JSON.stringify(value));
   };
@@ -264,7 +268,10 @@ const Heatmap = ({
 
     const maxLabelLength = longestVisibleLabel(yTerms);
     // console.log(`[Heatmap] yTerms:\n${JSON.stringify(yTerms, null, 2)}`);
-    const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, marginLeft);
+    // Floor at the user's width, not the current margin. The current margin has already
+    // been grown to fit a longer expanded label, so using it here would never shrink.
+    const floor = Number(yLabelWidthFloorRef.current);
+    const flexMarginLeft = Math.max(maxLabelLength * 7.5 + 50, Number.isFinite(floor) ? floor : 0);
     // Functional update so a wider width just requested by the renderer (cells + slanted
     // top labels) is not replaced by the graphWidth value captured in this effect.
     setGraphWidth((current) => Math.max(flexMarginLeft + 50, current));
