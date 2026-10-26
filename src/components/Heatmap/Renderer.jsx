@@ -82,7 +82,8 @@ const DEFAULT_MARGIN = { top: 50, right: 10, bottom: 50, left: 200 };
 // X-axis label geometry constants (must match the <text> elements below)
 const X_LABEL_FONT_SIZE = 15;
 const X_LABEL_LINE_HEIGHT = 1.2;
-// Empirical average glyph width for 15px sans-serif (Open Sans); slight over-estimate is safer.
+// Empirical average glyph width at X_LABEL_FONT_SIZE for sans-serif (Open Sans).
+// Slight over-estimate is safer. Scaled with the font when columns shrink.
 const X_LABEL_CHAR_WIDTH = 8.5;
 // Extra breathing room added on top of the projected label extent.
 const X_LABEL_PADDING = 15;
@@ -94,21 +95,108 @@ const DEFAULT_BOTTOM_LABEL_GAP = 40;
 const COLOR_LEGEND_OVERFLOW_TOP = 25;
 // Baseline of the "Not expressed" / "No data" row in ColorLegendSvg (posY + 48).
 const COLOR_LEGEND_SWATCH_BASELINE = 48;
+// Pixels of air between neighboring label em-boxes once the font has to shrink.
+const X_LABEL_NEIGHBOR_GAP = 1;
+
+const labelMetrics = (fontSize) => {
+  const size = Number.isFinite(fontSize) && fontSize > 0 ? fontSize : X_LABEL_FONT_SIZE;
+  return {
+    fontSize: size,
+    charWidth: (X_LABEL_CHAR_WIDTH * size) / X_LABEL_FONT_SIZE,
+  };
+};
+
+// Em-box height of a label, in units of fontSize. Multi-line labels are thicker.
+const labelBlockEm = (text) => {
+  const lines = String(text ?? '').split('\n');
+  if (lines.length <= 1) return 1;
+  return (lines.length - 1) * X_LABEL_LINE_HEIGHT + 1;
+};
+
+const axisLabelTexts = (xTerms) => {
+  if (!xTerms?.length) return [];
+  return xTerms.flatMap((term) => [
+    term?.topLabel ?? term?.label ?? term?.value ?? '',
+    term?.bottomLabel ?? term?.label ?? term?.value ?? '',
+  ]);
+};
+
+const normalizeDeg = (deg) => {
+  const wrapped = Number(deg) % 360;
+  return wrapped < 0 ? wrapped + 360 : wrapped;
+};
+
+// Upright angle in the same half-turn, so up-right text stays upward and
+// down-right text stays downward as the slant steepens.
+const verticalForRotation = (rotation) => (normalizeDeg(rotation) < 180 ? 90 : 270);
+
+const labelBlockEmForTerms = (xTerms) =>
+  axisLabelTexts(xTerms).reduce((max, text) => Math.max(max, labelBlockEm(text)), 1);
+
+// Largest em size whose box fits between neighboring baselines at this slant.
+// Horizontal labels share one line, so the pitch does not limit the font.
+const fontSizeForPitchAndRotation = (pitch, rotation, blockEm) => {
+  const sinAbs = Math.abs(Math.sin((rotation * Math.PI) / 180));
+  if (sinAbs < 1e-3) return X_LABEL_FONT_SIZE;
+  const separation = pitch * sinAbs;
+  const gap = separation > X_LABEL_NEIGHBOR_GAP * 2 ? X_LABEL_NEIGHBOR_GAP : 0;
+  return Math.min(X_LABEL_FONT_SIZE, Math.max(0, (separation - gap) / blockEm));
+};
+
+// Top and bottom x-axis label layout.
+// Adjacent baselines are `pitch * |sin θ|` apart. A shallow slant makes that
+// gap smaller than a 15px em box, which is why a packed gene set was drawing
+// tiny type. Tip the labels toward upright, only as far as needed for the
+// design size to fit. At the narrowest columns they stand vertical and the
+// font is limited by the column pitch itself.
+const xLabelLayoutForPitch = (pitch, preferredRotation, xTerms) => {
+  const preferred = Number(preferredRotation);
+  if (!(pitch > 0) || !Number.isFinite(pitch) || !Number.isFinite(preferred)) {
+    return { rotation: Number.isFinite(preferred) ? preferred : 0, fontSize: X_LABEL_FONT_SIZE };
+  }
+  const preferredSin = Math.abs(Math.sin((preferred * Math.PI) / 180));
+  if (preferredSin < 1e-3) {
+    return { rotation: preferred, fontSize: X_LABEL_FONT_SIZE };
+  }
+  const blockEm = labelBlockEmForTerms(xTerms);
+  if (fontSizeForPitchAndRotation(pitch, preferred, blockEm) >= X_LABEL_FONT_SIZE - 0.05) {
+    return { rotation: preferred, fontSize: X_LABEL_FONT_SIZE };
+  }
+  const neededSin = Math.min(1, (X_LABEL_FONT_SIZE * blockEm + X_LABEL_NEIGHBOR_GAP) / pitch);
+  const from = normalizeDeg(preferred);
+  const vertical = verticalForRotation(from);
+  if (neededSin >= 1 - 1e-6) {
+    return { rotation: vertical, fontSize: fontSizeForPitchAndRotation(pitch, vertical, blockEm) };
+  }
+  let delta = vertical - from;
+  if (delta > 180) delta -= 360;
+  if (delta < -180) delta += 360;
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 16; i += 1) {
+    const mid = (lo + hi) / 2;
+    const sinAbs = Math.abs(Math.sin(((from + mid * delta) * Math.PI) / 180));
+    if (sinAbs >= neededSin) hi = mid;
+    else lo = mid;
+  }
+  const rotation = from + hi * delta;
+  return { rotation, fontSize: fontSizeForPitchAndRotation(pitch, rotation, blockEm) };
+};
 
 // Estimate how far a bottom x-axis label hangs below its anchor when rotated.
 // Bottom labels use textAnchor="end" and dominantBaseline="middle", so the
 // string extends to the left of the anchor before rotation.
-const estimateLabelExtentBelowAnchor = (text, rotationDeg) => {
+const estimateLabelExtentBelowAnchor = (text, rotationDeg, metrics) => {
   if (!text) return 0;
   const lines = text.split('\n');
   const rotRad = (rotationDeg * Math.PI) / 180;
   const sin = Math.sin(rotRad);
   const cos = Math.cos(rotRad);
   const maxLineLength = Math.max(...lines.map((line) => line.length));
-  const textWidth = maxLineLength * X_LABEL_CHAR_WIDTH;
-  const lineHeight = X_LABEL_FONT_SIZE * X_LABEL_LINE_HEIGHT;
-  const yMin = -X_LABEL_FONT_SIZE / 2;
-  const yMax = (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE / 2;
+  const textWidth = maxLineLength * metrics.charWidth;
+  const lineHeight = metrics.fontSize * X_LABEL_LINE_HEIGHT;
+  const yMin = -metrics.fontSize / 2;
+  const yMax = (lines.length - 1) * lineHeight + metrics.fontSize / 2;
   const corners = [
     [-textWidth, yMin],
     [0, yMin],
@@ -121,28 +209,28 @@ const estimateLabelExtentBelowAnchor = (text, rotationDeg) => {
 
 // Full axis-aligned height of a label. Used for the top margin, where labels
 // grow upward and clipping the top of the SVG is the failure mode.
-const estimateLabelVerticalExtent = (text, rotationDeg) => {
+const estimateLabelVerticalExtent = (text, rotationDeg, metrics) => {
   if (!text) return 0;
   const lines = text.split('\n');
   const rotRad = (rotationDeg * Math.PI) / 180;
   const sinAbs = Math.abs(Math.sin(rotRad));
   const cosAbs = Math.abs(Math.cos(rotRad));
   const maxLineLength = Math.max(...lines.map((line) => line.length));
-  const textWidth = maxLineLength * X_LABEL_CHAR_WIDTH;
-  const lineHeight = X_LABEL_FONT_SIZE * X_LABEL_LINE_HEIGHT;
-  const textHeight = lines.length === 1 ? X_LABEL_FONT_SIZE : (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE;
+  const textWidth = maxLineLength * metrics.charWidth;
+  const lineHeight = metrics.fontSize * X_LABEL_LINE_HEIGHT;
+  const textHeight = lines.length === 1 ? metrics.fontSize : (lines.length - 1) * lineHeight + metrics.fontSize;
   return sinAbs * textWidth + cosAbs * textHeight;
 };
 
 // Local axis-aligned box of a label before rotation.
 // dominantBaseline="middle"; textAnchor selects where the anchor sits on that box.
-const labelLocalBox = (text, textAnchor) => {
+const labelLocalBox = (text, textAnchor, metrics) => {
   const lines = String(text).split('\n');
   const maxLineLength = Math.max(...lines.map((line) => line.length));
-  const textWidth = maxLineLength * X_LABEL_CHAR_WIDTH;
-  const lineHeight = X_LABEL_FONT_SIZE * X_LABEL_LINE_HEIGHT;
-  const yMin = -X_LABEL_FONT_SIZE / 2;
-  const yMax = (lines.length - 1) * lineHeight + X_LABEL_FONT_SIZE / 2;
+  const textWidth = maxLineLength * metrics.charWidth;
+  const lineHeight = metrics.fontSize * X_LABEL_LINE_HEIGHT;
+  const yMin = -metrics.fontSize / 2;
+  const yMax = (lines.length - 1) * lineHeight + metrics.fontSize / 2;
   const xMin = textAnchor === 'end' ? -textWidth : textAnchor === 'middle' ? -textWidth / 2 : 0;
   const xMax = textAnchor === 'end' ? 0 : textAnchor === 'middle' ? textWidth / 2 : textWidth;
   return { xMin, xMax, yMin, yMax };
@@ -152,12 +240,12 @@ const labelLocalBox = (text, textAnchor) => {
 // The SVG rotation matrix is [cos -sin; sin cos], so x' = x cos θ - y sin θ.
 // Top labels use textAnchor "start" when rotated (the string runs up and to the right
 // at the default 325°) and "middle" when horizontal.
-const estimateLabelExtentRightOfAnchor = (text, rotationDeg, textAnchor) => {
+const estimateLabelExtentRightOfAnchor = (text, rotationDeg, textAnchor, metrics) => {
   if (!text) return 0;
   const rotRad = (rotationDeg * Math.PI) / 180;
   const sin = Math.sin(rotRad);
   const cos = Math.cos(rotRad);
-  const { xMin, xMax, yMin, yMax } = labelLocalBox(text, textAnchor);
+  const { xMin, xMax, yMin, yMax } = labelLocalBox(text, textAnchor, metrics);
   const corners = [
     [xMin, yMin],
     [xMax, yMin],
@@ -171,7 +259,7 @@ const estimateLabelExtentRightOfAnchor = (text, rotationDeg, textAnchor) => {
 // Distance by which slanted top labels pass the right edge of the cells.
 // Each label is anchored at the center of its column, so a long label on an
 // earlier column can stick out further than a short one on the last column.
-const estimateTopLabelRightOverflow = (xTerms, xScale, rotationDeg, plotRight) => {
+const estimateTopLabelRightOverflow = (xTerms, xScale, rotationDeg, plotRight, metrics) => {
   const textAnchor = rotationDeg === 0 ? 'middle' : 'start';
   let maxRight = 0;
   xTerms.forEach((term) => {
@@ -179,7 +267,7 @@ const estimateTopLabelRightOverflow = (xTerms, xScale, rotationDeg, plotRight) =
     if (x === undefined) return;
     const xCoord = x + xScale.bandwidth() / 2;
     const label = term.topLabel ?? term.label ?? term.value ?? '';
-    maxRight = Math.max(maxRight, xCoord + estimateLabelExtentRightOfAnchor(label, rotationDeg, textAnchor));
+    maxRight = Math.max(maxRight, xCoord + estimateLabelExtentRightOfAnchor(label, rotationDeg, textAnchor, metrics));
   });
   return Math.max(0, maxRight - plotRight);
 };
@@ -238,7 +326,9 @@ const FIT_SLACK = 4;
 const contentWidthForCellSize = ({ cellSize, domain, xTerms, xLabelRotation, marginLeft, marginRight }) => {
   const requiredXWidth = domain.length * (cellSize + COLUMN_GAP);
   const xScale = d3.scaleBand().range([0, requiredXWidth]).domain(domain).padding(0.01);
-  const overflow = estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotation, requiredXWidth);
+  const layout = xLabelLayoutForPitch(xScale.step(), xLabelRotation, xTerms);
+  const metrics = labelMetrics(layout.fontSize);
+  const overflow = estimateTopLabelRightOverflow(xTerms, xScale, layout.rotation, requiredXWidth, metrics);
   const right = Math.max(marginRight, overflow + X_LABEL_PADDING);
   return (Number(marginLeft) || 0) + requiredXWidth + right;
 };
@@ -315,40 +405,6 @@ export const Renderer = forwardRef(
     const MARGIN = rendererMargins || DEFAULT_MARGIN;
     // The bounds (=area inside the axis) is calculated by substracting the margins
     const boundsWidth = width - MARGIN.right - marginLeft;
-
-    // Determine how much vertical space the rotated x-axis labels need so that
-    // top labels are not clipped and bottom labels don't overlap the legend.
-    const { topLabelSpace, bottomLabelSpace } = useMemo(() => {
-      let maxTopText = '';
-      let maxBottomText = '';
-      xTerms.forEach((t) => {
-        const top = t?.topLabel ?? t?.label ?? t?.value ?? '';
-        const bottom = t?.bottomLabel ?? t?.label ?? t?.value ?? '';
-        if (
-          estimateLabelVerticalExtent(top, xLabelRotation) > estimateLabelVerticalExtent(maxTopText, xLabelRotation)
-        ) {
-          maxTopText = top;
-        }
-        if (
-          estimateLabelExtentBelowAnchor(bottom, xLabelRotation) >
-          estimateLabelExtentBelowAnchor(maxBottomText, xLabelRotation)
-        ) {
-          maxBottomText = bottom;
-        }
-      });
-      return {
-        topLabelSpace: estimateLabelVerticalExtent(maxTopText, xLabelRotation) + X_LABEL_PADDING,
-        // Hang below the anchor, then leave room for the legend title drawn above posY.
-        bottomLabelSpace:
-          X_LABEL_ANCHOR_OFFSET +
-          estimateLabelExtentBelowAnchor(maxBottomText, xLabelRotation) +
-          COLOR_LEGEND_OVERFLOW_TOP +
-          X_LABEL_PADDING,
-      };
-    }, [xTerms, xLabelRotation]);
-
-    const effectiveMarginTop = Math.max(MARGIN.top, topLabelSpace);
-    const bottomLabelGap = Math.max(DEFAULT_BOTTOM_LABEL_GAP, bottomLabelSpace);
 
     // show only selected and top-level data points
     // const dataShow = data.filter((d) => (
@@ -436,16 +492,60 @@ export const Renderer = forwardRef(
       [requiredXWidth, allXGroups]
     );
 
+    // Column centers are one band step apart. A shallow slant cannot hold 15px
+    // type once that pitch gets small, so the labels tip toward upright and
+    // keep as much of the design size as the column gap allows.
+    const xLabelLayout = xLabelLayoutForPitch(xScale.step(), xLabelRotation, xTerms);
+    const xLabelFontSize = xLabelLayout.fontSize;
+    const xLabelRotationEffective = xLabelLayout.rotation;
+    const xLabelMetrics = useMemo(() => labelMetrics(xLabelFontSize), [xLabelFontSize]);
+
+    // Determine how much vertical space the rotated x-axis labels need so that
+    // top labels are not clipped and bottom labels don't overlap the legend.
+    const { topLabelSpace, bottomLabelSpace } = useMemo(() => {
+      let maxTopText = '';
+      let maxBottomText = '';
+      xTerms.forEach((t) => {
+        const top = t?.topLabel ?? t?.label ?? t?.value ?? '';
+        const bottom = t?.bottomLabel ?? t?.label ?? t?.value ?? '';
+        if (
+          estimateLabelVerticalExtent(top, xLabelRotationEffective, xLabelMetrics) >
+          estimateLabelVerticalExtent(maxTopText, xLabelRotationEffective, xLabelMetrics)
+        ) {
+          maxTopText = top;
+        }
+        if (
+          estimateLabelExtentBelowAnchor(bottom, xLabelRotationEffective, xLabelMetrics) >
+          estimateLabelExtentBelowAnchor(maxBottomText, xLabelRotationEffective, xLabelMetrics)
+        ) {
+          maxBottomText = bottom;
+        }
+      });
+      return {
+        topLabelSpace:
+          estimateLabelVerticalExtent(maxTopText, xLabelRotationEffective, xLabelMetrics) + X_LABEL_PADDING,
+        // Hang below the anchor, then leave room for the legend title drawn above posY.
+        bottomLabelSpace:
+          X_LABEL_ANCHOR_OFFSET +
+          estimateLabelExtentBelowAnchor(maxBottomText, xLabelRotationEffective, xLabelMetrics) +
+          COLOR_LEGEND_OVERFLOW_TOP +
+          X_LABEL_PADDING,
+      };
+    }, [xTerms, xLabelRotationEffective, xLabelMetrics]);
+
+    const effectiveMarginTop = Math.max(MARGIN.top, topLabelSpace);
+    const bottomLabelGap = Math.max(DEFAULT_BOTTOM_LABEL_GAP, bottomLabelSpace);
+
     // Slanted top labels are anchored at the column center and run up-right, so the
     // right margin has to cover whatever sticks past the cells. The character-width
     // estimate sizes the first frame; the layout effect replaces it with the painted
     // glyph extent so wide letters are not clipped and narrow ones do not leave a gap.
-    const topLabelMeasureKey = `${xLabelRotation}|${requiredXWidth}|${xTerms
+    const topLabelMeasureKey = `${xLabelFontSize}|${xLabelRotationEffective}|${requiredXWidth}|${xTerms
       .map((term) => `${term.value ?? ''}\u0000${term.topLabel ?? term.label ?? ''}`)
       .join('\u0001')}`;
     const estimatedTopLabelRightOverflow = useMemo(
-      () => estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotation, requiredXWidth),
-      [xTerms, xScale, xLabelRotation, requiredXWidth]
+      () => estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics),
+      [xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics]
     );
     const [measuredTopLabelRightOverflow, setMeasuredTopLabelRightOverflow] = useState(null);
     const topLabelsRef = useRef(null);
@@ -749,12 +849,14 @@ export const Renderer = forwardRef(
       return (
         <text
           key={`heatMapXLabel-${i}`}
-          x={xLabelRotation === 0 ? xCoord : null}
-          y={xLabelRotation === 0 ? yCoord : null}
-          transform={xLabelRotation !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotation})` : null}
-          textAnchor={xLabelRotation === 0 ? 'middle' : 'start'}
+          x={xLabelRotationEffective === 0 ? xCoord : null}
+          y={xLabelRotationEffective === 0 ? yCoord : null}
+          transform={
+            xLabelRotationEffective !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotationEffective})` : null
+          }
+          textAnchor={xLabelRotationEffective === 0 ? 'middle' : 'start'}
           dominantBaseline="middle"
-          fontSize={X_LABEL_FONT_SIZE}
+          fontSize={xLabelFontSize}
           fontFamily="Open Sans, sans-serif"
         >
           {renderSvgTextLines(displayLabel, `heatMapXLabel-${i}`)}
@@ -776,12 +878,14 @@ export const Renderer = forwardRef(
       return (
         <text
           key={`heatMapXLabelBottom-${i}`}
-          x={xLabelRotation === 0 ? xCoord : null}
-          y={xLabelRotation === 0 ? yCoord : null}
-          transform={xLabelRotation !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotation})` : null}
-          textAnchor={xLabelRotation === 0 ? 'middle' : 'end'}
+          x={xLabelRotationEffective === 0 ? xCoord : null}
+          y={xLabelRotationEffective === 0 ? yCoord : null}
+          transform={
+            xLabelRotationEffective !== 0 ? `translate(${xCoord}, ${yCoord}) rotate(${xLabelRotationEffective})` : null
+          }
+          textAnchor={xLabelRotationEffective === 0 ? 'middle' : 'end'}
           dominantBaseline="middle"
-          fontSize={X_LABEL_FONT_SIZE}
+          fontSize={xLabelFontSize}
           fontFamily="Open Sans, sans-serif"
         >
           {renderSvgTextLines(displayLabel, `heatMapXLabelBottom-${i}`)}
