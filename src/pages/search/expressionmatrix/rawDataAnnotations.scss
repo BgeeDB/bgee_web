@@ -270,6 +270,19 @@
     flex: 0 0 auto;
   }
 
+  .selected-genes-add-species-btn.button {
+    flex: 0 0 auto;
+    height: 2rem;
+    gap: 0.3rem;
+    padding-left: 0.55rem;
+    padding-right: 0.7rem;
+    font-size: 0.85rem !important;
+
+    svg {
+      flex: 0 0 auto;
+    }
+  }
+
   .selected-genes-header-toggle {
     margin-left: auto;
     flex: 0 0 auto;
@@ -317,6 +330,29 @@
   .expression-graph-genes {
     background-color: #fff5f4;
     border-left: 4px solid #ed2e24;
+  }
+
+  .expression-graph-species-field.is-highlighted {
+    outline: 2px solid #ed2e24;
+    outline-offset: 3px;
+    border-radius: 4px;
+    animation: expression-graph-species-pulse 0.7s ease-in-out 2;
+  }
+
+  .expression-graph-species-note {
+    margin: 0.4rem 0 0;
+    font-size: 0.85rem;
+    color: #4a4a4a;
+  }
+
+  @keyframes expression-graph-species-pulse {
+    0%,
+    100% {
+      outline-color: #ed2e24;
+    }
+    50% {
+      outline-color: transparent;
+    }
   }
 
   .expression-graph-filters {
