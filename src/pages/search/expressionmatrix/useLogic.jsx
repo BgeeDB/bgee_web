@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 
 import axios from 'axios';
@@ -215,20 +215,28 @@ const appendNonDefaultFilters = (target, source) => {
   });
 };
 
-// Mirror the API request into the page URL. A stored hash replaces storable
-// parameters, except filter values that differ from the defaults.
+// Mirror the API request into the page URL. Once the backend returns a data hash,
+// every storable parameter is replaced by it. Filter values that differ from the
+// defaults stay beside the hash so a reload keeps the selection.
+const GENE_IDENTITY_URL_KEYS = ['gene_list', 'gene_id', 'species_id'];
+
 const buildExpressionMatrixUrlParams = (paramsURLCalled, requestParameters) => {
   const searchParams = new URLSearchParams(paramsURLCalled || '');
-  const newHash = requestParameters?.data;
+  const newHash = typeof requestParameters?.data === 'string' ? requestParameters.data : '';
   const storableParameters = requestParameters?.storableParameters;
 
-  if (newHash && storableParameters) {
+  if (newHash) {
     searchParams.delete('data');
-    storableParameters.forEach((key) => {
-      const values = concreteFilterValues(key, searchParams.getAll(key));
-      if (FILTER_URL_KEYS.includes(key) && !isDefaultFilterParam(key, values)) return;
-      searchParams.delete(key);
-    });
+    if (Array.isArray(storableParameters)) {
+      storableParameters.forEach((key) => {
+        const values = concreteFilterValues(key, searchParams.getAll(key));
+        if (FILTER_URL_KEYS.includes(key) && !isDefaultFilterParam(key, values)) return;
+        searchParams.delete(key);
+      });
+    }
+    // Gene identity always lives in the hash, even if the backend omitted it
+    // from storableParameters.
+    GENE_IDENTITY_URL_KEYS.forEach((key) => searchParams.delete(key));
     searchParams.append('data', newHash);
   }
 
@@ -266,6 +274,10 @@ const useLogic = (options = {}) => {
   const loc = useLocation();
   const initSearch = new URLSearchParams(loc.search);
   const initHash = initSearch.get('data');
+  // Hash last written by a search. A later URL effect must not expand it back into gene_list.
+  const publishedHashRef = useRef(null);
+  // Hash whose gene list is already being resolved, so a second init does not start another one.
+  const resolvingHashRef = useRef(null);
   const [isFirstSearch, setIsFirstSearch] = useState(true);
 
   const initDataType = initSearch.get('data_type') || DATA_TYPES[0].id;
@@ -386,6 +398,24 @@ const useLogic = (options = {}) => {
 
   const onSubmit = (multiSpeciesGenes = null) => {
     triggerInitialSearch(null, multiSpeciesGenes);
+  };
+
+  const genesAreLoaded = () =>
+    (Array.isArray(multiSpeciesGenes) && multiSpeciesGenes.length > 0) || selectedGene.length > 0;
+
+  // Publish the search URL. Record the hash first so the location effect does not
+  // treat this navigation as a new query and spell the gene list back out.
+  const navigateToMatrixSearch = (searchParams, replace) => {
+    publishedHashRef.current = searchParams.get('data');
+    const target = {
+      search: searchParams.toString(),
+      pathname: `${URL_ROOT}${loc.pathname}`,
+    };
+    if (replace) {
+      navigate(target, { replace: true, preventScrollReset: true });
+    } else {
+      navigate(target);
+    }
   };
 
   const addConditionalParam = (id) => {
@@ -638,20 +668,7 @@ const useLogic = (options = {}) => {
         searchParams.delete('data_qual');
         if (baseParams.dataQuality) searchParams.set('data_qual', baseParams.dataQuality);
 
-        if (isFirstSearch) {
-          navigate(
-            {
-              search: searchParams.toString(),
-              pathname: `${URL_ROOT}${loc.pathname}`,
-            },
-            { replace: true, preventScrollReset: true }
-          );
-        } else {
-          navigate({
-            search: searchParams.toString(),
-            pathname: `${URL_ROOT}${loc.pathname}`,
-          });
-        }
+        navigateToMatrixSearch(searchParams, isFirstSearch);
 
         // Keep the search form visible after Submit so the user can tweak filters
         // and re-submit without having to re-open the form. The "Selected Genes"
@@ -746,20 +763,7 @@ const useLogic = (options = {}) => {
           }
 
           const searchParams = buildExpressionMatrixUrlParams(paramsURLCalled, resp?.requestParameters);
-          if (isFirstSearch) {
-            navigate(
-              {
-                search: searchParams.toString(),
-                pathname: `${URL_ROOT}${loc.pathname}`,
-              },
-              { replace: true, preventScrollReset: true }
-            );
-          } else {
-            navigate({
-              search: searchParams.toString(),
-              pathname: `${URL_ROOT}${loc.pathname}`,
-            });
-          }
+          navigateToMatrixSearch(searchParams, isFirstSearch);
         }
 
         // Keep the search form visible after Submit (see triggerInitialSearch above).
@@ -909,6 +913,12 @@ const useLogic = (options = {}) => {
   };
 
   const initFromUrlParams = async () => {
+    const hashInUrl = initSearch.get('data');
+    // The search we just ran already replaced eligible params with this hash.
+    if (hashInUrl && genesAreLoaded() && hashInUrl === publishedHashRef.current) return;
+    if (hashInUrl && resolvingHashRef.current === hashInUrl) return;
+    if (hashInUrl) resolvingHashRef.current = hashInUrl;
+
     const params = {
       hash: initHash,
       isFirstSearch: true,
@@ -939,10 +949,41 @@ const useLogic = (options = {}) => {
         const geneIdValues = paramValues(simpleParams, 'gene_id');
         const genesToRestore = geneListValues.length > 0 ? geneListValues : geneIdValues;
         if (genesToRestore.length > 0) {
+          const storedHash = typeof simpleParams?.data === 'string' ? simpleParams.data : '';
+          const hash = hashInUrl || storedHash;
+          // The backend already stored this query. Keep the hash in the URL and resolve
+          // genes without spelling gene_list / gene_id back out.
+          if (hash) {
+            const filterSource = hashInUrl ? new URLSearchParams(initSearch) : new URLSearchParams();
+            if (!hashInUrl) filterSource.set('data', hash);
+            const storedFilters = new URLSearchParams();
+            appendNonDefaultFilters(storedFilters, simpleParams);
+            // The SUMMARY request hash records bronze. Keep the quality from the page URL.
+            if (explicitDataQual) {
+              storedFilters.delete('data_qual');
+              storedFilters.set('data_qual', explicitDataQual);
+            }
+            storedFilters.forEach((value, key) => {
+              if (!filterSource.has(key)) filterSource.append(key, value);
+            });
+            if (!hashInUrl) {
+              publishedHashRef.current = hash;
+              resolvingHashRef.current = hash;
+              navigate(
+                {
+                  pathname: loc.pathname,
+                  search: filterSource.toString(),
+                },
+                { replace: true, preventScrollReset: true }
+              );
+            }
+            if (!genesAreLoaded()) processGeneList(genesToRestore.join('\n'), filterSource);
+            return;
+          }
+
           const nextSearch = new URLSearchParams();
           nextSearch.set('gene_list', genesToRestore.join('\n'));
           appendNonDefaultFilters(nextSearch, simpleParams);
-          // The SUMMARY request hash records bronze. Keep the quality from the page URL.
           if (explicitDataQual) {
             nextSearch.delete('data_qual');
             nextSearch.set('data_qual', explicitDataQual);
@@ -956,6 +997,8 @@ const useLogic = (options = {}) => {
           );
           return;
         }
+
+        if (hashInUrl) resolvingHashRef.current = null;
 
         const searchParamsNew = new URLSearchParams();
 
@@ -1013,8 +1056,11 @@ const useLogic = (options = {}) => {
             );
           }
         }
+      } else if (hashInUrl) {
+        resolvingHashRef.current = null;
       }
     } catch (error) {
+      if (hashInUrl) resolvingHashRef.current = null;
       console.error('[initFromUrlParams] Error:', error);
     } finally {
       // setIsInitializingFromUrl(false);
@@ -1035,7 +1081,7 @@ const useLogic = (options = {}) => {
   }, [selectedGene, selectedSpecies, multiSpeciesGenes, isInitializingFromUrl]);
 
   // Add function to process gene list (from URL ?gene_list=ID1%0AID2...)
-  const processGeneList = async (geneListParam) => {
+  const processGeneList = async (geneListParam, filterSource = null) => {
     if (!geneListParam) return;
 
     setIsProcessingGeneList(true);
@@ -1089,7 +1135,8 @@ const useLogic = (options = {}) => {
       });
       // resetForm inside setSelectedSpeciesFromUrl clears tissue and cell type.
       // Re-apply URL filters afterwards so a shared link restores them.
-      const urlFilters = new URLSearchParams(loc.search);
+      // filterSource carries filters that were stored in the hash and are not in the page URL yet.
+      const urlFilters = filterSource || new URLSearchParams(loc.search);
       setSelectedTissue(
         termOptionsFromIds(
           urlFilters.getAll('anat_entity_id').filter((id) => id && id !== DEFAULT_ANAT_ENTITY_ID),
@@ -1110,6 +1157,7 @@ const useLogic = (options = {}) => {
       console.error('Error processing gene list:', error);
     } finally {
       setIsProcessingGeneList(false);
+      resolvingHashRef.current = null;
     }
   };
 

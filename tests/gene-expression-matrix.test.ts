@@ -426,5 +426,12 @@ test.describe('Gene Expression Matrix Page', () => {
     // single-species autocomplete.
     await expect(page.getByRole('link', { name: /ENSG00000130208 - APOC1/ })).toBeVisible();
     await expect(page.getByRole('link', { name: /ENSG00000012048 - BRCA1/ })).toBeVisible();
+
+    // After the backend stores the query, gene_list / gene_id / species_id are replaced by the data hash.
+    await expect.poll(() => new URL(page.url()).searchParams.get('data'), { timeout: 30000 }).toMatch(/^[a-f0-9]+$/);
+    const params = new URL(page.url()).searchParams;
+    expect(params.get('gene_list')).toBeNull();
+    expect(params.getAll('gene_id')).toEqual([]);
+    expect(params.get('species_id')).toBeNull();
   });
 });
