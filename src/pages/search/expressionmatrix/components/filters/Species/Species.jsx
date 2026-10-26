@@ -4,7 +4,7 @@ import api from '../../../../../../api';
 import './SpeciesList.scss';
 
 export const EMPTY_SPECIES_VALUE = {
-  label: 'Choose a species for more filters',
+  label: 'Choose a species',
   value: '',
 };
 

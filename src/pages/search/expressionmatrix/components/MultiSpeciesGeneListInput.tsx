@@ -157,8 +157,8 @@ const MultiSpeciesGeneListInput = ({
         disabled={isResolving}
       />
       <p className="help">
-        Enter one gene ID per line. Genes can come from any supported species. Click <strong>Submit</strong> to resolve
-        the list and run the search.
+        Enter one gene ID per line. Genes can come from any supported species. Click <strong>Show graph</strong> to
+        resolve the list and run the search.
       </p>
 
       {summary}

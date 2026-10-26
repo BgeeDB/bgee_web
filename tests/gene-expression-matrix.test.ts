@@ -20,8 +20,8 @@ test.describe('Gene Expression Matrix Page', () => {
     // Gene section should be visible after species selection, but not initially
     // Tissue, Data type, and Data quality sections are conditional on gene selection
 
-    // Check that the submit button is present
-    await expect(page.getByRole('button', { name: 'Submit', exact: true })).toBeVisible();
+    // Check that the show-graph button is present
+    await expect(page.getByRole('button', { name: 'Show graph', exact: true })).toBeVisible();
 
     // Check that the reinitialize button is present
     await expect(page.getByRole('button', { name: 'Reinitialize' })).toBeVisible();
@@ -189,7 +189,7 @@ test.describe('Gene Expression Matrix Page', () => {
         await page.waitForTimeout(2000);
 
         // Click search button
-        await page.getByRole('button', { name: 'Submit', exact: true }).click();
+        await page.getByRole('button', { name: 'Show graph', exact: true }).click();
 
         // Wait for results to load
         await page.waitForLoadState('networkidle');
@@ -277,7 +277,7 @@ test.describe('Gene Expression Matrix Page', () => {
     }
 
     // Perform search
-    await page.getByRole('button', { name: 'Submit', exact: true }).click();
+    await page.getByRole('button', { name: 'Show graph', exact: true }).click();
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
@@ -350,7 +350,7 @@ test.describe('Gene Expression Matrix Page', () => {
       await page.waitForTimeout(2000);
 
       // Start search and check for loading state (might be very brief)
-      const searchPromise = page.getByRole('button', { name: 'Submit', exact: true }).click();
+      const searchPromise = page.getByRole('button', { name: 'Show graph', exact: true }).click();
 
       // Check for loading indicator (use flexible selector and handle case where it might not appear)
       const loadingIndicator = page.locator('.progress.is-primary, [class*="loading"], [class*="spinner"]').first();
@@ -412,7 +412,7 @@ test.describe('Gene Expression Matrix Page', () => {
 
   test('should keep submit disabled until a gene is selected', async ({ page }) => {
     // An empty search cannot be submitted. The button stays disabled instead of showing an error.
-    const submit = page.getByRole('button', { name: 'Submit', exact: true });
+    const submit = page.getByRole('button', { name: 'Show graph', exact: true });
     await expect(submit).toBeDisabled();
     await expect(page.getByText('Please select search criteria above to display results.')).toBeVisible();
   });
