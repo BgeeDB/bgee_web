@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
-import { Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import Button from '../../../../components/Bulma/Button/Button';
 import isPlural from '../../../../helpers/isPlural';
 
@@ -47,6 +47,7 @@ interface SelectedGenesListProps {
   selectedGenes: GeneEntry[];
   trackedGenes: GeneEntry[];
   removeGene: (speciesId: string, geneId: string) => void;
+  moveGene: (speciesId: string, geneId: string, direction: -1 | 1) => void;
   addHomologs: (geneId: string, speciesId: string, selection: HomologSelection) => Promise<void>;
   loadHomologs: (geneId: string, speciesId: string) => Promise<HomologData | null>;
   homologData: Record<string, HomologData>;
@@ -336,6 +337,7 @@ const SelectedGenesList = ({
   selectedGenes,
   trackedGenes,
   removeGene,
+  moveGene,
   addHomologs,
   loadHomologs,
   homologData,
@@ -369,6 +371,7 @@ const SelectedGenesList = ({
       <table className="table is-fullwidth is-striped selected-genes-table">
         <thead>
           <tr>
+            <th className="selected-genes-col-order">Order</th>
             <th className="selected-genes-col-species">Species</th>
             <th className="selected-genes-col-gene">Gene</th>
             <th className="selected-genes-col-actions">Add homologs</th>
@@ -388,8 +391,35 @@ const SelectedGenesList = ({
             else if (loadFailedKey === key && !data) addTitle = 'Could not load homologs';
             else if (data && !hasChoices) addTitle = 'No orthologs or paralogs';
 
+            const atTop = index === 0;
+            const atBottom = index === selectedGenes.length - 1;
+
             return (
-              <tr key={`${gene.speciesId}-${gene.geneId}-${index}`}>
+              <tr key={`${gene.speciesId}-${gene.geneId}`}>
+                <td className="selected-genes-cell-order">
+                  <div className="selected-genes-order-btns">
+                    <Button
+                      type="button"
+                      className="button is-small is-outlined selected-genes-order-btn"
+                      onClick={() => moveGene(gene.speciesId, gene.geneId, -1)}
+                      disabled={atTop}
+                      aria-label={`Move ${gene.geneId} up`}
+                      title="Move gene up"
+                    >
+                      <ChevronUp size={14} />
+                    </Button>
+                    <Button
+                      type="button"
+                      className="button is-small is-outlined selected-genes-order-btn"
+                      onClick={() => moveGene(gene.speciesId, gene.geneId, 1)}
+                      disabled={atBottom}
+                      aria-label={`Move ${gene.geneId} down`}
+                      title="Move gene down"
+                    >
+                      <ChevronDown size={14} />
+                    </Button>
+                  </div>
+                </td>
                 <td className="selected-genes-cell-species">
                   <div className="selected-genes-primary-cell">
                     <strong>
