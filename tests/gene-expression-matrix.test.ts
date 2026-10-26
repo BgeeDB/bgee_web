@@ -432,5 +432,12 @@ test.describe('Gene Expression Matrix Page', () => {
     await expect(apoc1.getByText('ENSG00000130208')).toBeVisible();
     await expect(brca1.getByRole('link', { name: 'BRCA1', exact: true })).toBeVisible();
     await expect(brca1.getByText('ENSG00000012048')).toBeVisible();
+
+    // After the backend stores the query, gene_list / gene_id / species_id are replaced by the data hash.
+    await expect.poll(() => new URL(page.url()).searchParams.get('data'), { timeout: 30000 }).toMatch(/^[a-f0-9]+$/);
+    const params = new URL(page.url()).searchParams;
+    expect(params.get('gene_list')).toBeNull();
+    expect(params.getAll('gene_id')).toEqual([]);
+    expect(params.get('species_id')).toBeNull();
   });
 });
