@@ -7,6 +7,7 @@ import { getGeneLabel, pickGeneFromSearchResult } from '../../../helpers/gene';
 import { getIdAndNameLabel, getOptionsForFilter } from '../../../helpers/selects';
 import { flattenDevStagesList } from './components/filters/DevelopmentalAndLifeStages/useLogic';
 import { getSelectedGeneKey } from './components/SelectedGenesList';
+import { mergeSpeciesSelection } from './geneOrder';
 import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
@@ -1046,14 +1047,23 @@ const useLogic = (options = {}) => {
             });
           }
 
-          // Set genes after species
+          // Set genes after species. Write the shared list here as well: the page
+          // skips its selectedGene sync on the same render that changes species.
           if (requestedGenes?.length > 0) {
-            setSelectedGene(
-              requestedGenes.map((gene) => ({
-                label: getGeneLabel(gene),
-                value: gene.geneId,
-              }))
-            );
+            const selected = requestedGenes.map((gene) => ({
+              label: getGeneLabel(gene),
+              value: gene.geneId,
+            }));
+            setSelectedGene(selected);
+            if (setMultiSpeciesGenes && requestedSpecies) {
+              setMultiSpeciesGenes((prev) =>
+                mergeSpeciesSelection(Array.isArray(prev) ? prev : [], {
+                  speciesId: requestedSpecies.id,
+                  speciesLabel: getSpeciesLabel(requestedSpecies),
+                  selected,
+                })
+              );
+            }
           }
         }
       } else if (hashInUrl) {

@@ -27,6 +27,7 @@ import './rawDataAnnotations.scss';
 import Bulma from '~/components/Bulma';
 import api from '~/api';
 import { getGeneLabel, pickGeneFromSearchResult } from '~/helpers/gene';
+import { groupGenesBySpecies, insertGenesBySpecies, mergeSpeciesSelection, moveVisibleGene } from './geneOrder';
 import { ChevronDown, ChevronUp, Plus, SquarePlus } from 'lucide-react';
 
 type InputMode = 'species' | 'list';
@@ -127,6 +128,9 @@ const GeneExpressionMatrix = () => {
   const [geneListStatuses, setGeneListStatuses] = useState<Record<string, GeneResolutionStatus>>({});
   const [hasResolvedGeneList, setHasResolvedGeneList] = useState(false);
   const [isResolvingGeneList, setIsResolvingGeneList] = useState(false);
+  // Paste text that was last resolved into the selected-gene list. A later submit
+  // of that same text keeps row moves instead of grouping the list again.
+  const lastResolvedListTextRef = useRef<string | null>(null);
 
   const tracedGeneListText = useMemo(() => {
     const seen = new Set<string>();
@@ -189,26 +193,20 @@ const GeneExpressionMatrix = () => {
     multiSpeciesGenes,
   });
 
-  // Wrapper for setSelectedGene that tracks genes with species information
+  // Wrapper for setSelectedGene that tracks genes with species information.
+  // Genes that stay selected keep their row. New genes join the end of that species.
   const handleGeneSelection = useCallback(
     (genes: Array<{ label: string; value: string }>) => {
-      // Update the underlying selectedGene state (for current species only)
       setSelectedGene(genes);
 
-      // Update multi-species tracking
       if (selectedSpecies.value) {
-        setMultiSpeciesGenes((prev) => {
-          // Remove all genes from current species
-          const filtered = prev.filter((g) => g.speciesId !== selectedSpecies.value);
-          // Add new genes from current species with species info
-          const newGenes = genes.map((gene) => ({
+        setMultiSpeciesGenes((prev) =>
+          mergeSpeciesSelection(prev, {
             speciesId: selectedSpecies.value,
             speciesLabel: selectedSpecies.label,
-            geneId: gene.value,
-            geneLabel: gene.label,
-          }));
-          return [...filtered, ...newGenes];
-        });
+            selected: genes,
+          })
+        );
       }
     },
     [selectedSpecies, setSelectedGene]
@@ -335,11 +333,7 @@ const GeneExpressionMatrix = () => {
           });
         });
 
-        setMultiSpeciesGenes((prev) => {
-          const existingKeys = new Set(prev.map((gene) => getSelectedGeneKey(gene.speciesId, gene.geneId)));
-          const added = homologs.filter((gene) => !existingKeys.has(getSelectedGeneKey(gene.speciesId, gene.geneId)));
-          return added.length === 0 ? prev : [...prev, ...added];
-        });
+        setMultiSpeciesGenes((prev) => insertGenesBySpecies(prev, homologs));
       } catch (error) {
         console.error('Error fetching homologs:', error);
         throw error;
@@ -348,37 +342,23 @@ const GeneExpressionMatrix = () => {
     [loadGeneHomologs]
   );
 
-  // Sync selectedGene from useLogic into multiSpeciesGenes (handles URL params initialization)
-  // This ensures genes initialized from URL params are tracked in multiSpeciesGenes
+  // Copy selectedGene into the shared list when a URL restore sets it directly.
+  // A species change clears selectedGene in the same render, and that empty
+  // selection must not delete the genes already stored for the new species.
+  const speciesAtLastSyncRef = useRef(selectedSpecies.value);
   useEffect(() => {
-    if (selectedSpecies.value && selectedGene.length > 0) {
-      // Check if these genes are already in multiSpeciesGenes for this species
-      const existingGeneIds = new Set(
-        multiSpeciesGenes.filter((g) => g.speciesId === selectedSpecies.value).map((g) => g.geneId)
-      );
-      const newGeneIds = new Set(selectedGene.map((g) => g.value));
+    const speciesChanged = speciesAtLastSyncRef.current !== selectedSpecies.value;
+    speciesAtLastSyncRef.current = selectedSpecies.value;
+    if (speciesChanged || !selectedSpecies.value || selectedGene.length === 0) return;
 
-      // Only update if there are new genes or genes are missing
-      const hasNewGenes = selectedGene.some((g) => !existingGeneIds.has(g.value));
-      const hasMissingGenes =
-        existingGeneIds.size !== newGeneIds.size || [...existingGeneIds].some((id) => !newGeneIds.has(id));
-
-      if (hasNewGenes || hasMissingGenes) {
-        setMultiSpeciesGenes((prev) => {
-          // Remove all genes from current species
-          const filtered = prev.filter((g) => g.speciesId !== selectedSpecies.value);
-          // Add genes from selectedGene with species info
-          const newGenes = selectedGene.map((gene) => ({
-            speciesId: selectedSpecies.value,
-            speciesLabel: selectedSpecies.label,
-            geneId: gene.value,
-            geneLabel: gene.label,
-          }));
-          return [...filtered, ...newGenes];
-        });
-      }
-    }
-  }, [selectedGene, selectedSpecies.value, selectedSpecies.label]); // Sync when selectedGene changes (e.g., from URL params)
+    setMultiSpeciesGenes((prev) =>
+      mergeSpeciesSelection(prev, {
+        speciesId: selectedSpecies.value,
+        speciesLabel: selectedSpecies.label,
+        selected: selectedGene,
+      })
+    );
+  }, [selectedGene, selectedSpecies.value, selectedSpecies.label]);
 
   // Sync currentSpeciesGenes with selectedGene when species changes
   // Use a ref to track the previous species to avoid unnecessary updates
@@ -480,10 +460,12 @@ const GeneExpressionMatrix = () => {
       }
     });
 
+    const ordered = groupGenesBySpecies(resolved);
+    lastResolvedListTextRef.current = text;
     setGeneListStatuses(nextStatuses);
-    setMultiSpeciesGenes(resolved);
+    setMultiSpeciesGenes(ordered);
     setIsResolvingGeneList(false);
-    return resolved;
+    return ordered;
   }, []);
 
   // Submit handler that resolves the gene list first when list-input mode is active.
@@ -493,7 +475,17 @@ const GeneExpressionMatrix = () => {
   const handleSubmit = useCallback(async () => {
     setSelectedGenesFilter('all');
     if (inputMode === 'list') {
-      const resolved = await resolveGeneList(effectiveGeneListText);
+      const text = effectiveGeneListText;
+      const unchangedSinceResolve =
+        lastResolvedListTextRef.current !== null && text === lastResolvedListTextRef.current;
+      // The paste box mirrors the table until the user edits it. Submit that
+      // order, including later row moves. A newly edited list is grouped by species.
+      if ((!geneListEdited || unchangedSinceResolve) && multiSpeciesGenes.length > 0) {
+        setIsGenesListExpanded(false);
+        onSubmit(multiSpeciesGenes);
+        return;
+      }
+      const resolved = await resolveGeneList(text);
       if (resolved.length === 0) return;
       setIsGenesListExpanded(false);
       onSubmit(resolved);
@@ -502,7 +494,7 @@ const GeneExpressionMatrix = () => {
     if (multiSpeciesGenes.length === 0) return;
     setIsGenesListExpanded(false);
     onSubmit(multiSpeciesGenes);
-  }, [inputMode, effectiveGeneListText, resolveGeneList, onSubmit, multiSpeciesGenes]);
+  }, [inputMode, effectiveGeneListText, geneListEdited, resolveGeneList, onSubmit, multiSpeciesGenes]);
 
   // Point the user back at the species dropdown so they can add genes from another species.
   // The dropdown itself is unchanged; this only scrolls to it and outlines it briefly.
@@ -601,6 +593,26 @@ const GeneExpressionMatrix = () => {
     }
     return genesInLastSearch.filter((g) => !geneIdsWithData.has(g.geneId));
   }, [hasSearchResults, multiSpeciesGenes, genesInLastSearch, geneIdsWithData, selectedGenesFilter]);
+
+  // Swap a row with the previous or next gene currently shown in the table.
+  const moveGene = useCallback(
+    (speciesId: string, geneId: string, direction: -1 | 1) => {
+      const visible = new Set(
+        filteredSelectedGenes.map((gene) => getSelectedGeneKey(String(gene.speciesId), gene.geneId))
+      );
+      const target = getSelectedGeneKey(String(speciesId), geneId);
+      setMultiSpeciesGenes((prev) =>
+        moveVisibleGene(
+          prev,
+          target,
+          direction,
+          (gene) => getSelectedGeneKey(String(gene.speciesId), gene.geneId),
+          (gene) => visible.has(getSelectedGeneKey(String(gene.speciesId), gene.geneId))
+        )
+      );
+    },
+    [filteredSelectedGenes]
+  );
 
   const detailedData = TAB_PAGE_EXPR_CALL;
 
@@ -784,6 +796,7 @@ const GeneExpressionMatrix = () => {
                                   selectedGenes={filteredSelectedGenes}
                                   trackedGenes={multiSpeciesGenes}
                                   removeGene={removeGene}
+                                  moveGene={moveGene}
                                   addHomologs={addHomologs}
                                   loadHomologs={loadGeneHomologs}
                                   homologData={geneHomologsData}
