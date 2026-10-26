@@ -27,7 +27,7 @@ import './rawDataAnnotations.scss';
 import Bulma from '~/components/Bulma';
 import api from '~/api';
 import { getGeneLabel, pickGeneFromSearchResult } from '~/helpers/gene';
-import { ChevronDown, ChevronUp, SquarePlus } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, SquarePlus } from 'lucide-react';
 
 type InputMode = 'species' | 'list';
 
@@ -118,6 +118,9 @@ const GeneExpressionMatrix = () => {
 
   // Multi-species gene list input (alternative input mode)
   const [inputMode, setInputMode] = useState<InputMode>('species');
+  const speciesFieldRef = useRef<HTMLDivElement>(null);
+  const [speciesFieldHighlighted, setSpeciesFieldHighlighted] = useState(false);
+  const [speciesPromptRequest, setSpeciesPromptRequest] = useState(0);
   const [geneListText, setGeneListText] = useState('');
   // Until the user types in the paste box, it mirrors the Selected Genes list.
   const [geneListEdited, setGeneListEdited] = useState(false);
@@ -501,6 +504,27 @@ const GeneExpressionMatrix = () => {
     onSubmit(multiSpeciesGenes);
   }, [inputMode, effectiveGeneListText, resolveGeneList, onSubmit, multiSpeciesGenes]);
 
+  // Point the user back at the species dropdown so they can add genes from another species.
+  // The dropdown itself is unchanged; this only scrolls to it and outlines it briefly.
+  const promptAddGenesFromSpecies = useCallback(() => {
+    setInputMode('species');
+    setSpeciesPromptRequest((n) => n + 1);
+  }, []);
+
+  useEffect(() => {
+    if (speciesPromptRequest === 0) return;
+    const field = speciesFieldRef.current;
+    if (!field) return;
+    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    field.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
+    setSpeciesFieldHighlighted(true);
+    const timer = window.setTimeout(() => setSpeciesFieldHighlighted(false), 2400);
+    return () => {
+      window.clearTimeout(timer);
+      setSpeciesFieldHighlighted(false);
+    };
+  }, [speciesPromptRequest]);
+
   // Whether the Show graph button should be enabled
   const canSubmit = useMemo(() => {
     if (isLoading || isResolvingGeneList) return false;
@@ -632,12 +656,22 @@ const GeneExpressionMatrix = () => {
                   </div>
                   {inputMode === 'species' ? (
                     <>
-                      <div className="mb-2 maxWidth50">
+                      <div
+                        ref={speciesFieldRef}
+                        className={`mb-2 maxWidth50 expression-graph-species-field${
+                          speciesFieldHighlighted ? ' is-highlighted' : ''
+                        }`}
+                      >
                         <Species
                           selectedSpecies={selectedSpecies}
                           onChangeSpecies={onChangeSpecies}
                           getSpeciesLabel={getSpeciesLabel}
                         />
+                        {multiSpeciesGenes.length > 0 && (
+                          <p className="expression-graph-species-note">
+                            Choose another species to add its genes. Genes already selected stay in the list.
+                          </p>
+                        )}
                       </div>
                       {selectedSpecies.value && (
                         <div>
@@ -671,6 +705,16 @@ const GeneExpressionMatrix = () => {
                               <label className="has-text-weight-semibold selected-genes-header-label">
                                 Selected Genes
                               </label>
+                              {inputMode === 'species' && (
+                                <button
+                                  type="button"
+                                  className="button is-small is-info is-outlined selected-genes-add-species-btn"
+                                  onClick={promptAddGenesFromSpecies}
+                                >
+                                  <Plus size={14} aria-hidden="true" />
+                                  <span>Add genes from another species</span>
+                                </button>
+                              )}
                               <div className="tabs is-toggle is-small selected-genes-filter-tabs">
                                 <ul>
                                   <li className={selectedGenesFilter === 'all' ? 'is-active' : ''}>
