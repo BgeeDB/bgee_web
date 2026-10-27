@@ -25,7 +25,7 @@ const EXAMPLES = [
     description: 'Pigmentation genes in rabbit.',
   },
   {
-    id: '0360a7168b1cebb936b09dbb9978c0f67a50d50e',
+    id: '0ea60c53f695f4ec1a4f2da3a5343b6f14249720',
     description: 'COVID-19 related human genes.',
   },
 ];
