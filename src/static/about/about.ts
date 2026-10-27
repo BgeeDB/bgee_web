@@ -151,12 +151,12 @@ const about = [
             type: 'rich_text',
             content: [
               {
-                text: 'Expression comparison',
-                path: PATHS.ANALYSIS.EXPRESSION_COMPARISON,
+                text: 'Gene Expression Graph',
+                path: PATHS.SEARCH.EXPRESSION_MATRIX,
                 type: 'link_internal',
               },
               {
-                content: ', to compare expression between genes, within a given species or between multiple species',
+                content: ', to compare the expression of one or multiple genes in different tissues as a heatmap.',
                 type: 'text',
               },
             ],

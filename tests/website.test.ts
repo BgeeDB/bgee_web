@@ -58,12 +58,6 @@ test.describe('Search pages', () => {
     // expect(await page.locator('text=Mus musculus').count()).toBeGreaterThan(0);
     await expect(page.getByText('Mus musculus')).toBeVisible();
   });
-
-  test('display expression comparison', async ({ page }) => {
-    await page.goto('/analysis/expr-comparison');
-    await expect(page).toHaveTitle(/Expression comparison analysis/);
-    await expect(page.getByText('Compare expression of several genes.')).toBeVisible();
-  });
 });
 
 test.describe('Other pages', () => {

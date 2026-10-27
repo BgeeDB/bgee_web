@@ -31,7 +31,6 @@ import PATHS from './paths';
 // // import TutoExpressionCallsFile from '../markdown/support/present_absent-expression-calls/Expression_call_search.md';
 // import TutoSPARQLFile from '../markdown/support/sparql-tutorial/sparql-tutorial.md';
 // import TutoCurationFile from '../markdown/support/data-curation/data-curation.md';
-// import TutoExpCompFile from '../markdown/support/expression-comparison/expression-comparison.md';
 // import TutoRawDataFile from '../markdown/support/Raw-data-interface/Raw-data-interface.md';
 // import TutoAnatHomologyFile from '../markdown/support/anatomical-homology/anatomical-homology.md';
 // import TutoRNASeqExprVal from '../markdown/support/Download-files/rnaSeqProcExprValues.md';
@@ -60,17 +59,6 @@ const ANALYSIS = {
     //   title: 'TopAnat: Expression enrichment analysis',
     //   description: 'GO-like enrichment of anatomical terms, mapped to genes by expression patterns',
     //   keywords: 'Enrichment, Gene expression, Anatomical terms',
-    // },
-  },
-  [PATHS.ANALYSIS.EXPRESSION_COMPARISON]: {
-    title: 'Expression comparison',
-    // component: ExpComp,
-    // meta: {
-    //   title: 'Expression comparison analysis',
-    //   description:
-    //     'Compare gene expression within species, or between species using homology relations between anatomical entities.',
-    //   keywords:
-    //     'gene expression comparison, homology, gene expression patterns, expression call comparison',
     // },
   },
 };
@@ -279,15 +267,6 @@ const SUPPORT = {
     //   title: 'Bgee data curation tutorial',
     //   description: 'Bgee Tutorial about data curation and annotation',
     //   keywords: 'Tutorial, data curation, annotation',
-    // },
-  },
-  [PATHS.SUPPORT.TUTORIAL_EXPRESSION_COMPARISON]: {
-    // source: TutoExpCompFile,
-    title: 'Tutorial: expression comparison',
-    // meta: {
-    //   title: 'Bgee expression comparison tutorial',
-    //   description: 'Bgee Tutorial about expression comparison of genes',
-    //   keywords: 'Tutorial, expression comparison, genes',
     // },
   },
   [PATHS.SUPPORT.TUTORIAL_RAW_DATA]: {

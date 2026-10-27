@@ -8,7 +8,6 @@ const PATHS = {
     TOP_ANAT: `${URL_ROOT}/analysis/top-anat`,
     TOP_ANAT_RESULT: `${URL_ROOT}/analysis/top-anat/:id`,
     TOP_ANAT_RESULT_JOB_ID: `${URL_ROOT}/analysis/top-anat/:id/:jobId`,
-    EXPRESSION_COMPARISON: `${URL_ROOT}/analysis/expr-comparison`,
   },
   SEARCH: {
     GENE: `${URL_ROOT}/search/genes`,
@@ -48,7 +47,6 @@ const PATHS = {
     TUTORIAL_EXPRESSION_GRAPH: `${URL_ROOT}/support/tutorial-expression-graph`,
     TUTORIAL_SPARQL: `${URL_ROOT}/support/tutorial-query-bgee-knowledge-graph-sparql`,
     TUTORIAL_CURATION: `${URL_ROOT}/support/tutorial-data-curation`,
-    TUTORIAL_EXPRESSION_COMPARISON: `${URL_ROOT}/support/tutorial-expression-comparison`,
     TUTORIAL_RAW_DATA: `${URL_ROOT}/support/tutorial-raw-data`,
     TUTORIAL_ANAT_HOMOLOGY: `${URL_ROOT}/support/tutorial-anatomical-homology`,
     TUTORIAL_RNASEQ_EXPR_VAL: `${URL_ROOT}/support/tutorial-processed-expression-values-download-RNA-seq`,

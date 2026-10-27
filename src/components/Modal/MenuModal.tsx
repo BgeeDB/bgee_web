@@ -22,12 +22,6 @@ const SIDE_MENU = [
         path: PATHS.ANALYSIS.TOP_ANAT,
       },
       {
-        key: 'page.tools.expression-comparison.test',
-        title: ROUTES[PATHS.ANALYSIS.EXPRESSION_COMPARISON].title,
-        type: 'internal',
-        path: PATHS.ANALYSIS.EXPRESSION_COMPARISON,
-      },
-      {
         key: 'page.tools.expression-matrix.test',
         title: ROUTES[PATHS.SEARCH.EXPRESSION_MATRIX].title,
         type: 'internal',

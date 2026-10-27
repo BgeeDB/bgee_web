@@ -154,31 +154,6 @@ const tutorialValues = [
         children: [
           {
             type: 'card',
-            title: 'Expression Pattern Comparison',
-            image: {
-              src: imagePath('/document-text-outline.svg'),
-              alt: 'Document logo',
-            },
-            link: PATHS.SUPPORT.TUTORIAL_EXPRESSION_COMPARISON,
-            linkType: 'internal',
-            classNames: 'mb-3',
-          },
-          {
-            type: 'rich_text',
-            classNames: 'has-text-centered',
-            content: [
-              {
-                type: 'text',
-                content: 'Compare gene expression across anatomical structures for a list of genes.',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        children: [
-          {
-            type: 'card',
             title: 'Search Experiments, Data Annotations, and Processed Expression Values',
             image: {
               src: imagePath('/document-text-outline.svg'),

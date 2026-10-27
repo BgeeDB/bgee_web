@@ -1,6 +1,5 @@
 import topAnat from './prod/topAnat';
 import search from './prod/search';
-import expressionComparison from './prod/expressionComparison';
 import get from './prod/get';
 import feedback from './prod/feedback';
 import message from './prod/message';
@@ -21,7 +20,6 @@ import message from './prod/message';
 const api = {
   search,
   topAnat,
-  expressionComparison,
   get,
   feedback,
   message,

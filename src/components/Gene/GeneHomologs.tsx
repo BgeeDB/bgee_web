@@ -27,21 +27,14 @@ const TaxonNameCell = ({ id, scientificName }) => (
   </>
 );
 const ExpressionComparisonCellHomologs = ({ query }) => (
-  <Link to={`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${query}`} rel="nofollow">
+  <Link to={`${PATHS.SEARCH.EXPRESSION_MATRIX}?${query}`} rel="nofollow">
     Compare expression
   </Link>
 );
 const ExpressionComparisonCellParalogs = ({ query, speciesId }) => (
-  <p>
-    <span>Compare expression: </span>
-    <Link to={`${PATHS.ANALYSIS.EXPRESSION_COMPARISON}?${query}`} rel="nofollow">
-      table
-    </Link>
-    <span> | </span>
-    <Link to={`${PATHS.SEARCH.EXPRESSION_MATRIX}?species_id=${speciesId}&${query}`} rel="nofollow">
-      graph
-    </Link>
-  </p>
+  <Link to={`${PATHS.SEARCH.EXPRESSION_MATRIX}?species_id=${speciesId}&${query}`} rel="nofollow">
+    Compare expression
+  </Link>
 );
 const ExpandCell = ({ onClick }) => (
   <a className="expand-button" onClick={onClick}>
@@ -211,7 +204,7 @@ const GeneHomologs = ({ homologs, geneId, speciesId, isLoading }) => {
                     },
                     {
                       key: 'expressionComparisonHomologs',
-                      text: 'Expression comparison',
+                      text: 'Expression graph',
                       hide: MEDIA_QUERIES.DESKTOP_HOMOLOGS,
                     },
                     {
@@ -270,7 +263,7 @@ const GeneHomologs = ({ homologs, geneId, speciesId, isLoading }) => {
                     },
                     {
                       key: 'expressionComparisonParalogs',
-                      text: 'Expression comparison',
+                      text: 'Expression graph',
                       hide: MEDIA_QUERIES.MOBILE_L,
                     },
                     {

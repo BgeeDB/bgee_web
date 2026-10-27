@@ -4,8 +4,7 @@ User-agent: *
 Crawl-delay: 10
 Disallow: /error
 Disallow: /search/anatomical-homology?
-Disallow: /analysis/expr-comparison/:
-Disallow: /analysis/expr-comparison?
+Disallow: /search/expression-matrix?
 Disallow: /analysis/top-anat/0
 Disallow: /analysis/top-anat/1
 Disallow: /analysis/top-anat/2

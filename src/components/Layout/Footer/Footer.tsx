@@ -79,11 +79,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to={PATHS.ANALYSIS.EXPRESSION_COMPARISON} className="nav_a">
-                  Expression comparison
-                </Link>
-              </li>
-              <li>
                 <Link to={PATHS.SEARCH.EXPRESSION_MATRIX} className="nav_a">
                   Expression graph
                 </Link>

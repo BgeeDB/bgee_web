@@ -163,7 +163,7 @@ export default function Home({ loaderData }) {
           <Bulma.C>
             <div className="inner">
               <a href="#card-gene-expression">Gene expression</a>
-              <a href="#card-expression-comparison">Expression comparison</a>
+              <a href="#card-expression-graph">Expression graph</a>
               <a href="#card-expression-enrichment-analysis">Expression enrichment analysis</a>
               <a href="#card-raw-data-annotations">Curated annotations</a>
               <a href="#card-expression-calls">Expression calls</a>
@@ -184,11 +184,11 @@ export default function Home({ loaderData }) {
             linkText="Gene search"
           />
           <HomeCard
-            id="card-expression-comparison"
-            imgUrl="/home/exp_comp_screenshot.webp"
-            title="Expression comparison"
-            desc="Compare gene expression for a list of genes in anatomical entities."
-            linkUrl={PATHS.ANALYSIS.EXPRESSION_COMPARISON}
+            id="card-expression-graph"
+            imgUrl="/home/expression-graph-screenshot.webp"
+            title="Expression graph"
+            desc="Compare gene expression for a list of genes."
+            linkUrl={PATHS.SEARCH.EXPRESSION_MATRIX}
             linkText="Compare"
           />
           <HomeCard

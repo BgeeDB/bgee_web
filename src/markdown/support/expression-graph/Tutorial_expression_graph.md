@@ -7,7 +7,6 @@ The use in the gene page (single-gene) is different from that in the expression 
 - [What the graph shows](#what-the-graph-shows 'Jump to this section')
 - [How to use the graph](#how-to-use-the-graph 'Jump to this section')
 - [Technical details](#technical-details 'Jump to this section')
-- [Feedback](#feedback 'Jump to this section')
 
 ## What the graph shows
 
@@ -85,7 +84,3 @@ The displayed top-level anatomical entities contain a curated list of 20 UBERON 
 The root term of the top-level terms is [anatomical entity](https://purl.obolibrary.org/obo/UBERON_0001062 'UBERON_0001062').
 
 Any data points that are not linked to any of the top-level terms are displayed as children of 'anatomical entity'.
-
-## Feedback
-
-If you are missing anything in the graph, please let us know using the feedback form below the graph. We appreciate all kinds of feedback!

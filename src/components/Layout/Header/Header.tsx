@@ -22,10 +22,10 @@ const NAVBAR_LEFT = [
     path: PATHS.ANALYSIS.TOP_ANAT,
   },
   {
-    key: 'page.analysis.expression-comparison',
-    title: 'Expression comparison',
+    key: 'page.search.expression-graph',
+    title: 'Expression graph',
     type: 'internal',
-    path: PATHS.ANALYSIS.EXPRESSION_COMPARISON,
+    path: PATHS.SEARCH.EXPRESSION_MATRIX,
   },
   {
     key: 'page.search.raw-data-experiment',

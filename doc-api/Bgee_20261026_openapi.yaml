@@ -942,54 +942,6 @@ paths:
           description: Successful response
         '404':
           description: Error page not found, probably incorrect species identifier
-  /expression_comparison:
-    get:
-      tags:
-        - Tools
-      summary: Expression comparison tool
-      description: >
-        The expression comparison tool allows for the comparison of gene
-        expression for a list of genes in anatomical entities. If the genes
-        listed belong to a single species, their expression is compared in all
-        anatomical entities with expression data. If the genes listed belong to
-        different species, their expression is compared in homologous anatomical
-        entities with expression data (deriving from a common ancestral entity
-        in the least common ancestor of the selected species).
-
-
-        Outputs expression results for each anatomical entity, in which the
-        presence and absence of expression for the selected genes and species
-        are displayed.
-
-
-        [More
-        details](https://www.bgee.org/support/tutorial-expression-comparison)
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: string
-            enum:
-              - expression_comparison
-          required: true
-          description: >-
-            Specifies the API's page endpoint, in this case
-            'expression_comparison'.
-        - name: gene_list
-          in: query
-          required: true
-          schema:
-            type: string
-          description: >
-            List of gene IDs **separated by newline characters** **(i.e., one
-            gene per line, `%0A` when URL-encoded)<br> Example:  ```
-            ENSBTAG00000008676 ENSRNOG00000001141 ENSSSCG00000009845 ```
-        - $ref: '#/components/parameters/display_type_json'
-      responses:
-        '200':
-          description: Successful response
-        '404':
-          description: Error page not found, probably incorrect species identifier
   /gene/general_info:
     get:
       tags:

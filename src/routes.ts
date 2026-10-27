@@ -8,7 +8,6 @@ export default [
 
   // Analysis routes
   route(PATHS.ANALYSIS.TOP_ANAT + '/:id?/:jobId?', './pages/analysis/TopAnat.tsx'),
-  route(PATHS.ANALYSIS.EXPRESSION_COMPARISON, './pages/analysis/ExpComp.tsx'),
 
   // Search routes (gene resolution is in the routes/ folder)
   route(PATHS.SEARCH.GENE, './pages/search/GeneList.tsx'),
