@@ -7,25 +7,25 @@ import Tooltip from '../Tooltip';
 
 const EXAMPLES = [
   {
-    id: '8af5b0727ba1c62318707bf6f59c7c9c2b3697a1',
+    id: '896282493ba586018b2bd310a2d21f1487d55a09',
     description:
       'Autism spectrum associated genes from Satterstrom et al. 2020 https://doi.org/10.1016/j.cell.2019.12.036',
   },
   {
-    id: '2dd226ea83f1b041cf105e7d18a01d81fff19d10',
+    id: '1c1dcd61258315420064aad29e315471628d2edb',
     description: 'Mouse genes mapped to the GO term "spermatogenesis".',
   },
   {
-    id: '2bf58d4561f36bbaec9bebc730131423e695df3d',
+    id: '5fc057c2e71f11ee05fac4d1c4831f0a91f49ee7',
     description:
       'Zebrafish 3R ohnologs from Roux et al. 2017 https://doi.org/10.1093/molbev/msx199 showing nervous system expression of 3R duplicates.',
   },
   {
-    id: '9a9896727557dab83c45731d3fd4f4ccadf19be0',
+    id: '267509110feb0f027cd9546d6209e6776cf03d5f',
     description: 'Pigmentation genes in rabbit.',
   },
   {
-    id: '10fb20cc0f767484a570ee82e5c24fc317657d23',
+    id: '0360a7168b1cebb936b09dbb9978c0f67a50d50e',
     description: 'COVID-19 related human genes.',
   },
 ];
