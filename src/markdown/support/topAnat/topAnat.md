@@ -59,7 +59,7 @@ On top of your gene list, you can now see a sentence describing the number of ge
 
 Additionally, two new subsections appeared: **_Background_** and **_Analysis options_**.
 
-The **_Background_** subsection allows the user to select the universe of the analysis, which is described in the [Properly choose your background](#how-to-properly-choose-your-background) section of this documentation. In our example, we keep the default background which corresponds to all genes from the species.
+The **_Background_** subsection allows the user to select the universe of the analysis, which is described in the [Properly choose your background](#how-to-properly-choose-your-background) section of this documentation. In our example, we keep the default background: the protein-coding genes of the species expressed in at least one condition in Bgee.
 
 ![](../img/doc/topAnat/topAnat_backgroundDefault.webp#tutoimgborder)
 
@@ -131,7 +131,7 @@ the result table is composed of 8 columns:
 
 The background, also called the universe, corresponds to the list of genes you want to consider in your analysis.
 
-By default, the gene universe considered for the TopAnat enrichment analysis is all genes with data in Bgee for the selected species.
+By default, the gene universe considered for the TopAnat enrichment analysis is the protein-coding genes of the selected species expressed in at least one condition in Bgee, for the data types, call quality and developmental stage of the analysis. The genes of your _Gene list_ outside of this universe are not considered in the analysis.
 
 Let's imagine that you want to answer the question: where (which anatomical entities) are human genes enriched that are both present and differentially expressed in testis and ovary?
 
@@ -144,7 +144,7 @@ It is possible to provide a custom gene universe as a list of gene IDs. To do so
 
 ![](../img/doc/topAnat/topAnat_backgroundButtonHuman.webp#tutoimgborder)
 
-As for your _Gene list_ you have to enter one gene per line without space, quotes, or any delimiter. All gene IDs present in the foreground must be present in the background.
+As for your _Gene list_ you have to enter one gene per line without space, quotes, or any delimiter. All gene IDs present in the foreground must be present in the background. As for the default background, only the genes of your custom background expressed in at least one condition are considered.
 
 ![](../img/doc/topAnat/topAnat_backgroundIDsHuman.png#tutoimgborder)
 

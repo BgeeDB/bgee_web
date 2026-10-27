@@ -102,9 +102,10 @@ const TopAnatForm = ({
                     }}
                     content={
                       <>
-                        By default, the gene universe considered for the enrichment analysis is all genes with data in
-                        Bgee for the selected species. It is possible to provide a custom gene universe, as a list of
-                        gene IDs. All gene IDs present in the foreground must be present in the background.
+                        By default, the gene universe considered for the enrichment analysis is the protein-coding
+                        genes of the selected species expressed in at least one condition in Bgee. It is possible to
+                        provide a custom gene universe, as a list of gene IDs. All gene IDs present in the foreground
+                        must be present in the background.
                       </>
                     }
                   />
