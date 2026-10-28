@@ -130,7 +130,7 @@ const TopAnatForm = ({
                             color={!rp.customBg && 'danger'}
                             onClick={() => setRP((prev) => ({ ...prev, customBg: false }))}
                             disabled={formDisabled || (!formDisabled && !rp.customBg)}
-                          >{`Bgee data for ${
+                          >{`Protein coding genes for ${
                             rp.fg.list.detectedSpecies[rp.fg.list.selectedSpecies].name
                           }`}</Bulma.Button>
                         </div>
@@ -347,51 +347,6 @@ const TopAnatForm = ({
                           disabled={formDisabled}
                         />
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </Bulma.C>
-            </Bulma.Columns>
-            <Bulma.Columns>
-              <Bulma.C size={12}>
-                <div className="field">
-                  <label
-                    className={topAnatLabelClassNames('decorrelationType', formData.decorrelationType)}
-                    htmlFor="decorrelationType"
-                  >
-                    Decorrelation type (slower)
-                    <HelpIcon
-                      title="Decorrelation typey"
-                      style={{
-                        position: 'absolute',
-                      }}
-                      content={
-                        <>
-                          Algorithm used to take into account the topology of the anatomical ontology, to decrease the
-                          number of false positives and highly general terms in the results, owing to the inheritance
-                          problem. A precise description of these algorithms can be found in the topGO documentation.
-                          Please note that using these decorrelation methods slow the analyses a lot.
-                        </>
-                      }
-                    />
-                  </label>
-                  <div className="field-body">
-                    <div className="field">
-                      <Toggle
-                        disabled={formDisabled}
-                        elements={[
-                          {
-                            value: 'classic',
-                            text: 'No decorrelation',
-                          },
-                          { value: 'elim', text: 'Elim' },
-                          { value: 'weight', text: 'Weight' },
-                          { value: 'parent-child', text: 'Parent-child' },
-                        ]}
-                        value={formData.decorrelationType}
-                        onChange={handleChange('decorrelationType', (v) => v)}
-                        error={errors.decorrelationType}
-                      />
                     </div>
                   </div>
                 </div>
