@@ -28,8 +28,6 @@ const expressionCallsContentKey = (calls: ExpressionCall[] | undefined): string 
         call.expressionScore?.expressionScore ?? '',
         call.expressionState ?? '',
         call.expressionQuality ?? '',
-        types?.AFFYMETRIX ? 1 : 0,
-        types?.EST ? 1 : 0,
         types?.IN_SITU ? 1 : 0,
         types?.RNA_SEQ ? 1 : 0,
         types?.SC_RNA_SEQ ? 1 : 0,
