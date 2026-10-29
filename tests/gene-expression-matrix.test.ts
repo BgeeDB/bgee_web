@@ -425,8 +425,12 @@ test.describe('Gene Expression Matrix Page', () => {
     await page.goto(`/search/expression-matrix?gene_list=${geneList}`);
 
     // A gene_list URL resolves into the Selected Genes table, across species, without the
-    // single-species autocomplete.
-    await expect(page.getByRole('link', { name: /ENSG00000130208 - APOC1/ })).toBeVisible();
-    await expect(page.getByRole('link', { name: /ENSG00000012048 - BRCA1/ })).toBeVisible();
+    // single-species autocomplete. The name is the link; the ID follows it in the cell.
+    const apoc1 = page.getByRole('cell', { name: /APOC1/ });
+    const brca1 = page.getByRole('cell', { name: /BRCA1/ });
+    await expect(apoc1.getByRole('link', { name: 'APOC1', exact: true })).toBeVisible();
+    await expect(apoc1.getByText('ENSG00000130208')).toBeVisible();
+    await expect(brca1.getByRole('link', { name: 'BRCA1', exact: true })).toBeVisible();
+    await expect(brca1.getByText('ENSG00000012048')).toBeVisible();
   });
 });

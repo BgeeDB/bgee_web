@@ -664,7 +664,8 @@ const useLogic = (options = {}) => {
         setIsLoading(false);
       } else {
         console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
-        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
+        // Keep the current URL. Replacing it with a bare path makes the URL effect
+        // reset the form and drop the species/gene selection just restored from the link.
         setIsLoading(false);
       }
     } finally {
@@ -772,7 +773,7 @@ const useLogic = (options = {}) => {
           setIsLoading(false);
           return;
         }
-        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
+        // Keep the current URL so a failed search does not clear the restored form.
         setIsLoading(false);
       })
       .finally(() => {
