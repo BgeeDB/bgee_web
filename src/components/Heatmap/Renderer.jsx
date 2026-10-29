@@ -91,6 +91,10 @@ const X_LABEL_PADDING = 15;
 const X_LABEL_ANCHOR_OFFSET = 10;
 // Minimum gap between the bottom of the heatmap cells and the color legend.
 const DEFAULT_BOTTOM_LABEL_GAP = 40;
+// The y-label tree is shifted so its origin sits this far from the left edge of the SVG.
+const Y_LABEL_LEFT_INSET = 10;
+// Air between the rightmost painted y-axis glyph and the heatmap cells.
+const Y_LABEL_RIGHT_GAP = 16;
 // ColorLegendSvg draws its title and help badge above posY (badge top is at posY - 23).
 const COLOR_LEGEND_OVERFLOW_TOP = 25;
 // Baseline of the "Not expressed" / "No data" row in ColorLegendSvg (posY + 48).
@@ -380,6 +384,7 @@ export const Renderer = forwardRef(
       colorScale,
       backgroundColor,
       marginLeft,
+      onYLabelWidth,
       xLabelRotation,
       showLegend,
       showMissingData,
@@ -549,6 +554,7 @@ export const Renderer = forwardRef(
     );
     const [measuredTopLabelRightOverflow, setMeasuredTopLabelRightOverflow] = useState(null);
     const topLabelsRef = useRef(null);
+    const yLabelsRef = useRef(null);
     const hasMeasuredTopLabelOverflow =
       measuredTopLabelRightOverflow &&
       measuredTopLabelRightOverflow.key === topLabelMeasureKey &&
@@ -592,6 +598,31 @@ export const Renderer = forwardRef(
         cancelled = true;
       };
     }, [topLabelMeasureKey, requiredXWidth]);
+
+    // Character counts miss the real Open Sans widths and any label text the tree
+    // draws differently from `label`. The group bbox is the painted extent.
+    useLayoutEffect(() => {
+      const labelGroup = yLabelsRef.current;
+      if (!labelGroup || !onYLabelWidth) return undefined;
+      let cancelled = false;
+      const measure = () => {
+        if (cancelled) return;
+        let box;
+        try {
+          box = labelGroup.getBBox();
+        } catch {
+          return;
+        }
+        if (!(box.width > 0)) return;
+        onYLabelWidth(Y_LABEL_LEFT_INSET + box.x + box.width + Y_LABEL_RIGHT_GAP);
+      };
+      measure();
+      const fontsReady = typeof document !== 'undefined' ? document.fonts?.ready : undefined;
+      fontsReady?.then(() => measure());
+      return () => {
+        cancelled = true;
+      };
+    }, [drilldownOrdered, onYLabelWidth]);
 
     // Keep the parent width in sync so tooltips and later renders use the same size.
     useEffect(() => {
@@ -947,7 +978,7 @@ export const Renderer = forwardRef(
             <g>{allShapes}</g>
             <g ref={topLabelsRef}>{xLabelsTop}</g>
             <g>{xLabelsBottom}</g>
-            <g transform={`translate(-${marginLeft - 10}, 5)`}>
+            <g ref={yLabelsRef} transform={`translate(-${marginLeft - Y_LABEL_LEFT_INSET}, 5)`}>
               <Tree
                 data={drilldownOrdered}
                 yScale={yScale}

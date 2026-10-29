@@ -14,6 +14,8 @@ export type RendererProps = {
   onToggleExpandCollapse: (...args: any[]) => void;
   colorScale: unknown;
   marginLeft: number;
+  /** Painted y-label width, including the left inset and the gap before the cells. */
+  onYLabelWidth?: (width: number) => void;
   xLabelRotation: number;
   showLegend: boolean;
   showMissingData: boolean;

@@ -25,6 +25,7 @@ const asCellTypeRow = (row: ExpandedConditionRow, depth: number): ExpandedCondit
   ...row,
   label: row.cellTypeLabel || row.label,
   depth,
+  isTopLevelTerm: false,
   groupedUnderAnatEntity: true,
   isExpanded: false,
   hasBeenQueried: false,
@@ -44,11 +45,15 @@ export function groupExpandedConditionRows(
     parentDepth,
     parentAnatEntityId,
     cellTypesExpanded = true,
+    groupHeadersAreTopLevel = false,
   }: {
     parentId: string;
     parentDepth: number;
     parentAnatEntityId: string;
     cellTypesExpanded?: boolean;
+    // Initial tissue results sit directly under the anatomical root, where the
+    // other top-level organs live. Expansion headers stay nested under the organ.
+    groupHeadersAreTopLevel?: boolean;
   }
 ): ExpandedConditionRow[] {
   const groups = new Map<string, { organ: ExpandedConditionRow | null; cells: ExpandedConditionRow[] }>();
@@ -83,6 +88,7 @@ export function groupExpandedConditionRows(
       grouped.push({
         ...group.organ,
         depth: headerDepth,
+        isTopLevelTerm: groupHeadersAreTopLevel || group.organ.isTopLevelTerm,
         isExpanded: cellRows.length > 0 && cellTypesExpanded,
         // The cell types arrived with this expansion. The toggle only shows or hides them.
         hasBeenQueried: cellRows.length > 0,
@@ -102,7 +108,7 @@ export function groupExpandedConditionRows(
       cellTypeId: CELL_TYPE_ROOT_ID,
       cellTypeLabel: 'cellular component',
       depth: headerDepth,
-      isTopLevelTerm: false,
+      isTopLevelTerm: groupHeadersAreTopLevel,
       isExpanded: cellTypesExpanded,
       isPopulated: true,
       hasBeenQueried: true,

@@ -240,7 +240,8 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
       // Initialize the nested structure
       const nestedTerm = {
         id: termId,
-        label: term.isSingleCell ? `${term.label} : ${term.cellTypeLabel}` : term.label,
+        // term.label already includes the cell type for single-cell rows.
+        label: term.label,
         anatEntityId: term.anatEntityId,
         anatEntityLabel: term.anatEntityLabel,
         cellTypeId: term.cellTypeId,

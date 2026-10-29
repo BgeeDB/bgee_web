@@ -217,9 +217,11 @@ const appendNonDefaultFilters = (target, source) => {
 };
 
 // Mirror the API request into the page URL. Once the backend returns a data hash,
-// every storable parameter is replaced by it. Filter values that differ from the
-// defaults stay beside the hash so a reload keeps the selection.
+// storable parameters are replaced by it. Anatomical entity, cell type, and data
+// type are stored in that hash. data_qual stays in the URL because the summary
+// request is recorded as bronze, so the selected quality would otherwise be lost.
 const GENE_IDENTITY_URL_KEYS = ['gene_list', 'gene_id', 'species_id'];
+const HASH_STORED_FILTER_KEYS = ['anat_entity_id', 'cell_type_id', 'data_type'];
 
 const buildExpressionMatrixUrlParams = (paramsURLCalled, requestParameters) => {
   const searchParams = new URLSearchParams(paramsURLCalled || '');
@@ -231,13 +233,14 @@ const buildExpressionMatrixUrlParams = (paramsURLCalled, requestParameters) => {
     if (Array.isArray(storableParameters)) {
       storableParameters.forEach((key) => {
         const values = concreteFilterValues(key, searchParams.getAll(key));
-        if (FILTER_URL_KEYS.includes(key) && !isDefaultFilterParam(key, values)) return;
+        // Keep a non-default quality. The hash records bronze for the summary search.
+        if (key === 'data_qual' && !isDefaultFilterParam(key, values)) return;
         searchParams.delete(key);
       });
     }
-    // Gene identity always lives in the hash, even if the backend omitted it
-    // from storableParameters.
+    // These always live in the hash, even if the backend omitted them from storableParameters.
     GENE_IDENTITY_URL_KEYS.forEach((key) => searchParams.delete(key));
+    HASH_STORED_FILTER_KEYS.forEach((key) => searchParams.delete(key));
     searchParams.append('data', newHash);
   }
 
@@ -250,6 +253,10 @@ const buildExpressionMatrixUrlParams = (paramsURLCalled, requestParameters) => {
   if (searchParams.get('anat_entity_descendant') === 'true') searchParams.delete('anat_entity_descendant');
 
   FILTER_URL_KEYS.forEach((key) => {
+    if (newHash && HASH_STORED_FILTER_KEYS.includes(key)) {
+      searchParams.delete(key);
+      return;
+    }
     const values = concreteFilterValues(key, searchParams.getAll(key));
     searchParams.delete(key);
     if (isDefaultFilterParam(key, values)) return;
@@ -663,8 +670,8 @@ const useLogic = (options = {}) => {
           }
         }
 
-        // Keep non-default filters in the URL; the hash still stores the full query.
-        // The SUMMARY request is bronze. The URL keeps the quality selected in the form.
+        // The hash stores tissue, cell type, and data type. The summary request is
+        // bronze, so the URL keeps the quality selected in the form.
         const searchParams = buildExpressionMatrixUrlParams(paramsURLCalled1, resp1?.requestParameters);
         searchParams.delete('data_qual');
         if (baseParams.dataQuality) searchParams.set('data_qual', baseParams.dataQuality);
@@ -968,12 +975,14 @@ const useLogic = (options = {}) => {
               if (!filterSource.has(key)) filterSource.append(key, value);
             });
             if (!hashInUrl) {
+              const pageSearch = new URLSearchParams(filterSource);
+              HASH_STORED_FILTER_KEYS.forEach((key) => pageSearch.delete(key));
               publishedHashRef.current = hash;
               resolvingHashRef.current = hash;
               navigate(
                 {
                   pathname: loc.pathname,
-                  search: filterSource.toString(),
+                  search: pageSearch.toString(),
                 },
                 { replace: true, preventScrollReset: true }
               );

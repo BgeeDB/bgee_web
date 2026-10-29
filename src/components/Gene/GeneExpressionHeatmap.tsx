@@ -172,88 +172,86 @@ const GeneExpressionHeatmap = ({
   const collapseSingleCellRef = useRef(readCollapseSingleCell());
   const [allExpressionCalls, setAllExpressionCalls] = useState<ExpressionCall[]>([]);
 
-  // prepare term hierarchy from gene expression call data
+  // Initial results, including a tissue search, arrive as one flat list. Group cell types
+  // under their anatomical entity the same way an expanded SUMMARY organ does.
   const prepTermHierarchy = (calls: ExpressionCall[]) => {
-    const termProps = {
-      [ROOT_TERM_ANAT_ENTITY]: {
-        label: 'anatomical entity',
-        anatEntityId: 'UBERON:0001062',
-        anatEntityLabel: 'anatomical entity',
-        cellTypeId: 'GO:0005575',
-        cellTypeLabel: 'cellular component',
-        isTopLevelTerm: true,
-        isExpanded: true,
-        isPopulated: false,
-        hasBeenQueried: true,
-        isSingleCell: false,
-      },
+    const root: ExpandedConditionRow = {
+      id: ROOT_TERM_ANAT_ENTITY,
+      label: 'anatomical entity',
+      anatEntityId: 'UBERON:0001062',
+      anatEntityLabel: 'anatomical entity',
+      cellTypeId: CELL_TYPE_ROOT_ID,
+      cellTypeLabel: 'cellular component',
+      depth: 0,
+      isTopLevelTerm: true,
+      isExpanded: true,
+      isPopulated: true,
+      hasBeenQueried: true,
+      isSingleCell: false,
+      children: [],
     };
-    const parents = { [ROOT_TERM_ANAT_ENTITY]: [] };
-    const children: { [key: string]: string[] } = { [ROOT_TERM_ANAT_ENTITY]: [] };
 
+    const flatRows: ExpandedConditionRow[] = [];
+    const seenRowIds = new Set<string>();
     calls.forEach((exprCall) => {
       const { id: anatEntityId, name: anatEntityName } = exprCall.condition.anatEntity;
       const { id: cellTypeId, name: cellTypeName } = exprCall.condition.cellType;
-      const termIsSingleCell = cellTypeId !== 'GO:0005575';
-      const termId = `${anatEntityId}-${cellTypeId}`;
-      const termLabel = termIsSingleCell ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
+      const isSingleCell = cellTypeId !== CELL_TYPE_ROOT_ID;
+      if (anatEntityId === 'SUMMARY') return;
 
-      if (!(termId in termProps)) {
-        termProps[termId] = {
-          label: termLabel,
-          anatEntityId,
-          anatEntityLabel: anatEntityName,
-          cellTypeId,
-          cellTypeLabel: cellTypeName,
-          isTopLevelTerm: true,
-          isExpanded: true,
-          isPopulated: false,
-          hasBeenQueried: true,
-          isSingleCell: termIsSingleCell,
-        };
-
-        if (termId !== ROOT_TERM_ANAT_ENTITY) {
-          parents[termId] = [ROOT_TERM_ANAT_ENTITY];
-          children[ROOT_TERM_ANAT_ENTITY].push(termId);
-        }
-      }
+      // Heatmap cells for the initial search use this id, with no expansion prefix.
+      const id = `${anatEntityId}-${cellTypeId}`;
+      if (id === ROOT_TERM_ANAT_ENTITY || seenRowIds.has(id)) return;
+      seenRowIds.add(id);
+      flatRows.push({
+        id,
+        label: isSingleCell ? `${cellTypeName} in ${anatEntityName}` : anatEntityName,
+        anatEntityId,
+        anatEntityLabel: anatEntityName,
+        cellTypeId,
+        cellTypeLabel: cellTypeName,
+        depth: 0,
+        // Organ rows sort with the other top-level terms. Cell types are nested under them.
+        isTopLevelTerm: !isSingleCell,
+        isExpanded: false,
+        isPopulated: true,
+        hasBeenQueried: false,
+        isSingleCell,
+        children: [],
+      });
     });
 
-    // identify root terms
-    const roots = Object.keys(parents).filter((id) => parents[id].length === 0);
+    root.children = groupExpandedConditionRows(flatRows, {
+      parentId: ROOT_TERM_ANAT_ENTITY,
+      parentDepth: 0,
+      // The tree parent is the anatomical root, not the selected tissue. A selected
+      // organ such as brain therefore becomes the header for its own cell types.
+      parentAnatEntityId: 'UBERON:0001062',
+      cellTypesExpanded: !collapseSingleCellRef.current,
+      groupHeadersAreTopLevel: true,
+    });
 
-    function createNestedStructure(termId: string, depth = 0): any {
-      const term = termProps[termId];
-      if (!term) {
-        console.error(`[GeneExpressionHeatmap.prepTermHierarchy] term not found: ${termId}`);
-        return null;
-      }
-
-      const nestedTerm: any = {
-        id: termId,
-        label: term.isSingleCell ? `${term.label} : ${term.cellTypeLabel}` : term.label,
-        anatEntityId: term.anatEntityId,
-        anatEntityLabel: term.anatEntityLabel,
-        cellTypeId: term.cellTypeId,
-        cellTypeLabel: term.cellTypeLabel,
-        depth,
-        isTopLevelTerm: term.isTopLevelTerm,
-        isExpanded: depth === 0,
-        isPopulated: true,
-        hasBeenQueried: depth === 0,
-        isSingleCell: term.isSingleCell,
-        children: [],
+    const termProps: Record<string, any> = {};
+    const addTermProps = (node: ExpandedConditionRow) => {
+      termProps[node.id] = {
+        label: node.label,
+        anatEntityId: node.anatEntityId,
+        anatEntityLabel: node.anatEntityLabel,
+        cellTypeId: node.cellTypeId,
+        cellTypeLabel: node.cellTypeLabel,
+        isTopLevelTerm: node.isTopLevelTerm,
+        isExpanded: node.isExpanded,
+        isPopulated: node.isPopulated,
+        hasBeenQueried: node.hasBeenQueried,
+        isSingleCell: node.isSingleCell,
+        groupedUnderAnatEntity: node.groupedUnderAnatEntity,
+        isSyntheticSingleCellGroup: node.isSyntheticSingleCellGroup,
       };
+      node.children?.forEach(addTermProps);
+    };
+    addTermProps(root);
 
-      if (children[termId]) {
-        nestedTerm.children = children[termId].map((childId) => createNestedStructure(childId, depth + 1));
-      }
-
-      return nestedTerm;
-    }
-
-    const anatTerms = roots.map((root) => createNestedStructure(root)).filter(Boolean);
-    return { anatTerms, termProps };
+    return { anatTerms: [root], termProps };
   };
 
   // Same calls in a new array (for example the Selected Genes panel toggling) must not

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } from 'react';
 import * as d3 from 'd3';
 import Bulma from '../Bulma';
 import { Renderer } from './Renderer';
@@ -37,6 +37,22 @@ const getStoredValue = (key, defaultValue) => {
     return stored;
   }
 };
+
+// Identifies the labels currently taking horizontal space, so a glyph measurement
+// for this tree is not overwritten by the character-count estimate.
+function visibleYLabelKey(terms, collapseSingleCell) {
+  const parts: string[] = [];
+  function traverse(item, depth, inCellTypeGroup) {
+    if (collapseSingleCell && item.isSingleCell && !inCellTypeGroup) return;
+    parts.push(`${depth}\u0000${item?.label ?? ''}`);
+    if (item?.isExpanded && item.children?.length) {
+      const childInGroup = isCellTypeGroup(item);
+      item.children.forEach((child) => traverse(child, depth + 1, childInGroup));
+    }
+  }
+  (terms || []).forEach((term) => traverse(term, 0, false));
+  return parts.join('\n');
+}
 
 /** Explicit props so callers are not required to pass matrix-only / debug options. */
 export type HeatmapProps = {
@@ -100,6 +116,8 @@ const Heatmap = ({
   // Settings (and the stored default) are a floor. Auto-sizing may grow past it to fit
   // a long expanded label, and must be able to shrink back to it on collapse.
   const yLabelWidthFloorRef = useRef(marginLeft);
+  // Set once the painted labels for the current tree have been measured.
+  const measuredYLabelKeyRef = useRef<string | null>(null);
   const [showDescMax, setShowDescMax] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_DESC_MAX, 'none'));
   const [showMissingData, setShowMissingData] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_MISSING_DATA, true));
   const [showSettings, setShowSettings] = useState(() => getStoredValue(STORAGE_KEYS.SHOW_SETTINGS, false));
@@ -109,6 +127,9 @@ const Heatmap = ({
   const [rowOrdering, setRowOrdering] = useState(() => getStoredValue(STORAGE_KEYS.ROW_ORDERING, 'alphabetical'));
   const [rowAggFn, setRowAggFn] = useState(() => getStoredValue(STORAGE_KEYS.ROW_AGG_FN, 'mean'));
   const [collapseSingleCell, setCollapseSingleCell] = useState(() => readCollapseSingleCell());
+  const yLabelKey = useMemo(() => visibleYLabelKey(yTerms, collapseSingleCell), [yTerms, collapseSingleCell]);
+  const yLabelKeyRef = useRef(yLabelKey);
+  yLabelKeyRef.current = yLabelKey;
 
   // Add state to track input values during editing
   const [graphWidthInput, setGraphWidthInput] = useState(maxGraphWidth);
@@ -191,6 +212,15 @@ const Heatmap = ({
     setMarginLeft(value);
     localStorage.setItem(STORAGE_KEYS.MARGIN_LEFT, JSON.stringify(value));
   };
+
+  // Glyph measurement replaces the character-count estimate. The settings value
+  // stays a floor, so a wider manual width is kept and a narrower one still grows.
+  const onYLabelWidth = useCallback((needed: number) => {
+    measuredYLabelKeyRef.current = yLabelKeyRef.current;
+    const floor = Number(yLabelWidthFloorRef.current);
+    const next = Math.max(needed, Number.isFinite(floor) ? floor : 0);
+    setMarginLeft((current) => (Math.abs(Number(current) - next) < 1 ? current : next));
+  }, []);
 
   const updateXLabelRotation = ({ target: { value } }) => {
     try {
@@ -291,8 +321,11 @@ const Heatmap = ({
     // Functional update so a wider width just requested by the renderer (cells + slanted
     // top labels) is not replaced by the graphWidth value captured in this effect.
     setGraphWidth((current) => Math.max(flexMarginLeft + 50, current));
+    // The renderer measures the painted labels in layout and records that key first.
+    // Skip the estimate then, so it cannot put the wide character-count margin back.
+    if (measuredYLabelKeyRef.current === yLabelKey) return;
     setMarginLeft(flexMarginLeft);
-  }, [yTerms, collapseSingleCell]);
+  }, [yTerms, collapseSingleCell, yLabelKey]);
 
   const displayData = useMemo(() => (data?.length ? [...data].sort((a, b) => a.y.localeCompare(b.y)) : data), [data]);
 
@@ -451,6 +484,7 @@ const Heatmap = ({
                 onToggleExpandCollapse={onToggleExpandCollapse}
                 colorScale={colorScale}
                 marginLeft={marginLeft}
+                onYLabelWidth={onYLabelWidth}
                 xLabelRotation={xLabelRotation}
                 showLegend={showLegend}
                 showMissingData={showMissingData}
