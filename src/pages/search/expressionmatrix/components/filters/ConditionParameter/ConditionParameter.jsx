@@ -32,7 +32,7 @@ const ConditionParameter = ({ conditionalParam2, setConditionalParam2 }) => {
               select "Anatomical localization" and "Development and life stage",
               expression calls will have been produced for this organ at this
               stage, integrating data from all sexes and strains available.
-              Therefore the calls have different FDR, call type, etc, depending
+              Therefore the calls have different p-values, call type, etc, depending
               on this selection of condition parameters.`}
             </>
           }

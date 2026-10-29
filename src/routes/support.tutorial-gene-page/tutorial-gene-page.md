@@ -70,7 +70,7 @@ The present/absent calls are then ranked using the Bgee expression score method,
 By default, the gene page reports this information for each anatomical localization only. For each present/absent expression call, are provided:
 
 - Anatomical entity: the localization of the call (where the gene is detected either as present or as absent). It can point to simply an anatomical structure, or to a cell type, or to the composition of a cell type in a specific anatomical structure.
-- the FDR-corrected p-value of the present/absent call (Bgee does not report p-values below 1e-15: a value of 1e-15 means 1e-15 or less).
+- the p-value of the present/absent call (Bgee does not report p-values below 1e-15: a value of 1e-15 means 1e-15 or less).
 - its expression score
 - an overview of the data types supporting it
 - and a link to browse the source data that allowed to produce it.

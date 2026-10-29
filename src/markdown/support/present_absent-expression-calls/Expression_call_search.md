@@ -62,7 +62,7 @@ The following filter options are available through the search form:
   background transcriptional noise, "absent" means that the level of expression is not significantly different from the background noise.
 
 - **Data Quality**: The minimum level of quality in support of the expression call. This level is determined
-  by the FDR-corrected p-values of the statistical test for significant expression of the gene in the reported condition,
+  by the p-values of the statistical test for significant expression of the gene in the reported condition,
   and in its child conditions.
 
 ## Results
@@ -105,7 +105,7 @@ Below the export current page in TSV button, you can change the number of lines 
 
 - **Call quality:** Determines how confident Bgee is of the presence/absence call given to the expression state of the gene in that condition. It scale goes from bronze for less confident calls to silver or gold for more strongly supported expression calls.
 
-- **FDR:** P-value, corrected for multiple testing by false discovery rate (FDR), of the test of significance used by Bgee to determine the expression state of the gene (various statistical methods are used to determine the p-value based on the data types and for merging results from different data types). Bgee does not report p-values below 1e-15: a value of 1e-15 means 1e-15 or less.
+- **pValue:** P-value of the test of significance used by Bgee to determine the expression state of the gene (various statistical methods are used to determine the p-value based on the data types and for merging results from different data types). Bgee does not report p-values below 1e-15: a value of 1e-15 means 1e-15 or less.
 
 - **Expression score:** This value represents the normalized expression level of the gene in that condition after merging all supporting data types. It is scaled from 0, meaning this gene was on average the one with the lowest expression, to 100 which indicates that this gene has high expression in that condition compared to all other genes. Briefly, the expression scores are based on non-parametric statistics, where conditions are ranked based on the gene expression levels. These ranks are then normalized across conditions, genes, and data types, and transformed into an expression score going from 0 (= low expression) to 100 (= high expression) for a more intuitive use. This non-parametric statistics allow comparison of gene expression in a quantitative manner across species and conditions, without requiring batch-correction procedures.
 
