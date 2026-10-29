@@ -95,8 +95,8 @@ const columnsGenerator = (cFields, data) => {
       hide: MEDIA_QUERIES.MOBILE_L,
     },
     {
-      key: 'fdr',
-      text: 'FDR',
+      key: 'pValue',
+      text: 'pValue',
       style: { width: 100 },
       hide: MEDIA_QUERIES.MOBILE_L,
     },
@@ -244,7 +244,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
       cols.push({ header: ['Strain'], value: (call) => [call?.condition?.strain] });
     }
     cols.push({ header: ['Expression score'], value: (call) => [call?.expressionScore?.expressionScore] });
-    cols.push({ header: ['FDR'], value: (call) => [call?.fdr] });
+    cols.push({ header: ['pValue'], value: (call) => [call?.pValue] });
     cols.push({ header: ['Link to source data'], value: (call) => [sourceDataUrl(call, params)] });
     cols.push({ header: ['Sources'], value: (call) => [sourceList(call)] });
 
@@ -421,8 +421,8 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
               {cell.expressionScore.expressionScore}
             </span>
           );
-        case 'fdr':
-          return defaultRender(cell.fdr, key);
+        case 'pValue':
+          return defaultRender(cell.pValue, key);
         case 'proc_expr_values': {
           let searchParams = `pageType=${PROC_EXPR_VALUES}&gene_id=${geneId}&species_id=${speciesId}&cell_type_descendant=true&stage_descendant=true&anat_entity_descendant=true`;
           if (data.requestedConditionParameters.find((r) => r === 'Anat. entity')) {
