@@ -30,13 +30,28 @@ For each gene and each sample in Bgee, we produce a p-value based on a null hypo
 - **single-cell RNA-Seq data**: the method used is the same as for bulk RNA-Seq data for each cell/library.
 - **_in situ_ hybridization data**: we retrieve _in situ_ hybridization data from Model Organism Databases part of the Alliance of Genome Resources. We map call qualities provided by these resources to p-values: 0.0004 for 'present high quality' calls; 0.01 for "present low quality"; 0.1 for "absent low quality"; 0.5 for "absent high quality".
 
-### Second step: FDR corrected p-values per gene and condition
+### Second step: p-values per gene and annotated condition
 
 We capture information about the anatomical localization of samples, their developmental and life stage, sex, and strain or ethnicity. We either manually capture this information using ontologies and controlled vocabularies, or we map existing annotations provided by MODs to these ontologies and vocabularies.
 
-After p-values are generated from the curated data for each gene and sample, they are propagated using anatomical and life stage ontologies. For instance, the p-value obtained for a gene in a sample studying the condition 'midbrain' at 'aged stage', will be propagated to the condition 'brain' at 'adult stage'. All p-values are propagated in a similar way toward the root of the graph of conditions.
+Samples annotated to the same condition are replicates of each other. For each gene, condition and data type, we combine their p-values with a weighted arithmetic mean:
 
-After all p-values have been propagated, we apply a Benjamini-Hochberg FDR correction to generate one FDR p-value per gene and condition.
+- **bulk and single-cell RNA-Seq data**: each annotated sample (an RNA-Seq library, or the pseudobulk of cells of a single-cell library annotated to the same cell type) is weighted by its number of distinct expression ranks, the same weight as used for the expression score.
+- **_in situ_ hybridization data**: the p-values of all the spots reporting the gene in the condition are averaged with equal weights.
+
+The arithmetic mean suits replicates: a single outlying sample does not decide the result. These p-values are floored at 1e-15.
+
+### Third step: p-values per gene and condition, propagated along the graph of conditions
+
+Expression calls are computed when they are requested, from the requested data types only (all data types for the download files).
+
+For a gene in an annotated condition, the p-values of the requested data types are first combined with a weighted arithmetic mean, using the weights of the second step. When this mean is computed from more than one observation (several samples, several spots, or several data types), it is multiplied by 2, capped at 1: the arithmetic mean of several p-values is not itself a p-value, but twice that mean is one, whatever the dependence between them.
+
+These p-values are then propagated using anatomical and life stage ontologies. For instance, the p-value obtained for a gene in a sample studying the condition 'midbrain' at 'aged stage', will be propagated to the condition 'brain' at 'adult stage'. All p-values are propagated in a similar way toward the root of the graph of conditions.
+
+The p-value of a gene in a condition is the weighted harmonic mean of the p-values of all the annotated conditions it contains: the condition itself, when samples are annotated to it, and all its sub-conditions. Each annotated condition is counted once, even when it can be reached through several paths of the graph, and is weighted by the sum of the weights of its samples. The harmonic mean is dominated by the smallest p-values: strong evidence of expression in a single sub-condition (e.g. the midbrain) supports expression in the parent condition (the brain), and is not cancelled out by the lack of expression in the other sub-conditions, as it would be with an arithmetic mean.
+
+A second p-value is computed in the same way from the data types trusted for absent calls only (bulk RNA-Seq, _in situ_ hybridization), and is used to produce the absent calls below.
 
 ### Final step: generation of present/absent expression calls per gene and condition
 
