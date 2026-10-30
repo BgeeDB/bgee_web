@@ -574,6 +574,17 @@ const GeneExpressionMatrix = () => {
   // Whether a search has been run (so we can show with/without data filters)
   const hasSearchResults = searchResult !== null;
 
+  // A category click selects that filter and opens the table when it is rolled up.
+  // With data / No data stay inert until a search has produced results.
+  const selectGenesFilter = useCallback(
+    (filter: SelectedGenesFilter) => {
+      if (filter !== 'all' && !hasSearchResults) return;
+      setSelectedGenesFilter(filter);
+      setIsGenesListExpanded(true);
+    },
+    [hasSearchResults]
+  );
+
   // Counts for the Selected Genes header filter tabs. Genes added since the last
   // search are counted only under All; they are not yet known to have data or not.
   const genesWithDataCount = useMemo(
@@ -730,7 +741,7 @@ const GeneExpressionMatrix = () => {
                               <div className="tabs is-toggle is-small selected-genes-filter-tabs">
                                 <ul>
                                   <li className={selectedGenesFilter === 'all' ? 'is-active' : ''}>
-                                    <a onClick={() => setSelectedGenesFilter('all')}>
+                                    <a onClick={() => selectGenesFilter('all')}>
                                       <span>All</span>
                                       <span className="selected-genes-filter-count">({multiSpeciesGenes.length})</span>
                                     </a>
@@ -741,9 +752,7 @@ const GeneExpressionMatrix = () => {
                                     }`}
                                   >
                                     <a
-                                      onClick={() => {
-                                        if (hasSearchResults) setSelectedGenesFilter('with');
-                                      }}
+                                      onClick={() => selectGenesFilter('with')}
                                       title={
                                         hasSearchResults
                                           ? 'Show only genes with expression data in the current search'
@@ -762,9 +771,7 @@ const GeneExpressionMatrix = () => {
                                     }`}
                                   >
                                     <a
-                                      onClick={() => {
-                                        if (hasSearchResults) setSelectedGenesFilter('without');
-                                      }}
+                                      onClick={() => selectGenesFilter('without')}
                                       title={
                                         hasSearchResults
                                           ? 'Show only genes without expression data in the current search'
