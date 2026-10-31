@@ -28,6 +28,13 @@ export const SEARCH_CANCEL_API: any = {
     count: null,
     /** Request-parameter / display_rp fetches — must not share token with `search` or URL init cancels */
     requestParams: null,
+    /**
+     * In-flight organ expansions on the expression matrix.
+     * A new top-level search cancels these. They do not share `search`, so one
+     * expansion does not cancel another, and a finished expansion cannot clear
+     * the top-level search token.
+     */
+    expressionMatrixChildren: [] as Array<(message?: string) => void>,
   },
 };
 
@@ -106,6 +113,42 @@ const postExpressionMatrix = (params: URLSearchParams, typeToken: string) => {
     .then(({ data }) => {
       SEARCH_CANCEL_API.rawData[typeToken] = null;
       return { resp: data, paramsURLCalled };
+    });
+};
+
+const cancelExpressionMatrixChildren = (message: string) => {
+  const pending = SEARCH_CANCEL_API.rawData.expressionMatrixChildren || [];
+  SEARCH_CANCEL_API.rawData.expressionMatrixChildren = [];
+  pending.forEach((cancel: (message?: string) => void) => cancel(message));
+};
+
+// Organ expansion. Kept off the shared `search` token so several organs can load
+// at once, and so Submit can drop every one of them without touching other calls.
+const postExpressionMatrixChild = (params: URLSearchParams) => {
+  const paramsURLCalled = params.toString();
+  let cancelThis: ((message?: string) => void) | null = null;
+  return axiosInstance
+    .post('/', params, {
+      cancelToken: new axios.CancelToken((c) => {
+        cancelThis = c;
+        SEARCH_CANCEL_API.rawData.expressionMatrixChildren.push(c);
+      }),
+    })
+    .then(({ data }) => {
+      const pending = SEARCH_CANCEL_API.rawData.expressionMatrixChildren;
+      if (cancelThis) {
+        const index = pending.indexOf(cancelThis);
+        if (index !== -1) pending.splice(index, 1);
+      }
+      return { resp: data, paramsURLCalled };
+    })
+    .catch((error) => {
+      const pending = SEARCH_CANCEL_API.rawData.expressionMatrixChildren;
+      if (cancelThis) {
+        const index = pending.indexOf(cancelThis);
+        if (index !== -1) pending.splice(index, 1);
+      }
+      throw error;
     });
 };
 
@@ -662,6 +705,10 @@ const search = {
           form.dataType.forEach((type) => params.append('data_type', type));
         }
         params.append('data_qual', SUMMARY_EXPRESSION_DATA_QUAL);
+        // Drop organ expansions started against the previous gene list / filters.
+        cancelExpressionMatrixChildren(
+          '-- Child expansion canceled because a new expression-matrix search was started --'
+        );
         postExpressionMatrix(params, 'search')
           .then((result) => resolve(result))
           .catch((error) => {
@@ -704,9 +751,13 @@ const search = {
           form.conditionalParam2.forEach((cp) => params.append('cond_param2', cp));
         }
         if (form?.dataQuality) params.append('data_qual', form.dataQuality);
-        postExpressionMatrix(params, 'search')
+        postExpressionMatrixChild(params)
           .then((result) => resolve(result))
           .catch((error) => {
+            if (axios.isCancel(error)) {
+              reject(error);
+              return;
+            }
             errorHandler(error);
             reject(error?.response || error?.message);
           });

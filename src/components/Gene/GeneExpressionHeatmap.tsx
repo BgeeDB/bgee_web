@@ -36,6 +36,19 @@ const expressionCallsContentKey = (calls: ExpressionCall[] | undefined): string 
     .join('\u001e');
 };
 
+const patchAnatomicalNode = (
+  nodes: any[],
+  termId: string,
+  patch: { hasBeenQueried: boolean; isExpanded: boolean }
+): any[] =>
+  nodes.map((item) => {
+    const children = Array.isArray(item.children) ? patchAnatomicalNode(item.children, termId, patch) : item.children;
+    if (item.id !== termId) {
+      return children === item.children ? item : { ...item, children };
+    }
+    return { ...item, children, ...patch };
+  });
+
 const getSpeciesDisplayName = (species?: { name?: string; genus?: string; speciesName?: string }) => {
   const commonName = species?.name?.trim();
   if (commonName) {
@@ -129,7 +142,8 @@ export interface GeneExpressionHeatmapProps {
   dataQuality?: string | null;
 
   // Callbacks
-  onFetchChildren?: (parentId: string, tissueId: string) => Promise<ExpressionCall[]>;
+  // null means the request was canceled because a newer search superseded it.
+  onFetchChildren?: (parentId: string, tissueId: string) => Promise<ExpressionCall[] | null>;
   onToggleExpandCollapse?: (term: any) => void;
 
   // Display options
@@ -256,6 +270,10 @@ const GeneExpressionHeatmap = ({
   // count as a new search. Rebuilding here sets isExpanded only on the root and drops
   // children fetched by expanding a term.
   const expressionCallsKey = useMemo(() => expressionCallsContentKey(expressionCalls), [expressionCalls]);
+  // Read after an expansion await. A submit that lands in between changes this key,
+  // and the expansion must not paint the previous gene list onto the new matrix.
+  const expressionCallsKeyRef = useRef(expressionCallsKey);
+  expressionCallsKeyRef.current = expressionCallsKey;
 
   // Sync allExpressionCalls when the search results change.
   useEffect(() => {
@@ -284,11 +302,37 @@ const GeneExpressionHeatmap = ({
   const triggerSearchChildren = async (parentId: string, selectedTissueId: string) => {
     if (!onFetchChildren) return;
 
+    const startedKey = expressionCallsKeyRef.current;
     const newCalls = await onFetchChildren(parentId, selectedTissueId);
-    if (!newCalls || newCalls.length === 0) return;
+    const stillCurrent = () => expressionCallsKeyRef.current === startedKey;
 
-    // Add new calls to allExpressionCalls to populate heatmap data
-    setAllExpressionCalls((prev) => [...prev, ...newCalls]);
+    // Submit replaced the matrix while this organ was loading. Drop the response.
+    // The search effect rebuilds the tree from the new calls.
+    if (!stillCurrent()) return;
+
+    // Canceled because a newer search started, but its results are not in yet.
+    // Fold the row back so the click that already marked it queried can run again
+    // if that search fails and leaves the same matrix in place.
+    if (newCalls === null) {
+      setAnatomicalTerms((prev) =>
+        stillCurrent() ? patchAnatomicalNode(prev, parentId, { hasBeenQueried: false, isExpanded: false }) : prev
+      );
+      setAnatomicalTermsProps((prev) => {
+        if (!stillCurrent() || !prev[parentId]) return prev;
+        return {
+          ...prev,
+          [parentId]: { ...prev[parentId], hasBeenQueried: false, isExpanded: false },
+        };
+      });
+      return;
+    }
+
+    if (newCalls.length === 0) return;
+
+    // Add new calls to allExpressionCalls to populate heatmap data.
+    // Re-check inside the updater: the search effect may have reset state
+    // between this line and the render that applies it.
+    setAllExpressionCalls((prev) => (stillCurrent() ? [...prev, ...newCalls] : prev));
 
     // Extract child terms from new calls. Cell types of one organ are nested under that organ.
     const flatRows: ExpandedConditionRow[] = [];
@@ -354,8 +398,10 @@ const GeneExpressionHeatmap = ({
       return traverse(hierarchy);
     }
 
-    // Update hierarchy if there are new children
-    if (flatRows.length > 0) {
+    // Update hierarchy if there are new children. Merge into the latest tree so a
+    // sibling expansion is kept. Skip the write if Submit has since replaced the
+    // matrix: that would reopen this organ with the previous gene list.
+    if (flatRows.length > 0 && stillCurrent()) {
       const parentDepth = findNodeDepth(anatomicalTerms, parentId) ?? 0;
       const grouped = groupExpandedConditionRows(flatRows, {
         parentId,
@@ -363,8 +409,7 @@ const GeneExpressionHeatmap = ({
         parentAnatEntityId: selectedTissueId,
         cellTypesExpanded: !collapseSingleCellRef.current,
       });
-      const newAnatTerms = addChildren(anatomicalTerms, parentId, grouped);
-      setAnatomicalTerms(newAnatTerms);
+      setAnatomicalTerms((prev) => (stillCurrent() ? addChildren(prev, parentId, grouped) : prev));
 
       const propsNodes: ExpandedConditionRow[] = [];
       const walk = (nodes: ExpandedConditionRow[]) => {
@@ -375,27 +420,29 @@ const GeneExpressionHeatmap = ({
       };
       walk(grouped);
 
-      // Update term props
-      const newAnatTermsProps = { ...anatomicalTermsProps };
-      propsNodes.forEach((child) => {
-        if (!(child.id in newAnatTermsProps)) {
-          newAnatTermsProps[child.id] = {
-            label: child.label,
-            anatEntityId: child.anatEntityId,
-            anatEntityLabel: child.anatEntityLabel,
-            cellTypeId: child.cellTypeId,
-            cellTypeLabel: child.cellTypeLabel,
-            isTopLevelTerm: child.isTopLevelTerm,
-            isExpanded: child.isExpanded,
-            isPopulated: child.isPopulated,
-            hasBeenQueried: child.hasBeenQueried,
-            isSingleCell: child.isSingleCell,
-            groupedUnderAnatEntity: child.groupedUnderAnatEntity,
-            isSyntheticSingleCellGroup: child.isSyntheticSingleCellGroup,
-          };
-        }
+      setAnatomicalTermsProps((prev) => {
+        if (!stillCurrent()) return prev;
+        const next = { ...prev };
+        propsNodes.forEach((child) => {
+          if (!(child.id in next)) {
+            next[child.id] = {
+              label: child.label,
+              anatEntityId: child.anatEntityId,
+              anatEntityLabel: child.anatEntityLabel,
+              cellTypeId: child.cellTypeId,
+              cellTypeLabel: child.cellTypeLabel,
+              isTopLevelTerm: child.isTopLevelTerm,
+              isExpanded: child.isExpanded,
+              isPopulated: child.isPopulated,
+              hasBeenQueried: child.hasBeenQueried,
+              isSingleCell: child.isSingleCell,
+              groupedUnderAnatEntity: child.groupedUnderAnatEntity,
+              isSyntheticSingleCellGroup: child.isSyntheticSingleCellGroup,
+            };
+          }
+        });
+        return next;
       });
-      setAnatomicalTermsProps(newAnatTermsProps);
     }
   };
 

@@ -846,6 +846,9 @@ const useLogic = (options = {}) => {
       });
       return calls;
     } catch (error) {
+      // null: the request was dropped because a newer search started. An empty array
+      // means this organ has no child calls and should stay expanded.
+      if (axios.isCancel(error)) return null;
       console.error(`[useLogic.triggerSearchChildren] ERROR:\n${JSON.stringify(error)}`);
       return [];
     }
