@@ -922,9 +922,9 @@ const GeneExpressionMatrix = () => {
             <br />
             <a
               className="internal-link"
-              href={`${URL_ROOT}/search/expression-matrix?species_id=7227&gene_id=FBgn0030298&gene_id=FBgn0030715&gene_id=FBgn0041626&gene_id=FBgn0023523&gene_id=FBgn0030016&gene_id=FBgn0030204`}
+              href={`${URL_ROOT}/search/expression-matrix?gene_list=ENSG00000117601%0AENSMUSG00000026715%0AENSFCAG00000014923%0AENSECAG00000014493%0AENSSSCG00000015493%0AENSBTAG00000004362%0AENSCHIG00000010653%0AENSOARG00000012929%0AENSOCUG00000002891%0AENSOANG00000000923%0AENSCJAG00000009182%0AENSCATG00000034060%0AENSMFAG00000031906%0AENSMMUG00000000629%0AENSMNEG00000008415%0AENSPANG00000004954%0AENSPPAG00000042631%0AENSPTRG00000001701%0AENSMICG00000002980%0A108405505%0AENSRNOG00000002783%0AENSHGLG00000007370%0AENSMODG00000004202`}
             >
-              Olfactory receptor genes (<i>Drosophila melanogaster</i>)
+              SERPINC1 - Antithrombin genes
             </a>
             <br />
             <a
@@ -938,14 +938,14 @@ const GeneExpressionMatrix = () => {
               className="internal-link"
               href={`${URL_ROOT}/search/expression-matrix?gene_list=ENSG00000139767%0AENSMUSG00000063919%0AENSPPAG00000028134%0AENSPTRG00000005517ENSBTAG00000008676%0AENSRNOG00000001141%0AENSSSCG00000009845%0AENSECAG00000021729%0AENSCAFG00000023113%0AENSOCUG00000004503%0AENSMODG00000015283%0AENSACAG00000004139%0AENSXETG00000019934&display_rp=1&display_type=json`}
             >
-              SSRM4 - brain specific genes (<i>multi-species</i>)
+              SSRM4 - brain specific genes
             </a>
             <br />
             <a
               className="internal-link"
               href={`${URL_ROOT}/search/expression-matrix?gene_list=ENSDARG00000059263%0AENSG00000170178%0AENSMUSG00000001823&display_rp=1&display_type=json`}
             >
-              Hoxd12 - pattern development genes (<i>multi-species</i>)
+              Hoxd12 - pattern development genes
             </a>
           </p>
 
