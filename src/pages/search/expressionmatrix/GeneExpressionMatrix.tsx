@@ -501,7 +501,7 @@ const GeneExpressionMatrix = () => {
     onSubmit(multiSpeciesGenes);
   }, [inputMode, effectiveGeneListText, resolveGeneList, onSubmit, multiSpeciesGenes]);
 
-  // Whether the Submit button should be enabled
+  // Whether the Show graph button should be enabled
   const canSubmit = useMemo(() => {
     if (isLoading || isResolvingGeneList) return false;
     if (inputMode === 'list') {
@@ -509,6 +509,12 @@ const GeneExpressionMatrix = () => {
     }
     return multiSpeciesGenes.length > 0;
   }, [isLoading, isResolvingGeneList, inputMode, effectiveGeneListText, multiSpeciesGenes.length]);
+
+  // Data filters apply to a chosen gene set. Pasted IDs count before they are resolved,
+  // so filters can be set and then submitted together.
+  const hasGenesForFilters =
+    multiSpeciesGenes.length > 0 || (inputMode === 'list' && parseGeneListIds(effectiveGeneListText).length > 0);
+  const showSelectGeneHint = !canSubmit && !isLoading && !isResolvingGeneList;
 
   const resultExprsCall = searchResult?.expressionData?.expressionCalls || [];
   const results = resultExprsCall;
@@ -606,8 +612,10 @@ const GeneExpressionMatrix = () => {
           <h2 className="gradient-underline title is-size-5 has-text-primary">{detailedData?.searchLabel}</h2>
           {show && (
             <>
-              <div className="columns is-8">
-                <div className="column mr-6">
+              <div className="columns is-8 expression-graph-columns">
+                <div className="column expression-graph-genes">
+                  <h3 className="expression-graph-step-title">1 - Genes</h3>
+                  <p className="expression-graph-step-note">Select the genes to compare.</p>
                   <div className="tabs is-toggle is-small is-fullwidth maxWidth50 mb-3 gene-input-mode-tabs">
                     <ul>
                       <li className={inputMode === 'species' ? 'is-active' : ''}>
@@ -742,7 +750,7 @@ const GeneExpressionMatrix = () => {
                                   {selectedGenesFilter === 'with'
                                     ? 'No selected gene has expression data in the current search.'
                                     : hasGenesAddedSinceSearch
-                                      ? 'Genes added since the last search are listed under All until you submit.'
+                                      ? 'Genes added since the last search are listed under All until you run the search again.'
                                       : 'All selected genes have expression data in the current search.'}
                                 </p>
                               ))}
@@ -752,8 +760,10 @@ const GeneExpressionMatrix = () => {
                     </div>
                   )}
                 </div>
-                <div className="column">
-                  {(selectedGene.length > 0 || inputMode === 'list' || multiSpeciesGenes.length > 0) && (
+                <div className="column expression-graph-filters">
+                  <h3 className="expression-graph-step-title">2 - Data filters</h3>
+                  <p className="expression-graph-step-note">Optional. Limit which expression data is included.</p>
+                  {hasGenesForFilters ? (
                     <>
                       <div className="my-2 maxWidth50">
                         <Tissues
@@ -807,37 +817,39 @@ const GeneExpressionMatrix = () => {
                             />
                           </div>
                         )} */}
+                      <DataType dataTypes={dataTypesExpCalls} setDataTypes={setDataTypesExpCalls} />
+                      {/* {false && ( // TODO: remove permanently?
+                        <CallType callTypes={callTypes} setCallTypes={setCallTypes} />
+                      )} */}
+                      <hr />
+                      <DataQualityParameter dataQuality={dataQuality} setDataQuality={setDataQuality} />
                     </>
+                  ) : (
+                    <p className="expression-graph-filters-empty">
+                      Select at least one gene. These filters are optional and apply to the data for those genes.
+                    </p>
                   )}
-                  <div>
-                    {(selectedGene.length > 0 || inputMode === 'list' || multiSpeciesGenes.length > 0) && (
-                      <>
-                        <DataType dataTypes={dataTypesExpCalls} setDataTypes={setDataTypesExpCalls} />
-                        {/* {false && ( // TODO: remove permanently?
-                          <CallType callTypes={callTypes} setCallTypes={setCallTypes} />
-                        )} */}
-                        <hr />
-                        <DataQualityParameter dataQuality={dataQuality} setDataQuality={setDataQuality} />
-                      </>
-                    )}
-                    <div className="submit-reinit">
-                      <Button
-                        className="button is-success is-light is-outlined"
-                        type="submit"
-                        onClick={handleSubmit}
-                        disabled={!canSubmit}
-                      >
-                        {isResolvingGeneList ? 'Resolving...' : 'Submit'}
-                      </Button>
-                      <Button
-                        type="button"
-                        className="reinit is-warning is-light is-outlined"
-                        onClick={handleReinitialize}
-                      >
-                        Reinitialize
-                      </Button>
-                    </div>
-                  </div>
+                </div>
+              </div>
+              <div className="expression-graph-actions">
+                {showSelectGeneHint && (
+                  <p id="expression-graph-submit-hint" className="expression-graph-submit-hint">
+                    Select at least one gene to continue.
+                  </p>
+                )}
+                <div className="expression-graph-action-buttons">
+                  <Button
+                    className="button is-success is-light is-outlined"
+                    type="submit"
+                    onClick={handleSubmit}
+                    disabled={!canSubmit}
+                    aria-describedby={showSelectGeneHint ? 'expression-graph-submit-hint' : undefined}
+                  >
+                    {isResolvingGeneList ? 'Resolving...' : 'Show graph'}
+                  </Button>
+                  <Button type="button" className="reinit is-warning is-light is-outlined" onClick={handleReinitialize}>
+                    Reinitialize
+                  </Button>
                 </div>
               </div>
             </>
