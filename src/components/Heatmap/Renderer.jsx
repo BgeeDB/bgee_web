@@ -8,6 +8,8 @@ import fonts from './fonts';
 import { computeTermAggregates } from './heatmapAggregates';
 import { hideLooseSingleCellRows } from './singleCellRows';
 import { isOthersBucket } from '../../helpers/othersAnatomicalBucket';
+import { speciesAxisModel } from '../../helpers/speciesTree';
+import { buildSpeciesAxisLayout, SPECIES_COLUMN_HIGHLIGHT, SpeciesAxisMarks } from './speciesAxis';
 
 // A row with its own calls keeps that score. A header with none (a single-cell-only
 // organ) takes the same mean or max already used across genes.
@@ -403,6 +405,8 @@ export const Renderer = forwardRef(
       setGraphHeight,
       scaleSvg = false,
       rendererMargins,
+      speciesTree = null,
+      speciesAxis = 'flat',
     },
     ref
   ) => {
@@ -538,21 +542,56 @@ export const Renderer = forwardRef(
       };
     }, [xTerms, xLabelRotationEffective, xLabelMetrics]);
 
-    const effectiveMarginTop = Math.max(MARGIN.top, topLabelSpace);
+    const speciesAxisLayout = useMemo(() => {
+      if (speciesAxis !== 'tree' || !speciesTree) return null;
+      const speciesIds = xTerms.map((term) => (term?.speciesId == null ? '' : String(term.speciesId)));
+      const model = speciesAxisModel(speciesIds, speciesTree);
+      if (!model) return null;
+      return buildSpeciesAxisLayout({
+        model,
+        domain: allXGroups,
+        xScale,
+        plotRight: requiredXWidth,
+        leafPadding: X_LABEL_PADDING,
+        helpers: {
+          verticalExtent: estimateLabelVerticalExtent,
+          rightExtent: estimateLabelExtentRightOfAnchor,
+          labelMetrics,
+        },
+      });
+    }, [speciesAxis, speciesTree, xTerms, allXGroups, xScale, requiredXWidth]);
+
+    const resolvedTopLabelSpace = speciesAxisLayout?.topSpace ?? topLabelSpace;
+    const effectiveMarginTop = Math.max(MARGIN.top, resolvedTopLabelSpace);
     const bottomLabelGap = Math.max(DEFAULT_BOTTOM_LABEL_GAP, bottomLabelSpace);
 
     // Slanted top labels are anchored at the column center and run up-right, so the
     // right margin has to cover whatever sticks past the cells. The character-width
     // estimate sizes the first frame; the layout effect replaces it with the painted
     // glyph extent so wide letters are not clipped and narrow ones do not leave a gap.
-    const topLabelMeasureKey = `${xLabelFontSize}|${xLabelRotationEffective}|${requiredXWidth}|${xTerms
-      .map((term) => `${term.value ?? ''}\u0000${term.topLabel ?? term.label ?? ''}`)
-      .join('\u0001')}`;
-    const estimatedTopLabelRightOverflow = useMemo(
-      () => estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics),
-      [xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics]
-    );
+    const topLabelMeasureKey = speciesAxisLayout
+      ? `tree|${speciesAxisLayout.topSpace}|${requiredXWidth}|${speciesAxisLayout.leaves
+          .map((leaf) => `${leaf.key}\u0000${leaf.label}`)
+          .join(
+            '\u0001'
+          )}|${speciesAxisLayout.brackets.map((bracket) => `${bracket.key}\u0000${bracket.label}`).join('\u0001')}`
+      : `${xLabelFontSize}|${xLabelRotationEffective}|${requiredXWidth}|${xTerms
+          .map((term) => `${term.value ?? ''}\u0000${term.topLabel ?? term.label ?? ''}`)
+          .join('\u0001')}`;
+    const estimatedTopLabelRightOverflow = useMemo(() => {
+      if (speciesAxisLayout) return speciesAxisLayout.rightOverflow;
+      return estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics);
+    }, [speciesAxisLayout, xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics]);
     const [measuredTopLabelRightOverflow, setMeasuredTopLabelRightOverflow] = useState(null);
+    const [selectedTaxonKey, setSelectedTaxonKey] = useState(null);
+    const toggleTaxonHighlight = (key) => {
+      setSelectedTaxonKey((current) => (current === key ? null : key));
+    };
+    useEffect(() => {
+      if (!selectedTaxonKey) return;
+      const marks = [...(speciesAxisLayout?.brackets ?? []), ...(speciesAxisLayout?.leaves ?? [])];
+      if (!marks.some((mark) => mark.key === selectedTaxonKey)) setSelectedTaxonKey(null);
+    }, [speciesAxisLayout, selectedTaxonKey]);
     const topLabelsRef = useRef(null);
     const yLabelsRef = useRef(null);
     const hasMeasuredTopLabelOverflow =
@@ -941,6 +980,29 @@ export const Renderer = forwardRef(
     // (possibly rotated and long) bottom x-axis labels.
     const colorLegendPosY = actualHeatmapHeight + bottomLabelGap;
 
+    const selectedTaxon = [...(speciesAxisLayout?.brackets ?? []), ...(speciesAxisLayout?.leaves ?? [])].find(
+      (mark) => mark.key === selectedTaxonKey
+    );
+    let columnHighlight = null;
+    if (selectedTaxon) {
+      const left = xScale(allXGroups[selectedTaxon.start]);
+      const rightStart = xScale(allXGroups[selectedTaxon.end]);
+      if (left != null && rightStart != null && !Number.isNaN(left) && !Number.isNaN(rightStart)) {
+        columnHighlight = (
+          <rect
+            data-testid="species-column-highlight"
+            x={left}
+            y={0}
+            width={rightStart + xScale.bandwidth() - left}
+            height={cellBandHeight}
+            fill={SPECIES_COLUMN_HIGHLIGHT}
+            opacity={0.38}
+            pointerEvents="none"
+          />
+        );
+      }
+    }
+
     return (
       <svg
         ref={ref}
@@ -974,7 +1036,18 @@ export const Renderer = forwardRef(
         >
           <g>
             <g>{allShapes}</g>
-            <g ref={topLabelsRef}>{xLabelsTop}</g>
+            {columnHighlight}
+            <g ref={topLabelsRef}>
+              {speciesAxisLayout ? (
+                <SpeciesAxisMarks
+                  layout={speciesAxisLayout}
+                  selectedKey={selectedTaxonKey}
+                  onToggle={toggleTaxonHighlight}
+                />
+              ) : (
+                xLabelsTop
+              )}
+            </g>
             <g>{xLabelsBottom}</g>
             <g ref={yLabelsRef} transform={`translate(-${marginLeft - Y_LABEL_LEFT_INSET}, 5)`}>
               <Tree

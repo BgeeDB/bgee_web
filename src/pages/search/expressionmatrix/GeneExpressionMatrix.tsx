@@ -28,6 +28,13 @@ import Bulma from '~/components/Bulma';
 import api from '~/api';
 import { getGeneLabel, pickGeneFromSearchResult } from '~/helpers/gene';
 import { groupGenesBySpecies, insertGenesBySpecies, mergeSpeciesSelection, moveVisibleGene } from './geneOrder';
+import {
+  isPreferredSpeciesOrder,
+  isTreeLinearization,
+  orderGenesByPreferredDisplay,
+  parseSpeciesByTaxon,
+  speciesTreeSignature,
+} from '~/helpers/speciesTree';
 import { ChevronDown, ChevronUp, Plus, SquarePlus } from 'lucide-react';
 
 type InputMode = 'species' | 'list';
@@ -81,6 +88,13 @@ interface GeneWithSpecies {
 }
 
 type SelectedGenesFilter = 'all' | 'with' | 'without';
+type SpeciesAxisMode = 'tree' | 'flat';
+
+const sameGeneSet = (left: GeneWithSpecies[], right: GeneWithSpecies[]) => {
+  if (left.length !== right.length) return false;
+  const keys = new Set(left.map((gene) => getSelectedGeneKey(String(gene.speciesId), gene.geneId)));
+  return right.every((gene) => keys.has(getSelectedGeneKey(String(gene.speciesId), gene.geneId)));
+};
 
 const findHomologGroup = (groups: HomologTaxonGroup[] | undefined, taxonId?: string) => {
   if (!taxonId || !groups) return null;
@@ -111,6 +125,12 @@ const genesFromHomologGroup = (entry: HomologTaxonGroup | null): GeneWithSpecies
 
 const GeneExpressionMatrix = () => {
   const [multiSpeciesGenes, setMultiSpeciesGenes] = useState<GeneWithSpecies[]>([]);
+  // Tree is the default species axis. Flat is the per-gene labels, used when the
+  // column order is no longer a drawing of the taxonomy.
+  const [speciesAxis, setSpeciesAxis] = useState<SpeciesAxisMode>('tree');
+  const [appliedSpeciesTreeKey, setAppliedSpeciesTreeKey] = useState('');
+  // Order to restore when the user leaves a tree sort and asks for the flat axis.
+  const orderBeforeTreeRef = useRef<GeneWithSpecies[] | null>(null);
   const [isGenesListExpanded, setIsGenesListExpanded] = useState(true);
   const [selectedGenesFilter, setSelectedGenesFilter] = useState<SelectedGenesFilter>('all');
   const [geneHomologsData, setGeneHomologsData] = useState<Record<string, HomologData>>({});
@@ -298,6 +318,13 @@ const GeneExpressionMatrix = () => {
     });
   }, [multiSpeciesGenes]);
 
+  // A saved flat order is only meaningful for the gene set it was taken from.
+  useEffect(() => {
+    const saved = orderBeforeTreeRef.current;
+    if (!saved) return;
+    if (!sameGeneSet(saved, multiSpeciesGenes)) orderBeforeTreeRef.current = null;
+  }, [multiSpeciesGenes]);
+
   const clearGeneHomologsCache = useCallback(() => {
     homologRequestsRef.current.clear();
     setGeneHomologsData({});
@@ -391,6 +418,9 @@ const GeneExpressionMatrix = () => {
     setSearchResult(null);
     setSubmittedGeneKeys([]);
     setIsFirstSearch(true);
+    setSpeciesAxis('tree');
+    setAppliedSpeciesTreeKey('');
+    orderBeforeTreeRef.current = null;
     resetForm(false);
   }, [clearGeneHomologsCache, resetForm, setSearchResult, setSubmittedGeneKeys, setIsFirstSearch]);
 
@@ -534,6 +564,22 @@ const GeneExpressionMatrix = () => {
 
   const resultExprsCall = searchResult?.expressionData?.expressionCalls || [];
   const results = resultExprsCall;
+  const speciesTree = useMemo(() => parseSpeciesByTaxon(searchResult?.speciesByTaxon), [searchResult]);
+  const speciesTreeKey = useMemo(() => speciesTreeSignature(speciesTree), [speciesTree]);
+
+  // A newly arrived taxonomy orders the list so the tree can be drawn: sisters follow
+  // preferredDisplayOrder. Later edits that still draw without crossings are left alone.
+  // An edit that no longer draws (done in moveGene) has already switched to flat.
+  if (speciesTree && speciesTreeKey !== appliedSpeciesTreeKey) {
+    setAppliedSpeciesTreeKey(speciesTreeKey);
+    if (speciesAxis === 'tree') {
+      const sorted = orderGenesByPreferredDisplay(multiSpeciesGenes, speciesTree);
+      if (sorted !== multiSpeciesGenes) setMultiSpeciesGenes(sorted);
+    }
+  } else if (speciesAxis === 'tree' && speciesTree && !isTreeLinearization(multiSpeciesGenes, speciesTree)) {
+    const sorted = orderGenesByPreferredDisplay(multiSpeciesGenes, speciesTree);
+    if (sorted !== multiSpeciesGenes) setMultiSpeciesGenes(sorted);
+  }
   // const defaultColumDesc = searchResult?.columnDescriptions?.[dataType] || [];
   // const columnDescExprsCall = searchResult?.columnDescriptions || [];
   // const columnsDesc = isExprCalls ? columnDescExprsCall : defaultColumDesc;
@@ -568,6 +614,15 @@ const GeneExpressionMatrix = () => {
     return Array.from(geneMap.values());
   }, [results, genesInLastSearch]);
 
+  const speciesAxisAvailable = useMemo(() => {
+    if (!speciesTree) return false;
+    const speciesIds = new Set<string>();
+    searchedGenes.forEach((gene) => {
+      if (gene.species?.id) speciesIds.add(String(gene.species.id));
+    });
+    return speciesIds.size > 1;
+  }, [searchedGenes, speciesTree]);
+
   // Set of geneIds that returned at least one expression call in the current search results
   const geneIdsWithData = useMemo<Set<string>>(() => new Set(results.map((r: any) => r.gene.geneId)), [results]);
 
@@ -595,23 +650,51 @@ const GeneExpressionMatrix = () => {
   }, [hasSearchResults, multiSpeciesGenes, genesInLastSearch, geneIdsWithData, selectedGenesFilter]);
 
   // Swap a row with the previous or next gene currently shown in the table.
+  // A move that no longer draws the taxonomy (a species split, or a clade broken
+  // by another species) leaves the new order in place and shows flat labels.
   const moveGene = useCallback(
     (speciesId: string, geneId: string, direction: -1 | 1) => {
       const visible = new Set(
         filteredSelectedGenes.map((gene) => getSelectedGeneKey(String(gene.speciesId), gene.geneId))
       );
       const target = getSelectedGeneKey(String(speciesId), geneId);
-      setMultiSpeciesGenes((prev) =>
-        moveVisibleGene(
-          prev,
-          target,
-          direction,
-          (gene) => getSelectedGeneKey(String(gene.speciesId), gene.geneId),
-          (gene) => visible.has(getSelectedGeneKey(String(gene.speciesId), gene.geneId))
-        )
-      );
+      const keyOf = (gene: GeneWithSpecies) => getSelectedGeneKey(String(gene.speciesId), gene.geneId);
+      const next = moveVisibleGene(multiSpeciesGenes, target, direction, keyOf, (gene) => visible.has(keyOf(gene)));
+      if (next === multiSpeciesGenes) return;
+      orderBeforeTreeRef.current = null;
+      if (speciesAxis === 'tree' && speciesTree && !isTreeLinearization(next, speciesTree)) {
+        setSpeciesAxis('flat');
+      }
+      setMultiSpeciesGenes(next);
     },
-    [filteredSelectedGenes]
+    [filteredSelectedGenes, multiSpeciesGenes, speciesAxis, speciesTree]
+  );
+
+  const handleSpeciesAxisChange = useCallback(
+    (mode: SpeciesAxisMode) => {
+      if (mode === 'flat') {
+        setMultiSpeciesGenes((prev) => {
+          const saved = orderBeforeTreeRef.current;
+          orderBeforeTreeRef.current = null;
+          if (saved && sameGeneSet(saved, prev)) return saved;
+          return prev;
+        });
+        setSpeciesAxis('flat');
+        return;
+      }
+      if (!speciesTree) return;
+      setMultiSpeciesGenes((prev) => {
+        if (isPreferredSpeciesOrder(prev, speciesTree)) {
+          orderBeforeTreeRef.current = null;
+          return prev;
+        }
+        orderBeforeTreeRef.current = prev;
+        const sorted = orderGenesByPreferredDisplay(prev, speciesTree);
+        return sorted;
+      });
+      setSpeciesAxis('tree');
+    },
+    [speciesTree]
   );
 
   const detailedData = TAB_PAGE_EXPR_CALL;
@@ -988,6 +1071,9 @@ const GeneExpressionMatrix = () => {
               onFetchChildren={(parentId, selectedTissueId) =>
                 triggerSearchChildren(parentId, selectedTissueId, genesInLastSearch)
               }
+              speciesTree={speciesAxisAvailable && speciesAxis === 'tree' ? speciesTree : null}
+              speciesAxis={speciesAxisAvailable ? speciesAxis : 'flat'}
+              onSpeciesAxisChange={speciesAxisAvailable ? handleSpeciesAxisChange : undefined}
             />
           </div>
           {/* <UserFeedback /> */}

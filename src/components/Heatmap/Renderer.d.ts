@@ -40,6 +40,9 @@ export type RendererProps = {
   xTerms?: unknown;
   yLabelJustify?: string;
   clickedCell?: unknown;
+  /** Parsed data.speciesByTaxon tree. Drawn when speciesAxis is "tree" and the columns follow it. */
+  speciesTree?: unknown;
+  speciesAxis?: 'tree' | 'flat';
 };
 
 export declare const Renderer: React.ForwardRefExoticComponent<
