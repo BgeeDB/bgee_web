@@ -213,29 +213,39 @@
     }
   }
 
-  th.selected-genes-col-order {
-    width: 4.75rem;
+  th.selected-genes-col-order,
+  td.selected-genes-cell-order {
+    // Fixed layout will not grow this column to fit the header. 3.75rem fits
+    // "Order" with the 4px cell padding from the global table styles.
+    width: 3.75rem;
     text-align: center;
     white-space: nowrap;
   }
 
-  .selected-genes-cell-order {
-    text-align: center;
-  }
-
-  .selected-genes-order-btns {
+  .selected-genes-drag-handle {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-  }
-
-  .selected-genes-order-btn {
+    justify-content: center;
     flex: 0 0 auto;
-    min-width: 2rem;
     width: 2rem;
     height: 2rem;
-    padding: 0;
     margin: 0;
+    padding: 0;
+    color: #7a7a7a;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .selected-genes-drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .selected-genes-table tr.is-dragging {
+    opacity: 0.45;
+  }
+
+  .selected-genes-table tr.is-drop-target td {
+    box-shadow: inset 0 2px 0 #e2011b;
   }
 
   th.selected-genes-col-actions {
@@ -278,7 +288,7 @@
 
   @media screen and (max-width: 900px) {
     .selected-genes-table {
-      min-width: 50rem;
+      min-width: 52rem;
     }
   }
 

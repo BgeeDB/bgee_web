@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type DragEvent, type RefObject } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
-import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import { GripVertical, Plus, Trash2 } from 'lucide-react';
 import Button from '../../../../components/Bulma/Button/Button';
 import isPlural from '../../../../helpers/isPlural';
 
@@ -47,7 +47,7 @@ interface SelectedGenesListProps {
   selectedGenes: GeneEntry[];
   trackedGenes: GeneEntry[];
   removeGene: (speciesId: string, geneId: string) => void;
-  moveGene: (speciesId: string, geneId: string, direction: -1 | 1) => void;
+  reorderGene: (sourceSpeciesId: string, sourceGeneId: string, destSpeciesId: string, destGeneId: string) => void;
   addHomologs: (geneId: string, speciesId: string, selection: HomologSelection) => Promise<void>;
   loadHomologs: (geneId: string, speciesId: string) => Promise<HomologData | null>;
   homologData: Record<string, HomologData>;
@@ -337,7 +337,7 @@ const SelectedGenesList = ({
   selectedGenes,
   trackedGenes,
   removeGene,
-  moveGene,
+  reorderGene,
   addHomologs,
   loadHomologs,
   homologData,
@@ -345,6 +345,9 @@ const SelectedGenesList = ({
 }: SelectedGenesListProps) => {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [loadFailedKey, setLoadFailedKey] = useState<string | null>(null);
+  const [draggingKey, setDraggingKey] = useState<string | null>(null);
+  const [dropKey, setDropKey] = useState<string | null>(null);
+  const draggingKeyRef = useRef<string | null>(null);
   const anchorRef = useRef<HTMLSpanElement | null>(null);
   const loadRequestRef = useRef(0);
   const trackedKeys = useMemo(
@@ -359,6 +362,41 @@ const SelectedGenesList = ({
     );
     if (!stillVisible) setOpenKey(null);
   }, [openKey, selectedGenes]);
+
+  const beginDrag = (event: DragEvent<HTMLElement>, key: string) => {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', key);
+    const row = event.currentTarget.closest('tr');
+    if (row) event.dataTransfer.setDragImage(row, 24, 16);
+    draggingKeyRef.current = key;
+    setDraggingKey(key);
+    setDropKey(null);
+    setOpenKey(null);
+  };
+
+  const endDrag = () => {
+    draggingKeyRef.current = null;
+    setDraggingKey(null);
+    setDropKey(null);
+  };
+
+  const allowDrop = (event: DragEvent<HTMLTableRowElement>, key: string) => {
+    if (!draggingKeyRef.current) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    if (dropKey !== key) setDropKey(key);
+  };
+
+  const dropOnGene = (event: DragEvent<HTMLTableRowElement>, speciesId: string, geneId: string) => {
+    event.preventDefault();
+    const sourceKey = draggingKeyRef.current || event.dataTransfer.getData('text/plain');
+    const destKey = getSelectedGeneKey(String(speciesId), geneId);
+    endDrag();
+    if (!sourceKey || sourceKey === destKey) return;
+    const separator = sourceKey.indexOf(':');
+    if (separator <= 0) return;
+    reorderGene(sourceKey.slice(0, separator), sourceKey.slice(separator + 1), String(speciesId), geneId);
+  };
 
   if (selectedGenes.length === 0) {
     return null;
@@ -378,7 +416,7 @@ const SelectedGenesList = ({
           </tr>
         </thead>
         <tbody>
-          {selectedGenes.map((gene, index) => {
+          {selectedGenes.map((gene) => {
             const key = getSelectedGeneKey(String(gene.speciesId), gene.geneId);
             const isOpen = openKey === key;
             const isFetching = Boolean(fetchingHomologs[key]);
@@ -391,34 +429,30 @@ const SelectedGenesList = ({
             else if (loadFailedKey === key && !data) addTitle = 'Could not load homologs';
             else if (data && !hasChoices) addTitle = 'No orthologs or paralogs';
 
-            const atTop = index === 0;
-            const atBottom = index === selectedGenes.length - 1;
+            const isDragging = draggingKey === key;
+            const isDropTarget = dropKey === key && draggingKey !== key;
+            let rowClassName: string | undefined;
+            if (isDragging) rowClassName = 'is-dragging';
+            else if (isDropTarget) rowClassName = 'is-drop-target';
 
             return (
-              <tr key={`${gene.speciesId}-${gene.geneId}`}>
+              <tr
+                key={`${gene.speciesId}-${gene.geneId}`}
+                className={rowClassName}
+                onDragOver={(event) => allowDrop(event, key)}
+                onDrop={(event) => dropOnGene(event, gene.speciesId, gene.geneId)}
+              >
                 <td className="selected-genes-cell-order">
-                  <div className="selected-genes-order-btns">
-                    <Button
-                      type="button"
-                      className="button is-small is-outlined selected-genes-order-btn"
-                      onClick={() => moveGene(gene.speciesId, gene.geneId, -1)}
-                      disabled={atTop}
-                      aria-label={`Move ${gene.geneId} up`}
-                      title="Move gene up"
-                    >
-                      <ChevronUp size={14} />
-                    </Button>
-                    <Button
-                      type="button"
-                      className="button is-small is-outlined selected-genes-order-btn"
-                      onClick={() => moveGene(gene.speciesId, gene.geneId, 1)}
-                      disabled={atBottom}
-                      aria-label={`Move ${gene.geneId} down`}
-                      title="Move gene down"
-                    >
-                      <ChevronDown size={14} />
-                    </Button>
-                  </div>
+                  <span
+                    className="selected-genes-drag-handle"
+                    draggable
+                    onDragStart={(event) => beginDrag(event, key)}
+                    onDragEnd={endDrag}
+                    aria-label={`Drag ${gene.geneId} to reorder`}
+                    title="Drag to reorder"
+                  >
+                    <GripVertical size={22} aria-hidden="true" />
+                  </span>
                 </td>
                 <td className="selected-genes-cell-species">
                   <div className="selected-genes-primary-cell">

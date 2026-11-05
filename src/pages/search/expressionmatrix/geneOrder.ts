@@ -127,26 +127,32 @@ export const mergeSpeciesSelection = <T extends OrderedGene>(current: T[], selec
   return insertGenesBySpecies(kept, toAdd);
 };
 
-// Swap a gene with the previous or next visible row. Hidden rows stay put, so a
-// filtered table still moves the row the user is looking at.
-export const moveVisibleGene = <T>(
+// Move one visible gene into another visible gene's place. Hidden genes keep
+// their positions, and the visible genes in between shift along the gaps.
+export const reorderVisibleGene = <T>(
   genes: T[],
-  targetKey: string,
-  direction: -1 | 1,
+  sourceKey: string,
+  destinationKey: string,
   keyOf: (gene: T) => string,
   isVisible: (gene: T) => boolean
 ): T[] => {
+  if (!sourceKey || sourceKey === destinationKey) return genes;
+
   const visibleIndexes: number[] = [];
   genes.forEach((gene, index) => {
     if (isVisible(gene)) visibleIndexes.push(index);
   });
-  const position = visibleIndexes.findIndex((index) => keyOf(genes[index]) === targetKey);
-  const swapPosition = position + direction;
-  if (position < 0 || swapPosition < 0 || swapPosition >= visibleIndexes.length) return genes;
+  const fromPos = visibleIndexes.findIndex((index) => keyOf(genes[index]) === sourceKey);
+  const toPos = visibleIndexes.findIndex((index) => keyOf(genes[index]) === destinationKey);
+  if (fromPos < 0 || toPos < 0) return genes;
+
+  const visibleGenes = visibleIndexes.map((index) => genes[index]);
+  const [moved] = visibleGenes.splice(fromPos, 1);
+  visibleGenes.splice(toPos, 0, moved);
 
   const next = [...genes];
-  const from = visibleIndexes[position];
-  const to = visibleIndexes[swapPosition];
-  [next[from], next[to]] = [next[to], next[from]];
+  visibleIndexes.forEach((index, position) => {
+    next[index] = visibleGenes[position];
+  });
   return next;
 };

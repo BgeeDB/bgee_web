@@ -27,7 +27,7 @@ import './rawDataAnnotations.scss';
 import Bulma from '~/components/Bulma';
 import api from '~/api';
 import { getGeneLabel, pickGeneFromSearchResult } from '~/helpers/gene';
-import { groupGenesBySpecies, insertGenesBySpecies, mergeSpeciesSelection, moveVisibleGene } from './geneOrder';
+import { groupGenesBySpecies, insertGenesBySpecies, mergeSpeciesSelection, reorderVisibleGene } from './geneOrder';
 import { ChevronDown, ChevronUp, Plus, SquarePlus } from 'lucide-react';
 
 type InputMode = 'species' | 'list';
@@ -594,20 +594,20 @@ const GeneExpressionMatrix = () => {
     return genesInLastSearch.filter((g) => !geneIdsWithData.has(g.geneId));
   }, [hasSearchResults, multiSpeciesGenes, genesInLastSearch, geneIdsWithData, selectedGenesFilter]);
 
-  // Swap a row with the previous or next gene currently shown in the table.
-  const moveGene = useCallback(
-    (speciesId: string, geneId: string, direction: -1 | 1) => {
+  // Drop a visible row onto another visible row. Hidden genes stay where they are.
+  const reorderGene = useCallback(
+    (sourceSpeciesId: string, sourceGeneId: string, destSpeciesId: string, destGeneId: string) => {
       const visible = new Set(
         filteredSelectedGenes.map((gene) => getSelectedGeneKey(String(gene.speciesId), gene.geneId))
       );
-      const target = getSelectedGeneKey(String(speciesId), geneId);
+      const keyOf = (gene: GeneWithSpecies) => getSelectedGeneKey(String(gene.speciesId), gene.geneId);
       setMultiSpeciesGenes((prev) =>
-        moveVisibleGene(
+        reorderVisibleGene(
           prev,
-          target,
-          direction,
-          (gene) => getSelectedGeneKey(String(gene.speciesId), gene.geneId),
-          (gene) => visible.has(getSelectedGeneKey(String(gene.speciesId), gene.geneId))
+          getSelectedGeneKey(String(sourceSpeciesId), sourceGeneId),
+          getSelectedGeneKey(String(destSpeciesId), destGeneId),
+          keyOf,
+          (gene) => visible.has(keyOf(gene))
         )
       );
     },
@@ -796,7 +796,7 @@ const GeneExpressionMatrix = () => {
                                   selectedGenes={filteredSelectedGenes}
                                   trackedGenes={multiSpeciesGenes}
                                   removeGene={removeGene}
-                                  moveGene={moveGene}
+                                  reorderGene={reorderGene}
                                   addHomologs={addHomologs}
                                   loadHomologs={loadGeneHomologs}
                                   homologData={geneHomologsData}

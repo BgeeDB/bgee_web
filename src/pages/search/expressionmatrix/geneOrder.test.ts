@@ -5,7 +5,7 @@ import {
   groupGenesBySpecies,
   insertGenesBySpecies,
   mergeSpeciesSelection,
-  moveVisibleGene,
+  reorderVisibleGene,
   type OrderedGene,
 } from './geneOrder.ts';
 
@@ -64,27 +64,24 @@ test('drops a deselected gene and leaves the surrounding genes where they are', 
   assert.deepEqual(ids(next), ['m1', 'h2']);
 });
 
-test('moves a visible gene past a hidden neighbor', () => {
+test('drops a visible gene onto another and leaves a hidden gene where it is', () => {
   const genes = [homo('h1'), mus('m1'), danio('d1')];
   const visible = new Set(['9606:h1', '7955:d1']);
-  const next = moveVisibleGene(
-    genes,
-    '7955:d1',
-    -1,
-    (entry) => `${entry.speciesId}:${entry.geneId}`,
-    (entry) => visible.has(`${entry.speciesId}:${entry.geneId}`)
-  );
+  const keyOf = (entry: OrderedGene) => `${entry.speciesId}:${entry.geneId}`;
+  const next = reorderVisibleGene(genes, '7955:d1', '9606:h1', keyOf, (entry) => visible.has(keyOf(entry)));
   assert.deepEqual(ids(next), ['d1', 'm1', 'h1']);
 });
 
-test('leaves the list unchanged when a gene is already at that end', () => {
+test('moves a gene onto the last row by taking that row place', () => {
+  const genes = [homo('h1'), mus('m1'), danio('d1')];
+  const keyOf = (entry: OrderedGene) => `${entry.speciesId}:${entry.geneId}`;
+  const next = reorderVisibleGene(genes, '9606:h1', '7955:d1', keyOf, () => true);
+  assert.deepEqual(ids(next), ['m1', 'd1', 'h1']);
+});
+
+test('leaves the list unchanged when a gene is dropped on itself', () => {
   const genes = [homo('h1'), mus('m1')];
-  const next = moveVisibleGene(
-    genes,
-    '9606:h1',
-    -1,
-    (entry) => `${entry.speciesId}:${entry.geneId}`,
-    () => true
-  );
+  const keyOf = (entry: OrderedGene) => `${entry.speciesId}:${entry.geneId}`;
+  const next = reorderVisibleGene(genes, '9606:h1', '9606:h1', keyOf, () => true);
   assert.equal(next, genes);
 });
