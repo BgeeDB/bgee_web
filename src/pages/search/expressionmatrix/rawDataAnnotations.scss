@@ -356,15 +356,19 @@
     align-items: stretch;
   }
 
-  .expression-graph-genes,
-  .expression-graph-filters {
+  .expression-graph-genes {
     border-radius: 4px;
     padding: 1rem 1.15rem 1.25rem;
-  }
-
-  .expression-graph-genes {
     background-color: #fff5f4;
     border-left: 4px solid #ed2e24;
+  }
+
+  .expression-graph-side {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+    padding: 1rem 1.15rem 1.25rem;
   }
 
   .expression-graph-species-field.is-highlighted {
@@ -392,6 +396,68 @@
 
   .expression-graph-filters {
     background-color: #f6f6f6;
+    border-radius: 4px;
+    padding: 0.85rem 1rem 1rem;
+    width: 100%;
+  }
+
+  .expression-graph-filters-toggle {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background: transparent;
+      color: inherit;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #626262;
+      outline-offset: 3px;
+    }
+
+    .expression-graph-filters-toggle-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+    }
+
+    .expression-graph-filters-toggle-label {
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: #626262;
+    }
+
+    .expression-graph-step-note {
+      display: block;
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .icon {
+      flex: 0 0 auto;
+      margin-top: 0.1rem;
+      color: #626262;
+    }
+  }
+
+  .expression-graph-filters-panel {
+    margin-top: 0.85rem;
   }
 
   .expression-graph-step-title {
@@ -406,6 +472,7 @@
   }
 
   .expression-graph-filters .expression-graph-step-title {
+    margin: 0;
     color: #626262;
     font-weight: 600;
   }
@@ -435,7 +502,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.4rem;
-    margin: 0.35rem 0 0.85rem;
+    margin: 0;
   }
 
   .expression-graph-submit-hint {

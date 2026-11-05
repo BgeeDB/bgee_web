@@ -112,6 +112,7 @@ const genesFromHomologGroup = (entry: HomologTaxonGroup | null): GeneWithSpecies
 const GeneExpressionMatrix = () => {
   const [multiSpeciesGenes, setMultiSpeciesGenes] = useState<GeneWithSpecies[]>([]);
   const [isGenesListExpanded, setIsGenesListExpanded] = useState(true);
+  const [isDataFiltersExpanded, setIsDataFiltersExpanded] = useState(false);
   const [selectedGenesFilter, setSelectedGenesFilter] = useState<SelectedGenesFilter>('all');
   const [geneHomologsData, setGeneHomologsData] = useState<Record<string, HomologData>>({});
   const [fetchingGeneHomologs, setFetchingGeneHomologs] = useState<Record<string, boolean>>({});
@@ -388,6 +389,7 @@ const GeneExpressionMatrix = () => {
     setHasResolvedGeneList(false);
     setSelectedGenesFilter('all');
     setIsGenesListExpanded(true);
+    setIsDataFiltersExpanded(false);
     setSearchResult(null);
     setSubmittedGeneKeys([]);
     setIsFirstSearch(true);
@@ -650,7 +652,7 @@ const GeneExpressionMatrix = () => {
             <>
               <div className="columns is-8 expression-graph-columns">
                 <div className="column expression-graph-genes">
-                  <h3 className="expression-graph-step-title">1 - Genes</h3>
+                  <h3 className="expression-graph-step-title">Genes</h3>
                   <p className="expression-graph-step-note">Select the genes to compare.</p>
                   <div className="tabs is-toggle is-small is-fullwidth maxWidth50 mb-3 gene-input-mode-tabs">
                     <ul>
@@ -817,32 +819,52 @@ const GeneExpressionMatrix = () => {
                     </div>
                   )}
                 </div>
-                <div className="column expression-graph-filters">
-                  <h3 className="expression-graph-step-title">2 - Data filters</h3>
-                  <p className="expression-graph-step-note">Optional. Limit which expression data is included.</p>
-                  {hasGenesForFilters ? (
-                    <>
-                      <div className="my-2 maxWidth50">
-                        <Tissues
-                          selectedTissue={selectedTissue}
-                          setSelectedTissue={setSelectedTissue}
-                          AutoCompleteByType={AutoCompleteByType}
-                          hasTissueSubStructure={hasTissueSubStructure}
-                          setHasTissueSubStructure={setHasTissueSubStructure}
-                          addConditionalParam={addConditionalParam}
-                        />
-                      </div>
-                      <div className="my-2 maxWidth50">
-                        <CellTypes
-                          selectedCellTypes={selectedCellTypes}
-                          setSelectedCellTypes={setSelectedCellTypes}
-                          AutoCompleteByType={AutoCompleteByType}
-                          hasCellTypeSubStructure={hasCellTypeSubStructure}
-                          setHasCellTypeSubStructure={setHasCellTypeSubStructure}
-                          addConditionalParam={addConditionalParam}
-                        />
-                      </div>
-                      {/* {false && ( // TODO: display dev stage as condition param?
+                <div className="column expression-graph-side">
+                  <div className="expression-graph-filters">
+                    <h3 className="expression-graph-step-title">
+                      <button
+                        type="button"
+                        className="expression-graph-filters-toggle"
+                        aria-expanded={isDataFiltersExpanded}
+                        aria-controls="expression-graph-filters-panel"
+                        onClick={() => setIsDataFiltersExpanded((open) => !open)}
+                      >
+                        <span className="expression-graph-filters-toggle-copy">
+                          <span className="expression-graph-filters-toggle-label">Data filters</span>
+                          <span className="expression-graph-step-note">
+                            Optional. Limit which expression data is included.
+                          </span>
+                        </span>
+                        <span className="icon" aria-hidden="true">
+                          {isDataFiltersExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </span>
+                      </button>
+                    </h3>
+                    {isDataFiltersExpanded && (
+                      <div id="expression-graph-filters-panel" className="expression-graph-filters-panel">
+                        {hasGenesForFilters ? (
+                          <>
+                            <div className="my-2 maxWidth50">
+                              <Tissues
+                                selectedTissue={selectedTissue}
+                                setSelectedTissue={setSelectedTissue}
+                                AutoCompleteByType={AutoCompleteByType}
+                                hasTissueSubStructure={hasTissueSubStructure}
+                                setHasTissueSubStructure={setHasTissueSubStructure}
+                                addConditionalParam={addConditionalParam}
+                              />
+                            </div>
+                            <div className="my-2 maxWidth50">
+                              <CellTypes
+                                selectedCellTypes={selectedCellTypes}
+                                setSelectedCellTypes={setSelectedCellTypes}
+                                AutoCompleteByType={AutoCompleteByType}
+                                hasCellTypeSubStructure={hasCellTypeSubStructure}
+                                setHasCellTypeSubStructure={setHasCellTypeSubStructure}
+                                addConditionalParam={addConditionalParam}
+                              />
+                            </div>
+                            {/* {false && ( // TODO: display dev stage as condition param?
                           <div className="my-2 maxWidth50">
                             <DevelopmentalAndLifeStages
                               devStages={devStages}
@@ -874,39 +896,46 @@ const GeneExpressionMatrix = () => {
                             />
                           </div>
                         )} */}
-                      <DataType dataTypes={dataTypesExpCalls} setDataTypes={setDataTypesExpCalls} />
-                      {/* {false && ( // TODO: remove permanently?
+                            <DataType dataTypes={dataTypesExpCalls} setDataTypes={setDataTypesExpCalls} />
+                            {/* {false && ( // TODO: remove permanently?
                         <CallType callTypes={callTypes} setCallTypes={setCallTypes} />
                       )} */}
-                      <hr />
-                      <DataQualityParameter dataQuality={dataQuality} setDataQuality={setDataQuality} />
-                    </>
-                  ) : (
-                    <p className="expression-graph-filters-empty">
-                      Select at least one gene. These filters are optional and apply to the data for those genes.
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="expression-graph-actions">
-                {showSelectGeneHint && (
-                  <p id="expression-graph-submit-hint" className="expression-graph-submit-hint">
-                    Select at least one gene to continue.
-                  </p>
-                )}
-                <div className="expression-graph-action-buttons">
-                  <Button
-                    className="button is-success is-light is-outlined"
-                    type="submit"
-                    onClick={handleSubmit}
-                    disabled={!canSubmit}
-                    aria-describedby={showSelectGeneHint ? 'expression-graph-submit-hint' : undefined}
-                  >
-                    {isResolvingGeneList ? 'Resolving...' : 'Show graph'}
-                  </Button>
-                  <Button type="button" className="reinit is-warning is-light is-outlined" onClick={handleReinitialize}>
-                    Reinitialize
-                  </Button>
+                            <hr />
+                            <DataQualityParameter dataQuality={dataQuality} setDataQuality={setDataQuality} />
+                          </>
+                        ) : (
+                          <p className="expression-graph-filters-empty">
+                            Select at least one gene. These filters are optional and apply to the data for those genes.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="expression-graph-actions">
+                    <div className="expression-graph-action-buttons">
+                      <Button
+                        className="button is-success is-light is-outlined"
+                        type="submit"
+                        onClick={handleSubmit}
+                        disabled={!canSubmit}
+                        aria-describedby={showSelectGeneHint ? 'expression-graph-submit-hint' : undefined}
+                      >
+                        {isResolvingGeneList ? 'Resolving...' : 'Show graph'}
+                      </Button>
+                      <Button
+                        type="button"
+                        className="reinit is-warning is-light is-outlined"
+                        onClick={handleReinitialize}
+                      >
+                        Reinitialize
+                      </Button>
+                    </div>
+                    {showSelectGeneHint && (
+                      <p id="expression-graph-submit-hint" className="expression-graph-submit-hint">
+                        Select at least one gene to continue.
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </>
