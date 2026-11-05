@@ -46,6 +46,10 @@ type AxisSpecies = {
   speciesName?: string;
 };
 
+// The species list returns numeric ids. Selected genes store that id as a string.
+const sameSpeciesId = (left: string | number | null | undefined, right: string | number | null | undefined) =>
+  String(left ?? '') === String(right ?? '');
+
 // speciesLabel is "Genus species" or "Genus species - common name".
 const speciesFromLabel = (speciesId: string, speciesLabel: string): AxisSpecies => {
   const separator = ' - ';
@@ -216,7 +220,7 @@ const GeneExpressionMatrix = () => {
   // Filter genes for current species to show in Gene component
   const currentSpeciesGenes = useMemo(() => {
     return multiSpeciesGenes
-      .filter((g) => g.speciesId === selectedSpecies.value)
+      .filter((g) => sameSpeciesId(g.speciesId, selectedSpecies.value))
       .map((g) => ({
         label: g.geneLabel,
         value: g.geneId,
@@ -226,10 +230,12 @@ const GeneExpressionMatrix = () => {
   // Remove a gene from multi-species tracking
   const removeGene = useCallback(
     (speciesId: string, geneId: string) => {
-      setMultiSpeciesGenes((prev) => prev.filter((g) => !(g.speciesId === speciesId && g.geneId === geneId)));
+      setMultiSpeciesGenes((prev) =>
+        prev.filter((g) => !(sameSpeciesId(g.speciesId, speciesId) && g.geneId === geneId))
+      );
 
       // Also remove from selectedGene if it's the current species
-      if (speciesId === selectedSpecies.value) {
+      if (sameSpeciesId(speciesId, selectedSpecies.value)) {
         setSelectedGene((prev: Array<{ label: string; value: string }>) => prev.filter((g) => g.value !== geneId));
       }
     },
@@ -367,7 +373,7 @@ const GeneExpressionMatrix = () => {
   useEffect(() => {
     if (selectedSpecies.value && prevSpeciesRef.current !== selectedSpecies.value) {
       const genesForSpecies = multiSpeciesGenes
-        .filter((g) => g.speciesId === selectedSpecies.value)
+        .filter((g) => sameSpeciesId(g.speciesId, selectedSpecies.value))
         .map((g) => ({
           label: g.geneLabel,
           value: g.geneId,
