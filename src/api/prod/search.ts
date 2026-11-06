@@ -693,13 +693,14 @@ const search = {
           params.append('cell_type_id', 'SUMMARY');
         }
         params.append('cond_param2', 'anat_entity');
-        // Only request descendant expansion when the user selected a concrete tissue/cell type
-        // AND explicitly enabled the corresponding "sub-structure" checkbox.
-        if (form.hasTissueSubStructure && form.selectedTissue?.length > 0) {
-          params.append('anat_entity_descendant', '1');
+        // A selected tissue or cell type always sends its substructure flag.
+        // Omitting it does not mean "include substructures": this API treats a missing
+        // flag as the selected term only. false is what the unchecked box must send.
+        if (form.selectedTissue?.length > 0) {
+          params.append('anat_entity_descendant', form.hasTissueSubStructure ? '1' : 'false');
         }
-        if (form.hasCellTypeSubStructure && form.selectedCellTypes?.length > 0) {
-          params.append('cell_type_descendant', '1');
+        if (form.selectedCellTypes?.length > 0) {
+          params.append('cell_type_descendant', form.hasCellTypeSubStructure ? '1' : 'false');
         }
         if (form.dataType?.length > 0) {
           form.dataType.forEach((type) => params.append('data_type', type));

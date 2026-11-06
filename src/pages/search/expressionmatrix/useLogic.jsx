@@ -8,6 +8,14 @@ import { getIdAndNameLabel, getOptionsForFilter } from '../../../helpers/selects
 import { flattenDevStagesList } from './components/filters/DevelopmentalAndLifeStages/useLogic';
 import { getSelectedGeneKey } from './components/SelectedGenesList';
 import { mergeSpeciesSelection } from './geneOrder';
+import {
+  ANAT_ENTITY_DESCENDANT_PARAM,
+  CELL_TYPE_DESCENDANT_PARAM,
+  applyDescendantPageParams,
+  copyMissingDescendantFlags,
+  descendantFlagFromParams,
+} from './descendantParams';
+import { appendMissingFilterValues } from './storedFilters';
 import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
@@ -315,8 +323,12 @@ const useLogic = (options = {}) => {
   const [selectedSexes, setSelectedSexes] = useState([]);
   const [selectedExpOrAssay, setSelectedExpOrAssay] = useState([]);
   const [selectedDevStages, setSelectedDevStages] = useState([]);
-  const [hasCellTypeSubStructure, setHasCellTypeSubStructure] = useState(true);
-  const [hasTissueSubStructure, setHasTissueSubStructure] = useState(true);
+  const [hasCellTypeSubStructure, setHasCellTypeSubStructure] = useState(
+    () => descendantFlagFromParams(initSearch, CELL_TYPE_DESCENDANT_PARAM) ?? true
+  );
+  const [hasTissueSubStructure, setHasTissueSubStructure] = useState(
+    () => descendantFlagFromParams(initSearch, ANAT_ENTITY_DESCENDANT_PARAM) ?? true
+  );
   const [hasDevStageSubStructure, setDevStageSubStructure] = useState(true);
   const [dataQuality, setDataQuality] = useState(initSearch.get('data_qual') || SILVER);
   const [callTypes, setCallTypes] = useState([NOT_EXPRESSED, EXPRESSED]);
@@ -513,13 +525,17 @@ const useLogic = (options = {}) => {
       setSelectedExpOrAssay(initExpOrAssay);
     }
 
-    // SubStructures
-    setHasTissueSubStructure(true);
-    setHasCellTypeSubStructure(true);
+    // Substructures. The summary request omits a flag when that filter is empty, and the
+    // API then echoes its own default. Only a flag for a selected tissue or cell type
+    // describes the search the user asked for.
     setDevStageSubStructure(true);
-    if (requestParameters?.anat_entity_descendant === 'false') setHasTissueSubStructure(false);
-    if (requestParameters?.cell_type_descendant === 'false') setHasCellTypeSubStructure(false);
     if (requestParameters?.stage_descendant === 'false') setDevStageSubStructure(false);
+    const tissueIds = paramValues(requestParameters, 'anat_entity_id').filter((id) => id !== DEFAULT_ANAT_ENTITY_ID);
+    const cellTypeIds = paramValues(requestParameters, 'cell_type_id').filter((id) => id !== DEFAULT_CELL_TYPE_ID);
+    const tissueDesc = descendantFlagFromParams(requestParameters, ANAT_ENTITY_DESCENDANT_PARAM);
+    const cellDesc = descendantFlagFromParams(requestParameters, CELL_TYPE_DESCENDANT_PARAM);
+    if (tissueIds.length > 0 && tissueDesc !== null) setHasTissueSubStructure(tissueDesc);
+    if (cellTypeIds.length > 0 && cellDesc !== null) setHasCellTypeSubStructure(cellDesc);
 
     // Filters
     const filtersToCheck = data?.filters || {};
@@ -666,6 +682,12 @@ const useLogic = (options = {}) => {
         const searchParams = buildExpressionMatrixUrlParams(paramsURLCalled1, resp1?.requestParameters);
         searchParams.delete('data_qual');
         if (baseParams.dataQuality) searchParams.set('data_qual', baseParams.dataQuality);
+        // Keep an explicit opt-out beside the hash. The default stays off the URL.
+        applyDescendantPageParams(
+          searchParams,
+          Boolean(baseParams.hasTissueSubStructure),
+          Boolean(baseParams.hasCellTypeSubStructure)
+        );
 
         navigateToMatrixSearch(searchParams, isFirstSearch);
 
@@ -915,6 +937,14 @@ const useLogic = (options = {}) => {
     }
   };
 
+  // A URL value replaces the default. Called after resetForm, which turns both boxes on.
+  const applyDescendantFlags = (params) => {
+    const tissueDesc = descendantFlagFromParams(params, ANAT_ENTITY_DESCENDANT_PARAM);
+    const cellDesc = descendantFlagFromParams(params, CELL_TYPE_DESCENDANT_PARAM);
+    if (tissueDesc !== null) setHasTissueSubStructure(tissueDesc);
+    if (cellDesc !== null) setHasCellTypeSubStructure(cellDesc);
+  };
+
   const initFromUrlParams = async () => {
     const hashInUrl = initSearch.get('data');
     // The search we just ran already replaced eligible params with this hash.
@@ -958,7 +988,10 @@ const useLogic = (options = {}) => {
           // genes without spelling gene_list / gene_id back out.
           if (hash) {
             const filterSource = hashInUrl ? new URLSearchParams(initSearch) : new URLSearchParams();
-            if (!hashInUrl) filterSource.set('data', hash);
+            if (!hashInUrl) {
+              filterSource.set('data', hash);
+              copyMissingDescendantFlags(filterSource, initSearch);
+            }
             const storedFilters = new URLSearchParams();
             appendNonDefaultFilters(storedFilters, simpleParams);
             // The SUMMARY request hash records bronze. Keep the quality from the page URL.
@@ -966,9 +999,9 @@ const useLogic = (options = {}) => {
               storedFilters.delete('data_qual');
               storedFilters.set('data_qual', explicitDataQual);
             }
-            storedFilters.forEach((value, key) => {
-              if (!filterSource.has(key)) filterSource.append(key, value);
-            });
+            appendMissingFilterValues(filterSource, storedFilters);
+            // Page params win. Otherwise restore a substructure flag stored in the hash.
+            copyMissingDescendantFlags(filterSource, simpleParams);
             if (!hashInUrl) {
               const pageSearch = new URLSearchParams(filterSource);
               HASH_STORED_FILTER_KEYS.forEach((key) => pageSearch.delete(key));
@@ -993,6 +1026,8 @@ const useLogic = (options = {}) => {
             nextSearch.delete('data_qual');
             nextSearch.set('data_qual', explicitDataQual);
           }
+          copyMissingDescendantFlags(nextSearch, initSearch);
+          copyMissingDescendantFlags(nextSearch, simpleParams);
           navigate(
             {
               pathname: loc.pathname,
@@ -1069,6 +1104,10 @@ const useLogic = (options = {}) => {
               );
             }
           }
+          // resetForm turns both boxes on. Restore a stored flag, then let an explicit
+          // page param replace it.
+          applyDescendantFlags(resp2.resp.requestParameters);
+          applyDescendantFlags(initSearch);
         }
       } else if (hashInUrl) {
         resolvingHashRef.current = null;
@@ -1166,6 +1205,8 @@ const useLogic = (options = {}) => {
       setDataQuality(urlFilters.get('data_qual') || SILVER);
       const typesFromUrl = urlFilters.getAll('data_type');
       setDataTypesExpCalls(typesFromUrl.length === 0 ? ALL_DATA_TYPES_ID : expressionCallDataTypes(typesFromUrl));
+      // resetForm above turns both boxes on. Restore an explicit URL or hash value.
+      applyDescendantFlags(urlFilters);
       setIsInitializingFromUrl(true);
     } catch (error) {
       console.error('Error processing gene list:', error);
