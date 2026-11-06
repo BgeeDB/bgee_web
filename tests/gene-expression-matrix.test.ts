@@ -125,9 +125,11 @@ test.describe('Gene Expression Matrix Page', () => {
 
         if (geneOptionCount > 0) {
           await geneOptions.first().click();
-          await page.waitForTimeout(2000);
 
-          // Now check that data type checkbox options are present
+          // Data type and quality controls are inside the collapsed Data filters panel.
+          await page.getByRole('button', { name: 'Data filters' }).click();
+
+          // Current expression-call data types. Affymetrix and EST are no longer offered.
           const dataTypeLabels = ['bulk RNA-Seq', 'scRNA-Seq', 'In situ hybridization'];
           for (const label of dataTypeLabels) {
             await expect(page.locator('label.checkbox').filter({ hasText: label })).toBeVisible();
