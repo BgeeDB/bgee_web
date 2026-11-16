@@ -20,8 +20,6 @@ import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
 import { URL_ROOT } from '~/helpers/constants';
-// DEBUG: remove in PROD
-// import maxExpScoreCsv from '../../../assets/maxExpScore.csv'
 
 // to workaround backend server issues
 // import apiResp1 from '../../../assets/response_query1.INS.json';
@@ -349,8 +347,6 @@ const useLogic = (options = {}) => {
   const [submittedGeneKeys, setSubmittedGeneKeys] = useState([]);
   // True when the submitted search is the default SUMMARY anatomy view.
   const [showOthersBucket, setShowOthersBucket] = useState(true);
-  // const [maxExpScore, setMaxExpScore] = useState({});
-  const maxExpScore = [];
 
   // filters
   const [filters, setFilters] = useState({});
@@ -1244,7 +1240,6 @@ const useLogic = (options = {}) => {
     submittedGeneKeys,
     setSubmittedGeneKeys,
     showOthersBucket,
-    maxExpScore,
     dataType,
     show,
     devStages,

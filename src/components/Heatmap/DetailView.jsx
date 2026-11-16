@@ -144,6 +144,9 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           <DetailRow label="expressed" value={String(data.isExpressed)} />
           <DetailRow label="data quality" value={formatExpressionQuality(data.expressionQuality)} />
           <DetailRow label="expression score" value={String(data.value)} />
+          {data.maxExpScore != null ? (
+            <DetailRow label="best descendant score" value={String(data.maxExpScore)} />
+          ) : null}
           <br />
           <a
             href={

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 
 import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
 import { appendOthersBucket } from '../../helpers/othersAnatomicalBucket';
+import { callDescendantExpressionScore } from '../Heatmap/descendantScore';
 import Heatmap from '../Heatmap/Heatmap';
 import { CELL_TYPE_ROOT_ID, groupExpandedConditionRows } from './groupExpandedConditionRows';
 import { cellTypeGroupIds, readCollapseSingleCell, setCellTypeGroupsExpanded } from '../Heatmap/singleCellRows';
@@ -26,6 +27,7 @@ const expressionCallsContentKey = (calls: ExpressionCall[] | undefined): string 
         cell?.id ?? '',
         cell?.name ?? '',
         call.expressionScore?.expressionScore ?? '',
+        callDescendantExpressionScore(call) ?? '',
         call.expressionState ?? '',
         call.expressionQuality ?? '',
         types?.IN_SITU ? 1 : 0,
@@ -119,7 +121,9 @@ export interface ExpressionCall {
       name: string;
     };
   };
-  expressionScore: { expressionScore: number };
+  expressionScore: { expressionScore: number; bestDescendantExpressionScore?: number };
+  // Some responses also send this beside expressionScore. Null means "use the nested field".
+  bestDescendantExpressionScore?: number | { expressionScore?: number } | null;
   expressionState: string;
   expressionQuality?: string;
   dataTypesWithData: {
@@ -155,6 +159,8 @@ export interface GeneExpressionHeatmapProps {
   maxGraphWidth?: number;
   cellHeight?: number;
   showResetButton?: boolean;
+  // 'border' paints bestDescendantExpressionScore on rows the user can open.
+  descendantScoreMode?: string;
   rendererMargins?: { top: number; right: number; bottom: number; left: number };
   // Default SUMMARY view: show the expandable "others" bucket under the anatomical root.
   showOthersBucket?: boolean;
@@ -173,6 +179,7 @@ const GeneExpressionHeatmap = ({
   maxGraphWidth = 800,
   cellHeight = 15,
   showResetButton = false,
+  descendantScoreMode,
   rendererMargins,
   showOthersBucket = true,
 }: GeneExpressionHeatmapProps) => {
@@ -551,6 +558,7 @@ const GeneExpressionHeatmap = ({
       const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
       const expScore = result.expressionScore.expressionScore;
       const isExpressed = result.expressionState === 'expressed';
+      const maxExp = callDescendantExpressionScore(result);
 
       return {
         // Use geneId as x-domain key so columns are unique even when species prefix
@@ -568,6 +576,7 @@ const GeneExpressionHeatmap = ({
         cellTypeId,
         cellTypeName,
         value: expScore,
+        ...(maxExp != null ? { maxExp } : {}),
         isExpressed,
         expressionQuality: result.expressionQuality,
         hasDataInSitu: result.dataTypesWithData.IN_SITU,
@@ -623,6 +632,7 @@ const GeneExpressionHeatmap = ({
         defaultMaxGraphWidth={maxGraphWidth}
         defaultCellHeight={cellHeight}
         showResetButton={showResetButton}
+        descendantScoreMode={descendantScoreMode}
         rendererMargins={rendererMargins}
       />
       {isExpanding && (

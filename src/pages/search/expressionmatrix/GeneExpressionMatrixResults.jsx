@@ -30,6 +30,7 @@ const transformToExpressionCall = (result) => {
     gene: result.gene,
     condition,
     expressionScore: result.expressionScore,
+    bestDescendantExpressionScore: result.bestDescendantExpressionScore,
     expressionState: result.expressionState,
     expressionQuality: result.expressionQuality,
     dataTypesWithData: result.dataTypesWithData,
@@ -62,6 +63,7 @@ const GeneExpressionMatrixResults = ({
           cellHeight={30}
           showResetButton={true}
           showOthersBucket={showOthersBucket}
+          descendantScoreMode="border"
           rendererMargins={{ top: 60, right: 60, bottom: 50, left: 200 }}
         />
       )}

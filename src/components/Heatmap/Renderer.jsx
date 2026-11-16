@@ -5,6 +5,7 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import { Tooltip } from "../../../Tooltip";
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
+import { formatExpressionScore } from './descendantScore';
 import { computeTermAggregates } from './heatmapAggregates';
 import { hideLooseSingleCellRows } from './singleCellRows';
 import { isOthersBucket } from '../../helpers/othersAnatomicalBucket';
@@ -663,10 +664,16 @@ export const Renderer = forwardRef(
       }
       const idx = i;
       const fillColour = d.isExpressed ? colorScale(d.value) : '#cccccc';
-      if (!termProps[d.termId]) {
-        // console.log(`[Renderer] termProps[${d.termId}] not found`);
-      }
-      const strokeColour = termProps[d.termId].isTopLevelTerm ? colorScale(d.maxExp) : fillColour;
+      const term = termProps?.[d.termId];
+      const descendantScore = typeof d.maxExp === 'number' && Number.isFinite(d.maxExp) ? d.maxExp : null;
+      // The border is a cue to open the row. Child rows have no anatomical [+], so they
+      // keep the score in the tooltip and the detail card without a colored border.
+      const paintsDescendantScore =
+        (showDescMax === 'border' || showDescMax === 'center' || showDescMax === 'split') &&
+        Boolean(term?.isTopLevelTerm) &&
+        descendantScore != null;
+      const strokeColour = paintsDescendantScore ? colorScale(descendantScore) : fillColour;
+      const formattedDescendantScore = descendantScore != null ? formatExpressionScore(descendantScore) : null;
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
@@ -687,7 +694,7 @@ export const Renderer = forwardRef(
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
         expressionQuality: d.expressionQuality,
-        // maxExpScore: d.maxExp.toFixed(2),
+        ...(formattedDescendantScore != null && { maxExpScore: formattedDescendantScore }),
         hasDataInSitu: d.hasDataInSitu,
         hasDataRnaSeq: d.hasDataRnaSeq,
         hasDataScRnaSeq: d.hasDataScRnaSeq,
@@ -698,7 +705,7 @@ export const Renderer = forwardRef(
         yLabel,
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
-        ...(d.maxExp != null && { maxExpScore: d.maxExp.toFixed(2) }),
+        ...(formattedDescendantScore != null && { maxExpScore: formattedDescendantScore }),
         clientX: e.clientX + 10,
         clientY: e.clientY - 10,
       });
@@ -750,28 +757,89 @@ export const Renderer = forwardRef(
       // );
 
       switch (showDescMax) {
-        case 'border':
+        case 'border': {
+          // The score is a ring inside the tile: background between cells, a thin
+          // black edge so a light ring stays visible on white, the colored ring,
+          // then a hairline of the page background so the ring stays distinct
+          // from the fill. A centered stroke would spill into the next cell.
+          const cellGutter = 3;
+          const scoreOutline = 1;
+          const scoreRing = 2;
+          const scoreHairline = 1;
+          const cellRx = 3;
+          const bandX = xScale(d.x);
+          const bandY = yScale(d.y);
+          const bandW = xScale.bandwidth();
+          const bandH = yScale.bandwidth();
+          const outerX = bandX + cellGutter / 2;
+          const outerY = bandY + cellGutter / 2;
+          const outerW = Math.max(bandW - cellGutter, 0);
+          const outerH = Math.max(bandH - cellGutter, 0);
+          const hairlineColor = backgroundColor || '#ffffff';
+          const cellHandlers = {
+            onMouseEnter: (e) => setHoveredCell(getHoverData(e)),
+            onMouseLeave: () => setHoveredCell(null),
+            onClick: () => setClickedCell(cellData),
+            style: { cursor: 'pointer' },
+          };
+          const frameInset = (scoreOutline + scoreRing + scoreHairline) * 2;
+          const showFrame = paintsDescendantScore && outerW > frameInset + 2 && outerH > frameInset + 2;
+          if (!showFrame) {
+            return (
+              <rect
+                key={`heatMapCell-${idx}`}
+                x={outerX}
+                y={outerY}
+                width={outerW}
+                height={outerH}
+                rx={cellRx}
+                fill={fillColour}
+                {...cellHandlers}
+              />
+            );
+          }
+          const colorX = outerX + scoreOutline;
+          const colorY = outerY + scoreOutline;
+          const colorW = outerW - scoreOutline * 2;
+          const colorH = outerH - scoreOutline * 2;
+          const ringX = colorX + scoreRing;
+          const ringY = colorY + scoreRing;
+          const ringW = colorW - scoreRing * 2;
+          const ringH = colorH - scoreRing * 2;
+          const fillX = ringX + scoreHairline;
+          const fillY = ringY + scoreHairline;
+          const fillW = ringW - scoreHairline * 2;
+          const fillH = ringH - scoreHairline * 2;
           return (
-            <rect
-              key={`heatMapCell-${idx}`}
-              r={3}
-              x={xScale(d.x)}
-              y={yScale(d.y)}
-              width={xScale.bandwidth() - 4}
-              height={yScale.bandwidth() - 4}
-              opacity={1}
-              fill={fillColour}
-              rx={5}
-              stroke={strokeColour}
-              strokeWidth={4}
-              onMouseEnter={(e) => {
-                setHoveredCell(getHoverData(e));
-              }}
-              onMouseLeave={() => setHoveredCell(null)}
-              onClick={() => setClickedCell(cellData)}
-              cursor="pointer"
-            />
+            <g key={`heatMapCell-${idx}`} {...cellHandlers}>
+              <rect x={outerX} y={outerY} width={outerW} height={outerH} rx={cellRx} fill="#000000" />
+              <rect
+                x={colorX}
+                y={colorY}
+                width={colorW}
+                height={colorH}
+                rx={Math.max(cellRx - scoreOutline, 0)}
+                fill={strokeColour}
+              />
+              <rect
+                x={ringX}
+                y={ringY}
+                width={ringW}
+                height={ringH}
+                rx={Math.max(cellRx - scoreOutline - scoreRing, 0)}
+                fill={hairlineColor}
+              />
+              <rect
+                x={fillX}
+                y={fillY}
+                width={fillW}
+                height={fillH}
+                rx={Math.max(cellRx - scoreOutline - scoreRing - scoreHairline, 0)}
+                fill={fillColour}
+              />
+            </g>
           );
+        }
 
         // show circle in center of cell
         case 'center':
@@ -1010,7 +1078,7 @@ export const Renderer = forwardRef(
                   fontSize={15}
                   fontFamily="sans"
                 >
-                  {showDescMax === 'border' ? 'Border color: max. expression score' : null}
+                  {showDescMax === 'border' ? 'Border on top-level rows: best descendant expression score' : null}
                   {showDescMax === 'center' ? 'Central dot: max. expression score' : null}
                   {showDescMax === 'split' ? 'Right part of cell: max. expression score' : null}
                 </text>

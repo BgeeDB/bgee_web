@@ -47,6 +47,9 @@ export const Tooltip = ({ interactionData, width, height }) => {
         <TooltipRow label="gene" value={interactionData.xLabel} />
         <TooltipRow label="anatomy" value={interactionData.yLabel} />
         <TooltipRow label="value" value={String(interactionData.value)} />
+        {interactionData.maxExpScore != null ? (
+          <TooltipRow label="best descendant score" value={String(interactionData.maxExpScore)} />
+        ) : null}
         <TooltipRow label="expressed" value={String(interactionData.isExpressed)} />
       </div>
     </div>

@@ -74,6 +74,8 @@ export type HeatmapProps = {
   defaultMaxGraphWidth?: number;
   defaultCellHeight?: number;
   showResetButton?: boolean;
+  // When set, replaces the stored debug choice (border, center, split, none).
+  descendantScoreMode?: string;
   rendererMargins?: { top: number; right: number; bottom: number; left: number };
 };
 
@@ -92,6 +94,7 @@ const Heatmap = ({
   defaultXLabelRotation = 0,
   defaultMaxGraphWidth = 800,
   defaultCellHeight = 30,
+  descendantScoreMode,
   rendererMargins,
 }: HeatmapProps) => {
   // COMPONENT STATE
@@ -488,7 +491,7 @@ const Heatmap = ({
                 xLabelRotation={xLabelRotation}
                 showLegend={showLegend}
                 showMissingData={showMissingData}
-                showDescMax={showDescMax}
+                showDescMax={descendantScoreMode || showDescMax}
                 colorLegendWidth={200}
                 colorLegendHeight={COLOR_LEGEND_HEIGHT}
                 maxCellWidth={cellWidth}
