@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router';
 import Bulma from '../Bulma';
 import api from '../../api';
 import Heatmap from '../Heatmap/Heatmap';
+import { callDescendantExpressionScore } from '../Heatmap/descendantScore';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
 import useQuery from '../../hooks/useQuery';
@@ -540,6 +541,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
       const termName = cellTypeId !== 'GO:0005575' ? `${anatEntityName} : ${cellTypeName}` : anatEntityName;
       const expScore = result.expressionScore.expressionScore;
       const isExpressed = result.expressionState === 'expressed';
+      const maxExp = callDescendantExpressionScore(result);
 
       return {
         x: gId, // Use geneId for x coordinate (matches xTerms.value for scale domain)
@@ -555,6 +557,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
         cellTypeId,
         cellTypeName,
         value: expScore,
+        ...(maxExp != null ? { maxExp } : {}),
         isExpressed,
         expressionQuality: result.expressionQuality,
         hasDataInSitu: result.dataTypesWithData.IN_SITU,
@@ -644,6 +647,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
             width={800}
             height={800}
             backgroundColor="white"
+            descendantScoreMode="border"
           />
         )}
         {!isLoading && searchResult && anatomicalTerms.length === 0 && heatmapData.length === 0 && (
