@@ -664,14 +664,9 @@ export const Renderer = forwardRef(
       }
       const idx = i;
       const fillColour = d.isExpressed ? colorScale(d.value) : '#cccccc';
-      const term = termProps?.[d.termId];
       const descendantScore = typeof d.maxExp === 'number' && Number.isFinite(d.maxExp) ? d.maxExp : null;
-      // The border is a cue to open the row. Child rows have no anatomical [+], so they
-      // keep the score in the tooltip and the detail card without a colored border.
       const paintsDescendantScore =
-        (showDescMax === 'border' || showDescMax === 'center' || showDescMax === 'split') &&
-        Boolean(term?.isTopLevelTerm) &&
-        descendantScore != null;
+        (showDescMax === 'border' || showDescMax === 'center' || showDescMax === 'split') && descendantScore != null;
       const strokeColour = paintsDescendantScore ? colorScale(descendantScore) : fillColour;
       const formattedDescendantScore = descendantScore != null ? formatExpressionScore(descendantScore) : null;
       const cellData = {
@@ -1078,7 +1073,7 @@ export const Renderer = forwardRef(
                   fontSize={15}
                   fontFamily="sans"
                 >
-                  {showDescMax === 'border' ? 'Border on top-level rows: best descendant expression score' : null}
+                  {showDescMax === 'border' ? 'Border: best descendant expression score' : null}
                   {showDescMax === 'center' ? 'Central dot: max. expression score' : null}
                   {showDescMax === 'split' ? 'Right part of cell: max. expression score' : null}
                 </text>

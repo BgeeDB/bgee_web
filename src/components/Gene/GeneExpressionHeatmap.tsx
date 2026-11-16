@@ -159,7 +159,7 @@ export interface GeneExpressionHeatmapProps {
   maxGraphWidth?: number;
   cellHeight?: number;
   showResetButton?: boolean;
-  // 'border' paints bestDescendantExpressionScore on rows the user can open.
+  // 'border' paints bestDescendantExpressionScore on every row that has one.
   descendantScoreMode?: string;
   rendererMargins?: { top: number; right: number; bottom: number; left: number };
   // Default SUMMARY view: show the expandable "others" bucket under the anatomical root.
