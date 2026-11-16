@@ -28,7 +28,7 @@ import Bulma from '~/components/Bulma';
 import api from '~/api';
 import { getGeneLabel, pickGeneFromSearchResult } from '~/helpers/gene';
 import { groupGenesBySpecies, insertGenesBySpecies, mergeSpeciesSelection, reorderVisibleGene } from './geneOrder';
-import { ChevronDown, ChevronUp, Plus, SquarePlus } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 type InputMode = 'species' | 'list';
 
@@ -639,17 +639,6 @@ const GeneExpressionMatrix = () => {
       <div className="rawDataAnnotation">
         <div className="columns is-8 ongletPageWrapper expression-graph-heading">
           <h1 className="ongletPages pageActive">{TAB_PAGE_EXPR_CALL.label}</h1>
-          <Button
-            renderAs="a"
-            href={`${URL_ROOT}/search/expression-matrix`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="is-small new-expression-graph-btn"
-            title="New expression graph (opens in a new tab)"
-            aria-label="New expression graph (opens in a new tab)"
-          >
-            <SquarePlus size={18} aria-hidden="true" />
-          </Button>
         </div>
 
         <div>
