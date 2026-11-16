@@ -5,7 +5,7 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import { Tooltip } from "../../../Tooltip";
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
-import { formatExpressionScore } from './descendantScore';
+import { bestDescendantCellMarks, descendantCellMarkKey, formatExpressionScore } from './descendantScore';
 import { computeTermAggregates } from './heatmapAggregates';
 import { hideLooseSingleCellRows } from './singleCellRows';
 import { isOthersBucket } from '../../helpers/othersAnatomicalBucket';
@@ -79,6 +79,13 @@ function reorderAnatomyTree(nodes, rowOrdering, scoreMap, aggFn) {
 }
 
 const DEFAULT_MARGIN = { top: 50, right: 10, bottom: 50, left: 200 };
+
+// Cell frame for a best-descendant score. The legend swatches use the same thicknesses.
+const SCORE_CELL_GUTTER = 3;
+const SCORE_OUTLINE = 1;
+const SCORE_RING = 2;
+const SCORE_HAIRLINE = 1;
+const SCORE_CELL_RX = 3;
 
 // X-axis label geometry constants (must match the <text> elements below)
 const X_LABEL_FONT_SIZE = 15;
@@ -369,6 +376,124 @@ const renderSvgTextLines = (text, keyPrefix) => {
   ));
 };
 
+function ScoreFrame({ x, y, width, height, rx, ringColor, fill, hairline }) {
+  const colorX = x + SCORE_OUTLINE;
+  const colorY = y + SCORE_OUTLINE;
+  const colorW = width - SCORE_OUTLINE * 2;
+  const colorH = height - SCORE_OUTLINE * 2;
+  const hairX = colorX + SCORE_RING;
+  const hairY = colorY + SCORE_RING;
+  const hairW = colorW - SCORE_RING * 2;
+  const hairH = colorH - SCORE_RING * 2;
+  const fillX = hairX + SCORE_HAIRLINE;
+  const fillY = hairY + SCORE_HAIRLINE;
+  return (
+    <g>
+      <rect x={x} y={y} width={width} height={height} rx={rx} fill="#000000" />
+      <rect
+        x={colorX}
+        y={colorY}
+        width={colorW}
+        height={colorH}
+        rx={Math.max(rx - SCORE_OUTLINE, 0)}
+        fill={ringColor}
+      />
+      <rect
+        x={hairX}
+        y={hairY}
+        width={hairW}
+        height={hairH}
+        rx={Math.max(rx - SCORE_OUTLINE - SCORE_RING, 0)}
+        fill={hairline}
+      />
+      <rect
+        x={fillX}
+        y={fillY}
+        width={width - (SCORE_OUTLINE + SCORE_RING + SCORE_HAIRLINE) * 2}
+        height={height - (SCORE_OUTLINE + SCORE_RING + SCORE_HAIRLINE) * 2}
+        rx={Math.max(rx - SCORE_OUTLINE - SCORE_RING - SCORE_HAIRLINE, 0)}
+        fill={fill}
+      />
+    </g>
+  );
+}
+
+function CornerMark({ x, y, width, height, kind, hairline }) {
+  const size = Math.min(8, width * 0.45, height * 0.45);
+  if (!(size >= 4)) return null;
+  const right = x + width - 1.5;
+  const top = y + 1.5;
+  const points = `${right - size},${top} ${right},${top} ${right},${top + size}`;
+  if (kind === 'self') {
+    return (
+      <polygon
+        points={points}
+        fill="#000000"
+        stroke={hairline}
+        strokeWidth={1}
+        strokeLinejoin="round"
+        pointerEvents="none"
+      />
+    );
+  }
+  return (
+    <polygon
+      points={points}
+      fill={hairline}
+      stroke="#000000"
+      strokeWidth={1}
+      strokeLinejoin="round"
+      pointerEvents="none"
+    />
+  );
+}
+
+function DescendantAnnotationKey({ x, y, ringColor, fill, hairline }) {
+  const swatchW = 36;
+  const swatchH = 24;
+  const rows = [
+    { kind: 'border', label: 'Border: best descendant expression score' },
+    { kind: 'self', label: "Filled triangle: this cell is the parent's best" },
+    { kind: 'branch', label: 'Open triangle: the best score is further down' },
+  ];
+  return (
+    <g id="descendantAnnotationLegend" fontFamily="Open Sans, sans-serif">
+      {rows.map((row, index) => {
+        const rowY = y + index * 30;
+        const inset = SCORE_OUTLINE + SCORE_RING + SCORE_HAIRLINE;
+        return (
+          <g key={row.kind}>
+            <ScoreFrame
+              x={x}
+              y={rowY}
+              width={swatchW}
+              height={swatchH}
+              rx={SCORE_CELL_RX}
+              ringColor={ringColor}
+              fill={fill}
+              hairline={hairline}
+            />
+            {row.kind === 'border' ? null : (
+              <CornerMark
+                x={x + inset}
+                y={rowY + inset}
+                width={swatchW - inset * 2}
+                height={swatchH - inset * 2}
+                kind={row.kind}
+                hairline={hairline}
+              />
+            )}
+            <text x={x + swatchW + 8} y={rowY + swatchH / 2} dominantBaseline="middle" fontSize={12}>
+              {row.label}
+            </text>
+            <title>{row.label}</title>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 export const Renderer = forwardRef(
   (
     {
@@ -377,7 +502,6 @@ export const Renderer = forwardRef(
       data,
       xTerms,
       drilldown,
-      termProps,
       hoveredCell,
       setHoveredCell,
       setClickedCell,
@@ -639,7 +763,10 @@ export const Renderer = forwardRef(
     const desiredCellBand = allYGroups.length * defaultCellHeight;
     const requestedCellBand = height - effectiveMarginTop - bottomLabelGap - MARGIN.bottom;
     const cellBandHeight = Math.max(desiredCellBand, requestedCellBand, 0);
-    const svgHeight = effectiveMarginTop + cellBandHeight + bottomLabelGap + MARGIN.bottom + colorLegendHeight;
+    // The annotation key sits under the color scale: three swatch rows.
+    const annotationKeyHeight = showLegend && showDescMax === 'border' ? 96 : 0;
+    const svgHeight =
+      effectiveMarginTop + cellBandHeight + bottomLabelGap + MARGIN.bottom + colorLegendHeight + annotationKeyHeight;
 
     const yScale = useMemo(
       () => d3.scaleBand().range([0, cellBandHeight]).domain(allYGroups).padding(0.01),
@@ -651,6 +778,11 @@ export const Renderer = forwardRef(
       if (!setGraphHeight) return;
       setGraphHeight((current) => (Number(current) === svgHeight ? current : svgHeight));
     }, [svgHeight, setGraphHeight]);
+
+    const descendantMarks = useMemo(
+      () => (showDescMax === 'border' ? bestDescendantCellMarks(drilldownOrdered, data) : new Map()),
+      [showDescMax, drilldownOrdered, data]
+    );
 
     // Build the rectangles
     const allShapes = dataShow.map((d, i) => {
@@ -669,6 +801,7 @@ export const Renderer = forwardRef(
         (showDescMax === 'border' || showDescMax === 'center' || showDescMax === 'split') && descendantScore != null;
       const strokeColour = paintsDescendantScore ? colorScale(descendantScore) : fillColour;
       const formattedDescendantScore = descendantScore != null ? formatExpressionScore(descendantScore) : null;
+      const parentMark = descendantMarks.get(descendantCellMarkKey(d.x, d.y));
       const cellData = {
         geneId: d.geneId,
         geneName: d.geneName,
@@ -690,6 +823,7 @@ export const Renderer = forwardRef(
         isExpressed: d.isExpressed,
         expressionQuality: d.expressionQuality,
         ...(formattedDescendantScore != null && { maxExpScore: formattedDescendantScore }),
+        ...(parentMark && { bestDescendantOfParent: parentMark }),
         hasDataInSitu: d.hasDataInSitu,
         hasDataRnaSeq: d.hasDataRnaSeq,
         hasDataScRnaSeq: d.hasDataScRnaSeq,
@@ -701,6 +835,7 @@ export const Renderer = forwardRef(
         value: Math.round(d.value * 100) / 100,
         isExpressed: d.isExpressed,
         ...(formattedDescendantScore != null && { maxExpScore: formattedDescendantScore }),
+        ...(parentMark && { bestDescendantOfParent: parentMark }),
         clientX: e.clientX + 10,
         clientY: e.clientY - 10,
       });
@@ -757,19 +892,14 @@ export const Renderer = forwardRef(
           // black edge so a light ring stays visible on white, the colored ring,
           // then a hairline of the page background so the ring stays distinct
           // from the fill. A centered stroke would spill into the next cell.
-          const cellGutter = 3;
-          const scoreOutline = 1;
-          const scoreRing = 2;
-          const scoreHairline = 1;
-          const cellRx = 3;
           const bandX = xScale(d.x);
           const bandY = yScale(d.y);
           const bandW = xScale.bandwidth();
           const bandH = yScale.bandwidth();
-          const outerX = bandX + cellGutter / 2;
-          const outerY = bandY + cellGutter / 2;
-          const outerW = Math.max(bandW - cellGutter, 0);
-          const outerH = Math.max(bandH - cellGutter, 0);
+          const outerX = bandX + SCORE_CELL_GUTTER / 2;
+          const outerY = bandY + SCORE_CELL_GUTTER / 2;
+          const outerW = Math.max(bandW - SCORE_CELL_GUTTER, 0);
+          const outerH = Math.max(bandH - SCORE_CELL_GUTTER, 0);
           const hairlineColor = backgroundColor || '#ffffff';
           const cellHandlers = {
             onMouseEnter: (e) => setHoveredCell(getHoverData(e)),
@@ -777,61 +907,42 @@ export const Renderer = forwardRef(
             onClick: () => setClickedCell(cellData),
             style: { cursor: 'pointer' },
           };
-          const frameInset = (scoreOutline + scoreRing + scoreHairline) * 2;
+          const frameInset = (SCORE_OUTLINE + SCORE_RING + SCORE_HAIRLINE) * 2;
           const showFrame = paintsDescendantScore && outerW > frameInset + 2 && outerH > frameInset + 2;
-          if (!showFrame) {
-            return (
-              <rect
-                key={`heatMapCell-${idx}`}
-                x={outerX}
-                y={outerY}
-                width={outerW}
-                height={outerH}
-                rx={cellRx}
-                fill={fillColour}
-                {...cellHandlers}
-              />
-            );
-          }
-          const colorX = outerX + scoreOutline;
-          const colorY = outerY + scoreOutline;
-          const colorW = outerW - scoreOutline * 2;
-          const colorH = outerH - scoreOutline * 2;
-          const ringX = colorX + scoreRing;
-          const ringY = colorY + scoreRing;
-          const ringW = colorW - scoreRing * 2;
-          const ringH = colorH - scoreRing * 2;
-          const fillX = ringX + scoreHairline;
-          const fillY = ringY + scoreHairline;
-          const fillW = ringW - scoreHairline * 2;
-          const fillH = ringH - scoreHairline * 2;
+          const markBox = showFrame
+            ? {
+                x: outerX + frameInset,
+                y: outerY + frameInset,
+                width: outerW - frameInset * 2,
+                height: outerH - frameInset * 2,
+              }
+            : { x: outerX, y: outerY, width: outerW, height: outerH };
           return (
             <g key={`heatMapCell-${idx}`} {...cellHandlers}>
-              <rect x={outerX} y={outerY} width={outerW} height={outerH} rx={cellRx} fill="#000000" />
-              <rect
-                x={colorX}
-                y={colorY}
-                width={colorW}
-                height={colorH}
-                rx={Math.max(cellRx - scoreOutline, 0)}
-                fill={strokeColour}
-              />
-              <rect
-                x={ringX}
-                y={ringY}
-                width={ringW}
-                height={ringH}
-                rx={Math.max(cellRx - scoreOutline - scoreRing, 0)}
-                fill={hairlineColor}
-              />
-              <rect
-                x={fillX}
-                y={fillY}
-                width={fillW}
-                height={fillH}
-                rx={Math.max(cellRx - scoreOutline - scoreRing - scoreHairline, 0)}
-                fill={fillColour}
-              />
+              {showFrame ? (
+                <ScoreFrame
+                  x={outerX}
+                  y={outerY}
+                  width={outerW}
+                  height={outerH}
+                  rx={SCORE_CELL_RX}
+                  ringColor={strokeColour}
+                  fill={fillColour}
+                  hairline={hairlineColor}
+                />
+              ) : (
+                <rect x={outerX} y={outerY} width={outerW} height={outerH} rx={SCORE_CELL_RX} fill={fillColour} />
+              )}
+              {parentMark ? (
+                <CornerMark
+                  x={markBox.x}
+                  y={markBox.y}
+                  width={markBox.width}
+                  height={markBox.height}
+                  kind={parentMark}
+                  hairline={hairlineColor}
+                />
+              ) : null}
             </g>
           );
         }
@@ -1063,7 +1174,16 @@ export const Renderer = forwardRef(
               </g>
             ) : null}
 
-            {showLegend ? (
+            {showLegend && showDescMax === 'border' ? (
+              <DescendantAnnotationKey
+                x={colorLegendPosX}
+                y={colorLegendPosY + COLOR_LEGEND_SWATCH_BASELINE + 16}
+                ringColor={colorScale(max * 0.92)}
+                fill={colorScale(max * 0.4)}
+                hairline={backgroundColor || '#ffffff'}
+              />
+            ) : null}
+            {showLegend && showDescMax !== 'border' ? (
               <g>
                 <text
                   id="txtSecondaryLegend"
@@ -1073,7 +1193,6 @@ export const Renderer = forwardRef(
                   fontSize={15}
                   fontFamily="sans"
                 >
-                  {showDescMax === 'border' ? 'Border: best descendant expression score' : null}
                   {showDescMax === 'center' ? 'Central dot: max. expression score' : null}
                   {showDescMax === 'split' ? 'Right part of cell: max. expression score' : null}
                 </text>

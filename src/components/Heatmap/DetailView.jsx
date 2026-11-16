@@ -1,3 +1,4 @@
+import { PARENT_DESCENDANT_MARK_LABEL } from './descendantScore';
 /* TypeScript specific
 import { InteractionData } from "./Heatmap";
 */
@@ -146,6 +147,9 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           <DetailRow label="expression score" value={String(data.value)} />
           {data.maxExpScore != null ? (
             <DetailRow label="best descendant score" value={String(data.maxExpScore)} />
+          ) : null}
+          {PARENT_DESCENDANT_MARK_LABEL[data.bestDescendantOfParent] ? (
+            <DetailRow label="highlight" value={PARENT_DESCENDANT_MARK_LABEL[data.bestDescendantOfParent]} />
           ) : null}
           <br />
           <a

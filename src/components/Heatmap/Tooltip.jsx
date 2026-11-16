@@ -1,6 +1,7 @@
 /* TypeScript specific
 import { InteractionData } from "./Heatmap";
 */
+import { PARENT_DESCENDANT_MARK_LABEL } from './descendantScore';
 import styles from './tooltip.module.css';
 
 /* TypeScript specific
@@ -49,6 +50,9 @@ export const Tooltip = ({ interactionData, width, height }) => {
         <TooltipRow label="value" value={String(interactionData.value)} />
         {interactionData.maxExpScore != null ? (
           <TooltipRow label="best descendant score" value={String(interactionData.maxExpScore)} />
+        ) : null}
+        {PARENT_DESCENDANT_MARK_LABEL[interactionData.bestDescendantOfParent] ? (
+          <TooltipRow label="highlight" value={PARENT_DESCENDANT_MARK_LABEL[interactionData.bestDescendantOfParent]} />
         ) : null}
         <TooltipRow label="expressed" value={String(interactionData.isExpressed)} />
       </div>
