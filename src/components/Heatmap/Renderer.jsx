@@ -324,6 +324,77 @@ const measureTopLabelRightOverflow = (labelGroup, plotRight) => {
   return Math.max(0, maxX - plotRight);
 };
 
+// Height of each species name above its anchor, in the label group's coordinates.
+// The anchor is the text origin: with text-anchor start and rotate(-90) the glyphs
+// grow upward, so the extent is the distance from that origin to the top of the ink.
+const measureSpeciesLeafExtents = (labelGroup) => {
+  const svg = labelGroup.ownerSVGElement;
+  if (!svg) return null;
+  const groupCtm = labelGroup.getScreenCTM();
+  if (!groupCtm) return null;
+  let toGroup;
+  try {
+    toGroup = groupCtm.inverse();
+  } catch {
+    return null;
+  }
+  const extents = {};
+  let sawGlyphs = false;
+  for (const group of labelGroup.querySelectorAll('[data-testid^="species-taxon-species-leaf-"]')) {
+    const text = group.querySelector('text');
+    if (!text) continue;
+    const key = (group.getAttribute('data-testid') || '').slice('species-taxon-'.length);
+    if (!key) continue;
+    let box;
+    try {
+      box = text.getBBox();
+    } catch {
+      continue;
+    }
+    if (!(box.width > 0)) continue;
+    const nodeCtm = text.getScreenCTM();
+    if (!nodeCtm) continue;
+    const matrix = toGroup.multiply(nodeCtm);
+    const point = (x, y) => {
+      const pt = svg.createSVGPoint();
+      pt.x = x;
+      pt.y = y;
+      return pt.matrixTransform(matrix);
+    };
+    const anchor = point(0, 0);
+    let minY = Infinity;
+    for (const [x, y] of [
+      [box.x, box.y],
+      [box.x + box.width, box.y],
+      [box.x, box.y + box.height],
+      [box.x + box.width, box.y + box.height],
+    ]) {
+      const painted = point(x, y);
+      if (Number.isFinite(painted.y)) minY = Math.min(minY, painted.y);
+    }
+    const extent = anchor.y - minY;
+    if (!(extent > 0)) continue;
+    sawGlyphs = true;
+    extents[key] = {
+      fontSize: Number.parseFloat(text.getAttribute('font-size') || ''),
+      label: group.getAttribute('aria-label') || '',
+      extent,
+    };
+  }
+  return sawGlyphs ? extents : null;
+};
+
+const speciesLeafExtentsMatch = (left, right) => {
+  const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
+  for (const key of keys) {
+    const a = left[key];
+    const b = right[key];
+    if (!a || !b || a.label !== b.label) return false;
+    if (Math.abs(a.fontSize - b.fontSize) > 0.1 || Math.abs(a.extent - b.extent) > 0.5) return false;
+  }
+  return true;
+};
+
 // Extra pixels reserved beside each column when turning a cell size into plot width.
 const COLUMN_GAP = 4;
 // Keep the fitted drawing a hair inside the viewport so a scrollbar does not appear.
@@ -542,6 +613,7 @@ export const Renderer = forwardRef(
       };
     }, [xTerms, xLabelRotationEffective, xLabelMetrics]);
 
+    const [speciesLeafExtents, setSpeciesLeafExtents] = useState(null);
     const speciesAxisLayout = useMemo(() => {
       if (speciesAxis !== 'tree' || !speciesTree) return null;
       const speciesIds = xTerms.map((term) => (term?.speciesId == null ? '' : String(term.speciesId)));
@@ -553,13 +625,14 @@ export const Renderer = forwardRef(
         xScale,
         plotRight: requiredXWidth,
         leafPadding: X_LABEL_PADDING,
+        leafExtents: speciesLeafExtents?.extents,
         helpers: {
           verticalExtent: estimateLabelVerticalExtent,
           rightExtent: estimateLabelExtentRightOfAnchor,
           labelMetrics,
         },
       });
-    }, [speciesAxis, speciesTree, xTerms, allXGroups, xScale, requiredXWidth]);
+    }, [speciesAxis, speciesTree, xTerms, allXGroups, xScale, requiredXWidth, speciesLeafExtents]);
 
     const resolvedTopLabelSpace = speciesAxisLayout?.topSpace ?? topLabelSpace;
     const effectiveMarginTop = Math.max(MARGIN.top, resolvedTopLabelSpace);
@@ -594,6 +667,31 @@ export const Renderer = forwardRef(
     }, [speciesAxisLayout, selectedTaxonKey]);
     const topLabelsRef = useRef(null);
     const yLabelsRef = useRef(null);
+    const speciesLeafMeasureKey = speciesAxisLayout
+      ? speciesAxisLayout.leaves.map((leaf) => `${leaf.key}:${leaf.fontSize}:${leaf.label}`).join('|')
+      : '';
+
+    useLayoutEffect(() => {
+      if (!speciesLeafMeasureKey) return undefined;
+      const labelGroup = topLabelsRef.current;
+      if (!labelGroup) return undefined;
+      let cancelled = false;
+      const measure = () => {
+        if (cancelled) return;
+        const extents = measureSpeciesLeafExtents(labelGroup);
+        if (!extents) return;
+        setSpeciesLeafExtents((prev) => {
+          if (prev && prev.key === speciesLeafMeasureKey && speciesLeafExtentsMatch(prev.extents, extents)) return prev;
+          return { key: speciesLeafMeasureKey, extents };
+        });
+      };
+      measure();
+      const fontsReady = typeof document !== 'undefined' ? document.fonts?.ready : undefined;
+      fontsReady?.then(() => measure());
+      return () => {
+        cancelled = true;
+      };
+    }, [speciesLeafMeasureKey]);
     const hasMeasuredTopLabelOverflow =
       measuredTopLabelRightOverflow &&
       measuredTopLabelRightOverflow.key === topLabelMeasureKey &&
