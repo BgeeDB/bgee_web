@@ -5,7 +5,13 @@ import { ColorLegendSvg } from './ColorLegendSvg';
 // import { Tooltip } from "../../../Tooltip";
 // import styles from "./renderer.module.css";
 import fonts from './fonts';
-import { bestDescendantCellMarks, descendantCellMarkKey, formatExpressionScore } from './descendantScore';
+import {
+  bestDescendantCellMarks,
+  cornerMarkSize,
+  descendantCellMarkKey,
+  descendantMarkBox,
+  formatExpressionScore,
+} from './descendantScore';
 import { computeTermAggregates } from './heatmapAggregates';
 import { hideLooseSingleCellRows } from './singleCellRows';
 import { isOthersBucket } from '../../helpers/othersAnatomicalBucket';
@@ -419,8 +425,8 @@ function ScoreFrame({ x, y, width, height, rx, ringColor, fill, hairline }) {
 }
 
 function CornerMark({ x, y, width, height, kind, hairline }) {
-  const size = Math.min(8, width * 0.45, height * 0.45);
-  if (!(size >= 4)) return null;
+  const size = cornerMarkSize(width, height);
+  if (!size) return null;
   const right = x + width - 1.5;
   const top = y + 1.5;
   const points = `${right - size},${top} ${right},${top} ${right},${top + size}`;
@@ -453,7 +459,7 @@ function DescendantAnnotationKey({ x, y, ringColor, fill, hairline }) {
   const swatchH = 24;
   const rows = [
     { kind: 'border', label: 'Border: best descendant expression score' },
-    { kind: 'self', label: "Filled triangle: this cell is the parent's best" },
+    { kind: 'self', label: "Filled triangle: this tile is the parent's best" },
     { kind: 'branch', label: 'Open triangle: the best score is further down' },
   ];
   return (
@@ -907,16 +913,12 @@ export const Renderer = forwardRef(
             onClick: () => setClickedCell(cellData),
             style: { cursor: 'pointer' },
           };
-          const frameInset = (SCORE_OUTLINE + SCORE_RING + SCORE_HAIRLINE) * 2;
-          const showFrame = paintsDescendantScore && outerW > frameInset + 2 && outerH > frameInset + 2;
-          const markBox = showFrame
-            ? {
-                x: outerX + frameInset,
-                y: outerY + frameInset,
-                width: outerW - frameInset * 2,
-                height: outerH - frameInset * 2,
-              }
-            : { x: outerX, y: outerY, width: outerW, height: outerH };
+          const framePad = SCORE_OUTLINE + SCORE_RING + SCORE_HAIRLINE;
+          const showFrame = paintsDescendantScore && outerW > framePad * 2 + 2 && outerH > framePad * 2 + 2;
+          const markBox = descendantMarkBox(
+            { x: outerX, y: outerY, width: outerW, height: outerH },
+            showFrame ? framePad : 0
+          );
           return (
             <g key={`heatMapCell-${idx}`} {...cellHandlers}>
               {showFrame ? (

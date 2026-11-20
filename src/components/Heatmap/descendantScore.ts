@@ -51,6 +51,31 @@ export const roundedExpressionScore = (value: unknown): number | undefined => {
 
 export const descendantCellMarkKey = (geneId: unknown, termId: unknown): string => `${geneId}\u0000${termId}`;
 
+// Side length of the corner triangle. Zero means the box cannot hold one.
+// The cap matches the mark drawn on a full-size cell; the fraction keeps a
+// readable triangle as columns shrink toward the minimum cell width.
+export const cornerMarkSize = (width: number, height: number): number => {
+  if (!(width > 0) || !(height > 0)) return 0;
+  const size = Math.min(8, width * 0.45, height * 0.45);
+  return size >= 4 ? size : 0;
+};
+
+type MarkBox = { x: number; y: number; width: number; height: number };
+
+// Prefer the inner fill so the triangle sits on the expression color.
+// A narrow column's fill is smaller than the frame pad, so the mark then
+// uses the whole tile and stays visible.
+export const descendantMarkBox = (outer: MarkBox, framePad: number): MarkBox => {
+  if (!(framePad > 0)) return outer;
+  const inner = {
+    x: outer.x + framePad,
+    y: outer.y + framePad,
+    width: outer.width - framePad * 2,
+    height: outer.height - framePad * 2,
+  };
+  return cornerMarkSize(inner.width, inner.height) > 0 ? inner : outer;
+};
+
 // Direct children of one expanded parent, for one gene.
 // Each child is judged on its own: 'self' when its score matches the parent best,
 // otherwise 'branch' when its best descendant does. A tie marks every match.

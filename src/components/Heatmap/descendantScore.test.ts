@@ -4,8 +4,10 @@ import { test } from 'node:test';
 import {
   bestDescendantCellMarks,
   callDescendantExpressionScore,
+  cornerMarkSize,
   descendantChildMarks,
   descendantExpressionScore,
+  descendantMarkBox,
   formatExpressionScore,
 } from './descendantScore.ts';
 
@@ -60,6 +62,23 @@ test('marks every child on the path to the parent best, including ties', () => {
   assert.equal(marks.get('stem'), 'self');
   // A sibling whose own score differs still leads to the same best descendant.
   assert.equal(marks.get('other'), 'branch');
+});
+
+test('keeps a corner mark inside a narrow column', () => {
+  // Outer tile from a large gene set: about 22 by 27, with a 4px frame pad.
+  const box = descendantMarkBox({ x: 0, y: 0, width: 21.97, height: 26.68 }, 4);
+  assert.equal(box.x, 4);
+  assert.ok(cornerMarkSize(box.width, box.height) >= 4);
+  const wide = descendantMarkBox({ x: 0, y: 0, width: 47, height: 27 }, 4);
+  assert.equal(wide.width, 39);
+  assert.equal(cornerMarkSize(wide.width, wide.height), 8);
+});
+
+test('uses the outer corner when the fill cannot hold a mark', () => {
+  const box = descendantMarkBox({ x: 1, y: 2, width: 11, height: 27 }, 4);
+  assert.deepEqual(box, { x: 1, y: 2, width: 11, height: 27 });
+  assert.ok(cornerMarkSize(box.width, box.height) >= 4);
+  assert.equal(cornerMarkSize(2, 2), 0);
 });
 
 test('marks the branch that contains the parent best when no child score matches', () => {
