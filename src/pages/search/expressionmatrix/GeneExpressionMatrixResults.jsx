@@ -44,6 +44,9 @@ const GeneExpressionMatrixResults = ({
   isFirstSearch,
   onFetchChildren,
   showOthersBucket = true,
+  speciesTree = /** @type {import('../../../helpers/speciesTree').TaxonTree | null} */ (null),
+  speciesAxis = 'flat',
+  onSpeciesAxisChange,
 }) => {
   // A fresh array on every render would look like a new search to the heatmap and
   // rebuild the anatomical tree, collapsing any terms the user has expanded.
@@ -65,6 +68,9 @@ const GeneExpressionMatrixResults = ({
           showOthersBucket={showOthersBucket}
           descendantScoreMode="border"
           rendererMargins={{ top: 60, right: 60, bottom: 50, left: 200 }}
+          speciesTree={speciesTree}
+          speciesAxis={speciesAxis}
+          onSpeciesAxisChange={onSpeciesAxisChange}
         />
       )}
       {isFirstSearch && (

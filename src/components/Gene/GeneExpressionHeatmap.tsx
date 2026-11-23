@@ -164,6 +164,9 @@ export interface GeneExpressionHeatmapProps {
   rendererMargins?: { top: number; right: number; bottom: number; left: number };
   // Default SUMMARY view: show the expandable "others" bucket under the anatomical root.
   showOthersBucket?: boolean;
+  speciesTree?: unknown;
+  speciesAxis?: 'tree' | 'flat';
+  onSpeciesAxisChange?: (mode: 'tree' | 'flat') => void;
 }
 
 const GeneExpressionHeatmap = ({
@@ -182,6 +185,9 @@ const GeneExpressionHeatmap = ({
   descendantScoreMode,
   rendererMargins,
   showOthersBucket = true,
+  speciesTree = null,
+  speciesAxis = 'flat',
+  onSpeciesAxisChange,
 }: GeneExpressionHeatmapProps) => {
   const [anatomicalTerms, setAnatomicalTerms] = useState<any[]>([]);
   const [anatomicalTermsProps, setAnatomicalTermsProps] = useState<Record<string, any>>({});
@@ -521,7 +527,7 @@ const GeneExpressionHeatmap = ({
   // Species for axis labels. Requested genes supply a fallback so a gene with no
   // calls still shows its species when the search spans more than one species.
   const geneIdToSpecies = useMemo(() => {
-    const map = new Map<string, { name?: string; genus?: string; speciesName?: string }>();
+    const map = new Map<string, NonNullable<Gene['species']>>();
     genes.forEach((gene) => {
       const geneId = gene.id || gene.value;
       if (geneId && gene.species) {
@@ -602,6 +608,7 @@ const GeneExpressionHeatmap = ({
         label: axisLabels.bottomLabel,
         topLabel: axisLabels.topLabel,
         bottomLabel: axisLabels.bottomLabel,
+        speciesId: species?.id != null && String(species.id) !== '' ? String(species.id) : undefined,
       };
     });
   }, [genes, isMultispecies, geneIdToSpecies]);
@@ -634,6 +641,9 @@ const GeneExpressionHeatmap = ({
         showResetButton={showResetButton}
         descendantScoreMode={descendantScoreMode}
         rendererMargins={rendererMargins}
+        speciesTree={speciesTree}
+        speciesAxis={speciesAxis}
+        onSpeciesAxisChange={onSpeciesAxisChange}
       />
       {isExpanding && (
         <div

@@ -15,6 +15,8 @@ import {
 import { computeTermAggregates } from './heatmapAggregates';
 import { hideLooseSingleCellRows } from './singleCellRows';
 import { isOthersBucket } from '../../helpers/othersAnatomicalBucket';
+import { speciesAxisModel } from '../../helpers/speciesTree';
+import { buildSpeciesAxisLayout, SPECIES_COLUMN_HIGHLIGHT, SpeciesAxisMarks } from './speciesAxis';
 
 // A row with its own calls keeps that score. A header with none (a single-cell-only
 // organ) takes the same mean or max already used across genes.
@@ -336,6 +338,77 @@ const measureTopLabelRightOverflow = (labelGroup, plotRight) => {
   return Math.max(0, maxX - plotRight);
 };
 
+// Height of each species name above its anchor, in the label group's coordinates.
+// The anchor is the text origin: with text-anchor start and rotate(-90) the glyphs
+// grow upward, so the extent is the distance from that origin to the top of the ink.
+const measureSpeciesLeafExtents = (labelGroup) => {
+  const svg = labelGroup.ownerSVGElement;
+  if (!svg) return null;
+  const groupCtm = labelGroup.getScreenCTM();
+  if (!groupCtm) return null;
+  let toGroup;
+  try {
+    toGroup = groupCtm.inverse();
+  } catch {
+    return null;
+  }
+  const extents = {};
+  let sawGlyphs = false;
+  for (const group of labelGroup.querySelectorAll('[data-testid^="species-taxon-species-leaf-"]')) {
+    const text = group.querySelector('text');
+    if (!text) continue;
+    const key = (group.getAttribute('data-testid') || '').slice('species-taxon-'.length);
+    if (!key) continue;
+    let box;
+    try {
+      box = text.getBBox();
+    } catch {
+      continue;
+    }
+    if (!(box.width > 0)) continue;
+    const nodeCtm = text.getScreenCTM();
+    if (!nodeCtm) continue;
+    const matrix = toGroup.multiply(nodeCtm);
+    const point = (x, y) => {
+      const pt = svg.createSVGPoint();
+      pt.x = x;
+      pt.y = y;
+      return pt.matrixTransform(matrix);
+    };
+    const anchor = point(0, 0);
+    let minY = Infinity;
+    for (const [x, y] of [
+      [box.x, box.y],
+      [box.x + box.width, box.y],
+      [box.x, box.y + box.height],
+      [box.x + box.width, box.y + box.height],
+    ]) {
+      const painted = point(x, y);
+      if (Number.isFinite(painted.y)) minY = Math.min(minY, painted.y);
+    }
+    const extent = anchor.y - minY;
+    if (!(extent > 0)) continue;
+    sawGlyphs = true;
+    extents[key] = {
+      fontSize: Number.parseFloat(text.getAttribute('font-size') || ''),
+      label: group.getAttribute('aria-label') || '',
+      extent,
+    };
+  }
+  return sawGlyphs ? extents : null;
+};
+
+const speciesLeafExtentsMatch = (left, right) => {
+  const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
+  for (const key of keys) {
+    const a = left[key];
+    const b = right[key];
+    if (!a || !b || a.label !== b.label) return false;
+    if (Math.abs(a.fontSize - b.fontSize) > 0.1 || Math.abs(a.extent - b.extent) > 0.5) return false;
+  }
+  return true;
+};
+
 // Extra pixels reserved beside each column when turning a cell size into plot width.
 const COLUMN_GAP = 4;
 // Keep the fitted drawing a hair inside the viewport so a scrollbar does not appear.
@@ -534,6 +607,8 @@ export const Renderer = forwardRef(
       setGraphHeight,
       scaleSvg = false,
       rendererMargins,
+      speciesTree = null,
+      speciesAxis = 'flat',
     },
     ref
   ) => {
@@ -669,23 +744,85 @@ export const Renderer = forwardRef(
       };
     }, [xTerms, xLabelRotationEffective, xLabelMetrics]);
 
-    const effectiveMarginTop = Math.max(MARGIN.top, topLabelSpace);
+    const [speciesLeafExtents, setSpeciesLeafExtents] = useState(null);
+    const speciesAxisLayout = useMemo(() => {
+      if (speciesAxis !== 'tree' || !speciesTree) return null;
+      const speciesIds = xTerms.map((term) => (term?.speciesId == null ? '' : String(term.speciesId)));
+      const model = speciesAxisModel(speciesIds, speciesTree);
+      if (!model) return null;
+      return buildSpeciesAxisLayout({
+        model,
+        domain: allXGroups,
+        xScale,
+        plotRight: requiredXWidth,
+        leafPadding: X_LABEL_PADDING,
+        leafExtents: speciesLeafExtents?.extents,
+        helpers: {
+          verticalExtent: estimateLabelVerticalExtent,
+          rightExtent: estimateLabelExtentRightOfAnchor,
+          labelMetrics,
+        },
+      });
+    }, [speciesAxis, speciesTree, xTerms, allXGroups, xScale, requiredXWidth, speciesLeafExtents]);
+
+    const resolvedTopLabelSpace = speciesAxisLayout?.topSpace ?? topLabelSpace;
+    const effectiveMarginTop = Math.max(MARGIN.top, resolvedTopLabelSpace);
     const bottomLabelGap = Math.max(DEFAULT_BOTTOM_LABEL_GAP, bottomLabelSpace);
 
     // Slanted top labels are anchored at the column center and run up-right, so the
     // right margin has to cover whatever sticks past the cells. The character-width
     // estimate sizes the first frame; the layout effect replaces it with the painted
     // glyph extent so wide letters are not clipped and narrow ones do not leave a gap.
-    const topLabelMeasureKey = `${xLabelFontSize}|${xLabelRotationEffective}|${requiredXWidth}|${xTerms
-      .map((term) => `${term.value ?? ''}\u0000${term.topLabel ?? term.label ?? ''}`)
-      .join('\u0001')}`;
-    const estimatedTopLabelRightOverflow = useMemo(
-      () => estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics),
-      [xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics]
-    );
+    const topLabelMeasureKey = speciesAxisLayout
+      ? `tree|${speciesAxisLayout.topSpace}|${requiredXWidth}|${speciesAxisLayout.leaves
+          .map((leaf) => `${leaf.key}\u0000${leaf.label}`)
+          .join(
+            '\u0001'
+          )}|${speciesAxisLayout.brackets.map((bracket) => `${bracket.key}\u0000${bracket.label}`).join('\u0001')}`
+      : `${xLabelFontSize}|${xLabelRotationEffective}|${requiredXWidth}|${xTerms
+          .map((term) => `${term.value ?? ''}\u0000${term.topLabel ?? term.label ?? ''}`)
+          .join('\u0001')}`;
+    const estimatedTopLabelRightOverflow = useMemo(() => {
+      if (speciesAxisLayout) return speciesAxisLayout.rightOverflow;
+      return estimateTopLabelRightOverflow(xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics);
+    }, [speciesAxisLayout, xTerms, xScale, xLabelRotationEffective, requiredXWidth, xLabelMetrics]);
     const [measuredTopLabelRightOverflow, setMeasuredTopLabelRightOverflow] = useState(null);
+    const [selectedTaxonKey, setSelectedTaxonKey] = useState(null);
+    const toggleTaxonHighlight = (key) => {
+      setSelectedTaxonKey((current) => (current === key ? null : key));
+    };
+    useEffect(() => {
+      if (!selectedTaxonKey) return;
+      const marks = [...(speciesAxisLayout?.brackets ?? []), ...(speciesAxisLayout?.leaves ?? [])];
+      if (!marks.some((mark) => mark.key === selectedTaxonKey)) setSelectedTaxonKey(null);
+    }, [speciesAxisLayout, selectedTaxonKey]);
     const topLabelsRef = useRef(null);
     const yLabelsRef = useRef(null);
+    const speciesLeafMeasureKey = speciesAxisLayout
+      ? speciesAxisLayout.leaves.map((leaf) => `${leaf.key}:${leaf.fontSize}:${leaf.label}`).join('|')
+      : '';
+
+    useLayoutEffect(() => {
+      if (!speciesLeafMeasureKey) return undefined;
+      const labelGroup = topLabelsRef.current;
+      if (!labelGroup) return undefined;
+      let cancelled = false;
+      const measure = () => {
+        if (cancelled) return;
+        const extents = measureSpeciesLeafExtents(labelGroup);
+        if (!extents) return;
+        setSpeciesLeafExtents((prev) => {
+          if (prev && prev.key === speciesLeafMeasureKey && speciesLeafExtentsMatch(prev.extents, extents)) return prev;
+          return { key: speciesLeafMeasureKey, extents };
+        });
+      };
+      measure();
+      const fontsReady = typeof document !== 'undefined' ? document.fonts?.ready : undefined;
+      fontsReady?.then(() => measure());
+      return () => {
+        cancelled = true;
+      };
+    }, [speciesLeafMeasureKey]);
     const hasMeasuredTopLabelOverflow =
       measuredTopLabelRightOverflow &&
       measuredTopLabelRightOverflow.key === topLabelMeasureKey &&
@@ -1117,6 +1254,29 @@ export const Renderer = forwardRef(
     // (possibly rotated and long) bottom x-axis labels.
     const colorLegendPosY = actualHeatmapHeight + bottomLabelGap;
 
+    const selectedTaxon = [...(speciesAxisLayout?.brackets ?? []), ...(speciesAxisLayout?.leaves ?? [])].find(
+      (mark) => mark.key === selectedTaxonKey
+    );
+    let columnHighlight = null;
+    if (selectedTaxon) {
+      const left = xScale(allXGroups[selectedTaxon.start]);
+      const rightStart = xScale(allXGroups[selectedTaxon.end]);
+      if (left != null && rightStart != null && !Number.isNaN(left) && !Number.isNaN(rightStart)) {
+        columnHighlight = (
+          <rect
+            data-testid="species-column-highlight"
+            x={left}
+            y={0}
+            width={rightStart + xScale.bandwidth() - left}
+            height={cellBandHeight}
+            fill={SPECIES_COLUMN_HIGHLIGHT}
+            opacity={0.38}
+            pointerEvents="none"
+          />
+        );
+      }
+    }
+
     return (
       <svg
         ref={ref}
@@ -1150,7 +1310,18 @@ export const Renderer = forwardRef(
         >
           <g>
             <g>{allShapes}</g>
-            <g ref={topLabelsRef}>{xLabelsTop}</g>
+            {columnHighlight}
+            <g ref={topLabelsRef}>
+              {speciesAxisLayout ? (
+                <SpeciesAxisMarks
+                  layout={speciesAxisLayout}
+                  selectedKey={selectedTaxonKey}
+                  onToggle={toggleTaxonHighlight}
+                />
+              ) : (
+                xLabelsTop
+              )}
+            </g>
             <g>{xLabelsBottom}</g>
             <g ref={yLabelsRef} transform={`translate(-${marginLeft - Y_LABEL_LEFT_INSET}, 5)`}>
               <Tree

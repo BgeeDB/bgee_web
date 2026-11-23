@@ -77,6 +77,10 @@ export type HeatmapProps = {
   // When set, replaces the stored debug choice (border, center, split, none).
   descendantScoreMode?: string;
   rendererMargins?: { top: number; right: number; bottom: number; left: number };
+  /** Parsed speciesByTaxon tree. Omitted callers keep the flat species labels. */
+  speciesTree?: unknown;
+  speciesAxis?: 'tree' | 'flat';
+  onSpeciesAxisChange?: (mode: 'tree' | 'flat') => void;
 };
 
 const Heatmap = ({
@@ -96,6 +100,9 @@ const Heatmap = ({
   defaultCellHeight = 30,
   descendantScoreMode,
   rendererMargins,
+  speciesTree = null,
+  speciesAxis = 'flat',
+  onSpeciesAxisChange,
 }: HeatmapProps) => {
   // COMPONENT STATE
   const [hoveredCell, setHoveredCell] = useState(null);
@@ -452,6 +459,35 @@ const Heatmap = ({
 
   return (
     <div className="heatmap-container" style={{ backgroundColor: bgColor, maxWidth: '100%', minWidth: 0 }}>
+      {onSpeciesAxisChange ? (
+        <div
+          className="is-flex is-align-items-center mb-2"
+          data-testid="species-axis-toggle"
+          role="group"
+          aria-label="Species axis"
+          style={{ gap: '0.5rem' }}
+        >
+          <span className="has-text-weight-semibold">Species axis</span>
+          <div className="buttons has-addons mb-0">
+            <button
+              type="button"
+              className={`button is-small ${speciesAxis === 'tree' ? 'is-primary' : ''}`}
+              aria-pressed={speciesAxis === 'tree'}
+              onClick={() => onSpeciesAxisChange('tree')}
+            >
+              Tree
+            </button>
+            <button
+              type="button"
+              className={`button is-small ${speciesAxis === 'flat' ? 'is-primary' : ''}`}
+              aria-pressed={speciesAxis === 'flat'}
+              onClick={() => onSpeciesAxisChange('flat')}
+            >
+              Flat
+            </button>
+          </div>
+        </div>
+      ) : null}
       <div className="columns is-gapless" style={{ maxWidth: '100%', minWidth: 0 }}>
         <div className="column" style={{ minWidth: 0, maxWidth: '100%' }}>
           <div
@@ -505,6 +541,8 @@ const Heatmap = ({
                 collapseSingleCell={collapseSingleCell}
                 setGraphHeight={setGraphHeight}
                 rendererMargins={rendererMargins}
+                speciesTree={speciesTree}
+                speciesAxis={speciesAxis}
               />
 
               <Tooltip interactionData={hoveredCell} width={graphWidth} height={graphHeight - COLOR_LEGEND_HEIGHT} />
