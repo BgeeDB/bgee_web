@@ -16,11 +16,11 @@ Open **Expression graph** from the Tools menu. The page has two steps: choose th
 
 **Pick species & genes** selects one species, then one or more of its genes. **Add genes from another species** keeps the genes already chosen and highlights the species field so you can add the next species. Genes already in the list stay there. **Paste gene list (multi-species)** is the other way to choose genes: one gene identifier per line, from any species in Bgee.
 
-Chosen genes are listed under **Selected Genes**. The figure shows the first rows of the SERPINC1 comparison. The full list is longer, which is why **All** reports 23 genes.
+Chosen genes are listed under **Selected Genes**. (The figure shows the first rows of the SERPINC1 comparison. The full list is longer, which is why **All** reports 23 genes.)
 
 ![Species and gene pickers, with the first SERPINC1 genes in the selected list](../img/doc/expression-graph/Fig01_gene-selection.webp#tutoimgborder)
 
-Each row shows the species and the gene, and both names link to their pages. Drag a row by the handle to change the column order. The trash button removes a gene.
+Each row shows the species and the gene, and both names link to their pages. Drag a row by the handle to change the column order in the graph. The trash button removes a gene.
 
 **All**, **With data**, and **No data** filter that list after a search. **With data** and **No data** count genes from the last search. A gene you add afterwards stays under **All** until you click **Show graph** again. In the SERPINC1 example every selected gene has expression data, so **No data** is 0.
 
@@ -36,7 +36,7 @@ The **+** on a row opens **Add orthologs or paralogs**. Orthologs and paralogs a
 
 ![Tissue, cell type, data type, and data quality filters](../img/doc/expression-graph/Fig04_data-filters.webp#tutoimgborder)
 
-- **Tissue** and **Cell type** limit the anatomy. **Including substructures** starts selected and also retrieves calls in parts of the terms you enter, for example every part of the brain.
+- **Tissue** and **Cell type** limit the anatomy. **Including substructures** (activated by default) also retrieves calls in subterms of the terms you enter, for example every part of the brain.
 - **Data type** chooses bulk RNA-Seq, scRNA-Seq, and in situ hybridization. Calls are produced by integrating the types you leave selected.
 - **Data quality** sets the minimum support required for a call. **Silver** is the default (a present call with p-value ≤ 0.05). **Gold** is stricter (present call, p-value ≤ 0.01). **Bronze** also keeps a present call that is not itself significant at 0.05 when at least one of its sub-conditions is. The **?** next to Data quality states the full present and absent rules.
 
@@ -46,7 +46,7 @@ Each column is a gene. Each row is an anatomical structure, or a cell type insid
 
 An expression score ranks a gene in a condition by its expression level (a non-parametric statistic), then normalizes that rank with the minimum and maximum rank of the species. Scores run from 0 to 100. A low score means the gene is lowly expressed in that condition compared with other genes. Scores are comparable across genes, conditions, and species. See the [Bgee publications](/about/publications 'Bgee publications') for the method. The **?** next to "Expression score" repeats this definition.
 
-On the SERPINC1 graph the columns are grouped by species, with the taxonomy drawn above the species names. Gene names run along the bottom. **Not expressed** is a gray cell. **No data** is a white cell.
+The graph columns are grouped by species, with the taxonomy drawn above the species names. Gene names run along the bottom. **Not expressed** is a gray cell. **No data** is a white cell.
 
 ![SERPINC1 expression across species, with the taxonomy above the columns](../img/doc/expression-graph/Fig06_serpinc1-graph.webp#tutoimgborder)
 
@@ -55,12 +55,10 @@ Two numbers can sit on one cell.
 - The **fill** is the expression score of that row itself.
 - The **border** is the best expression score among the structures and cell types under that row (the best descendant score). A parent organ can be pale while its border is yellow, because a child structure is highly expressed. In the SERPINC1 graph the digestive system and the endocrine system carry yellow borders: the highest score in those branches sits in a child structure.
 
-While a row is open, the children that carry its best score are marked:
+The tiles that carry the best score are marked:
 
 - A **filled triangle** in the top-right corner means this child's own score is the parent's best descendant score. Every child with that same score is marked.
 - An **open triangle** means this child's own score is lower, and its best descendant score matches the parent. The high score is further down that branch.
-
-**Anatomical entity** starts open, so those marks can already appear on the organ rows. The legend under the color scale names the border and both triangles.
 
 Hover a cell for a short tooltip: species, gene, anatomy, the cell's own value, the best descendant score, and whether the gene is expressed. A triangle adds a highlight line, either "best descendant of the parent" or "branch of the parent's best descendant."
 
