@@ -1,7 +1,8 @@
 #!/bin/sh
 
-cd build/client/
-for lnk in `find ../../public/ -type l | xargs ls -l | sed -e 's/^.*-> //'`; do
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT/${BUILD_DIR:-build}/client/" || exit 1
+for lnk in `find "$ROOT/public/" -type l | xargs ls -l | sed -e 's/^.*-> //'`; do
     name=`basename $lnk`;
     rm -rf $name;
     ln -fs $lnk $name;
