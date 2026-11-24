@@ -3,7 +3,7 @@ import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, 
 
 import type { Route } from './+types/root';
 import { ModalProvider } from './contexts/ModalContext';
-import { APP_VERSION, URL_ROOT } from './helpers/constants';
+import { APP_VERSION } from './helpers/constants';
 import config from './config.json';
 import Bulma from './components/Bulma';
 import Alert from './components/Alert';
@@ -23,11 +23,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const body = React.useMemo(
     () =>
-      loc.pathname === '/' || loc.pathname === `${URL_ROOT}/` || loc.pathname === `${URL_ROOT}` ? (
-        <>{children}</>
-      ) : (
-        <Bulma.Section className="is-flex-grow-1">{children}</Bulma.Section>
-      ),
+      loc.pathname === '/' ? <>{children}</> : <Bulma.Section className="is-flex-grow-1">{children}</Bulma.Section>,
     [loc, children]
   );
 

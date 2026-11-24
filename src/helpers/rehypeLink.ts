@@ -1,7 +1,5 @@
 import { visit } from 'unist-util-visit';
 
-import { URL_ROOT } from './constants/index.ts';
-
 const rehypeLink = () => (tree) => {
   visit(tree, 'element', (node) => {
     const isInternal = /(^#)|(^\/)|(^https:\/\/www.bgee.org)/gi;
@@ -10,8 +8,8 @@ const rehypeLink = () => (tree) => {
         node.properties.classname = 'internal-link';
         const regex = /\/\/+/g;
         node.properties.href = node.properties.href
-          .replace(/^\//, `${URL_ROOT}/`)
-          .replace(/^https:\/\/www\.bgee\.org/, `${URL_ROOT}`)
+          // Router path, without the archive prefix: mdxComponents adds it to the href
+          .replace(/^https:\/\/www\.bgee\.org/, '')
           .replaceAll(regex, '/');
         // Add a data attribute to identify internal links that need client-side navigation in mdxComponents
         node.properties['data-internal-link'] = true;

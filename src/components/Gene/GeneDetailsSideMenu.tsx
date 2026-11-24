@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router';
 
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import PATHS from '../../paths/paths';
-import { URL_ROOT } from '~/helpers/constants';
 
 const GeneDetailsSideMenu = ({
   homologs = null,
@@ -20,7 +19,7 @@ const GeneDetailsSideMenu = ({
 
   const handlerMenuClick = React.useCallback(
     (id: string) => {
-      navigate(`${URL_ROOT}${location.pathname}${location.search}#${id}`, { replace: true });
+      navigate(`${location.pathname}${location.search}#${id}`, { replace: true });
     },
     [location]
   );

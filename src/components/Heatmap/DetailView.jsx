@@ -1,5 +1,6 @@
 /* TypeScript specific
 import { InteractionData } from "./Heatmap";
+import { BASE_PATH } from "~/helpers/constants";
 */
 // import styles from "./tooltip.module.css";
 
@@ -165,7 +166,7 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           <br />
           <a
             href={
-              `/search/raw-data?pageType=proc_expr_values` +
+              `${BASE_PATH}/search/raw-data?pageType=proc_expr_values` +
               `&gene_id=${data.geneId}` +
               `&species_id=${data.speciesId}` +
               cellTypeQueryParams +

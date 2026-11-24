@@ -59,8 +59,8 @@ const NAVBAR_RIGHT = [
 const Footer = () => {
   const { addNotification } = React.useContext(NotificationContext);
   const loc = useLocation();
-  const pathname = `${config.archive ? loc.pathname.replace(/[\\/][^\\/]*/, '') : loc.pathname}`;
-  const permanentLink = React.useMemo(() => config.permanentVersionedDomain + pathname, [loc]);
+  // loc.pathname is relative to the router basename, so it never contains the archive prefix
+  const permanentLink = React.useMemo(() => config.permanentVersionedDomain + loc.pathname, [loc]);
 
   return (
     <Bulma.Footer>

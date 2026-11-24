@@ -2,6 +2,7 @@ import api from '~/api';
 import GeneDetails from '~/components/Gene/GeneDetails';
 import { geneHomologsToLdJSON, geneToLdJSON } from '~/helpers/schemaDotOrg';
 import { getMetadata } from '~/helpers/metadata';
+import { BASE_PATH } from '~/helpers/constants';
 import config from '../config.json';
 
 export async function loader({ params, request }) {
@@ -51,7 +52,7 @@ export async function loader({ params, request }) {
       xRefs,
       // exprData,
       // notExprData,
-      requestUrl: request.url.replace(/^https?:\/\/.+?\//, `${config.genericDomain}/`),
+      requestUrl: request.url.replace(new RegExp(`^https?://[^/]+${BASE_PATH}/`), `${config.genericDomain}/`),
     };
   } catch (error: any) {
     const status = error?.response?.status ?? error?.status;

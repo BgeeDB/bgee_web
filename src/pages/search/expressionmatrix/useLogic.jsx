@@ -11,7 +11,6 @@ import { mergeSpeciesSelection } from './geneOrder';
 import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
-import { URL_ROOT } from '~/helpers/constants';
 // DEBUG: remove in PROD
 // import maxExpScoreCsv from '../../../assets/maxExpScore.csv'
 
@@ -417,7 +416,7 @@ const useLogic = (options = {}) => {
     publishedHashRef.current = searchParams.get('data');
     const target = {
       search: searchParams.toString(),
-      pathname: `${URL_ROOT}${loc.pathname}`,
+      pathname: `${loc.pathname}`,
     };
     if (replace) {
       navigate(target, { replace: true, preventScrollReset: true });
@@ -698,7 +697,7 @@ const useLogic = (options = {}) => {
         setIsLoading(false);
       } else {
         console.error(`[useLogic.triggerInitialSearch] ERROR:\n${JSON.stringify(error)}`);
-        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
+        navigate(`${loc.pathname}`, { replace: true, preventScrollReset: true });
         setIsLoading(false);
       }
     } finally {
@@ -793,7 +792,7 @@ const useLogic = (options = {}) => {
           setIsLoading(false);
           return;
         }
-        navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
+        navigate(`${loc.pathname}`, { replace: true, preventScrollReset: true });
         setIsLoading(false);
       })
       .finally(() => {

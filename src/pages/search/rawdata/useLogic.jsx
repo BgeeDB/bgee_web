@@ -9,7 +9,6 @@ import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
 import { isEmpty } from '../../../helpers/arrayHelper';
-import { URL_ROOT } from '~/helpers/constants';
 
 // building the page_type array depending on config.json
 export const EXPERIMENTS = 'experiments';
@@ -548,14 +547,14 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
         navigate(
           {
             search: searchParams.toString(),
-            pathname: `${URL_ROOT}${loc.pathname}`,
+            pathname: `${loc.pathname}`,
           },
           { replace: true, preventScrollReset: true }
         );
       } else {
         navigate({
           search: searchParams.toString(),
-          pathname: `${URL_ROOT}${loc.pathname}`,
+          pathname: `${loc.pathname}`,
         });
       }
       // The search form will be collapsed if this is not the first time we're on the page
@@ -571,7 +570,7 @@ const useLogic = (isExprCalls, initSearchResult = {}) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // We remove all the parameters that we may have sent
-      navigate(`${URL_ROOT}${loc.pathname}`, { replace: true, preventScrollReset: true });
+      navigate(`${loc.pathname}`, { replace: true, preventScrollReset: true });
       setIsLoading(false);
     }
     setIsFirstSearch(false);

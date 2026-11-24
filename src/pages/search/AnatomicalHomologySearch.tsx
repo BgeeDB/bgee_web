@@ -9,7 +9,6 @@ import LinkExternal from '../../components/LinkExternal';
 import { customAnatomicalHomologySorter } from '../../helpers/sortTable';
 import obolibraryLinkFromID from '../../helpers/obolibraryLinkFromID';
 import { getMetadata } from '~/helpers/metadata';
-import { URL_ROOT } from '~/helpers/constants';
 
 export function meta() {
   return getMetadata({
@@ -153,7 +152,7 @@ const AnatomicalHomologySearch = () => {
           signature: queryString,
           data,
         });
-        navigate(`${URL_ROOT}${pathname}?${queryString}`, { preventScrollReset: true });
+        navigate(`${pathname}?${queryString}`, { preventScrollReset: true });
       })
       .catch((err) => {
         console.error(err);
@@ -302,35 +301,35 @@ const AnatomicalHomologySearch = () => {
                       {`Example: `}
                       <Link
                         className="internal-link"
-                        to={`${URL_ROOT}${pathname}?species_list=9606&species_list=7955&ae_list=UBERON%3A0002048`}
+                        to={`${pathname}?species_list=9606&species_list=7955&ae_list=UBERON%3A0002048`}
                       >
                         Lung in human and zebrafish
                       </Link>
                       {', '}
                       <Link
                         className="internal-link"
-                        to={`${URL_ROOT}${pathname}?species_list=9606&species_list=7955&ae_list=UBERON%3A0000206`}
+                        to={`${pathname}?species_list=9606&species_list=7955&ae_list=UBERON%3A0000206`}
                       >
                         Pharyngeal gill in human and zebrafish
                       </Link>
                       {', '}
                       <Link
                         className="internal-link"
-                        to={`${URL_ROOT}${pathname}?species_list=9606&species_list=7955&ae_list=CL%3A0000084`}
+                        to={`${pathname}?species_list=9606&species_list=7955&ae_list=CL%3A0000084`}
                       >
                         T Cell in human and zebrafish
                       </Link>
                       {', Placenta '}
                       <Link
                         className="internal-link"
-                        to={`${URL_ROOT}${pathname}?species_list=9606&species_list=9598&ae_list=UBERON%3A0001987`}
+                        to={`${pathname}?species_list=9606&species_list=9598&ae_list=UBERON%3A0001987`}
                       >
                         in human and chimpanzee
                       </Link>
                       {' (homologous structure), or '}
                       <Link
                         className="internal-link"
-                        to={`${URL_ROOT}${pathname}?species_list=9606&species_list=7955&ae_list=UBERON%3A0001987`}
+                        to={`${pathname}?species_list=9606&species_list=7955&ae_list=UBERON%3A0001987`}
                       >
                         in human and zebrafish
                       </Link>
