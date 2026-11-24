@@ -2,6 +2,7 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://www.bgee.org/</loc><priority>0.8</priority></url>
 <url><loc>https://www.bgee.org/sparql-editor/</loc><priority>0.7</priority></url>
+<url><loc>https://www.bgee.org/doc-api/</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/ftp/</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/about/</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/about/bgeesab</loc><priority>0.7</priority></url>
@@ -29,7 +30,6 @@
 <url><loc>https://www.bgee.org/support/tutorial-raw-data</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/support/tutorials</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/support/videos</loc><priority>0.7</priority></url>
-<url><loc>https://www.bgee.org/doc-api/</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/download/data-dumps</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/download/gene-expression-calls</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/download/processed-expression-values</loc><priority>0.7</priority></url>
