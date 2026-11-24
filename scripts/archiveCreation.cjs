@@ -36,12 +36,8 @@ const main = async () => {
     await fs.writeFile('./src/styles/global.scss', tmpScss);
     console.log('Setting scss as an archive');
 
-    const html = await fs.readFile('./public/index.html', 'utf8');
+    // FIXME  how to add that in SSR index ???
     const noIndexSource = await fs.readFile('./archives/resources/htmlHead.txt', 'utf8');
-    const tmpHtml = html.replace('<head>', `<head>${noIndexSource}`);
-    // .replace('/js/ionicons-5.5.4/ionicons.esm.js', `/${URL_VERSION}/js/ionicons-5.5.4/ionicons.esm.js`);
-    await fs.writeFile('./public/index.html', tmpHtml);
-    console.log('Setting noindex in html');
 
     const robots = await fs.readFile('./public/robots.txt', 'utf8');
     let tmprobots = 'User-agent: *\nDisallow: /\n';
@@ -78,7 +74,6 @@ const main = async () => {
     config.ftpDomain = originalFtpDomain;
     await fs.writeFile('./src/config.json', JSON.stringify(config, null, 2));
     await fs.writeFile('./src/styles/global.scss', scss);
-    await fs.writeFile('./public/index.html', html);
     await fs.writeFile('./public/robots.txt', robots);
     console.log('\x1b[93m%s %s\x1b[0m\n', 'The website url setup for the archive is', websiteUrl);
   } catch (err) {

@@ -24,7 +24,7 @@
     "postinstall": "npx playwright install --with-deps",
     "prepare": "husky",
     "upgrade": "npx npm-check-updates -u -x bulma && npm i",
-    "archive": "node scripts/archiveCreation.js"
+    "archive": "node scripts/archiveCreation.cjs"
   },
   "dependencies": {
     "@react-router/fs-routes": "^8.3.0",
