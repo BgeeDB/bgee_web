@@ -44,16 +44,14 @@ const main = async () => {
     await fs.writeFile('./public/robots.txt', tmprobots);
     console.log('Setting proper archived robots.txt file\n');
 
-    let pkg = await fs.readFile('./package.json', 'utf8');
-    pkg = JSON.parse(pkg);
-    pkg.homepage = websiteUrl;
-    await fs.writeFile('./package.json', JSON.stringify(pkg, null, 2));
-
     try {
       console.log('\x1b[31m%s\x1b[0m', 'Building app');
-      execSync('npm run build', { stdio: 'inherit' });
-      /* Fix symlinks manually because 'webpackConfig.resolve.symlinks = false;' & '"preserveSymlinks": true,' fail! */
-      execSync('sh scripts/fix_symlinks.sh');
+      // Serve JS/CSS and routes under /<URL_VERSION>/ (read by vite.config.ts and react-router.config.ts).
+      // `npm run build` already runs scripts/fix_symlinks.sh
+      execSync('npm run build', {
+        stdio: 'inherit',
+        env: { ...process.env, ARCHIVE_BASE: `/${URL_VERSION}/` },
+      });
       console.log('Moving directory');
       execSync(`mv ./build "${buildDirectory}"`, { stdio: 'inherit' });
       console.log('Removing unnecessary directories\n');
@@ -64,8 +62,6 @@ const main = async () => {
 
     //  Set back to production
     console.log('\x1b[31m%s\x1b[0m', 'Settings production data back\n');
-    pkg.homepage = undefined;
-    await fs.writeFile('./package.json', JSON.stringify(pkg, null, 2));
     config.archive = false;
     config.imageDomain = originalImageDomain;
     config.genericDomain = originalGenericDomain;
