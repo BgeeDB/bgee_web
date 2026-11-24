@@ -158,7 +158,11 @@ const Species = () => {
               </p>
             </div>
             <div>
-              <LinkExternal to={data.species.genomeAssemblyXRef}>{data.species.genomeSource.name}</LinkExternal>
+              {data.species.genomeAssemblyXRef ? (
+                <LinkExternal to={data.species.genomeAssemblyXRef}>{data.species.genomeSource.name}</LinkExternal>
+              ) : (
+                data.species.genomeSource.name
+              )}
             </div>
           </div>
           <div className="is-flex">

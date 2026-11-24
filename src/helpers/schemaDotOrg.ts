@@ -429,7 +429,7 @@ export const datasetToLdJSON = () => {
 
 export const speciesToLdJSON = ({
   downloadFilesGroups: { downloadFiles },
-  species: { genus, name, speciesName, id },
+  species: { genus, name, speciesName, id, genomeAssemblyXRef },
   url,
 }) => {
   const json: any = {
@@ -445,7 +445,8 @@ export const speciesToLdJSON = ({
     sameAs: [
       obolibraryNCBITaxonLinkFromID(id),
       `https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?lvl=0&id=${id}`,
-      `https://oct2024.archive.ensembl.org/${genus}_${speciesName}`,
+      // page of the species in its genome source, when the source still has one
+      ...(genomeAssemblyXRef ? [genomeAssemblyXRef] : []),
     ],
     taxonRank: [
       'https://rs.tdwg.org/ontology/voc/TaxonRank#Species',
