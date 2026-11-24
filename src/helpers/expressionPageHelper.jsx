@@ -1,5 +1,3 @@
-import { URL_ROOT } from '~/helpers/constants';
-
 const expressionPageHelper = {
   autocompleteSpecies: (list, kwList, search) =>
     list &&
@@ -17,7 +15,7 @@ const expressionPageHelper = {
       role="button"
       onClick={() => {
         setSearch(s.word);
-        navigate(`${URL_ROOT}${location.pathname}?id=${s.info.id}`, { replace: true, preventScrollReset: true });
+        navigate(`${location.pathname}?id=${s.info.id}`, { replace: true, preventScrollReset: true });
         setTimeout(() => {
           closeAutoComplete();
         }, 100);

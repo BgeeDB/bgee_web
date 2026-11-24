@@ -8,7 +8,7 @@ import config from '../../config.json';
 import obfuscateMailLink from '../../helpers/obfuscateMailLink';
 import Bulma from '../Bulma';
 import assets from '../../assets';
-import { URL_ROOT } from '~/helpers/constants';
+import { BASE_PATH } from '~/helpers/constants';
 
 const SIDE_MENU = [
   {
@@ -120,7 +120,7 @@ const SIDE_MENU = [
       {
         key: 'page.resources.sparql.test',
         title: 'SPARQL editor',
-        path: `/sparql-editor${URL_ROOT}/`,
+        path: PATHS.SEARCH.SPARQL,
         type: 'internal',
       },
       {
@@ -314,7 +314,8 @@ const ModalCard = ({ active, toggle }) => (
                     break;
                   case 'fullinternal':
                     link = (
-                      <a className="navbar-item custom" href={childProps.path}>
+                      // Plain <a>: needs the archive prefix itself (the router basename is not applied)
+                      <a className="navbar-item custom" href={`${BASE_PATH}${childProps.path}`}>
                         {pageTitle}
                       </a>
                     );

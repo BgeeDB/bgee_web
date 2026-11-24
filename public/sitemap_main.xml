@@ -29,6 +29,7 @@
 <url><loc>https://www.bgee.org/support/tutorial-raw-data</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/support/tutorials</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/support/videos</loc><priority>0.7</priority></url>
+<url><loc>https://www.bgee.org/doc-api/</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/download/data-dumps</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/download/gene-expression-calls</loc><priority>0.7</priority></url>
 <url><loc>https://www.bgee.org/download/processed-expression-values</loc><priority>0.7</priority></url>

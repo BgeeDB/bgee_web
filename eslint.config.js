@@ -10,7 +10,7 @@ export default tseslint.config(
       'archives',
       'build',
       'dist',
-      'doc-api',
+      'public/doc-api',
       '.git',
       '.github',
       '.husky',

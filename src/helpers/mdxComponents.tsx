@@ -1,5 +1,6 @@
 import Bulma from '~/components/Bulma';
 import classnames from '~/helpers/classnames';
+import { BASE_PATH } from '~/helpers/constants';
 import type { MDXComponents } from 'mdx/types.js';
 import { useNavigate } from 'react-router';
 
@@ -39,7 +40,13 @@ export function useMDXComponents(): MDXComponents {
         }
       };
       return (
-        <a href={href} className={className} onClick={isInternal ? handleClick : undefined} {...props}>
+        <a
+          // navigate() adds the archive prefix itself (router basename), a plain href does not
+          href={isInternal && href?.startsWith('/') ? `${BASE_PATH}${href}` : href}
+          className={className}
+          onClick={isInternal ? handleClick : undefined}
+          {...props}
+        >
           {children}
         </a>
       );

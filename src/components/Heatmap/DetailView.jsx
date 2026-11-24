@@ -1,4 +1,5 @@
 import { PARENT_DESCENDANT_MARK_LABEL } from './descendantScore';
+import { BASE_PATH } from '~/helpers/constants';
 /* TypeScript specific
 import { InteractionData } from "./Heatmap";
 */
@@ -154,7 +155,7 @@ export const DetailView = ({ interactionData: data, xPos, yPos, width, style, on
           <br />
           <a
             href={
-              `/search/raw-data?pageType=proc_expr_values` +
+              `${BASE_PATH}/search/raw-data?pageType=proc_expr_values` +
               `&gene_id=${data.geneId}` +
               `&species_id=${data.speciesId}` +
               cellTypeQueryParams +

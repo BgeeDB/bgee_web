@@ -26,7 +26,7 @@ import ConditionParameter from './components/filters/ConditionParameter';
 import ResultTabs from './components/ResultTabs';
 import DataQualityParameter from './components/filters/DataQualityParameter';
 import CallType from './components/filters/CallType';
-import { URL_ROOT } from '~/helpers/constants';
+import { BASE_PATH } from '~/helpers/constants';
 import './rawDataAnnotations.scss';
 
 const RawDataAnnotations = ({ isExprCalls = false, initSearchResult = {} }) => {
@@ -216,7 +216,7 @@ const RawDataAnnotations = ({ isExprCalls = false, initSearchResult = {} }) => {
                 <h1 key={type.id}>
                   <a
                     onClick={(e) => changePageType(e, type.id)}
-                    href={`${URL_ROOT}/search/raw-data?pageType=${type.id}${isActive ? filterForAllParameter() : ''}${isActive ? parameterInCurrentUrlWithoutPageType() : parameterFromForm()}`}
+                    href={`${BASE_PATH}/search/raw-data?pageType=${type.id}${isActive ? filterForAllParameter() : ''}${isActive ? parameterInCurrentUrlWithoutPageType() : parameterFromForm()}`}
                     className={`ongletPages is-centered py-2 px-5 ${isActive ? 'pageActive' : ''}`}
                   >
                     {type.label}
@@ -352,8 +352,8 @@ const RawDataAnnotations = ({ isExprCalls = false, initSearchResult = {} }) => {
                           className="reinit button is-bgee-link is-outlined mr-2"
                           href={
                             isExprCalls
-                              ? `${PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS}`
-                              : `${PATHS.SUPPORT.TUTORIAL_RAW_DATA}`
+                              ? `${BASE_PATH}${PATHS.SUPPORT.TUTORIAL_EXPRESSION_CALLS}`
+                              : `${BASE_PATH}${PATHS.SUPPORT.TUTORIAL_RAW_DATA}`
                           }
                         >
                           Documentation
@@ -376,14 +376,14 @@ const RawDataAnnotations = ({ isExprCalls = false, initSearchResult = {} }) => {
                 <br />
                 <a
                   className="internal-link"
-                  href={`${URL_ROOT}/search/expression-calls?species_id=9606&gene_id=ENSG00000134058`}
+                  href={`${BASE_PATH}/search/expression-calls?species_id=9606&gene_id=ENSG00000134058`}
                 >
                   The <strong>CDK7</strong> gene (<i>Homo sapiens</i>)
                 </a>
                 <br />
                 <a
                   className="internal-link"
-                  href={`${URL_ROOT}/search/expression-calls?species_id=7227&gene_id=FBgn0004644`}
+                  href={`${BASE_PATH}/search/expression-calls?species_id=7227&gene_id=FBgn0004644`}
                 >
                   The <strong>hedgehog</strong> gene (<i>Drosophila melanogaster</i>)
                 </a>

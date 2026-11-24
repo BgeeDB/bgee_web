@@ -22,7 +22,6 @@ import {
   PROC_EXPR_VALUES,
 } from '../../pages/search/rawdata/useLogic';
 import TagSource from '../TagSource/TagSource';
-import { URL_ROOT } from '~/helpers/constants';
 // import schemaDotOrg from '../../helpers/schemaDotOrg';
 
 const DATA_TYPES = [
@@ -355,7 +354,7 @@ const GeneExpressionTable = ({ geneId, speciesId, exprData = undefined, notExpre
               else queryParams.delete(dataTypeKey);
 
               // Use navigate with preventScrollReset, state, and preventLoad to avoid loader re-execution
-              navigate(`${URL_ROOT}${location.pathname}?${queryParams.toString()}`, {
+              navigate(`${location.pathname}?${queryParams.toString()}`, {
                 replace: true,
                 preventScrollReset: true,
               });

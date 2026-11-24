@@ -19,7 +19,6 @@ import { appendMissingFilterValues } from './storedFilters';
 import { EMPTY_SPECIES_VALUE } from './components/filters/Species/Species';
 import config from '../../../config.json';
 import { FULL_LENGTH_LABEL } from '../../../api/prod/constant';
-import { URL_ROOT } from '~/helpers/constants';
 
 // to workaround backend server issues
 // import apiResp1 from '../../../assets/response_query1.INS.json';
@@ -419,7 +418,7 @@ const useLogic = (options = {}) => {
     publishedHashRef.current = searchParams.get('data');
     const target = {
       search: searchParams.toString(),
-      pathname: `${URL_ROOT}${loc.pathname}`,
+      pathname: `${loc.pathname}`,
     };
     if (replace) {
       navigate(target, { replace: true, preventScrollReset: true });

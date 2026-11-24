@@ -7,15 +7,10 @@ import { callDescendantExpressionScore } from '../Heatmap/descendantScore';
 import GENE_DETAILS_HTML_IDS from '../../helpers/constants/GeneDetailsHtmlIds';
 import { getSpeciesLabel } from '../../helpers/getSpeciesLabel';
 import useQuery from '../../hooks/useQuery';
-import config from '../../config.json';
 import { appendOthersBucket } from '../../helpers/othersAnatomicalBucket';
 import { cellTypeGroupIds, readCollapseSingleCell, setCellTypeGroupsExpanded } from '../Heatmap/singleCellRows';
 import { CELL_TYPE_ROOT_ID, groupExpandedConditionRows } from './groupExpandedConditionRows';
 import type { ExpandedConditionRow } from './groupExpandedConditionRows';
-
-const APP_VERSION = config.version;
-const URL_VERSION = APP_VERSION.replaceAll('.', '-');
-const URL_ROOT = `${config.archive ? `/${URL_VERSION}` : ''}`;
 
 const logApiError = (context, error, extra = {}) => {
   const responseData = error?.response?.data;
@@ -623,7 +618,7 @@ const GeneExpressionGraph = ({ geneId, geneName, speciesId }: GeneExpressionGrap
                 queryParams.set(dataTypeKey, selected.join(','));
               else queryParams.delete(dataTypeKey);
 
-              navigate(`${URL_ROOT}${location.pathname}?${queryParams.toString()}`, {
+              navigate(`${location.pathname}?${queryParams.toString()}`, {
                 replace: true,
                 preventScrollReset: true,
               });
