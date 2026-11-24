@@ -12,7 +12,7 @@
 
 ## Introduction
 
-TopAnat is an anatomical entity enrichment analysis tool based on the [topGO R package](https://bioconductor.org/packages/release/bioc/html/topGO.html).
+TopAnat is an anatomical entity enrichment analysis tool. The analyses of this web interface are run with the [BgeeDB R package](https://bioconductor.org/packages/BgeeDB/), which can also be used to run TopAnat directly from R. This web interface performs a Fisher test for each anatomical entity. The decorrelation algorithms of the [topGO R package](https://bioconductor.org/packages/release/bioc/html/topGO.html) are available when running TopAnat from the BgeeDB R package.
 
 It is similar to a GO enrichment test but rather than using Gene Ontology annotations it is based on anatomical [Uberon](http://obophenotype.github.io/uberon/about/) annotations manually curated by Bgee. For example, given a set of genes that are up-regulated under certain conditions, TopAnat will find which anatomical entities have over or under-represented expression using annotations for that gene set.
 
@@ -97,16 +97,14 @@ Then, on top of the result table, you have the title of your analysis written in
 
 Below the title on the left side, there is a light red button that allows you to download an archive containing the results of your analysis, as well as all the data to reproduce them. The following files are included in the download:
 
-- **_topAnat*AnaEntitiesRelationships*_**: file containing direct relations between Uberon terms. It is a 2 column file where terms in the first column are direct descendants (using a _part of_ or _is a_ relations) of the term in the right column
-- **_topAnat*AnaEntitiesNames*_**: a file containing the IDs (column 1) and names (column 2) of all Uberon terms used in the topAnat analysis
-- **_topAnat*GeneToAnaEntities*_**: a 2-column file containing the mapping between gene IDs (column 1) and the Uberon terms (column 2) the genes are annotated with
-- **_topAnat_Params.txt_**: the parameters of your analysis
-- **_topAnat_functions.R_**: R functions used to run topAnat
-- **_topAnat_script.R_**: R script to reproduce the data
-- **_topAnat_log.R_console_**: the log resulting from running the R script on our server
 - **_topAnat_results.tsv_**: the results table stored as a tabulated file containing the same information found in the table present on our website
+- **_topAnat_results.pdf_**: the graph of the most significant anatomical entities (see the option _Nb of nodes_)
+- **_topAnat_Params.txt_**: the parameters of your analysis, including the Bgee version
+- **_topAnat_script.R_**: R script to reproduce the analysis. It downloads the expression calls and the anatomical entities from Bgee using the BgeeDB R package, then runs the analysis
+- **_topAnat_log.R_console_**: the log resulting from running the R script on our server
+- **_topAnat_Background.tsv_**: the gene IDs of your background, when you provided a custom background
 
-Below the title in the middle, there is a **_Filter_** field which allows you to perform a case-sensitive filter on all columns of the result table. For instance, in the _Pigmentations genes in rabbit_ results coming from the analysis of the [Quick start](#quick-start) section, filtering with the word _skin_ will return all anatomical entities containing the word skin and will show 5 results in the table.
+Below the title in the middle, there is a **_Filter_** field which allows you to perform a case-sensitive filter on all columns of the result table. For instance, in the _Pigmentations genes in rabbit_ results coming from the analysis of the [Quick start](#quick-start) section, filtering with the word _skin_ will return all anatomical entities containing the word skin.
 
 ![](../img/doc/topAnat/topAnat_filterResults.png#tutoimgborder)
 
@@ -118,14 +116,16 @@ In the same line, on the right side, you can change the number of lines visible 
 
 the result table is composed of 8 columns:
 
-- **_Anat Entity ID_** : the ID of the Uberon term
-- **_Anat Entity Name_** : the name of the Uberon term
+- **_Anat Entity ID_** : the ID of the Uberon term. For a cell type in an anatomical entity, the ID of the cell type followed by a dash and the ID of the Uberon term (e.g. CL:0000017-UBERON:0000473)
+- **_Anat Entity Name_** : the name of the Uberon term. For a cell type in an anatomical entity, the name of the cell type followed by _in_ and the name of the Uberon term (e.g. spermatocyte in testis)
 - **_Annotated_**: total number of genes annotated with this term from the background list of genes. More information about background is available in [Properly choose your background](#how-to-properly-choose-your-background)
 - **_Significant_**: actual number of annotations to this Uberon term from our _Gene list_
 - **_Expected_**: expected number of annotations to this Uberon term from our _Gene list_ based on the number of annotations to that term from the background.
 - **_Fold Enrichment_**: the ratio between Significant and Expected annotated genes.
 - **_P value_**: probability of seeing at least the _Significant_ number of genes annotated to this Uberon term, given the proportion of genes in the background genome that are annotated to that Uberon term
 - **_Fdr_**: false discovery rate
+
+A term whose result repeats the one of a more precise sub-term is not displayed: when a term has the same numbers of _Annotated_ and _Significant_ genes and the same _P value_ as one of its sub-terms (anatomical entity or cell type), at any depth, only the most precise of them is shown. The false discovery rate is computed over all the tested terms, including those that are not displayed.
 
 ## How to properly choose your background
 
@@ -170,9 +170,9 @@ For each expression call, Bgee assigns a level of confidence to the call: silver
 
 ![](../img/doc/topAnat/topAnat_algorithmParameters.webp#tutoimgborder)
 
-#### Decorrelation type
+#### Statistical test
 
-Decorrelation is an algorithm used to take into account the topology of the anatomical ontology, to decrease the number of false positives and highly general terms in the results, owing to the inheritance problem. A precise description of these algorithms can be found in the [topGO documentation](https://bioconductor.org/packages/release/bioc/vignettes/topGO/inst/doc/topGO.pdf). Please note that using these decorrelation methods greatly increases the analysis time. By default, a Fisher test without any decorrelation is performed.
+The web interface performs a Fisher test for each anatomical entity, on the expression calls propagated to the parent anatomical entities (see the [expression calls documentation](/support/tutorial-expression-call-download-documentation#generation-of-expression-calls)). The decorrelation algorithms of topGO (e.g. elim and weight), which take into account the topology of the anatomical ontology to decrease the number of false positives and highly general terms in the results owing to the inheritance problem, are available when running TopAnat from the BgeeDB R package. A precise description of these algorithms can be found in the [topGO documentation](https://bioconductor.org/packages/release/bioc/vignettes/topGO/inst/doc/topGO.pdf).
 
 #### node size
 

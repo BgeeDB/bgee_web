@@ -1,6 +1,6 @@
 # Gene Search and Gene Page
 
-This tutorial shows how to search for genes in Bgee and describes the information you will find on a gene page including gene expression, orthologs, paralogs, and general information about the gene. We use the mouse CDK5 gene (ENSMUSG00000028969) from Bgee release 15.0 as an example throughout the tutorial. The link to the most current version of the gene page for ENSMUSG00000028969 is found [here](/gene/ENSMUSG00000028969).
+This tutorial shows how to search for genes in Bgee and describes the information you will find on a gene page including gene expression, orthologs, paralogs, and general information about the gene. We use the mouse CDK5 gene (ENSMUSG00000028969) from Bgee release 16.0 as an example throughout the tutorial. The link to the most current version of the gene page for ENSMUSG00000028969 is found [here](/gene/ENSMUSG00000028969).
 
 - [Gene Search](#gene-search 'Quick jump to this section')
 - [Gene Page](#gene-page 'Quick jump to this section')
@@ -57,7 +57,7 @@ This section provides important details about your selected gene, including its 
 
 ![](../img/doc/gene-search/Fig06_species-gene-page.webp#tutoimgborder)
 
-E.g. the gene ENSMUSG00000028969, also known as Cdk5, encodes the cyclin-dependent kinase 5 protein in _Mus musculus_ (mouse). The gene has been identified to have 45 orthologs in different species, and possesses 196 paralogs within the mouse genome. Access to processed expression values for Cdk5 allows us to explore its patterns in various tissues and conditions
+E.g. the gene ENSMUSG00000028969, also known as Cdk5, encodes the cyclin-dependent kinase 5 protein in _Mus musculus_ (mouse). The gene has been identified to have 47 orthologs in different species, and possesses 245 paralogs within the mouse genome. Access to processed expression values for Cdk5 allows us to explore its patterns in various tissues and conditions
 
 ### Expression and reported absence of expression
 
@@ -65,12 +65,12 @@ The expression and absence of expression sections on each gene page provide a ra
 
 The present/absent expression calls are produced using statistical tests specific to each data type, to identify whether the gene expression level is significantly above the background transcriptional and experimental noise. See the main [Bgee publications](/about/publications) for details. For instance, for RNA-Seq data, the expression level of selected intergenic regions is used to estimate the background noise in each library, leading to obtain one p-value for the significance of expression for each gene in each library. These p-values are then averaged over the samples of each condition, and combined with a weighted harmonic mean over the condition and all its children conditions, to provide one p-value for each gene in each condition (see the [expression calls documentation](/support/tutorial-expression-call-download-documentation#generation-of-expression-calls) for details). This result per gene and condition takes into account all produced p-values, from all available data for all requested data types, in this condition and all its children conditions. More specifically for single-cell RNA-Seq data, data are pseudo-bulked per library and cell type to obtain more signal, no statistical present/absent calls are produced per **cell**, but per **cell population** (gene count matrices per cell can still be retrieved, in H5AD format, see the [experiment search](/search/raw-data) to retrieve such data).
 
-The present/absent calls are then ranked using the Bgee expression score method, in order to provide first the most relevant conditions of expression for each gene. Again, specific methods are used for each data type, see the main [Bgee publications](/about/publications) for details. Briefly, the expression scores are based on non-parametric statistics, where conditions are ranked based on the gene expression levels. These ranks are then normalized across conditions, genes, and data types, and transformed into an expression score going from 0 (= low expression) to 100 (= high expression) for a more intuitive use. This non-parametric statistics allow comparison of gene expression in a quantitative manner across species and conditions, without requiring batch-correction procedures.
+The present calls are then sorted by decreasing expression score, and the absent calls by increasing expression score, in order to provide first the most relevant conditions for each gene. Again, specific methods are used for each data type, see the main [Bgee publications](/about/publications) for details. Briefly, the expression scores are based on non-parametric statistics, where the genes of each sample are ranked based on their expression levels. These ranks are normalized using the minimum and maximum ranks of the species, and transformed into an expression score going from 1 (= low expression) to 100 (= high expression) for a more intuitive use. The expression score of a call is the weighted mean of the scores of all the samples of the condition and of all its children conditions, using the same weights as for the p-values (see the [expression calls documentation](/support/tutorial-expression-call-download-documentation#generation-of-expression-calls) for details). This non-parametric statistics allow comparison of gene expression in a quantitative manner across species and conditions, without requiring batch-correction procedures.
 
 By default, the gene page reports this information for each anatomical localization only. For each present/absent expression call, are provided:
 
 - Anatomical entity: the localization of the call (where the gene is detected either as present or as absent). It can point to simply an anatomical structure, or to a cell type, or to the composition of a cell type in a specific anatomical structure.
-- the p-value of the present/absent call.
+- the p-value of the present/absent call (Bgee does not report p-values below 1e-15: a value of 1e-15 means 1e-15 or less).
 - its expression score
 - an overview of the data types supporting it
 - and a link to browse the source data that allowed to produce it.
@@ -108,7 +108,7 @@ They correspond to one-to-one homologs for each pair of species in Bgee.
 #### Orthologs
 
 Orthology information is presented at taxon levels corresponding to the least common ancestor taxon for which orthologs are found in Bgee species.
-For the Mus musculus gene [Cdk5](/gene/ENSMUSG00000028969#orthologs), orthologs are found at 10 different taxon levels, each one corresponding to one line in the result table.
+For the Mus musculus gene [Cdk5](/gene/ENSMUSG00000028969#orthologs), orthologs are found at 13 different taxon levels, each one corresponding to one line in the result table.
 
 ![](../img/doc/gene-search/Fig12_Orthologs.gif#tutoimgborder)
 
@@ -117,7 +117,7 @@ Clicking on the _See details_ column allows you to see details of species and ge
 
 ![](../img/doc/gene-search/Fig13_orthologs-tab-explanation.webp#tutoimgborder)
 
-At Bilateria level the same gene has 45 orthologs coming from 44 species. Clicking on the _See details_ column allows us to see that each one of the 44 species has one ortholog, except Salmon that have 2 orthologs.
+At Bilateria level the same gene has 47 orthologs coming from 46 species. Clicking on the _See details_ column allows us to see that each one of the 46 species has one ortholog, except Salmon that has 2 orthologs.
 
 ![](../img/doc/gene-search/Fig14_orthologs-filter.gif#tutoimgborder)
 
@@ -125,7 +125,7 @@ You can filter the result entries with the _Filter_ box at the top left of the r
 
 ![](../img/doc/gene-search/Fig15_Orthologs-expression-comparison.webp#tutoimgborder)
 
-You can run an expression comparison analysis for all ortholog genes at one taxonomic level by clicking on the link "Compare expression" of the _Expression comparison_ column. For instance, clicking on the link "Compare expression" at the Bilateria level will run an expression comparison analysis for the 46 genes (45 orthologs + the gene itself) at that taxonomic level.
+You can display the expression of all ortholog genes at one taxonomic level in the [expression graph](/support/tutorial-expression-graph) by clicking on the link "Compare expression" of the _Expression graph_ column. For instance, clicking on the link "Compare expression" at the Bilateria level will open the expression graph of the 48 genes (47 orthologs + the gene itself) at that taxonomic level.
 
 #### Paralogs
 
@@ -134,8 +134,8 @@ For the Mus musculus gene [Cdk5](/gene/ENSMUSG00000028969#paralogs), paralogs ar
 
 ![](../img/doc/gene-search/Fig16_Paralogs-see-details.gif#tutoimgborder)
 
-At Metazoa level, Cdk5 has four paralog genes (column _Gene(s)_).
-Clicking on the _See details_ column allows you to see names and IDs of these genes.
+At Metazoa level, Cdk5 has one paralog gene (column _Gene(s)_).
+Clicking on the _See details_ column allows you to see the name and the ID of this gene: Cdk2 (ENSMUSG00000025358).
 
 ![](../img/doc/gene-search/Fig17_paralogs-filter.gif#tutoimgborder)
 
@@ -143,7 +143,7 @@ You can filter the result entries with the Filter box at the top left of the res
 
 ![](../img/doc/gene-search/Fig18_Paralogs-expression-comparison-analysis.webp#tutoimgborder)
 
-You can run an expression comparison analysis for all paralog genes at one taxonomic level by clicking on the link "Compare expression" of the _Expression comparison_ column. For instance, clicking on the link "Compare expression" at the Opisthokonta level will run an expression comparison analysis for the 197 genes (196 paralogs + the gene itself) at that taxonomic level.
+You can display the expression of all paralog genes at one taxonomic level in the [expression graph](/support/tutorial-expression-graph) by clicking on the link "Compare expression" of the _Expression graph_ column. For instance, clicking on the link "Compare expression" at the Opisthokonta level will open the expression graph of the 246 genes (245 paralogs + the gene itself) at that taxonomic level.
 
 #### Download one-to-one homologs
 

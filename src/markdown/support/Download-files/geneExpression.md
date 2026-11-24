@@ -66,7 +66,7 @@ A second p-value is computed in the same way from the data types trusted for abs
 
 ## Download expression calls
 
-The files can be found on the Bgee [download page](/download/gene-expression-calls) for each species. To access the download page from the Bgee homepage, go to the download section on the top toolbar and click on "Gene expression calls".
+The files can be found on the Bgee [download page](/download/gene-expression-calls) for each species. To access the download page from the Bgee homepage, open the main menu of the toolbar and click on "Download gene expression calls" in the _Download_ section.
 
 Once on the download calls webpage, you can either search for a specific species in the top search bar or look through the species list at the bottom and click on the species logo to access the different download file options. These datasets can also be downloaded directly using our R package "BgeeDB”.
 
@@ -102,10 +102,10 @@ Simple and advanced files contain the same expression calls (same number of line
 
 Advanced file additional information:
 
-- expression status generated from each data type are provided (present, absent, no data).
-- number of present high quality and present low quality calls from each data type.
-- number of absent high quality and absent low quality calls from _in situ_ and RNA-Seq.
-- data type for which calls are observed. Each call is observed in at least one data type.
+- whether the call includes data actually observed in the condition itself, or is only inferred from its sub-conditions.
+- for each data type (_in situ_ hybridization, bulk RNA-Seq, single-cell RNA-Seq), the call generated from this data type alone (present, absent, no data), with its quality, its pValue and its expression score.
+- for each data type, the weight of the data type in the call, used to compute the expression score and the pValue.
+- for each data type, whether data of this type were actually observed in the condition itself.
 
 ## Download file details
 
@@ -113,51 +113,41 @@ Below is a complete description of which data you can expect to find in each dow
 
 ### File content
 
-| Column | Content                                                                                                                                                                                                                                               | In anatomical simple files | In anatomical advanced files | In all conditions simple files | In all conditions advanced files | Example                        |
-| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | ---------------------------- | ------------------------------ | -------------------------------- | ------------------------------ |
-| 1      | [Gene ID](#gene-id-column-1 'See Gene ID column description')                                                                                                                                                                                         | Yes                        | Yes                          | Yes                            | Yes                              | FBgn0005427                    |
-| 2      | [Gene name](#gene-name-column-2 'See Gene name column description')                                                                                                                                                                                   | Yes                        | Yes                          | Yes                            | Yes                              | ewg                            |
-| 3      | [Anatomical entity ID](#anatomical-entity-id-column-3 'See Anatomical entity ID column description')                                                                                                                                                  | Yes                        | Yes                          | Yes                            | Yes                              | UBERON:6001060                 |
-| 4      | [Anatomical entity name](#anatomical-entity-name-column-4 'See Anatomical entity name column description')                                                                                                                                            | Yes                        | Yes                          | Yes                            | Yes                              | embryonic brain                |
-| 5      | [Developmental stage ID](#developmental-stage-id-column-5 'See Developmental stage ID column description')                                                                                                                                            | No                         | No                           | Yes                            | Yes                              | FBdv:00005334                  |
-| 6      | [Developmental stage name](#developmental-stage-name-column-6 'See Developmental stage name column description')                                                                                                                                      | No                         | No                           | Yes                            | Yes                              | embryonic stage 16 (fruit fly) |
-| 7      | [Sex](#sex-column-7 'See Sex column description')                                                                                                                                                                                                     | No                         | No                           | Yes                            | Yes                              | any                            |
-| 8      | [Strain](#strain-column-8 'See Strain column description')                                                                                                                                                                                            | No                         | No                           | Yes                            | Yes                              | wild-type                      |
-| 9      | [Expression](#expression-column-9 'See Expression column description')                                                                                                                                                                                | Yes                        | Yes                          | Yes                            | Yes                              | present                        |
-| 10     | [Call quality](#call-quality-column-10 'See Call quality column description')                                                                                                                                                                         | Yes                        | Yes                          | Yes                            | Yes                              | gold quality                   |
-| 11     | [pValue](#pvalue-column-11 'See pValue column description')                                                                                                                                                                                           | Yes                        | Yes                          | Yes                            | Yes                              | 0.0004                         |
-| 12     | [Expression score](#expression-score-column-12 'See Expression score column description')                                                                                                                                                             | Yes                        | Yes                          | Yes                            | Yes                              | 49.99                          |
-| 13     | [Expression rank](#expression-rank-column-13 'See Expression rank column description')                                                                                                                                                                | Yes                        | Yes                          | Yes                            | Yes                              | 8.32e3                         |
-| 14     | [Including observed data](#including-observed-data-column-14 'See Including observed data column description')                                                                                                                                        | No                         | Yes                          | No                             | Yes                              | yes                            |
-| 15     | [Self observation count](#self-observation-count-column-15 'See Self observation count column description')                                                                                                                                           | No                         | Yes                          | No                             | Yes                              | 1                              |
-| 16     | [Descendant observation count](#descendant-observation-count-column-16 'See Descendant observation count column description')                                                                                                                         | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 35     | [in situ hybridization expression](#in-situ-hybridization-expression-column-35 'See in situ hybridization expression column description')                                                                                                             | No                         | Yes                          | No                             | Yes                              | present                        |
-| 36     | [in situ hybridization call quality](#in-situ-hybridization-call-quality-column-36 'See in situ hybridization call quality column description')                                                                                                       | No                         | Yes                          | No                             | Yes                              | gold quality                   |
-| 37     | [in situ hybridization pValue](#in-situ-hybridization-pvalue-column-37 'See in situ hybridization pValue column description')                                                                                                                         | No                         | Yes                          | No                             | Yes                              | 0.0004                         |
-| 38     | [in situ hybridization expression score](#in-situ-hybridization-expression-score-column-38 'See in situ hybridization expression score column description')                                                                                           | No                         | Yes                          | No                             | Yes                              | 49.99                          |
-| 39     | [in situ hybridization expression rank](#in-situ-hybridization-expression-rank-column-39 'See in situ hybridization expression rank column description')                                                                                              | No                         | Yes                          | No                             | Yes                              | 8.32e3                         |
-| 40     | [in situ hybridization weight for expression rank and score](#in-situ-hybridization-weight-for-expression-rank-and-score-column-40 'See in situ hybridization weight for expression rank and score column description')                               | No                         | Yes                          | No                             | Yes                              | 5.00                           |
-| 41     | [Including in situ hybridization observed data](#including-in-situ-hybridization-observed-data-column-41 'See Including in situ hybridization observed data column description')                                                                      | No                         | Yes                          | No                             | Yes                              | yes                            |
-| 42     | [Self observation count in situ hybridization](#self-observation-count-in-situ-hybridization-column-42 'See Self observation count in situ hybridization column description')                                                                         | No                         | Yes                          | No                             | Yes                              | 1                              |
-| 43     | [Descendant observation count in situ hybridization](#descendant-observation-count-in-situ-hybridization-column-43 'See Descendant observation count in situ hybridization column description')                                                       | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 44     | [RNA-Seq expression](#rna-seq-expression-column-44 'See RNA-Seq expression column description')                                                                                                                                                       | No                         | Yes                          | No                             | Yes                              | no data                        |
-| 45     | [RNA-Seq call quality](#rna-seq-call-quality-column-45 'See RNA-Seq call quality column description')                                                                                                                                                 | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 46     | [RNA-Seq pValue](#rna-seq-pvalue-column-46 'See RNA-Seq pValue column description')                                                                                                                                                                   | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 47     | [RNA-Seq expression score](#rna-seq-expression-score-column-47 'See RNA-Seq expression score column description')                                                                                                                                     | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 48     | [RNA-Seq expression rank](#rna-seq-expression-rank-column-48 'See RNA-Seq expression rank column description')                                                                                                                                        | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 49     | [RNA-Seq weight for expression rank and score](#rna-seq-weight-for-expression-rank-and-score-column-49 'See RNA-Seq weight for expression rank and score column description')                                                                         | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 50     | [Including RNA-Seq observed data](#including-rna-seq-observed-data-column-50 'See Including RNA-Seq observed data column description')                                                                                                                | No                         | Yes                          | No                             | Yes                              | no                             |
-| 51     | [Self observation count RNA-Seq](#self-observation-count-rna-seq-column-51 'See Self observation count RNA-Seq column description')                                                                                                                   | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 52     | [Descendant observation count RNA-Seq](#descendant-observation-count-rna-seq-column-52 'See Descendant observation count RNA-Seq column description')                                                                                                 | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 53     | [full-length single-cell RNA-Seq expression](#full-length-single-cell-rna-seq-expression-column-53 'See full-length single-cell RNA-Seq expression column description')                                                                               | No                         | Yes                          | No                             | Yes                              | no data                        |
-| 54     | [full-length single-cell RNA-Seq call quality](#full-length-single-cell-rna-seq-call-quality-column-54 'See full-length single-cell RNA-Seq call quality column description')                                                                         | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 55     | [full-length single-cell RNA-Seq pValue](#full-length-single-cell-rna-seq-pvalue-column-55 'See full-length single-cell RNA-Seq pValue column description')                                                                                           | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 56     | [full-length single-cell RNA-Seq expression score](#full-length-single-cell-rna-seq-expression-score-column-56 'See full-length single-cell RNA-Seq expression score column description')                                                             | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 57     | [full-length single-cell RNA-Seq expression rank](#full-length-single-cell-rna-seq-expression-rank-column-57 'See full-length single-cell RNA-Seq expression rank column description')                                                                | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 58     | [full-length single-cell RNA-Seq weight for expression rank and score](#full-length-single-cell-rna-seq-weight-for-expression-rank-and-score-column-58 'See full-length single-cell RNA-Seq weight for expression rank and score column description') | No                         | Yes                          | No                             | Yes                              | NA                             |
-| 59     | [Including full-length single-cell RNA-Seq observed data](#including-full-length-single-cell-rna-seq-observed-data-column-59 'See Including full-length single-cell RNA-Seq observed data column description')                                        | No                         | Yes                          | No                             | Yes                              | no                             |
-| 60     | [Self observation count full-length single-cell RNA-Seq](#self-observation-count-full-length-single-cell-rna-seq-column-60 'See Self observation count full-length single-cell RNA-Seq column description')                                           | No                         | Yes                          | No                             | Yes                              | 0                              |
-| 61     | [Descendant observation count full-length single-cell RNA-Seq](#descendant-observation-count-full-length-single-cell-rna-seq-column-61 'See Descendant observation count full-length single-cell RNA-Seq column description')                         | No                         | Yes                          | No                             | Yes                              | 0                              |
+The column numbers are those of the advanced file with all conditions parameters. In the other files, the columns that are not present (see the table) are skipped and the following columns are shifted accordingly. The values are separated by tabs, and a missing value is `NA`.
+
+| Column | Content                                                                                                                                                                                                                 | In anatomical simple files | In anatomical advanced files | In all conditions simple files | In all conditions advanced files | Example                        |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | ---------------------------- | ------------------------------ | -------------------------------- | ------------------------------ |
+| 1      | [Gene ID](#gene-id-column-1 'See Gene ID column description')                                                                                                                                                           | Yes                        | Yes                          | Yes                            | Yes                              | FBgn0005427                    |
+| 2      | [Gene name](#gene-name-column-2 'See Gene name column description')                                                                                                                                                     | Yes                        | Yes                          | Yes                            | Yes                              | ewg                            |
+| 3      | [Anatomical entity ID](#anatomical-entity-id-column-3 'See Anatomical entity ID column description')                                                                                                                    | Yes                        | Yes                          | Yes                            | Yes                              | UBERON:6001060                 |
+| 4      | [Anatomical entity name](#anatomical-entity-name-column-4 'See Anatomical entity name column description')                                                                                                              | Yes                        | Yes                          | Yes                            | Yes                              | embryonic brain                |
+| 5      | [Developmental stage ID](#developmental-stage-id-column-5 'See Developmental stage ID column description')                                                                                                              | No                         | No                           | Yes                            | Yes                              | FBdv:00005334                  |
+| 6      | [Developmental stage name](#developmental-stage-name-column-6 'See Developmental stage name column description')                                                                                                        | No                         | No                           | Yes                            | Yes                              | embryonic stage 16 (fruit fly) |
+| 7      | [Sex](#sex-column-7 'See Sex column description')                                                                                                                                                                       | No                         | No                           | Yes                            | Yes                              | any                            |
+| 8      | [Strain](#strain-column-8 'See Strain column description')                                                                                                                                                              | No                         | No                           | Yes                            | Yes                              | wild-type                      |
+| 9      | [Expression](#expression-column-9 'See Expression column description')                                                                                                                                                  | Yes                        | Yes                          | Yes                            | Yes                              | present                        |
+| 10     | [Call quality](#call-quality-column-10 'See Call quality column description')                                                                                                                                           | Yes                        | Yes                          | Yes                            | Yes                              | gold quality                   |
+| 11     | [pValue](#pvalue-column-11 'See pValue column description')                                                                                                                                                             | Yes                        | Yes                          | Yes                            | Yes                              | 1.28e-5                        |
+| 12     | [Expression score](#expression-score-column-12 'See Expression score column description')                                                                                                                               | Yes                        | Yes                          | Yes                            | Yes                              | 92.25                          |
+| 13     | [Including observed data](#including-observed-data-column-13 'See Including observed data column description')                                                                                                          | No                         | Yes                          | No                             | Yes                              | yes                            |
+| 14     | [in situ hybridization expression](#in-situ-hybridization-expression-column-14 'See in situ hybridization expression column description')                                                                               | No                         | Yes                          | No                             | Yes                              | present                        |
+| 15     | [in situ hybridization call quality](#in-situ-hybridization-call-quality-column-15 'See in situ hybridization call quality column description')                                                                         | No                         | Yes                          | No                             | Yes                              | gold quality                   |
+| 16     | [in situ hybridization pValue](#in-situ-hybridization-pvalue-column-16 'See in situ hybridization pValue column description')                                                                                           | No                         | Yes                          | No                             | Yes                              | 8.00e-4                        |
+| 17     | [in situ hybridization expression score](#in-situ-hybridization-expression-score-column-17 'See in situ hybridization expression score column description')                                                             | No                         | Yes                          | No                             | Yes                              | 70.27                          |
+| 18     | [in situ hybridization weight for expression rank and score](#in-situ-hybridization-weight-for-expression-rank-and-score-column-18 'See in situ hybridization weight for expression rank and score column description') | No                         | Yes                          | No                             | Yes                              | 5                              |
+| 19     | [Including in situ hybridization observed data](#including-in-situ-hybridization-observed-data-column-19 'See Including in situ hybridization observed data column description')                                        | No                         | Yes                          | No                             | Yes                              | yes                            |
+| 20     | [RNA-Seq expression](#rna-seq-expression-column-20 'See RNA-Seq expression column description')                                                                                                                         | No                         | Yes                          | No                             | Yes                              | present                        |
+| 21     | [RNA-Seq call quality](#rna-seq-call-quality-column-21 'See RNA-Seq call quality column description')                                                                                                                   | No                         | Yes                          | No                             | Yes                              | gold quality                   |
+| 22     | [RNA-Seq pValue](#rna-seq-pvalue-column-22 'See RNA-Seq pValue column description')                                                                                                                                     | No                         | Yes                          | No                             | Yes                              | 1.28e-5                        |
+| 23     | [RNA-Seq expression score](#rna-seq-expression-score-column-23 'See RNA-Seq expression score column description')                                                                                                       | No                         | Yes                          | No                             | Yes                              | 92.25                          |
+| 24     | [RNA-Seq weight for expression rank and score](#rna-seq-weight-for-expression-rank-and-score-column-24 'See RNA-Seq weight for expression rank and score column description')                                           | No                         | Yes                          | No                             | Yes                              | 21333                          |
+| 25     | [Including RNA-Seq observed data](#including-rna-seq-observed-data-column-25 'See Including RNA-Seq observed data column description')                                                                                  | No                         | Yes                          | No                             | Yes                              | yes                            |
+| 26     | [single-cell RNA-Seq expression](#single-cell-rna-seq-expression-column-26 'See single-cell RNA-Seq expression column description')                                                                                     | No                         | Yes                          | No                             | Yes                              | no data                        |
+| 27     | [single-cell RNA-Seq call quality](#single-cell-rna-seq-call-quality-column-27 'See single-cell RNA-Seq call quality column description')                                                                               | No                         | Yes                          | No                             | Yes                              | NA                             |
+| 28     | [single-cell RNA-Seq pValue](#single-cell-rna-seq-pvalue-column-28 'See single-cell RNA-Seq pValue column description')                                                                                                 | No                         | Yes                          | No                             | Yes                              | NA                             |
+| 29     | [single-cell RNA-Seq expression score](#single-cell-rna-seq-expression-score-column-29 'See single-cell RNA-Seq expression score column description')                                                                   | No                         | Yes                          | No                             | Yes                              | NA                             |
+| 30     | [single-cell RNA-Seq weight for expression rank and score](#single-cell-rna-seq-weight-for-expression-rank-and-score-column-30 'See single-cell RNA-Seq weight for expression rank and score column description')       | No                         | Yes                          | No                             | Yes                              | NA                             |
+| 31     | [Including single-cell RNA-Seq observed data](#including-single-cell-rna-seq-observed-data-column-31 'See Including single-cell RNA-Seq observed data column description')                                              | No                         | Yes                          | No                             | Yes                              | no                             |
 
 ### Column descriptions
 
@@ -199,7 +189,7 @@ Call generated from all data types for the selected combination of condition par
 
 ##### <a name="call-quality-column-10"></a>Call quality (column 10)
 
-Call quality from all data types for the selected combination of condition parameters (anatomical or all conditions). Permitted values: gold quality, silver quality.
+Call quality from all data types for the selected combination of condition parameters (anatomical or all conditions). Permitted values: gold quality, silver quality. Calls of bronze quality are not reported in these files.
 
 ##### <a name="pvalue-column-11"></a>pValue (column 11)
 
@@ -207,152 +197,90 @@ p-value of the call. Bgee does not report p-values below 1e-15, in this column o
 
 ##### <a name="expression-score-column-12"></a>Expression score (column 12)
 
-Score of expression to the call. The score uses the minimum and maximum `Expression Rank` (column 13) of the species to normalize the expression to a value between 0 and 100.
+Score of expression of the call, between 1 and 100. A low score means that the gene is lowly expressed in the condition, a high score that it is highly expressed.
 
-Low score means that the gene is lowly expressed in the condition.
+The score of an observation is obtained by normalizing the expression rank of the gene using the minimum and maximum ranks of the species. The score of a call is the weighted arithmetic mean of the scores of all the observations made in the condition and in all its sub-conditions, using the same weights as for the pValue (see the [second step](#second-step-p-values-per-gene-and-annotated-condition 'See the second step of the generation of the expression calls') of the generation of the calls).
 
-##### <a name="expression-rank-column-13"></a>Expression rank (column 13)
+##### <a name="including-observed-data-column-13"></a>Including observed data (column 13)
 
-Rank score associated with the call. Rank scores of expression calls are normalized across genes, conditions and species.
+Information about the calls actually coming from experimental data, whatever the data type, for the selected combination of condition parameters (anatomical or all conditions). Permitted values: `yes` or `no`.
 
-A low score means that the gene is highly expressed in the condition.
+`yes` means that the gene was observed in experimental data in this condition itself. `no` means that the call is only inferred from data observed in sub-conditions. Absent calls are always `yes`: absence of expression is only called in conditions where the gene was observed.
 
-##### <a name="including-observed-data-column-14"></a>Including observed data (column 14)
+##### <a name="in-situ-hybridization-expression-column-14"></a>in situ hybridization expression (column 14)
 
-Permitted value: `yes`.
+Call generated from _in situ_ hybridization data alone for the selected combination of condition parameters (anatomical or all conditions). Permitted values: present, absent, no data.
 
-Only calls that were actually seen in experimental data, at least once, are in this file.
+##### <a name="in-situ-hybridization-call-quality-column-15"></a>in situ hybridization call quality (column 15)
 
-##### <a name="self-observation-count-column-15"></a>Self observation count (column 15)
+Quality associated with the call from _in situ_ hybridization data. Permitted values: gold quality, silver quality, bronze quality, NA.
 
-Number of observations coming from experimental data for this combination of condition parameters (anatomical or all conditions).
+##### <a name="in-situ-hybridization-pvalue-column-16"></a>in situ hybridization pValue (column 16)
 
-##### <a name="descendant-observation-count-column-16"></a>Descendant observation count (column 16)
+p-value of the call calculated using only the p-values coming from _in situ_ hybridization data. `NA` when there is no such data.
 
-Number of observations coming from experimental data for the combination of condition parameters (anatomical or all conditions) descendant of the current one.
+##### <a name="in-situ-hybridization-expression-score-column-17"></a>in situ hybridization expression score (column 17)
 
-##### <a name="in-situ-hybridization-expression-column-35"></a>in situ hybridization expression (column 35)
+Score of expression of the call calculated using only the _in situ_ hybridization data, as described for `Expression score` (column 12). `NA` when there is no such data.
 
-Call generated from _in situ_ hybridization data for the selected combination of condition parameters (anatomical or all conditions). Permitted values: present, absent, no data.
+##### <a name="in-situ-hybridization-weight-for-expression-rank-and-score-column-18"></a>in situ hybridization weight for expression rank and score (column 18)
 
-##### <a name="in-situ-hybridization-call-quality-column-36"></a>in situ hybridization call quality (column 36)
+The weight of the _in situ_ hybridization data in the call: the sum of the weights of the observations made in the condition and in all its sub-conditions (each _in situ_ hybridization spot has the same weight, so this weight increases with the number of spots). It is the weight used to compute the weighted means giving the expression score and the pValue, see the [second step](#second-step-p-values-per-gene-and-annotated-condition 'See the second step of the generation of the expression calls'). `NA` when there is no such data.
 
-Quality associated with the call from in situ hybridization data. Permitted values: gold quality, silver quality, NA.
+##### <a name="including-in-situ-hybridization-observed-data-column-19"></a>Including in situ hybridization observed data (column 19)
 
-##### <a name="in-situ-hybridization-pvalue-column-37"></a>in situ hybridization pValue (column 37)
+Information about the calls actually coming from experimental _in situ_ hybridization data for the selected combination of condition parameters (anatomical or all conditions). Permitted values: `yes` or `no`.
 
-p-value of the call calculated using p-values coming from in situ hybridization data.
+`yes` means that the gene was observed in _in situ_ hybridization data in this condition itself. `no` means that there is no such data, or that the call is only inferred from data observed in sub-conditions.
 
-##### <a name="in-situ-hybridization-expression-score-column-38"></a>in situ hybridization expression score (column 38)
+##### <a name="rna-seq-expression-column-20"></a>RNA-Seq expression (column 20)
 
-Score of expression to the call from in situ hybridization data. The score uses the minimum and maximum `Expression Rank` (column 13) of the species to normalize the expression to a value between 0 and 100.
+Call generated from bulk RNA-Seq data alone for the selected combination of condition parameters (anatomical or all conditions). Permitted values: present, absent, no data.
 
-Low score means that the gene is lowly expressed in the condition.
+##### <a name="rna-seq-call-quality-column-21"></a>RNA-Seq call quality (column 21)
 
-##### <a name="in-situ-hybridization-expression-rank-column-39"></a>in situ hybridization expression rank (column 39)
+Quality associated with the call from bulk RNA-Seq data. Permitted values: gold quality, silver quality, bronze quality, NA.
 
-Rank score associated with the call from in situ hybridization data. Rank scores of expression calls are normalized across genes, conditions, and species.
+##### <a name="rna-seq-pvalue-column-22"></a>RNA-Seq pValue (column 22)
 
-A low score means that the gene is highly expressed in the condition.
+p-value of the call calculated using only the p-values coming from bulk RNA-Seq data. `NA` when there is no such data.
 
-##### <a name="in-situ-hybridization-weight-for-expression-rank-and-score-column-40"></a>in situ hybridization weight for expression rank and score (column 40)
+##### <a name="rna-seq-expression-score-column-23"></a>RNA-Seq expression score (column 23)
 
-The weight given to in situ hybridization expression ranks and scores when computing the weighted mean over several data types.
+Score of expression of the call calculated using only the bulk RNA-Seq data, as described for `Expression score` (column 12). `NA` when there is no such data.
 
-##### <a name="including-in-situ-hybridization-observed-data-column-41"></a>Including in situ hybridization observed data (column 41)
+##### <a name="rna-seq-weight-for-expression-rank-and-score-column-24"></a>RNA-Seq weight for expression rank and score (column 24)
 
-Information about the calls actually coming from experimental in situ hybridization data for this combination of condition parameters (anatomical or all conditions).
+The weight of the bulk RNA-Seq data in the call: the sum of the weights of the observations made in the condition and in all its sub-conditions (the weight of each sample is its number of distinct expression ranks). It is the weight used to compute the weighted means giving the expression score and the pValue, see the [second step](#second-step-p-values-per-gene-and-annotated-condition 'See the second step of the generation of the expression calls'). `NA` when there is no such data.
 
-Permitted value: `yes` or `no`.
+##### <a name="including-rna-seq-observed-data-column-25"></a>Including RNA-Seq observed data (column 25)
 
-##### <a name="self-observation-count-in-situ-hybridization-column-42"></a>Self observation count in situ hybridization (column 42)
+Information about the calls actually coming from experimental bulk RNA-Seq data for the selected combination of condition parameters (anatomical or all conditions). Permitted values: `yes` or `no`.
 
-Number of observations coming from experimental in situ hybridization data for this combination of condition parameters (anatomical or all conditions).
+`yes` means that the gene was observed in bulk RNA-Seq data in this condition itself. `no` means that there is no such data, or that the call is only inferred from data observed in sub-conditions.
 
-##### <a name="descendant-observation-count-in-situ-hybridization-column-43"></a>Descendant observation count in situ hybridization (column 43)
+##### <a name="single-cell-rna-seq-expression-column-26"></a>single-cell RNA-Seq expression (column 26)
 
-Number of observations coming from experimental in situ hybridization data for the combination of condition parameters (anatomical or all conditions) descendant of the current one.
+Call generated from single-cell RNA-Seq (full-length and droplet-based protocols together) data alone for the selected combination of condition parameters (anatomical or all conditions). Permitted values: present, absent, no data.
 
-##### <a name="rna-seq-expression-column-44"></a>RNA-Seq expression (column 44)
+##### <a name="single-cell-rna-seq-call-quality-column-27"></a>single-cell RNA-Seq call quality (column 27)
 
-Call generated from bulk RNA-Seq data for the selected combination of condition parameters (anatomical or all conditions). Permitted values: present, absent, no data.
+Quality associated with the call from single-cell RNA-Seq data. Permitted values: gold quality, silver quality, bronze quality, NA.
 
-##### <a name="rna-seq-call-quality-column-45"></a>RNA-Seq call quality (column 45)
+##### <a name="single-cell-rna-seq-pvalue-column-28"></a>single-cell RNA-Seq pValue (column 28)
 
-Quality associated with the call from bulk RNA-Seq data. Permitted values: gold quality, silver quality, NA.
+p-value of the call calculated using only the p-values coming from single-cell RNA-Seq data. `NA` when there is no such data.
 
-##### <a name="rna-seq-pvalue-column-46"></a>RNA-Seq pValue (column 46)
+##### <a name="single-cell-rna-seq-expression-score-column-29"></a>single-cell RNA-Seq expression score (column 29)
 
-p-value of the call calculated using p-values coming from RNA-Seq data.
+Score of expression of the call calculated using only the single-cell RNA-Seq data, as described for `Expression score` (column 12). `NA` when there is no such data.
 
-##### <a name="rna-seq-expression-score-column-47"></a>RNA-Seq expression score (column 47)
+##### <a name="single-cell-rna-seq-weight-for-expression-rank-and-score-column-30"></a>single-cell RNA-Seq weight for expression rank and score (column 30)
 
-Score of expression to the call from RNA-Seq data. The score uses the minimum and maximum `Expression Rank` (column 13) of the species to normalize the expression to a value between 0 and 100.
+The weight of the single-cell RNA-Seq data in the call: the sum of the weights of the observations made in the condition and in all its sub-conditions (the weight of each sample is its number of distinct expression ranks). It is the weight used to compute the weighted means giving the expression score and the pValue, see the [second step](#second-step-p-values-per-gene-and-annotated-condition 'See the second step of the generation of the expression calls'). `NA` when there is no such data.
 
-Low score means that the gene is lowly expressed in the condition.
+##### <a name="including-single-cell-rna-seq-observed-data-column-31"></a>Including single-cell RNA-Seq observed data (column 31)
 
-##### <a name="rna-seq-expression-rank-column-48"></a>RNA-Seq expression rank (column 48)
+Information about the calls actually coming from experimental single-cell RNA-Seq data for the selected combination of condition parameters (anatomical or all conditions). Permitted values: `yes` or `no`.
 
-Rank score associated with the call from RNA-Seq data. Rank scores of expression calls are normalized across genes, conditions and species.
-
-A low score means that the gene is highly expressed in the condition.
-
-##### <a name="rna-seq-weight-for-expression-rank-and-score-column-49"></a>RNA-Seq weight for expression rank and score (column 49)
-
-The weight given to RNA-Seq expression ranks and scores when computing the weighted mean over several data types.
-
-##### <a name="including-rna-seq-observed-data-column-50"></a>Including RNA-Seq observed data (column 50)
-
-Information about the calls actually coming from experimental RNA-Seq data for this combination of condition parameters (anatomical or all conditions).
-
-Permitted value: `yes` or `no`.
-
-##### <a name="self-observation-count-rna-seq-column-51"></a>Self observation count RNA-Seq (column 51)
-
-Number of observations coming from experimental RNA-Seq data for this combination of condition parameters (anatomical or all conditions).
-
-##### <a name="descendant-observation-count-rna-seq-column-52"></a>Descendant observation count RNA-Seq (column 52)
-
-Number of observations coming from experimental RNA-Seq data for the combination of condition parameters (anatomical or all conditions) descendant of the current one.
-
-##### <a name="full-length-single-cell-rna-seq-expression-column-53"></a>full-length single-cell RNA-Seq expression (column 53)
-
-Call generated from full-length single-cell RNA-Seq data for the selected combination of condition parameters (anatomical or all conditions). Permitted values: present, absent, no data.
-
-##### <a name="full-length-single-cell-rna-seq-call-quality-column-54"></a>full-length single-cell RNA-Seq call quality (column 54)
-
-Quality associated with the call from full-length single-cell RNA-Seq data. Permitted values: gold quality, silver quality, NA.
-
-##### <a name="full-length-single-cell-rna-seq-pvalue-column-55"></a>full-length single-cell RNA-Seq pValue (column 55)
-
-p-value of the call calculated using p-values coming from full-length single-cell RNA-Seq data.
-
-##### <a name="full-length-single-cell-rna-seq-expression-score-column-56"></a>full-length single-cell RNA-Seq expression score (column 56)
-
-Score of expression to the call from full-length single-cell RNA-Seq data. The score uses the minimum and maximum `Expression Rank` (column 13) of the species to normalize the expression to a value between 0 and 100.
-
-Low score means that the gene is lowly expressed in the condition.
-
-##### <a name="full-length-single-cell-rna-seq-expression-rank-column-57"></a>full-length single-cell RNA-Seq expression rank (column 57)
-
-Rank score associated with the call from full-length single-cell RNA-Seq data. Rank scores of expression calls are normalized across genes, conditions, and species.
-
-A low score means that the gene is highly expressed in the condition.
-
-##### <a name="full-length-single-cell-rna-seq-weight-for-expression-rank-and-score-column-58"></a>full-length single-cell RNA-Seq weight for expression rank and score (column 58)
-
-The weight given to full-length single-cell expression ranks and scores when computing the weighted mean over several data types.
-
-##### <a name="including-full-length-single-cell-rna-seq-observed-data-column-59"></a>Including full-length single-cell RNA-Seq observed data (column 59)
-
-Information about the calls actually coming from experimental full-length single-cell RNA-Seq data for this combination of condition parameters (anatomical or all conditions).
-
-Permitted value: `yes` or `no`.
-
-##### <a name="self-observation-count-full-length-single-cell-rna-seq-column-60"></a>Self observation count full-length single-cell RNA-Seq (column 60)
-
-Number of observations coming from experimental full-length single-cell RNA-Seq data for this combination of condition parameters (anatomical or all conditions).
-
-##### <a name="descendant-observation-count-full-length-single-cell-rna-seq-column-61"></a>Descendant observation count full-length single-cell RNA-Seq (column 61)
-
-Number of observations coming from experimental full-length single-cell RNA-Seq data for the combination of condition parameters (anatomical or all conditions) descendant of the current one.
+`yes` means that the gene was observed in single-cell RNA-Seq data in this condition itself. `no` means that there is no such data, or that the call is only inferred from data observed in sub-conditions.

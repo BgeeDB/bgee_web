@@ -51,8 +51,8 @@ The following filter options are available through the search form:
 
 - **Sex**: Limit sex to male, female, hermaphrodite (depending on the selected species) by checking the corresponding box(es).
 
-- **Data Type**: The data type(s) used to produce the expression calls. The calls retrieved will be supported by
-  at least one of the selected data types.
+- **Data Type**: The data type(s) used to produce the expression calls. The calls are generated from the selected data types only:
+  the pValue, the call quality and the expression score of a call take into account these data types alone.
 
 - **Condition Parameter**: Select the condition parameters to consider for generating expression calls.
   - For example, selecting only "Anatomical localization" will integrate all strain/ethnicity, developmental and life stage, and sex information, into one singular call per gene and anatomical localization.
@@ -97,6 +97,8 @@ Below the export current page in TSV button, you can change the number of lines 
 
 ![](../img/doc/present_absent-expression-calls/Fig1_results-table.png#tutoimgborder)
 
+The results are sorted by decreasing expression score, gene by gene when several genes are requested.
+
 - **Gene ID:** Gene identifier used to uniquely label each gene.
 
 - **Gene name:** It represents the commonly used name for the given gene. For example, in humans the gene names are approved and controlled by the HUGO Gene Nomenclature Committee (HGNC).
@@ -107,11 +109,11 @@ Below the export current page in TSV button, you can change the number of lines 
 
 - **pValue:** P-value of the test of significance used by Bgee to determine the expression state of the gene (various statistical methods are used to determine the p-value based on the data types and for merging results from different data types). Bgee does not report p-values below 1e-15: a value of 1e-15 means 1e-15 or less.
 
-- **Expression score:** This value represents the normalized expression level of the gene in that condition after merging all supporting data types. It is scaled from 0, meaning this gene was on average the one with the lowest expression, to 100 which indicates that this gene has high expression in that condition compared to all other genes. Briefly, the expression scores are based on non-parametric statistics, where conditions are ranked based on the gene expression levels. These ranks are then normalized across conditions, genes, and data types, and transformed into an expression score going from 0 (= low expression) to 100 (= high expression) for a more intuitive use. This non-parametric statistics allow comparison of gene expression in a quantitative manner across species and conditions, without requiring batch-correction procedures.
+- **Expression score:** This value represents the normalized expression level of the gene in that condition after merging all supporting data types. It is scaled from 1, meaning this gene was on average the one with the lowest expression, to 100 which indicates that this gene has high expression in that condition compared to all other genes. Briefly, the expression scores are based on non-parametric statistics, where the genes of each sample are ranked based on their expression levels. These ranks are normalized using the minimum and maximum ranks of the species, and transformed into an expression score going from 1 (= low expression) to 100 (= high expression) for a more intuitive use. The expression score of a call is the weighted mean of the scores of all the samples of the condition and of all its children conditions, using the same weights as for the pValue (see the [expression calls documentation](/support/tutorial-expression-call-download-documentation#second-step-p-values-per-gene-and-annotated-condition) for details). This non-parametric statistics allow comparison of gene expression in a quantitative manner across species and conditions, without requiring batch-correction procedures.
 
-- **Expression score confidence:** Bgee's assessment of how confident we are on the validity of the expression score results. There are two possible values, high or low. Our estimation of the validity of the score is determined by looking at the data types used for the expression score calculations. If the score is low and only non-quantitative methods such as in situ hybridization are used, we set its value to low.
+- **Expression score confidence:** Bgee's assessment of how confident we are on the validity of the expression score results. There are two possible values, high or low. The confidence is high for the calls of gold or silver quality, and low for the calls of bronze quality (see _Call quality_).
 
-- **Supporting data types:** In this column, we have 5 squares each representing a different method which Bgee integrates to make the presence/absence calls. The data types that were used to produce the calls of each row is colored in green, all squares in gray show the data types not used for the call either because no data was available for that method in the selected gene and condition, or those data types were filtered out by the user in order to make the expression calls.
+- **Supporting data types:** In this column, we have one square for each data type which Bgee integrates to make the presence/absence calls (bulk RNA-Seq, single-cell RNA-Seq and _in situ_ hybridization). The data types that were used to produce the calls of each row is colored in green, all squares in gray show the data types not used for the call either because no data was available for that method in the selected gene and condition, or those data types were filtered out by the user in order to make the expression calls.
 
 - **Anat. entity ID:** Controlled vocabulary describing anatomical entity of the samples (UBERON, CL or species specific term) used to make the call. Clicking on the Uberon link brings you to Ontology search page for that Uberon ID where you will be able to see all related substructures or parent terms.
 

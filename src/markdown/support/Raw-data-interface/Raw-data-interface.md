@@ -18,7 +18,7 @@ Instructions on how to search and filter Bgee _experiments_, _curated annotation
 
 Bgee data can be searched and filtered through the _Experiments_, _Curated annotations_ and _Processed expression values_ pages. Each page shares a common search form and filtering options and will display a results table that can be exported. The search form, filtering options, and data in the results table are described in detail below.
 
-To start a search, go to the _Search_ section of Bgee's homepage toolbar and select the _Experiments_, _Curated annotations_ or _Processed expression values_ subsection. Once on a page, you can easily alternate between data types.
+To start a search, click on _Curated data_ in Bgee's toolbar, or open the main menu of the toolbar and select _Experiments_, _Curated annotations_ or _Processed expression values_ in the _Browse_ section. Once on a page, you can easily alternate between data types.
 
 ## Search Form
 
@@ -98,7 +98,7 @@ Due to the number of potential entries in the result table, we do not support th
 
 The experiments tab allows you to retrieve the experiments in Bgee that match the specific conditions you are interested in (e.g. species, tissue, developmental stage, etc.) and retrieve library-specific expression values.
 
-We will focus this tutorial on the Mus musculus experiment ERP012910. To access the page click on the _Search_ tab in the toolbar then click _Curated annotated and processed_ which will bring you to the Experiments search page. Type in the experiment of interest (ERP012910) in the right search form entitled "Experiment or assay ID" and click _Submit_. Next, click the ERP012910 link in the Experiment ID column to access the ERP012910 experiment page. The video below details how to reach the experiment page in Bgee 15.0. Additionally, you can access the page directly at https://www.bgee.org/experiment/ERP012910.
+We will focus this tutorial on the Mus musculus experiment ERP012910. To access the page click on _Curated data_ in the toolbar, which will bring you to the Experiments search page. Type in the experiment of interest (ERP012910) in the right search form entitled "Experiment or assay ID" and click _Submit_. Next, click the ERP012910 link in the Experiment ID column to access the ERP012910 experiment page. The video below details how to reach the experiment page in Bgee 15.0. Additionally, you can access the page directly at https://www.bgee.org/experiment/ERP012910.
 
 ![](../img/doc/Raw-data-interface/Fig1-Experiment-page-howtogetthere.gif#tutoimgborder)
 
@@ -110,12 +110,14 @@ Alternatively, if you are not looking for a particular experiment but want to se
 
 ### Results table
 
-The result table at the bottom of the page, which gets populated after searching for a specific experiment ID or filling out the search form, contains 4 columns. You can easily access the more detailed Experiment information by clicking on any Experiment ID name contained in the results table.
+The result table at the bottom of the page gets populated after searching for a specific experiment ID or filling out the search form. You can easily access the more detailed Experiment information by clicking on any Experiment ID contained in the results table.
 
-The four columns contained in the table are:
+The columns contained in the table are (some of them are only available for some data types):
 
 - **Experiment ID**: refers to a unique identifier assigned to the specific experiment done in the study. You can click on this link to access further information on an experiment.
 - **Experiment name**: defines the title used to designate this experiment.
+- **DOI**: DOI of the publication related to the experiment.
+- **Cell count**: number of annotated cells in the dataset, for single-cell RNA-Seq experiments. Unannotated cells are not considered.
 - **Description**: a more detailed description of how the experiment was done and the aims of the project.
 - **Link to curated annotations**: this link will allow you to see all libraries included in this experiment (inside Bgee) through our curated annotations page (for further details on this page, see [Curated annotations](#curated-annotations) section).
 
@@ -153,10 +155,10 @@ As with the _Curated annotations_ or _Processed expression values_ pages, the co
 - **Fragmentation:** This number represents the size of the RNA fragmentation.
 - **Run sequencing type:** Specifies whether the sequencer reads the fragments from only one end to the other (single) or from both sides of the fragment (paired).
 - **Total read count:** Total number of reads for the annotated sample.
-- **Mapped read count:** Number of reads that Bgee was able to map to the reference ensembl transcriptome (ensembl 102).
+- **Mapped read count:** Number of reads that Bgee was able to map to the reference transcriptome of the species.
 - **Total UMI count:** Total number of individual RNA molecules (UMI) for the annotated sample. Only applicable for libraries producing UMIs.
 - **Mapped UMI count:** Number of UMIs that could be mapped to the transcriptome. Only applicable for libraries producing UMIs.
-- **Distinct rank count:** When performing a fractional ranking of the genes in the annotated sample, based on their expression level, number of distinct ranks observed, to have a value of the power for distinguishing expression levels. Used as a weight to compute a weighted mean rank across samples for each gene and compute expression scores in Bgee.
+- **Distinct rank count:** When performing a fractional ranking of the genes in the annotated sample, based on their expression level, number of distinct ranks observed, to have a value of the power for distinguishing expression levels. Used as the weight of the sample when computing, for each gene, the weighted means of the p-values and of the expression scores across samples in Bgee.
 - **Max rank:** When performing a fractional ranking of the genes in the annotated sample, based on their expression level, maximum rank attained in the sample. Used to normalize ranks across samples and compute expression scores in Bgee.
 - **Link to processed expression values:** The "Browse results" link allows you to access the processed expression values for this library. It will include the expression level and expression p-value for each available gene.
 
@@ -188,15 +190,21 @@ As with the _Experiments_ or _Processed expression values_ page, the columns of 
 - **Fragmentation:** This number represents the size of the RNA fragmentation.
 - **Run sequencing type:** Specifies whether the sequencer reads the fragments from only one end to the other (single) or from both sides of the fragment (paired).
 - **Total read count:** Total number of reads for the annotated sample.
-- **Mapped read count:** Number of reads that Bgee was able to map to the reference ensembl transcriptome (ensembl 102).
+- **Mapped read count:** Number of reads that Bgee was able to map to the reference transcriptome of the species.
 - **Total UMI count:** Total number of individual RNA molecules (UMI) for the annotated sample. Only applicable for libraries producing UMIs.
 - **Mapped UMI count:** Number of UMIs that could be mapped to the transcriptome. Only applicable for libraries producing UMIs.
-- **Distinct rank count:** When performing a fractional ranking of the genes in the annotated sample, based on their expression level, number of distinct ranks observed, to have a value of the power for distinguishing expression levels. Used as a weight to compute a weighted mean rank across samples for each gene and compute expression scores in Bgee.
+- **Distinct rank count:** When performing a fractional ranking of the genes in the annotated sample, based on their expression level, number of distinct ranks observed, to have a value of the power for distinguishing expression levels. Used as the weight of the sample when computing, for each gene, the weighted means of the p-values and of the expression scores across samples in Bgee.
 - **Max rank:** When performing a fractional ranking of the genes in the annotated sample, based on their expression level, maximum rank attained in the sample. Used to normalize ranks across samples and compute expression scores in Bgee.
 - **Link to processed expression values:** The "Browse results" link allows you to access the processed expression values for this library. It will include the expression level and expression p-value for each available gene.
 - **Cell type ID**: ID of the cell type of the sample. Clicking the link will give you more information on that cell type by bringing you to the Ontology origin where you can see parent and child terms or cell type function.
 - **Cell type name**: Common name of the cell type of the sample such as "embryonic cell".
 - **Fractionation**: Denotes where the transcripts are extracted from. There are two possible values, the cell or the nuclei.
+- **Anat. entity author annotation**: Free text annotation of the anatomical localization of the sample, as provided by the authors.
+- **Cell type author annotation**: Free text annotation of the cell type of the sample, as provided by the authors. Only for single-cell RNA-Seq data.
+- **Stage author annotation**: Free text annotation of the developmental and life stage of the sample, as provided by the authors.
+- **Time**: Free text annotation of the time of sampling, as provided by the authors.
+- **Time unit**: Unit of the time of sampling, as provided by the authors.
+- **Physiological status**: Physiological status of the organism at the time of sampling.
 - **Evidence ID**: Specific identifier of one results from an in situ hybridization experiment.
 
 ## Processed expression values
