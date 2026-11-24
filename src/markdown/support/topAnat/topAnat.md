@@ -192,8 +192,8 @@ Anatomical terms with a p-value higher than this threshold will not be considere
 
 ## Examples
 
-- [Human genes involved in autism and epilepsy.](/analysis/top-anat/896282493ba586018b2bd310a2d21f1487d55a09)
-- [Mouse genes mapped to the GO term "spermatogenesis".](/analysis/top-anat/1c1dcd61258315420064aad29e315471628d2edb)
-- [Zebrafish 3R ohnologs showing nervous system expression of 3R duplicates.](/analysis/top-anat/5fc057c2e71f11ee05fac4d1c4831f0a91f49ee7)
-- [Pigmentation genes in rabbit, with decorrelation.](/analysis/top-anat/267509110feb0f027cd9546d6209e6776cf03d5f)
+- [Human genes involved in autism and epilepsy.](/analysis/top-anat/4f12796d5c1f1c478cb3bf91f38355d4ee94c835)
+- [Mouse genes mapped to the GO term "spermatogenesis".](/analysis/top-anat/106462a670fc205ef34f0babec787bd00e7ab7ef)
+- [Zebrafish 3R ohnologs showing nervous system expression of 3R duplicates.](/analysis/top-anat/22e5257f8fc28f4564f0d1c3fcdbbadc61f7cc97)
+- [Pigmentation genes in rabbit, with decorrelation.](/analysis/top-anat/a4cdd03c7a4ebb43ec08609552697661cc49cbc9)
 - [COVID-19 related human genes, with increased FDR threshold.](/analysis/top-anat/0ea60c53f695f4ec1a4f2da3a5343b6f14249720)
