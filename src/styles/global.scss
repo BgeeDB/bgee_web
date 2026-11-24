@@ -152,10 +152,14 @@ $colors: map-merge($colors, $custom-colors);
 //separate styling of the navbar for the homepage
 body.homepage {
   background: #f7f7f7;
-  .navbar {
-    width: 100%;
-    position: absolute !important;
-    background: #000000b3 !important;
+  // In archives, keep the regular navbar (archive colour, in the page flow), so that the
+  // "archived version" banner below it is visible, as on the other pages
+  @if not $archive {
+    .navbar {
+      width: 100%;
+      position: absolute !important;
+      background: #000000b3 !important;
+    }
   }
 }
 //end separate styling of the navbar for the homepage

@@ -29,6 +29,7 @@ const PATHS = {
   },
   RESOURCES: {
     R_PACKAGES: `/resources/r-packages`,
+    API: `/doc-api/`,
     ANNOTATIONS: `/resources/annotations`,
     ONTOLOGIES: `/resources/ontologies`,
     SOURCE_CODE: `/resources/source-code`,

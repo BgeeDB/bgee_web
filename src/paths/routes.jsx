@@ -164,6 +164,9 @@ const RESOURCES = {
     //   keywords: 'R package, Bioconductor, BgeeDB, BgeeCall, Docker container',
     // },
   },
+  [PATHS.RESOURCES.API]: {
+    title: 'Bgee API',
+  },
   [PATHS.RESOURCES.ANNOTATIONS]: {
     // source: AnnotationsFile,
     title: 'Annotation resources',

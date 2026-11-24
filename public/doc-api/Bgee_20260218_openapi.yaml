@@ -15,7 +15,7 @@ info:
     homology, and more, each with customizable query parameters to tailor your
     data retrieval needs.
 
-    For further exploration, [visit the Bgee website](https://www.bgee.org).
+    For further exploration, [visit the Bgee website](https://archives.bgee.org/15-2).
 
 
     Data retrieved through the API is available under the CC0 license, promoting
@@ -29,9 +29,9 @@ info:
     email: Bgee@sib.swiss
 externalDocs:
   description: Find out more about Bgee
-  url: https://www.bgee.org/about/
+  url: https://archives.bgee.org/15-2/about/
 servers:
-  - url: https://www.bgee.org/api
+  - url: https://archives.bgee.org/api-15-2/
 tags:
   - name: Access Data
     description: >-
@@ -57,7 +57,7 @@ paths:
       tags:
         - Access Data
       externalDocs:
-        url: https://www.bgee.org/support/tutorial-raw-data
+        url: https://archives.bgee.org/15-2/support/tutorial-raw-data
       summary: Retrieve curated raw data annotations
       description: >
         Retrieve all libraries in Bgee that match your selected criteria and
@@ -122,7 +122,7 @@ paths:
         - Access Data
       externalDocs:
         url: >-
-          https://www.bgee.org/support/tutorial-raw-data#processed-expression-values
+          https://archives.bgee.org/15-2/support/tutorial-raw-data#processed-expression-values
       summary: Retrieve processed expression values
       description: >-
         Retrieve gene expression information processed using Bgee pipeline that
@@ -177,7 +177,7 @@ paths:
       tags:
         - Access Data
       externalDocs:
-        url: https://www.bgee.org/support/tutorial-expression-calls
+        url: https://archives.bgee.org/15-2/support/tutorial-expression-calls
       summary: Retrieve expression calls
       description: >-
         To answer to the question "Is this gene expressed under this 
@@ -192,8 +192,8 @@ paths:
         of anatomical entity, developmental stage, sex, or strain. \
 
         See the main [Bgee
-        publications](https://www.bgee.org/about/publications) or [Bgee
-        documentation](https://www.bgee.org/support/tutorial-expression-call-download-documentation) 
+        publications](https://archives.bgee.org/15-2/about/publications) or [Bgee
+        documentation](https://archives.bgee.org/15-2/support/tutorial-expression-call-download-documentation) 
         for details. 
 
 
@@ -392,7 +392,7 @@ paths:
       tags:
         - Access Data
       externalDocs:
-        url: https://www.bgee.org/support/tutorial-raw-data#experiments
+        url: https://archives.bgee.org/15-2/support/tutorial-raw-data#experiments
       summary: Retrieve experiments
       description: >-
         Retrieve the experiment(s) in Bgee that match the specific criteria you
@@ -449,7 +449,7 @@ paths:
       tags:
         - Tools
       externalDocs:
-        url: https://www.bgee.org/support/tutorial-TopAnat
+        url: https://archives.bgee.org/15-2/support/tutorial-TopAnat
       summary: Submit TopAnat analysis job
       description: |
       
@@ -693,7 +693,7 @@ paths:
       tags:
         - Tools
       externalDocs:
-        url: https://www.bgee.org/support/tutorial-TopAnat
+        url: https://archives.bgee.org/15-2/support/tutorial-TopAnat
       summary: Validate a TopAnat gene list
       description: >
         Validates one or more gene ID lists for use with TopAnat.
@@ -769,7 +769,7 @@ paths:
       tags:
         - Tools
       externalDocs:
-        url: https://www.bgee.org/support/tutorial-TopAnat
+        url: https://archives.bgee.org/15-2/support/tutorial-TopAnat
       summary: Check TopAnat job status
       description: >
         Returns the current status of a previously submitted TopAnat job.
@@ -839,7 +839,7 @@ paths:
       tags:
         - Tools
       externalDocs:
-        url: https://www.bgee.org/support/tutorial-TopAnat
+        url: https://archives.bgee.org/15-2/support/tutorial-TopAnat
       summary: Fetch TopAnat results
       description: >
         Returns the results of a TopAnat analysis once the corresponding job is
@@ -897,7 +897,7 @@ paths:
         common ancestral structure. 
 
         [More
-        details](https://www.bgee.org/support/tutorial-anatomical-homology)
+        details](https://archives.bgee.org/15-2/support/tutorial-anatomical-homology)
       parameters:
         - name: page
           in: query
@@ -963,7 +963,7 @@ paths:
 
 
         [More
-        details](https://www.bgee.org/support/tutorial-expression-comparison)
+        details](https://archives.bgee.org/15-2/support/tutorial-expression-comparison)
       parameters:
         - in: query
           name: page
@@ -1001,7 +1001,7 @@ paths:
         species details.
 
 
-        [More details](https://www.bgee.org/support/tutorial-gene-page)
+        [More details](https://archives.bgee.org/15-2/support/tutorial-gene-page)
       parameters:
         - in: query
           name: page
@@ -1049,7 +1049,7 @@ paths:
         to the source data.
 
 
-        [More details](https://www.bgee.org/support/tutorial-gene-page)
+        [More details](https://archives.bgee.org/15-2/support/tutorial-gene-page)
       parameters:
         - in: query
           name: page
@@ -1152,7 +1152,7 @@ paths:
         Ensembl, UniProtKB, GeneCards, EMBL, CCDS, HGNC, etc.
 
 
-        [More details](https://www.bgee.org/support/tutorial-gene-page)
+        [More details](https://archives.bgee.org/15-2/support/tutorial-gene-page)
       parameters:
         - in: query
           name: page
@@ -1199,7 +1199,7 @@ paths:
 
 
 
-        [More details](https://www.bgee.org/support/tutorial-gene-page)
+        [More details](https://archives.bgee.org/15-2/support/tutorial-gene-page)
       parameters:
         - in: query
           name: page
@@ -1242,7 +1242,7 @@ paths:
 
 
         [More details and mouse data
-        example](https://www.bgee.org/species/10090)
+        example](https://archives.bgee.org/15-2/species/10090)
       parameters:
         - name: page
           in: query

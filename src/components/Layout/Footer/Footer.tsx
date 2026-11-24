@@ -143,7 +143,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="/doc-api/" target="_blank">
+                <a href="/15-2/doc-api/" target="_blank">
                   Bgee API
                 </a>
               </li>

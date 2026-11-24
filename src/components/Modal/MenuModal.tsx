@@ -132,7 +132,7 @@ const SIDE_MENU = [
       {
         key: 'page.resources.api.test',
         title: 'Bgee API',
-        path: '/doc-api/',
+        path: '/15-2/doc-api/',
         type: 'external',
       },
     ],

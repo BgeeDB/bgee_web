@@ -8,9 +8,13 @@ for lnk in `find "$ROOT/public/" -type l | xargs ls -l | sed -e 's/^.*-> //'`; d
     ln -fs $lnk $name;
 done
 
+rm -f Bgee_*_openapi.json doc-api/Bgee-openapi.json
+cd doc-api/
+ln -fs Bgee_*_openapi.json Bgee-openapi.json
+cd ..
+
 # Add the ftp symlink which may have issues at build time if the destination does not exist!
 ln -fs /mnt/FTPBGEE/ftp ftp
-ln -fs ../doc-api doc-api
 
 exit
 
