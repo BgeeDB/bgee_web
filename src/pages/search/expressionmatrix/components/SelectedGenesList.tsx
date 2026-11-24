@@ -204,6 +204,7 @@ const HomologAddPanel = ({
   const hasSelection = Boolean(orthologTaxonId || paralogTaxonId);
   const canSubmit = hasSelection && orthologCount + paralogCount > 0 && !submitting;
   const label = hasSelection ? addButtonLabel(orthologCount, paralogCount) : 'Add';
+  const hasHomologs = orthologs.length > 0 || paralogs.length > 0;
 
   const submit = async () => {
     if (!canSubmit) return;
@@ -226,43 +227,51 @@ const HomologAddPanel = ({
       ref={panelRef}
       className="homolog-add-panel"
       role="dialog"
-      aria-label="Add orthologs or paralogs"
+      aria-label={hasHomologs ? 'Add orthologs or paralogs' : 'No orthologs or paralogs'}
       aria-describedby="homolog-add-panel-note"
       style={position ? { top: position.top, left: position.left } : { top: 0, left: 0, visibility: 'hidden' }}
     >
-      <p id="homolog-add-panel-note" className="homolog-add-panel-note">
-        Counts are genes not yet in the list.
-      </p>
-      <div className="homolog-add-panel-columns">
-        <TaxonColumn
-          title="Orthologs"
-          tone="ortholog"
-          groups={orthologs}
-          selectedId={orthologTaxonId}
-          trackedKeys={trackedKeys}
-          onSelect={setOrthologTaxonId}
-        />
-        <TaxonColumn
-          title="Paralogs"
-          tone="paralog"
-          groups={paralogs}
-          selectedId={paralogTaxonId}
-          trackedKeys={trackedKeys}
-          onSelect={setParalogTaxonId}
-        />
-      </div>
-      {error && <p className="homolog-add-panel-error">{error}</p>}
-      <Button
-        type="button"
-        className="homolog-add-panel-submit"
-        color="info"
-        size="small"
-        onClick={submit}
-        disabled={!canSubmit}
-        loading={submitting}
-      >
-        {label}
-      </Button>
+      {hasHomologs ? (
+        <>
+          <p id="homolog-add-panel-note" className="homolog-add-panel-note">
+            Counts are genes not yet in the list.
+          </p>
+          <div className="homolog-add-panel-columns">
+            <TaxonColumn
+              title="Orthologs"
+              tone="ortholog"
+              groups={orthologs}
+              selectedId={orthologTaxonId}
+              trackedKeys={trackedKeys}
+              onSelect={setOrthologTaxonId}
+            />
+            <TaxonColumn
+              title="Paralogs"
+              tone="paralog"
+              groups={paralogs}
+              selectedId={paralogTaxonId}
+              trackedKeys={trackedKeys}
+              onSelect={setParalogTaxonId}
+            />
+          </div>
+          {error && <p className="homolog-add-panel-error">{error}</p>}
+          <Button
+            type="button"
+            className="homolog-add-panel-submit"
+            color="info"
+            size="small"
+            onClick={submit}
+            disabled={!canSubmit}
+            loading={submitting}
+          >
+            {label}
+          </Button>
+        </>
+      ) : (
+        <p id="homolog-add-panel-note" className="homolog-add-panel-none">
+          No orthologs or paralogs have been found for this gene.
+        </p>
+      )}
     </div>
   );
 
@@ -422,12 +431,11 @@ const SelectedGenesList = ({
             const isFetching = Boolean(fetchingHomologs[key]);
             const data = homologData[key];
             const hasChoices = Boolean(data?.orthologsByTaxon?.length || data?.paralogsByTaxon?.length);
-            const canOpen = !isFetching && (!data || hasChoices);
             const geneName = geneDisplayName(gene.geneId, gene.geneLabel);
             let addTitle = 'Add orthologs or paralogs';
             if (isFetching) addTitle = 'Loading homologs...';
             else if (loadFailedKey === key && !data) addTitle = 'Could not load homologs';
-            else if (data && !hasChoices) addTitle = 'No orthologs or paralogs';
+            else if (data && !hasChoices) addTitle = 'No orthologs or paralogs have been found for this gene';
 
             const isDragging = draggingKey === key;
             const isDropTarget = dropKey === key && draggingKey !== key;
@@ -511,7 +519,7 @@ const SelectedGenesList = ({
                             return;
                           }
                           if (data) {
-                            if (hasChoices) setOpenKey(key);
+                            setOpenKey(key);
                             return;
                           }
                           const requestId = ++loadRequestRef.current;
@@ -522,13 +530,12 @@ const SelectedGenesList = ({
                               setLoadFailedKey(key);
                               return;
                             }
-                            const choices = Boolean(loaded.orthologsByTaxon?.length || loaded.paralogsByTaxon?.length);
-                            if (choices) setOpenKey(key);
+                            setOpenKey(key);
                           });
                         }}
-                        disabled={!canOpen}
+                        disabled={isFetching}
                         loading={isFetching}
-                        aria-label="Add orthologs or paralogs"
+                        aria-label={addTitle}
                         aria-expanded={isOpen}
                         aria-haspopup="dialog"
                         title={addTitle}
