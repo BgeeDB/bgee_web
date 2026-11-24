@@ -240,7 +240,7 @@ const RawDataAnnotationResults = ({
         </div>
       )}
       <Table
-        title={isExprCalls ? 'Order of results is independent of expression level' : undefined}
+        title={isExprCalls ? 'Results sorted by decreasing expression score, gene by gene' : undefined}
         pagination
         defaultPaginationSize={50}
         columns={columnDescriptions}
