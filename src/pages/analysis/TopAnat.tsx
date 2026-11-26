@@ -14,7 +14,7 @@ import TopAnatActionButtons from '../../components/TopAnat/TopAnatActionButtons'
 import { getAxiosAddNotif } from '../../api/prod/constant';
 import random from '../../helpers/random';
 import ApiReducer from '../../helpers/ApiReducer';
-import { TOP_ANAT_DEFAULT_RP } from '../../helpers/constants/topAnat';
+import { TOP_ANAT_DEFAULT_RP, topAnatBackground } from '../../helpers/constants/topAnat';
 import { topanatToLdJSON } from '~/helpers/schemaDotOrg';
 import config from '../../config.json';
 import { getMetadata } from '~/helpers/metadata';
@@ -92,6 +92,7 @@ const TopAnat = () => {
               ...prev,
               genes: (res.requestParameters.fg_list || []).join('\n'),
               genesBg: (res.requestParameters?.bg_list || []).join('\n'),
+              background: topAnatBackground(res.requestParameters),
               email: '',
               jobDescription: res.requestParameters.job_title || '',
               stages: res.requestParameters.stage_id || 'all',
@@ -105,10 +106,7 @@ const TopAnat = () => {
               inSitu: Boolean(res?.requestParameters?.data_type?.find((f) => f === 'IN_SITU')),
               full: Boolean(res?.requestParameters?.data_type?.find((f) => f === ID_FULL_LENGTH)),
             }));
-            requestParameters.set({
-              TOP_ANAT_DEFAULT_RP,
-              customBg: Boolean(res.requestParameters.bg_list),
-            });
+            requestParameters.set(TOP_ANAT_DEFAULT_RP);
 
             api.topAnat
               .autoCompleteGenes(res.requestParameters.fg_list.join('\n'))
@@ -264,7 +262,6 @@ const TopAnat = () => {
         handlers={{
           foregroundHandler,
           backgroundHandler,
-          setRP: requestParameters.set,
           onSelectCustomStage,
           checkBoxHandler,
         }}

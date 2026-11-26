@@ -60,7 +60,8 @@ const topAnat = {
       params.append('action', 'submit_job');
       params.append('display_rp', '1');
       params.append('fg_list', form.genes);
-      params.append('bg_list', form.genesBg);
+      params.append('background_type', form.background);
+      if (form.background === 'custom') params.append('bg_list', form.genesBg);
       if (form.rnaSeq) params.append('data_type', 'RNA_SEQ');
       if (form.full) params.append('data_type', ID_FULL_LENGTH);
       if (form.inSitu) params.append('data_type', 'IN_SITU');

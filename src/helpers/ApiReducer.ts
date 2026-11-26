@@ -1,4 +1,5 @@
 import isPlural from './isPlural';
+import { topAnatBackground } from './constants/topAnat';
 import config from '../config.json';
 
 const { ID_FULL_LENGTH } = config.dataTypeIds;
@@ -8,6 +9,7 @@ const ApiReducer = {
     ...prev,
     genes: rp.fg_list.join('\n'),
     genesBg: (rp.bg_list || []).join('\n'),
+    background: topAnatBackground(rp),
     email: '',
     jobDescription: rp.job_title || '',
     stages: rp.stage_id || 'all',
@@ -32,7 +34,6 @@ const ApiReducer = {
         res.data.fg_list.detectedSpecies[res.data.fg_list.selectedSpecies].name
       }`,
     };
-    if (rp.bg_list) curr.customBg = true;
     if (res.data.bg_list)
       curr.bg = res.data.bg_list
         ? {

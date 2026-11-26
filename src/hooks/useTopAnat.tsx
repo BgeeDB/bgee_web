@@ -69,6 +69,9 @@ const useTopAnat = (flowState: string, setFlowState) => {
             .autoCompleteGenes(e.target.value)
             .then((r) => {
               propsForm.handleChange('genesBg', () => '')();
+              propsForm.setData((d) =>
+                d.background === 'custom' ? { ...d, background: TOP_ANAT_FORM_CONFIG.initialValue.background } : d
+              );
               propsForm.handleChange('rnaSeq', () => true)();
               propsForm.handleChange('inSitu', () => true)();
               setRP((prev) => ({
@@ -78,14 +81,13 @@ const useTopAnat = (flowState: string, setFlowState) => {
                   message: r.message,
                 },
                 bg: null,
-                customBg: false,
               }));
             })
             .catch((err) => {
               console.debug('[ERROR] api.topAnat.autoComplete', err);
             });
         }, 1000);
-      } else setRP((prev) => ({ ...prev, fg: null, bg: null, customBg: false }));
+      } else setRP((prev) => ({ ...prev, fg: null, bg: null }));
     },
     [dataForm, propsForm, flowState]
   );

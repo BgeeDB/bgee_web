@@ -3,12 +3,15 @@ import classnames from '../classnames';
 export const TOP_ANAT_DEFAULT_RP = {
   fg: null,
   bg: null,
-  customBg: false,
 };
+// The background of an analysis from its request parameters: when none is requested, the custom
+// background if background genes are submitted, otherwise the default background of the API.
+export const topAnatBackground = (rp) => rp.background_type || (rp.bg_list ? 'custom' : 'observed');
 export const TOP_ANAT_FORM_CONFIG = {
   initialValue: {
     genes: '',
     genesBg: '',
+    background: 'protein_coding',
     email: '',
     jobDescription: '',
     stages: 'all',

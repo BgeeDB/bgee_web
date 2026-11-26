@@ -18,7 +18,7 @@ import { FULL_LENGTH_LABEL } from '../../api/prod/constant';
 const TopAnatForm = ({
   form: { handleChange, data: formData, errors },
   requestParameters: rp,
-  handlers: { foregroundHandler, backgroundHandler, setRP, onSelectCustomStage, checkBoxHandler },
+  handlers: { foregroundHandler, backgroundHandler, onSelectCustomStage, checkBoxHandler },
   status,
 }) => {
   const prevStatus = usePrevious(status);
@@ -103,8 +103,9 @@ const TopAnatForm = ({
                     content={
                       <>
                         By default, the gene universe considered for the enrichment analysis is the protein-coding genes
-                        of the selected species expressed in at least one condition in Bgee. It is possible to provide a
-                        custom gene universe, as a list of gene IDs. All gene IDs present in the foreground must be
+                        of the selected species expressed in at least one condition in Bgee. It is possible to consider
+                        all the genes expressed in at least one condition in Bgee, whatever their biotype, or to provide
+                        a custom gene universe, as a list of gene IDs. All gene IDs present in the foreground must be
                         present in the background.
                       </>
                     }
@@ -126,28 +127,38 @@ const TopAnatForm = ({
                           <Bulma.Button
                             size="small"
                             className="toggle-button"
-                            // @ts-expect-error Type false|"danger" is not assignable to type string|undefined
-                            color={!rp.customBg && 'danger'}
-                            onClick={() => setRP((prev) => ({ ...prev, customBg: false }))}
-                            disabled={formDisabled || (!formDisabled && !rp.customBg)}
-                          >{`Protein coding genes for ${
-                            rp.fg.list.detectedSpecies[rp.fg.list.selectedSpecies].name
-                          }`}</Bulma.Button>
+                            color={formData.background === 'protein_coding' ? 'danger' : undefined}
+                            onClick={handleChange('background', () => 'protein_coding')}
+                            disabled={formDisabled || formData.background === 'protein_coding'}
+                          >
+                            Protein coding genes
+                          </Bulma.Button>
                         </div>
                         <div className="control">
                           <Bulma.Button
                             size="small"
                             className="toggle-button"
-                            color={rp.customBg && 'danger'}
-                            onClick={() => setRP((prev) => ({ ...prev, customBg: true }))}
-                            disabled={formDisabled || (!formDisabled && rp.customBg)}
+                            color={formData.background === 'observed' ? 'danger' : undefined}
+                            onClick={handleChange('background', () => 'observed')}
+                            disabled={formDisabled || formData.background === 'observed'}
+                          >
+                            All genes with data
+                          </Bulma.Button>
+                        </div>
+                        <div className="control">
+                          <Bulma.Button
+                            size="small"
+                            className="toggle-button"
+                            color={formData.background === 'custom' ? 'danger' : undefined}
+                            onClick={handleChange('background', () => 'custom')}
+                            disabled={formDisabled || formData.background === 'custom'}
                           >
                             Custom data
                           </Bulma.Button>
                         </div>
                       </div>
                     </div>
-                    {rp.customBg && rp.bg && (
+                    {formData.background === 'custom' && rp.bg && (
                       <div className="is-flex is-align-items-center">
                         <p className="mr-1">{rp.bg?.message}</p>
                         <InfoIcon
@@ -160,7 +171,7 @@ const TopAnatForm = ({
                   </div>
                 )}
               </article>
-              {rp.customBg && (
+              {formData.background === 'custom' && (
                 <div className="field">
                   <TextArea
                     rows={10}
