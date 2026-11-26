@@ -56,10 +56,9 @@ const TopAnatHead = () => (
       >
         topGO package
       </a>
-      . This web-service runs its analyses without decorrelation, the decorrelation methods being available from
-      the BgeeDB R package. Opening the link of an analysis run with decorrelation in Bgee 15.2 or an earlier
-      release runs it again without decorrelation; its original results remain available from the archive site of
-      that release.
+      . This web-service runs its analyses without decorrelation, the decorrelation methods being available from the
+      BgeeDB R package. Opening the link of an analysis run with decorrelation in Bgee 15.2 or an earlier release runs
+      it again without decorrelation; its original results remain available from the archive site of that release.
     </p>
     <div id="helpers-top-anat" className="my-4 is-flex">
       <TopAnatHistoryModal />
